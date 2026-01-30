@@ -16,16 +16,18 @@ export const fetchEventsFromGemini = async (_forceRefresh: boolean = false): Pro
 
     const data = await response.json();
 
-    // Post-process: Fix sports event URLs
+    // Post-process: Fix Cal Athletics event URLs
     const CALBEARS_TICKETS_URL = 'https://calbears.com/sports/2021/2/23/cal-golden-bears-tickets.aspx';
     const events = (data.events || []).map((event: CalEvent) => {
-      const isSportsEvent = event.tags?.some(tag =>
-        tag.toLowerCase().includes('sport') ||
-        tag.toLowerCase().includes('athletics') ||
-        tag.toLowerCase().includes('cal bears')
-      );
+      // Only replace URL for official Cal Athletics events
+      const isCalAthleticsEvent =
+        event.organizer.toLowerCase().includes('cal athletics') ||
+        event.organizer.toLowerCase().includes('cal bears') ||
+        event.organizer.toLowerCase().includes('athletics department') ||
+        event.title.toLowerCase().includes('cal bears') ||
+        (event.url && event.url.includes('calbears.com'));
 
-      if (isSportsEvent) {
+      if (isCalAthleticsEvent) {
         return { ...event, url: CALBEARS_TICKETS_URL };
       }
       return event;
