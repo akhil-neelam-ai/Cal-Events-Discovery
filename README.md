@@ -1,20 +1,63 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Cal Events Discovery
 
-# Run and deploy your AI Studio app
+A web application that helps UC Berkeley students discover campus events. Events are automatically fetched daily from various Berkeley calendars and displayed in an instant-loading interface.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/drive/1M2sjQwL0pOkr75RGqsYjgBwmhJkt-uf3
+- **Instant Loading** - Events are pre-fetched and stored as static JSON, so the page loads immediately
+- **Daily Auto-Updates** - GitHub Actions automatically refreshes events every day at 6 AM PST
+- **Smart Filtering** - Filter events by category (Academic, Arts, Sports, Career, etc.) and date range
+- **Search** - Search across event titles, descriptions, and organizers
+- **Mobile Friendly** - Responsive design works on all devices
+
+## Tech Stack
+
+- **Frontend**: React 19, TypeScript, Tailwind CSS
+- **Build Tool**: Vite
+- **Event Source**: Google Gemini API with Google Search grounding
+- **Hosting**: Vercel
+- **CI/CD**: GitHub Actions
+
+## How It Works
+
+1. A GitHub Action runs daily and calls the Gemini API to fetch 40-50 upcoming UC Berkeley events
+2. Events are saved to `public/events.json` and committed to the repository
+3. The site is automatically redeployed to Vercel
+4. When users visit the site, they see events instantly (no API calls on page load)
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
-
+**Prerequisites:** Node.js 20+
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+   ```bash
+   npm install
+   ```
+
+2. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Update Events Manually
+
+To fetch fresh events locally:
+
+```bash
+API_KEY=your_gemini_api_key npm run update-events
+```
+
+## Environment Variables
+
+For the GitHub Action to work, add these secrets to your repository:
+
+| Secret | Description |
+|--------|-------------|
+| `API_KEY` | Google Gemini API key |
+| `VERCEL_TOKEN` | Vercel deployment token |
+| `VERCEL_ORG_ID` | Vercel organization ID |
+| `VERCEL_PROJECT_ID` | Vercel project ID |
+
+## License
+
+MIT
