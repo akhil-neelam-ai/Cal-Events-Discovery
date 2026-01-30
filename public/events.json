@@ -1,0 +1,120 @@
+{
+  "events": [
+    {
+      "id": "evt-001",
+      "title": "AI and Machine Learning Seminar",
+      "organizer": "EECS Department",
+      "date": "2026-01-30",
+      "time": "2:00 PM",
+      "location": "Soda Hall, Room 306",
+      "description": "Join us for a discussion on the latest advances in AI and machine learning research at Berkeley.",
+      "tags": ["Academic", "Science & Tech"],
+      "url": "https://events.berkeley.edu/"
+    },
+    {
+      "id": "evt-002",
+      "title": "Spring Career Fair 2026",
+      "organizer": "Career Center",
+      "date": "2026-01-31",
+      "time": "10:00 AM",
+      "location": "RSF Field House",
+      "description": "Connect with top employers from tech, finance, and consulting industries.",
+      "tags": ["Career"],
+      "url": "https://career.berkeley.edu/"
+    },
+    {
+      "id": "evt-003",
+      "title": "Cal Men's Basketball vs Stanford",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-01",
+      "time": "7:00 PM",
+      "location": "Haas Pavilion",
+      "description": "Cheer on the Golden Bears as they take on their rivals from Stanford!",
+      "tags": ["Sports"],
+      "url": "https://calbears.com/"
+    },
+    {
+      "id": "evt-004",
+      "title": "Botanical Garden Night Walk",
+      "organizer": "UC Botanical Garden",
+      "date": "2026-02-02",
+      "time": "6:00 PM",
+      "location": "UC Botanical Garden",
+      "description": "Experience the garden after dark with a guided tour through moonlit paths.",
+      "tags": ["Arts", "Student Life"],
+      "url": "https://botanicalgarden.berkeley.edu/"
+    },
+    {
+      "id": "evt-005",
+      "title": "Introduction to Python Workshop",
+      "organizer": "D-Lab",
+      "date": "2026-02-03",
+      "time": "1:00 PM",
+      "location": "Barrows Hall, Room 356",
+      "description": "A beginner-friendly workshop covering Python basics for data analysis.",
+      "tags": ["Academic", "Science & Tech"],
+      "url": "https://dlab.berkeley.edu/"
+    },
+    {
+      "id": "evt-006",
+      "title": "Jazz Ensemble Spring Concert",
+      "organizer": "Department of Music",
+      "date": "2026-02-04",
+      "time": "8:00 PM",
+      "location": "Hertz Hall",
+      "description": "The UC Jazz Ensembles present an evening of classic and contemporary jazz.",
+      "tags": ["Arts"],
+      "url": "https://music.berkeley.edu/"
+    },
+    {
+      "id": "evt-007",
+      "title": "Startup Pitch Night",
+      "organizer": "Berkeley SkyDeck",
+      "date": "2026-02-05",
+      "time": "5:30 PM",
+      "location": "SkyDeck, Penthouse Floor",
+      "description": "Watch Berkeley's top student startups pitch to a panel of investors.",
+      "tags": ["Career", "Science & Tech"],
+      "url": "https://skydeck.berkeley.edu/"
+    },
+    {
+      "id": "evt-008",
+      "title": "Intramural Soccer Signup",
+      "organizer": "Recreational Sports",
+      "date": "2026-02-06",
+      "time": "12:00 PM",
+      "location": "RSF Main Office",
+      "description": "Register your team for the spring intramural soccer league.",
+      "tags": ["Sports", "Student Life"],
+      "url": "https://recsports.berkeley.edu/"
+    },
+    {
+      "id": "evt-009",
+      "title": "Film Screening: Documentary Night",
+      "organizer": "Berkeley Art Museum",
+      "date": "2026-02-07",
+      "time": "7:30 PM",
+      "location": "BAMPFA",
+      "description": "Free screening of award-winning documentaries followed by Q&A with filmmakers.",
+      "tags": ["Arts"],
+      "url": "https://bampfa.org/"
+    },
+    {
+      "id": "evt-010",
+      "title": "Graduate Student Mixer",
+      "organizer": "Graduate Assembly",
+      "date": "2026-02-08",
+      "time": "4:00 PM",
+      "location": "International House",
+      "description": "Meet fellow grad students from across campus in a relaxed social setting.",
+      "tags": ["Student Life"],
+      "url": "https://ga.berkeley.edu/"
+    }
+  ],
+  "sources": [
+    {"title": "UC Berkeley Events Calendar", "uri": "https://events.berkeley.edu/"},
+    {"title": "Cal Athletics", "uri": "https://calbears.com/"},
+    {"title": "BAMPFA", "uri": "https://bampfa.org/"}
+  ],
+  "lastUpdated": 1738195200000
+}
