@@ -6,7 +6,9 @@ import { CalEvent, SearchResponse, GroundingSource } from "../types";
  */
 export const fetchEventsFromGemini = async (_forceRefresh: boolean = false): Promise<SearchResponse & { lastUpdated: number }> => {
   try {
-    const response = await fetch('/events.json');
+    const response = await fetch('/events.json', {
+      cache: 'no-store'
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to load events: ${response.status}`);
