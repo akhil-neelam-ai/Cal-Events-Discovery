@@ -48,13 +48,39 @@ async function updateEvents() {
     day: 'numeric'
   });
 
+  // Priority sources organized by category
   const prioritySources = [
+    // Main Campus Hubs
     "https://events.berkeley.edu/",
+    "https://calperformances.org/events/",
+    "https://calbears.com/calendar",
+
+    // Schools & Colleges
+    "https://events.berkeley.edu/chem/",
     "https://cdss.berkeley.edu/news-events/events-calendar",
-    "https://botanicalgarden.berkeley.edu/events-page/event-calendar/",
-    "https://anthropology.berkeley.edu/news-events/events-calendar",
-    "https://ce3.berkeley.edu/events",
-    "https://research-it.berkeley.edu/events-trainings/upcoming-events-trainings"
+    "https://events.berkeley.edu/coe/",
+    "https://www.ischool.berkeley.edu/events",
+    "https://www.law.berkeley.edu/events/",
+    "https://publichealth.berkeley.edu/events/",
+    "https://gspp.berkeley.edu/events",
+
+    // Research Centers & Tech Institutes
+    "https://rdi.berkeley.edu/events",
+    "https://haas.berkeley.edu/energy-institute/events/",
+    "https://bids.berkeley.edu/events",
+    "https://citris-uc.org/events/",
+    "https://cltc.berkeley.edu/events/",
+    "https://simons.berkeley.edu/events",
+    "https://scet.berkeley.edu/events/",
+    "https://innovativegenomics.org/events/",
+    "https://blumcenter.berkeley.edu/events/",
+    "https://www.ssl.berkeley.edu/events/",
+    "https://its.berkeley.edu/events",
+
+    // Arts, Culture & Public Venues
+    "https://bampfa.org/calendar",
+    "https://www.lawrencehallofscience.org/events/",
+    "https://botanicalgarden.berkeley.edu/events"
   ].join("\n");
 
   const prompt = `
@@ -62,7 +88,7 @@ async function updateEvents() {
     Task: Generate the DAILY BATCH of upcoming events.
     Current Date: ${currentDate}
 
-    GOAL: Find a diverse list of exactly 40-50 upcoming events spanning:
+    GOAL: Find a diverse list of 50-70 upcoming events spanning:
     - Academic seminars & lectures
     - Arts, music, and performances
     - Sports and recreation
@@ -70,12 +96,19 @@ async function updateEvents() {
     - Student life and club socials
     - Science & Technology events
 
-    SEARCH STRATEGY:
-    1. Scan priority sources: ${prioritySources}
-    2. Broaden search to include Berkeley department news, UC Berkeley News events, and CalPerformances.
+    PRIORITY SOURCES (scan these first):
+    ${prioritySources}
+
+    SEARCH EXPANSION:
+    Beyond the priority sources, also search for events from:
+    - UC Berkeley student organizations and clubs
+    - Career center job fairs and workshops
+    - Campus recreation and intramural sports
+    - Library events and workshops
+    - Graduate division events
 
     DATA FORMAT:
-    Return ONLY a valid JSON array.
+    Return ONLY a valid JSON array. No markdown, no explanation.
     [
       {
         "id": "unique_id",
@@ -84,9 +117,9 @@ async function updateEvents() {
         "date": "YYYY-MM-DD",
         "time": "Start Time",
         "location": "Venue",
-        "description": "Short summary",
-        "url": "Link",
-        "tags": ["Category - Academic, Arts, Sports, Science & Tech, Career, or Student Life"]
+        "description": "Short summary (1-2 sentences)",
+        "url": "Direct link to event page",
+        "tags": ["Category - use: Academic, Arts, Sports, Science & Tech, Career, or Student Life"]
       }
     ]
   `;
