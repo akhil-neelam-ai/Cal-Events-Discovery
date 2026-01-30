@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { fetchEventsFromGemini } from './services/geminiService';
 import { CalEvent, SearchFilters, LoadingState, GroundingSource } from './types';
 
-const Categories = ['All', 'Academic', 'Arts', 'Sports', 'Science & Tech', 'Career', 'Student Life'];
+const Categories = ['All', 'Academic', 'Arts', 'Sports', 'Science & Tech', 'Student Life'];
 const DateRanges = [
   { label: 'Upcoming', value: 'upcoming' },
   { label: 'Today', value: 'today' },
