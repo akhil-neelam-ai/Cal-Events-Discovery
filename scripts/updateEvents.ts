@@ -92,7 +92,6 @@ async function updateEvents() {
     - Academic seminars & lectures
     - Arts, music, and performances
     - Sports and recreation
-    - Career fairs and workshops
     - Student life and club socials
     - Science & Technology events
 
@@ -102,10 +101,16 @@ async function updateEvents() {
     SEARCH EXPANSION:
     Beyond the priority sources, also search for events from:
     - UC Berkeley student organizations and clubs
-    - Career center job fairs and workshops
     - Campus recreation and intramural sports
     - Library events and workshops
     - Graduate division events
+
+    IMPORTANT GUIDELINES:
+    - ONLY include actual public events (lectures, performances, games, workshops, meetings)
+    - DO NOT include administrative deadlines, document preparation periods, application windows, or decision dates
+    - Events must have a specific date/time when people can attend
+    - For Cal Athletics events, use: https://calbears.com/sports/2021/2/23/cal-golden-bears-tickets.aspx
+    - Verify events are real by checking the source URLs
 
     DATA FORMAT:
     Return ONLY a valid JSON array. No markdown, no explanation.
@@ -119,7 +124,7 @@ async function updateEvents() {
         "location": "Venue",
         "description": "Short summary (1-2 sentences)",
         "url": "Direct link to event page",
-        "tags": ["Category - use: Academic, Arts, Sports, Science & Tech, Career, or Student Life"]
+        "tags": ["Category - use: Academic, Arts, Sports, Science & Tech, or Student Life"]
       }
     ]
   `;
