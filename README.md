@@ -25,39 +25,3 @@ A web application that helps UC Berkeley students discover campus events. Events
 3. The site is automatically redeployed to Vercel
 4. When users visit the site, they see events instantly (no API calls on page load)
 
-## Run Locally
-
-**Prerequisites:** Node.js 20+
-
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Run the development server:
-   ```bash
-   npm run dev
-   ```
-
-## Update Events Manually
-
-To fetch fresh events locally:
-
-```bash
-API_KEY=your_gemini_api_key npm run update-events
-```
-
-## Environment Variables
-
-For the GitHub Action to work, add these secrets to your repository:
-
-| Secret | Description |
-|--------|-------------|
-| `API_KEY` | Google Gemini API key |
-| `VERCEL_TOKEN` | Vercel deployment token |
-| `VERCEL_ORG_ID` | Vercel organization ID |
-| `VERCEL_PROJECT_ID` | Vercel project ID |
-
-## License
-
-MIT
