@@ -1,120 +1,941 @@
 {
   "events": [
     {
-      "id": "evt-001",
-      "title": "AI and Machine Learning Seminar",
-      "organizer": "EECS Department",
-      "date": "2026-01-30",
-      "time": "2:00 PM",
-      "location": "Soda Hall, Room 306",
-      "description": "Join us for a discussion on the latest advances in AI and machine learning research at Berkeley.",
-      "tags": ["Academic", "Science & Tech"],
-      "url": "https://events.berkeley.edu/"
+      "id": "CP-MDGC-20260214",
+      "title": "Martha Graham Dance Company: GRAHAM100",
+      "organizer": "Cal Performances",
+      "date": "2026-02-14",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "The Martha Graham Dance Company celebrates its 100th anniversary with Graham classics and more.",
+      "url": "https://calperformances.org/events/martha-graham-dance-company-graham100/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
     },
     {
-      "id": "evt-002",
-      "title": "Spring Career Fair 2026",
-      "organizer": "Career Center",
-      "date": "2026-01-31",
-      "time": "10:00 AM",
-      "location": "RSF Field House",
-      "description": "Connect with top employers from tech, finance, and consulting industries.",
-      "tags": ["Career"],
-      "url": "https://career.berkeley.edu/"
+      "id": "CP-MDGC-20260215",
+      "title": "Martha Graham Dance Company: GRAHAM100",
+      "organizer": "Cal Performances",
+      "date": "2026-02-15",
+      "time": "3:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "The Martha Graham Dance Company celebrates its 100th anniversary with Graham classics and more.",
+      "url": "https://calperformances.org/events/martha-graham-dance-company-graham100/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
     },
     {
-      "id": "evt-003",
-      "title": "Cal Men's Basketball vs Stanford",
-      "organizer": "Cal Athletics",
+      "id": "CP-AIMKA-20260221",
+      "title": "A.I.M by Kyle Abraham",
+      "organizer": "Cal Performances",
+      "date": "2026-02-21",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "Kyle Abraham brings his A.I.M company for its Cal Performances debut, featuring three works at the intersection of Black and queer culture.",
+      "url": "https://calperformances.org/events/a-i-m-by-kyle-abraham/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
+    },
+    {
+      "id": "CP-AIMKA-20260222",
+      "title": "A.I.M by Kyle Abraham",
+      "organizer": "Cal Performances",
+      "date": "2026-02-22",
+      "time": "3:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "Kyle Abraham brings his A.I.M company for its Cal Performances debut, featuring three works at the intersection of Black and queer culture.",
+      "url": "https://calperformances.org/events/a-i-m-by-kyle-abraham/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
+    },
+    {
+      "id": "CP-Somi-20260221",
+      "title": "Somi",
+      "organizer": "Cal Performances",
+      "date": "2026-02-21",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "Vocalist and composer Somi makes her Cal Performances debut with music that traverses the cultural bridges between Africa and the US.",
+      "url": "https://calperformances.org/events/somi/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
+    },
+    {
+      "id": "CP-CantoOstinato-20260222",
+      "title": "Canto Ostinato, An AMOC* & Sandbox Percussion Co-Production",
+      "organizer": "Cal Performances",
+      "date": "2026-02-22",
+      "time": "3:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "The American Modern Opera Company and Sandbox Percussion perform Dutch composer Simeon ten Holt's Canto Ostinato.",
+      "url": "https://calperformances.org/events/canto-ostinato-an-amoc-sandbox-percussion-co-production/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
+    },
+    {
+      "id": "CP-YSDD-20260227",
+      "title": "Yaa Samar! Dance Theatre: Gathering",
+      "organizer": "Cal Performances",
+      "date": "2026-02-27",
+      "time": "8:00 PM",
+      "location": "Zellerbach Playhouse",
+      "description": "Yaa Samar! Dance Theatre presents 'Gathering'.",
+      "url": "https://calperformances.org/events/yaa-samar-dance-theatre-gathering/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
+    },
+    {
+      "id": "CP-YSDD-20260228",
+      "title": "Yaa Samar! Dance Theatre: Gathering",
+      "organizer": "Cal Performances",
+      "date": "2026-02-28",
+      "time": "8:00 PM",
+      "location": "Zellerbach Playhouse",
+      "description": "Yaa Samar! Dance Theatre presents 'Gathering'.",
+      "url": "https://calperformances.org/events/yaa-samar-dance-theatre-gathering/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
+    },
+    {
+      "id": "CP-SBKB-20260201",
+      "title": "Steven Banks and Xak Bjerken: Golden Silhouettes",
+      "organizer": "Cal Performances",
       "date": "2026-02-01",
-      "time": "7:00 PM",
-      "location": "Haas Pavilion",
-      "description": "Cheer on the Golden Bears as they take on their rivals from Stanford!",
-      "tags": ["Sports"],
-      "url": "https://calbears.com/"
+      "time": "3:00 PM",
+      "location": "Hertz Hall",
+      "description": "In his Cal Performances debut, saxophonist Steven Banks offers a whirlwind musical tour on the baritone saxophone.",
+      "url": "https://calperformances.org/events/steven-banks-and-xak-bjerken-golden-silhouettes/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
     },
     {
-      "id": "evt-004",
-      "title": "Botanical Garden Night Walk",
-      "organizer": "UC Botanical Garden",
-      "date": "2026-02-02",
-      "time": "6:00 PM",
-      "location": "UC Botanical Garden",
-      "description": "Experience the garden after dark with a guided tour through moonlit paths.",
-      "tags": ["Arts", "Student Life"],
-      "url": "https://botanicalgarden.berkeley.edu/"
+      "id": "CP-CMS-20260205",
+      "title": "Cécile McLorin Salvant",
+      "organizer": "Cal Performances",
+      "date": "2026-02-05",
+      "time": "7:30 PM",
+      "location": "Zellerbach Hall",
+      "description": "Vocalist and composer Cécile McLorin Salvant brings fresh perspectives to jazz performance.",
+      "url": "https://calperformances.org/events/cecile-mcclorin-salvant/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
     },
     {
-      "id": "evt-005",
-      "title": "Introduction to Python Workshop",
-      "organizer": "D-Lab",
-      "date": "2026-02-03",
-      "time": "1:00 PM",
-      "location": "Barrows Hall, Room 356",
-      "description": "A beginner-friendly workshop covering Python basics for data analysis.",
-      "tags": ["Academic", "Science & Tech"],
-      "url": "https://dlab.berkeley.edu/"
-    },
-    {
-      "id": "evt-006",
-      "title": "Jazz Ensemble Spring Concert",
-      "organizer": "Department of Music",
-      "date": "2026-02-04",
+      "id": "CP-EcoEnsemble-20260207",
+      "title": "Eco Ensemble",
+      "organizer": "Cal Performances",
+      "date": "2026-02-07",
       "time": "8:00 PM",
       "location": "Hertz Hall",
-      "description": "The UC Jazz Ensembles present an evening of classic and contemporary jazz.",
-      "tags": ["Arts"],
-      "url": "https://music.berkeley.edu/"
+      "description": "UC Berkeley's department of music's innovative new-music group in residence, led by David Milnes, explores new faculty compositions.",
+      "url": "https://calperformances.org/events/eco-ensemble-david-milnes-director/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
     },
     {
-      "id": "evt-007",
-      "title": "Startup Pitch Night",
-      "organizer": "Berkeley SkyDeck",
-      "date": "2026-02-05",
-      "time": "5:30 PM",
-      "location": "SkyDeck, Penthouse Floor",
-      "description": "Watch Berkeley's top student startups pitch to a panel of investors.",
-      "tags": ["Career", "Science & Tech"],
-      "url": "https://skydeck.berkeley.edu/"
+      "id": "CP-LD-20260307",
+      "title": "Lara Downes and Friends: This Land: Reflections on America",
+      "organizer": "Cal Performances",
+      "date": "2026-03-07",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "Classical pianist, NPR host, and San Francisco native Lara Downes is joined by an all-star cast of collaborators for a selection of classical and popular music exploring the richness and complexity of the American experience.",
+      "url": "https://calperformances.org/events/lara-downes-and-friends-this-land-reflections-on-america/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
     },
     {
-      "id": "evt-008",
-      "title": "Intramural Soccer Signup",
-      "organizer": "Recreational Sports",
+      "id": "CP-TLDSJT-20260308",
+      "title": "Théotime Langlois de Swarte, violin and Justin Taylor, harpsichord",
+      "organizer": "Cal Performances",
+      "date": "2026-03-08",
+      "time": "3:00 PM",
+      "location": "Hertz Hall",
+      "description": "Théotime Langlois de Swarte and Justin Taylor perform a program of Baroque showpieces.",
+      "url": "https://calperformances.org/events/theotime-langlois-de-swarte-violin-and-justin-taylor-harpsichord/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
+    },
+    {
+      "id": "Haas-POWER-20260320",
+      "title": "2026 POWER Conference on Energy Research and Policy",
+      "organizer": "UC Berkeley Haas School of Business, Energy Institute",
+      "date": "2026-03-20",
+      "time": "Full Day",
+      "location": "Spieker Forum, Chou Hall, Haas School of Business",
+      "description": "A full day of insightful talks, lively discussions, and valuable networking on energy markets and regulation.",
+      "url": "https://haas.berkeley.edu/events/2026-power-conference/",
+      "tags": [
+        "Academic Seminars & Lectures",
+        "Science & Technology"
+      ]
+    },
+    {
+      "id": "UCB-SpeechDebate-20260214",
+      "title": "Cal Invitational Speech and Debate Tournament",
+      "organizer": "Berkeley Debate",
+      "date": "2026-02-14",
+      "time": "All Day",
+      "location": "UC Berkeley Campus",
+      "description": "The formal invitation to the 2026 Cal Invitational Speech and Debate Tournament.",
+      "url": "https://www.tabroom.com/index/tourn/index.mhtml?tourn_id=41804",
+      "tags": [
+        "Academic Seminars & Lectures",
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "UCB-SpeechDebate-20260215",
+      "title": "Cal Invitational Speech and Debate Tournament",
+      "organizer": "Berkeley Debate",
+      "date": "2026-02-15",
+      "time": "All Day",
+      "location": "UC Berkeley Campus",
+      "description": "Day 2 of the 2026 Cal Invitational Speech and Debate Tournament.",
+      "url": "https://www.tabroom.com/index/tourn/index.mhtml?tourn_id=41804",
+      "tags": [
+        "Academic Seminars & Lectures",
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "UCB-SpeechDebate-20260216",
+      "title": "Cal Invitational Speech and Debate Tournament",
+      "organizer": "Berkeley Debate",
+      "date": "2026-02-16",
+      "time": "All Day",
+      "location": "UC Berkeley Campus",
+      "description": "Final day of the 2026 Cal Invitational Speech and Debate Tournament.",
+      "url": "https://www.tabroom.com/index/tourn/index.mhtml?tourn_id=41804",
+      "tags": [
+        "Academic Seminars & Lectures",
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "SU-ValentinesDay-20260213",
+      "title": "Valentine's Day Celebration",
+      "organizer": "Student Union",
+      "date": "2026-02-13",
+      "time": "12:00 PM - 3:00 PM",
+      "location": "Student Union",
+      "description": "Celebrate Valentine's Day with friends, free treats, crafts, and more!",
+      "url": "https://studentunion.berkeley.edu/programs/",
+      "tags": [
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "SU-ShesTheMan-20260213",
+      "title": "Movie Screening: She's the Man",
+      "organizer": "Student Union",
+      "date": "2026-02-13",
+      "time": "7:00 PM - 9:00 PM",
+      "location": "Student Union",
+      "description": "Join for a fun night with friends and a screening of the romantic comedy 'She's the Man'.",
+      "url": "https://studentunion.berkeley.edu/programs/",
+      "tags": [
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "SU-LunarNewYear-20260217",
+      "title": "Lunar New Year Event: Year of the Horse",
+      "organizer": "Student Union",
+      "date": "2026-02-17",
+      "time": "12:00 PM - 2:00 PM",
+      "location": "MLK Game Zone",
+      "description": "Celebrate the year of the horse with free activities for UC Berkeley students.",
+      "url": "https://studentunion.berkeley.edu/programs/",
+      "tags": [
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "SU-BlindBoxCharms-20260219",
+      "title": "Crafter Dark: Blind Box Charms",
+      "organizer": "Student Union",
+      "date": "2026-02-19",
+      "time": "7:30 PM - 9:30 PM",
+      "location": "Student Union",
+      "description": "Take a break from books and make your own blind box charms.",
+      "url": "https://studentunion.berkeley.edu/programs/",
+      "tags": [
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "SU-BlackHistoryMonth-20260224",
+      "title": "Black History Month Celebration",
+      "organizer": "Student Union",
+      "date": "2026-02-24",
+      "time": "4:00 PM - 6:00 PM",
+      "location": "Student Union",
+      "description": "Honor Black History Month with free treats and explore local black-owned businesses on campus.",
+      "url": "https://studentunion.berkeley.edu/programs/",
+      "tags": [
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "SU-DragBingo-20260226",
+      "title": "Drag Bingo",
+      "organizer": "Student Union",
+      "date": "2026-02-26",
+      "time": "7:30 PM - 9:30 PM",
+      "location": "Headlands on Campus",
+      "description": "An unforgettable night filled with laughter, prizes, and treats hosted by Thee Leggy Pee.",
+      "url": "https://studentunion.berkeley.edu/programs/",
+      "tags": [
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "CalRugby-OC-20260131",
+      "title": "Cal Rugby vs. Olympic Club",
+      "organizer": "California Golden Bears Athletics",
+      "date": "2026-01-31",
+      "time": "1:00 PM",
+      "location": "Strawberry Canyon",
+      "description": "California rugby is set to host Olympic Club for a midday contest.",
+      "url": "https://calbears.com/news/2026/1/23/cal-returns-home-to-face-olympic-club",
+      "tags": [
+        "Sports and Recreation"
+      ]
+    },
+    {
+      "id": "CalRowing-CCC-20260228",
+      "title": "Cal Men's Rowing: California Cup Challenge",
+      "organizer": "California Golden Bears Athletics",
+      "date": "2026-02-28",
+      "time": "All Day",
+      "location": "Newport",
+      "description": "Cal men's rowing opens its 2026 campaign at the California Cup Challenge.",
+      "url": "https://calbears.com/news/2026/1/22/cal-mens-rowing-announces-2026-schedule",
+      "tags": [
+        "Sports and Recreation"
+      ]
+    },
+    {
+      "id": "CalRowing-RSI-20260307",
+      "title": "Cal Men's Rowing: Redwood Shores Invitational",
+      "organizer": "California Golden Bears Athletics",
+      "date": "2026-03-07",
+      "time": "All Day",
+      "location": "Redwood Shores",
+      "description": "Cal co-hosts the Redwood Shores Invitational with Stanford.",
+      "url": "https://calbears.com/news/2026/1/22/cal-mens-rowing-announces-2026-schedule",
+      "tags": [
+        "Sports and Recreation"
+      ]
+    },
+    {
+      "id": "CalRowing-RSI-20260308",
+      "title": "Cal Men's Rowing: Redwood Shores Invitational",
+      "organizer": "California Golden Bears Athletics",
+      "date": "2026-03-08",
+      "time": "All Day",
+      "location": "Redwood Shores",
+      "description": "Day 2 of the Redwood Shores Invitational.",
+      "url": "https://calbears.com/news/2026/1/22/cal-mens-rowing-announces-2026-schedule",
+      "tags": [
+        "Sports and Recreation"
+      ]
+    },
+    {
+      "id": "CalRowing-Alumni-20260314",
+      "title": "Cal Men's Rowing: Alumni Day Races",
+      "organizer": "California Golden Bears Athletics",
+      "date": "2026-03-14",
+      "time": "All Day",
+      "location": "T. Gary Rogers Rowing Center, Oakland",
+      "description": "Alumni Day races held in Oakland.",
+      "url": "https://calbears.com/news/2026/1/22/cal-mens-rowing-announces-2026-schedule",
+      "tags": [
+        "Sports and Recreation"
+      ]
+    },
+    {
+      "id": "BPL-JewishCommunity-20260204",
+      "title": "The Jewish Community of Vienna in the Middle Ages: A Turbulent History and Its Material Remains",
+      "organizer": "Berkeley Public Library (likely in partnership with a UC Berkeley department)",
+      "date": "2026-02-04",
+      "time": "TBD",
+      "location": "Philosophy Hall, Berkeley",
+      "description": "A lecture discussing the Jewish community of Vienna in the Middle Ages.",
+      "url": "https://www.10times.com/berkeley-ca-conferences",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "BPL-EMVForum-20260210",
+      "title": "EM&V Forum",
+      "organizer": "Berkeley Public Library (Brower Center listed)",
+      "date": "2026-02-10",
+      "time": "TBD",
+      "location": "Brower Center, Berkeley",
+      "description": "A pivotal platform for addressing critical issues related to Evaluation, Measurement, and Verification (EM&V) in the energy sector.",
+      "url": "https://www.10times.com/berkeley-ca-conferences",
+      "tags": [
+        "Academic Seminars & Lectures",
+        "Science & Technology"
+      ]
+    },
+    {
+      "id": "BPL-TrafficSafety-20260216",
+      "title": "Traffic Safety Innovation Summit",
+      "organizer": "Swedish-American Chamber of Commerce SF & Silicon Valley",
+      "date": "2026-02-16",
+      "time": "All Day",
+      "location": "Richmond Field Station, Berkeley",
+      "description": "A premier event focusing on traffic safety innovation.",
+      "url": "https://www.10times.com/berkeley-ca-conferences",
+      "tags": [
+        "Science & Technology"
+      ]
+    },
+    {
+      "id": "BPL-AuthorsDinner-20260222",
+      "title": "Annual Authors Dinner & Auction",
+      "organizer": "Berkeley Public Library Foundation",
+      "date": "2026-02-22",
+      "time": "TBD",
+      "location": "TBD",
+      "description": "Annual gala honoring local authors and spotlighting the Bay Area's literary tradition.",
+      "url": "https://berkeleylibraryfoundation.org/events/",
+      "tags": [
+        "Arts, Music, and Performances",
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "HaasMBA-MockInterview-20260131",
+      "title": "Admit.me Access: R2 MasterClass - Mock Interview Prep",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-01-31",
+      "time": "9:00 AM–11:00 AM (Pacific Time)",
+      "location": "Online",
+      "description": "Mock interview preparation for MBA applicants.",
+      "url": "https://haas.berkeley.edu/full-time-mba/admissions-events/",
+      "tags": [
+        "Career Fairs and Workshops"
+      ]
+    },
+    {
+      "id": "HaasMBA-StudentPerspective-20260203",
+      "title": "The Student Perspective (MBA Info Session)",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-03",
+      "time": "1:00 PM–2:00 PM (Pacific Time)",
+      "location": "Online",
+      "description": "An information session about the MBA program from a student's point of view.",
+      "url": "https://haas.berkeley.edu/full-time-mba/admissions-events/",
+      "tags": [
+        "Career Fairs and Workshops",
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "HaasMBA-Scholarships-20260206",
+      "title": "Money Matters: Scholarships (MBA Financial Aid)",
+      "organizer": "UC Berkeley Haas School of Business",
       "date": "2026-02-06",
+      "time": "9:00 AM–9:30 AM (Pacific Time)",
+      "location": "Online",
+      "description": "Session on scholarships for MBA applicants.",
+      "url": "https://haas.berkeley.edu/full-time-mba/admissions-events/",
+      "tags": [
+        "Career Fairs and Workshops"
+      ]
+    },
+    {
+      "id": "HaasMBA-WhyHaas-20260209",
+      "title": "Full-time MBA Information Session: Why Haas?",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-09",
+      "time": "4:00 PM–4:45 PM (Pacific Time)",
+      "location": "Online",
+      "description": "Information session about the UC Berkeley Haas Full-time MBA program.",
+      "url": "https://haas.berkeley.edu/full-time-mba/admissions-events/",
+      "tags": [
+        "Career Fairs and Workshops",
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "HaasMBA-DeferredMBA-20260210",
+      "title": "Accelerated Access Info Session: Berkeley Haas Deferred MBA",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-10",
+      "time": "10:00 AM–10:30 AM (Pacific Time)",
+      "location": "Online",
+      "description": "Information session on the Deferred MBA program at Haas.",
+      "url": "https://haas.berkeley.edu/full-time-mba/admissions-events/",
+      "tags": [
+        "Career Fairs and Workshops",
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "HaasMBA-Q@Haas-20260210",
+      "title": "Community at Haas: Q@Haas (LGBTQ+)",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-10",
+      "time": "12:00 PM–1:00 PM (Pacific Time)",
+      "location": "Online",
+      "description": "Event focusing on the LGBTQ+ community at Haas.",
+      "url": "https://haas.berkeley.edu/full-time-mba/admissions-events/",
+      "tags": [
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "HaasMBA-Veterans-20260210",
+      "title": "Community at Haas: Veterans",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-10",
+      "time": "4:00 PM–5:00 PM (Pacific Time)",
+      "location": "Online",
+      "description": "Event for the veterans community at Haas.",
+      "url": "https://haas.berkeley.edu/full-time-mba/admissions-events/",
+      "tags": [
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "Haas-BusinessBerkeley-20260209",
+      "title": "Business@Berkeley | UC Berkeley Continuing Student Outreach Event",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-09",
+      "time": "TBD",
+      "location": "Virtual Event",
+      "description": "Information session for continuing UC Berkeley students considering applying to the business major.",
+      "url": "https://haas.berkeley.edu/undergraduate/events-advising/",
+      "tags": [
+        "Academic Seminars & Lectures",
+        "Career Fairs and Workshops"
+      ]
+    },
+    {
+      "id": "Haas-MORSColloquium-20260203",
+      "title": "MORS Colloquium: Hannah Birnbaum (WUSL)",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-03",
+      "time": "11:00 AM - 12:30 PM",
+      "location": "C320 Cheit Hall",
+      "description": "Colloquium by Hannah Birnbaum from Washington University in St. Louis.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-OEWSeminar-20260205",
+      "title": "OEW Seminar - Michael Callen (LSE)",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-05",
+      "time": "12:30 PM - 2:00 PM",
+      "location": "C320",
+      "description": "Seminar with Michael Callen from the London School of Economics.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-MarketingSeminar-20260205",
+      "title": "Marketing Seminar - Minah Jung",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-05",
+      "time": "12:30 PM - 2:00 PM",
+      "location": "C320",
+      "description": "Marketing seminar with Minah Jung.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-AccountingSeminar-20260206",
+      "title": "Accounting Seminar with Prof Vivian Fang",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-06",
+      "time": "2:00 PM - 3:15 PM",
+      "location": "C330",
+      "description": "Accounting seminar with Professor Vivian Fang.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-PESeminar-20260209",
+      "title": "PE Seminar - Rafael Jiménez-Durán (Bocconi)",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-09",
+      "time": "12:30 PM - 2:00 PM",
+      "location": "223 Philosophy Hall",
+      "description": "PE Seminar with Rafael Jiménez-Durán from Bocconi University.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-MORSColloquium-20260210",
+      "title": "MORS Colloquium: Tristan Botelho (YALE)",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-10",
+      "time": "11:00 AM - 12:30 PM",
+      "location": "C320 Cheit Hall",
+      "description": "Colloquium by Tristan Botelho from Yale University.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-TIESeminar-20260211",
+      "title": "TIE Seminar Presentation (Henning Piezunka)",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-11",
+      "time": "12:00 PM - 2:00 PM",
+      "location": "C110 Cheit Hall",
+      "description": "TIE Seminar Presentation by Henning Piezunka.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-OEWStudentSeminar-20260212",
+      "title": "OEW Student Seminar",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-12",
+      "time": "12:30 PM - 2:00 PM",
+      "location": "Cheit 220",
+      "description": "Student-led seminar from the Organizations, Environment, and Work group.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-MarketingSeminar-20260212",
+      "title": "Marketing Seminar - Camilla Schneier",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-12",
+      "time": "12:30 PM - 2:00 PM",
+      "location": "C320",
+      "description": "Marketing seminar with Camilla Schneier.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-OEWSeminar-20260219",
+      "title": "OEW Seminar - Stefanie Stantcheva (Harvard)",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-19",
+      "time": "12:30 PM - 2:00 PM",
+      "location": "C320",
+      "description": "Seminar with Stefanie Stantcheva from Harvard University.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-MarketingSeminar-20260219",
+      "title": "Marketing Seminar - Joowon Klusowski",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-19",
+      "time": "12:30 PM - 2:00 PM",
+      "location": "C320",
+      "description": "Marketing seminar with Joowon Klusowski.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-AccountingSeminar-20260220",
+      "title": "Accounting Seminar with Prof Henry Friedman",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-20",
+      "time": "2:00 PM - 3:15 PM",
+      "location": "C330",
+      "description": "Accounting seminar with Professor Henry Friedman.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-PESeminar-20260223",
+      "title": "PE Seminar - Hunter Rendleman (Internal)",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-23",
+      "time": "12:30 PM - 2:00 PM",
+      "location": "223 Philosophy Hall",
+      "description": "Internal PE Seminar with Hunter Rendleman.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-MORSColloquium-20260224",
+      "title": "MORS Colloquium: Sandra Matz-Cerf (Columbia)",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-24",
+      "time": "11:00 AM - 12:30 PM",
+      "location": "C110 Cheit Hall",
+      "description": "Colloquium by Sandra Matz-Cerf from Columbia University.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-TIESeminar-20260225",
+      "title": "TIE Seminar Presentation (Scott Stern)",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-25",
+      "time": "12:00 PM - 2:00 PM",
+      "location": "C110 Cheit Hall",
+      "description": "TIE Seminar Presentation by Scott Stern.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "Haas-OEWStudentSeminar-20260226",
+      "title": "OEW Student Seminar",
+      "organizer": "UC Berkeley Haas School of Business",
+      "date": "2026-02-26",
+      "time": "12:30 PM - 2:00 PM",
+      "location": "Cheit 220",
+      "description": "Student-led seminar from the Organizations, Environment, and Work group.",
+      "url": "https://events.berkeley.edu/haas/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "UCB-JobFair-20260203",
+      "title": "Berkeley Job Fair - Berkeley Career Fair",
+      "organizer": "HealthcareX",
+      "date": "2026-02-03",
+      "time": "11:00 AM",
+      "location": "Berkeley",
+      "description": "Find event and ticket information for the Berkeley Job Fair.",
+      "url": "https://www.eventbrite.com/e/berkeley-job-fair-berkeley-career-fair-tickets-800720496157",
+      "tags": [
+        "Career Fairs and Workshops"
+      ]
+    },
+    {
+      "id": "UCB-Can'tLookAway-20260130",
+      "title": "Can't Look Away: A Screening and Fireside Chat with Meta Whistleblower Arturo Béjar",
+      "organizer": "Design It for Us partnered with Political Computer Science at Berkeley and Youth Power Project",
+      "date": "2026-01-30",
+      "time": "5:00 PM - 7:00 PM PT",
+      "location": "Berkeley (in-person)",
+      "description": "An in-person screening of 'Can't Look Away: The Case Against Social Media', followed by a fireside conversation on social media accountability and youth wellbeing.",
+      "url": "https://uctech.universityofcalifornia.edu/events/",
+      "tags": [
+        "Science & Technology",
+        "Academic Seminars & Lectures",
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "Music-NoonConcert-20260211",
+      "title": "Noon Concert: Chamber Music",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-02-11",
       "time": "12:00 PM",
-      "location": "RSF Main Office",
-      "description": "Register your team for the spring intramural soccer league.",
-      "tags": ["Sports", "Student Life"],
-      "url": "https://recsports.berkeley.edu/"
+      "location": "Hertz Concert Hall",
+      "description": "Students from the UC Berkeley Symphony Orchestra perform small ensemble works.",
+      "url": "https://events.berkeley.edu/music/current-events/list/",
+      "tags": [
+        "Arts, Music, and Performances"
+      ]
     },
     {
-      "id": "evt-009",
-      "title": "Film Screening: Documentary Night",
-      "organizer": "Berkeley Art Museum",
-      "date": "2026-02-07",
-      "time": "7:30 PM",
-      "location": "BAMPFA",
-      "description": "Free screening of award-winning documentaries followed by Q&A with filmmakers.",
-      "tags": ["Arts"],
-      "url": "https://bampfa.org/"
+      "id": "Music-LoftHour-20260212",
+      "title": "The Loft Hour: Chris Batterman Cháirez + Cathy Lu",
+      "organizer": "UC Berkeley, Arts Research Center (ARC)",
+      "date": "2026-02-12",
+      "time": "12:00 PM - 1:00 PM",
+      "location": "Hearst Field Annex D23",
+      "description": "Arts faculty riff on their work over lunch, featuring Chris Batterman Cháirez (Music) and Cathy Lu (Art Practice).",
+      "url": "https://events.berkeley.edu/music/current-events/list/",
+      "tags": [
+        "Arts, Music, and Performances",
+        "Academic Seminars & Lectures"
+      ]
     },
     {
-      "id": "evt-010",
-      "title": "Graduate Student Mixer",
-      "organizer": "Graduate Assembly",
-      "date": "2026-02-08",
-      "time": "4:00 PM",
-      "location": "International House",
-      "description": "Meet fellow grad students from across campus in a relaxed social setting.",
-      "tags": ["Student Life"],
-      "url": "https://ga.berkeley.edu/"
+      "id": "Music-CompositionColloquium-20260213",
+      "title": "Composition Colloquium: Curtis Rumrill",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-02-13",
+      "time": "3:00 PM - 4:30 PM",
+      "location": "Wu Performance Hall (Morrison 125)",
+      "description": "Curtis Rumrill discusses 'What the Interference Took'.",
+      "url": "https://events.berkeley.edu/music/current-events/list/",
+      "tags": [
+        "Academic Seminars & Lectures"
+      ]
+    },
+    {
+      "id": "UCB-SEMCAREERFAIR",
+      "title": "UC Berkeley STEM Career & Internship Fair",
+      "organizer": "UC Berkeley Career Center",
+      "date": "Spring 2026 (TBD)",
+      "time": "TBD",
+      "location": "TBD",
+      "description": "Recruit for both full-time and internship positions in all areas of science, technology, engineering, and math.",
+      "url": "https://ischool.berkeley.edu/careers/events",
+      "tags": [
+        "Career Fairs and Workshops",
+        "Science & Technology"
+      ]
+    },
+    {
+      "id": "UCB-ACMCSL-20260303",
+      "title": "ACM Symposium on Computer Science and Law",
+      "organizer": "UC Berkeley",
+      "date": "2026-03-03",
+      "time": "All Day",
+      "location": "University of California, Berkeley",
+      "description": "Symposium on the intersection of computer science and law.",
+      "url": "https://www.10times.com/berkeley-ca-conferences",
+      "tags": [
+        "Academic Seminars & Lectures",
+        "Science & Technology"
+      ]
+    },
+    {
+      "id": "UCB-BMUN-20260306",
+      "title": "Berkeley Model United Nations (BMUN)",
+      "organizer": "UC Berkeley",
+      "date": "2026-03-06",
+      "time": "All Day",
+      "location": "Berkeley",
+      "description": "Annual Model UN conference for students.",
+      "url": "https://www.10times.com/berkeley-ca-conferences",
+      "tags": [
+        "Academic Seminars & Lectures",
+        "Student Life and Club Socials"
+      ]
+    },
+    {
+      "id": "UCB-AMMC-20260307",
+      "title": "Algorithmic Music Methods Conference",
+      "organizer": "UC Berkeley",
+      "date": "2026-03-07",
+      "time": "All Day",
+      "location": "University of California, Berkeley",
+      "description": "Conference exploring algorithmic methods in music.",
+      "url": "https://www.10times.com/berkeley-ca-conferences",
+      "tags": [
+        "Arts, Music, and Performances",
+        "Science & Technology"
+      ]
     }
   ],
   "sources": [
-    {"title": "UC Berkeley Events Calendar", "uri": "https://events.berkeley.edu/"},
-    {"title": "Cal Athletics", "uri": "https://calbears.com/"},
-    {"title": "BAMPFA", "uri": "https://bampfa.org/"}
+    {
+      "title": "calperformances.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGcOo3Be--iTtHDtnNyQrjrjZiIcNLDx4quQd4yNtw_nXBEBCTuogSoVeSxpEMvwXkxAu4F5VrOVJFoYN4hBexKbOlkTv1ySwPTG8J-orqGryqqPkuOC-1Te3rIYOJMj1jCnaco"
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEy_BsxeePSOhim3rvN9oX_mjXJdws6BzoAclK3BnP-IB84Q5BXZEdyci5yyvysFpOB9kOXNL4Vmmb89bplmRmeTNXNpCKA_vE-5ZCByVFsrpaPO4x9NoKURpMDX6RYgNY="
+    },
+    {
+      "title": "calperformances.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHATul0tYpZ1dUh9sxiSiAM2qNj1MG81f2WojVQanrl29mXJEFSLnzypcD8Htq5CrCnzXKeIwxnBaKbwjoPrcHhuFSCpB69y3Czv1DJqTx0P4X-1bm_Hr6orYd_Wt5Jfh0ILLQM6FXVFgrFzVrzBQlNiRZffDyA5ETu3KSgqr4tZh-JLlj52xrqvfLrjGcez0ZO9ZBh"
+    },
+    {
+      "title": "calperformances.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFPwM8ctbEg1QYBtVYObeu8wXo1kFFPcWa3pmAjlmHVZAPEL26D5d9RAz5CyY4tpYo6zUIvH0cck6bl5gA6Jkycmgp_Z7Ih68D_6M05ZDgFNZFEt2PWOuy7QznBtpgAeb2iajb4-G7UeNnDsI7nWTeRcjcdnC-8GH7xcz3--cIBBr11SW_lRL-C3G8Qe8xh6Agv6JgXqZEduob6"
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHw_KR7HInFHQyZPz-StKPCBZxY5YrMBHoD574WjBsgqU2hpiZ6vOsD9vmh3j5o_XRN4AgiRvwr6nyqAQTbNgjCcj1hf-FeO9UAI9he350yB9V4RBjPPUcBq5V0XaiAPW32ArNnUKK76xh42eRA9-FsCo11RzmUB76eLdCBYNs="
+    },
+    {
+      "title": "tabroom.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG08UrdeXa9BXsY0d9NCOFQu3qh9Jxk0eq9pnttGlzFcJoUOXVmmvBFI9nQEsC-Lrg2vH6UQFTC0Jcfl8RnokEJGWPhrxdZzMVvyLgHZXmQBLmhWJNqjg9Fdvxa5FoUs2DwMRRh7G1W6ZdiDZlGBA8BeN9ettdCYVrg"
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGn-nuN9fSzS2LPQVAvJ6hzGkzoO_Dc-jF6IXNRoq5AoB7kSrcLZYRK5tHwpOc00xTS-Kj5zA26b_hZ7FNp6JCwpcn7PfYeP5lfvP7Np8oeX-JYKYxq5F9KDtixpH6YEVQ5bp_TQyE="
+    },
+    {
+      "title": "calbears.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF3yUJ8KJHhQ0RvCbVY5EkLhGZRYDY4us39ju2gbdwO1iPfUCkjzVdo6Z9ORXoJXZrjWZz2LcYgAR-osPJ7SkQITcEW-IbtKQYV023Ex5Co50IsETE1FnCDl0JBPvxKm6jdQGa8IGY9pHw5knEXOW8p-eYVM64DCxezM8uqcXNUQvZtc8JRshKydA56WS7adg=="
+    },
+    {
+      "title": "calbears.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE1kjv9NfgNP-Uy8QHi83G7dB-ECD79X3UcAVpojzS05q9Uq7GEy-lOPNHReq0vDLzmUSXcfLj0jMGZ8OSbVg6ujqVepvug0_tDQiM9gCf_sd5RE4jMeTrWo-sSsQAuzw4jLDFDMKqRtniteeK6y7mRKbfEKiKSyROQAnhjGgOtLwIAGKaB0C5RkBc69o9gFTU7xMl1aD1O"
+    },
+    {
+      "title": "10times.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHhS1bMdY_HcKlYIkgkl9UJKca8u6uQxLX_wYsF-2A-6SqnwwvrnGrVFmh0_AHMW8EHIp4dpt9pvxBXxmEl6MNL0dHa_MwR41KYDKFw81HnoQk7OVj2apJVqGwOxMGSj3UCMllrEZM="
+    },
+    {
+      "title": "bplf.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQExWlvIWMR0JOFMb0DJMe1PiKv_SLytxBrLLesHZIBA33kqLYp0dqw9yN-0ss9hsYO_R0iQ0iZEKdvqOT7wdJ9RVHcTCXt3FwIz_QKKHEUC8PXK-w=="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFV4GuEDCmibjqvEbJN5CvxEhQaXp6mEYyLTtpEV-dHEmbLjXq87LBOrvnjIrmpa9qMWlJeo5jumJq76tIm7mQXqoqIXisXMWlCpV5w3nPbjlKSxRA--iltf_wIhb1kDAJGo4QrMWbZXHCPEvotWHGSUpiM"
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHvHLKmsP-Kb-5jhuvLfGgzCZ2nTqgPVygURsmiG7SYjjtPw1elhhGTcySfEb9jxDcrdqyx3Q5WztmqWiZbaTz6d4pPLnrWDbsJtVQKM342hZuI-CPGRnHT6wTGnlz6Upxp3zAYF__3GFsXVYAPe-B3GzP12e1h0XGotPot4k8="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEaHTJC59h8gWIWWPHc0nZuTdA4aFLQQV-G037VyM3fci-T3aBH5ou3ImoVA2umTuXa4g-nnxt6v78cFM3VYJjU5A4YAmsQXXKXKQIyc-ULG0AAuia-t05xUWSurg=="
+    },
+    {
+      "title": "eventbrite.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGl2MchH0HA73JM6dQSRZyYi4j-w-Dc2ArGYF9htLW88VUUtRkGrA7odK8vi32mIKkoknVE5nwmJ7GjKv9Gasdam3LsEXjunmC9pjSjNkqBxuHyIDhJroKWz4thKmajqohMk8xPvjS7uY28cE2Umq-BNeAhOB4NTgbf6AOdqvuYd2YF1qbF9ClL5opi-eCGNhKHBaMp"
+    },
+    {
+      "title": "ucop.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHYQTwnoMr5_sbh_laT68hDhloaxX1nRlZT3GwdioIAqSNyk2UJHTsHfUr_rUhNtbhelrPwRpQT49GdVf3R0NW_fJhumV8yAQY2HPwrmPlkC118KMeF50a59lHAi0vw"
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHDte4a6Vb7frcOrJId7w-x4ATCXFhS-OTTH--92QTM2U9HkCPS91amhtj_xt7HXNERgNfVuYvget3Eiux75_HaVKmzzwp6XbqtCacidUSSVnHb0HnZhh6TxLuZ5L0="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHWW8cp6S_B2mQ8tSqin9NsmQ5O9NQ-GdGRG-RLzmKYjkmCuhNAzuzxbVhB5mSUsBOf_K5bYDlkJhPtPqaGd3TLDL31cGQWmjsYZyX72UYVMZBWB7HB8-bL90qjOcb6biKX8tCXEJQMMxbpu_SrIR954KApmBbMAr1qfztTxu4sZJuFkHPFRxbg18FdeUFAPQ=="
+    }
   ],
-  "lastUpdated": 1738195200000
+  "lastUpdated": 1769745158738
 }
