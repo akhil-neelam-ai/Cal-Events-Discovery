@@ -109,6 +109,8 @@ async function updateEvents() {
     - ONLY include actual public events (lectures, performances, games, workshops, meetings)
     - DO NOT include administrative deadlines, document preparation periods, application windows, or decision dates
     - Events must have a specific date/time when people can attend
+    - DO NOT include ongoing/multi-week exhibitions or open-ended events. Each event must have a single specific start date.
+    - The "date" field MUST be in YYYY-MM-DD format (e.g. "2026-02-05"). Never use words like "Ongoing" or date ranges.
     - For Cal Athletics events, use: https://calbears.com/sports/2021/2/23/cal-golden-bears-tickets.aspx
     - Verify events are real by checking the source URLs
 
@@ -155,7 +157,18 @@ async function updateEvents() {
       }
     }
 
-    // Extract Grounding Metadata
+    // Filter out events with non-ISO date formats (e.g. "Ongoing (through May 29, 2026)")
+    const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    const validEvents = events.filter(event => {
+      if (!isoDateRegex.test(event.date)) {
+        console.warn(`Skipping event "${event.title}" — invalid date format: "${event.date}"`);
+        return false;
+      }
+      return true;
+    });
+    events = validEvents;
+
+    // Extract sources: try groundingChunks first (older models), then content parts (Gemini 2.5+)
     const sources: GroundingSource[] = [];
     const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
     chunks.forEach((chunk: any) => {
@@ -166,6 +179,21 @@ async function updateEvents() {
         });
       }
     });
+
+    if (sources.length === 0) {
+      // Gemini 2.5+ returns search results as content parts instead of groundingChunks
+      const parts = response.candidates?.[0]?.content?.parts || [];
+      parts.forEach((part: any) => {
+        if (part.googleSearchResult?.result) {
+          part.googleSearchResult.result.forEach((result: any) => {
+            if (result.url) {
+              sources.push({ title: result.title || result.url, uri: result.url });
+            }
+          });
+        }
+      });
+    }
+
     const uniqueSources = Array.from(new Map(sources.map(s => [s.uri, s])).values());
 
     const outputData = {
