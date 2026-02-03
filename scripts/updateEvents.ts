@@ -30,6 +30,79 @@ interface GroundingSource {
   uri: string;
 }
 
+const URL_TIMEOUT_MS = 10_000;
+const CONCURRENCY = 10;
+
+function buildFallbackMap(urls: string[]): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const url of urls) {
+    try {
+      const host = new URL(url).hostname;
+      if (!map.has(host)) map.set(host, url);
+    } catch {}
+  }
+  return map;
+}
+
+async function checkUrl(url: string): Promise<boolean> {
+  try {
+    const res = await fetch(url, {
+      method: 'HEAD',
+      signal: AbortSignal.timeout(URL_TIMEOUT_MS),
+      headers: { 'User-Agent': 'Cal-Events-Discovery-Bot' },
+      redirect: 'follow',
+    });
+    if (res.ok) return true;
+    // Some servers reject HEAD; retry with GET
+    const getRes = await fetch(url, {
+      method: 'GET',
+      signal: AbortSignal.timeout(URL_TIMEOUT_MS),
+      headers: { 'User-Agent': 'Cal-Events-Discovery-Bot' },
+      redirect: 'follow',
+    });
+    return getRes.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function verifyEventUrls(
+  events: CalEvent[],
+  fallbackMap: Map<string, string>
+): Promise<CalEvent[]> {
+  const DEFAULT_FALLBACK = 'https://events.berkeley.edu/';
+  const results = new Array<CalEvent>(events.length);
+  let index = 0;
+  let verified = 0;
+  let replaced = 0;
+
+  async function worker() {
+    while (true) {
+      const i = index++;
+      if (i >= events.length) return;
+      const event = events[i];
+      const ok = await checkUrl(event.url);
+      if (ok) {
+        results[i] = event;
+        verified++;
+      } else {
+        let fallback = DEFAULT_FALLBACK;
+        try {
+          const host = new URL(event.url).hostname;
+          fallback = fallbackMap.get(host) || DEFAULT_FALLBACK;
+        } catch {}
+        console.warn(`  [REPLACED] "${event.title}" — ${event.url} → ${fallback}`);
+        results[i] = { ...event, url: fallback };
+        replaced++;
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(CONCURRENCY, events.length) }, () => worker()));
+  console.log(`URL verification: ${verified} ok, ${replaced} replaced`);
+  return results;
+}
+
 async function updateEvents() {
   const apiKey = process.env.API_KEY;
 
@@ -49,7 +122,7 @@ async function updateEvents() {
   });
 
   // Priority sources organized by category
-  const prioritySources = [
+  const prioritySourceUrls = [
     // Main Campus Hubs
     "https://events.berkeley.edu/",
     "https://calperformances.org/events/",
@@ -81,7 +154,8 @@ async function updateEvents() {
     "https://bampfa.org/calendar",
     "https://www.lawrencehallofscience.org/events/",
     "https://botanicalgarden.berkeley.edu/events"
-  ].join("\n");
+  ];
+  const prioritySources = prioritySourceUrls.join("\n");
 
   const prompt = `
     You are the Daily Event Curator for UC Berkeley.
@@ -167,6 +241,11 @@ async function updateEvents() {
       return true;
     });
     events = validEvents;
+
+    // Verify URLs — replace broken ones with the best known fallback for that domain
+    console.log("Verifying event URLs...");
+    const fallbackMap = buildFallbackMap(prioritySourceUrls);
+    events = await verifyEventUrls(events, fallbackMap);
 
     // Extract sources: try groundingChunks first (older models), then content parts (Gemini 2.5+)
     const sources: GroundingSource[] = [];
