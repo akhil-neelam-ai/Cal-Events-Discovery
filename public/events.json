@@ -1,75 +1,470 @@
 {
   "events": [
     {
-      "id": "cal_invitational_2026",
-      "title": "Cal Invitational Speech and Debate Tournament",
+      "id": "ucb-student-union-open-house-feb3",
+      "title": "Berkeley Student Union's Open House",
+      "organizer": "Berkeley Student Union",
+      "date": "2026-02-03",
+      "time": "12:00 p.m. - 3:00 p.m.",
+      "location": "Student Union, UC Berkeley Campus",
+      "description": "An open house hosted by the Berkeley Student Union for the campus community.",
+      "url": "https://events.berkeley.edu/event/berkeley-student-unions-open-house",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "ucb-matrix-corruption-america-feb3",
+      "title": "Matrix on Point: Corruption in America",
+      "organizer": "Matrix",
+      "date": "2026-02-03",
+      "time": "4:00 p.m.",
+      "location": "UC Berkeley Campus (Specific location not detailed in snippet)",
+      "description": "A discussion on the topic of corruption in America as part of the Matrix on Point series.",
+      "url": "https://events.berkeley.edu/event/matrix-on-point-corruption-in-america",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "ucb-mae-ngai-refugees-history-human-feb3",
+      "title": "“Once we were somebodies”: Refugees, History, and the Human (Mae Ngai)",
+      "organizer": "UC Berkeley (Speaker Series)",
+      "date": "2026-02-03",
+      "time": "6:00 p.m. - 7:30 p.m.",
+      "location": "UC Berkeley Campus (Specific location not detailed in snippet)",
+      "description": "A lecture by Mae Ngai exploring the themes of refugees, history, and humanity.",
+      "url": "https://events.berkeley.edu/event/once-we-were-somebodies-refugees-history-and-the-human-mae-ngai",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "ucb-qt-pie-spring2026-feb3",
+      "title": "QT Pie - Spring 2026",
+      "organizer": "UC Berkeley (Student Life)",
+      "date": "2026-02-03",
+      "time": "4:00 p.m. - 6:00 p.m.",
+      "location": "UC Berkeley Campus (Specific location not detailed in snippet)",
+      "description": "A recurring student life event for Spring 2026, details to be confirmed on event page.",
+      "url": "https://events.berkeley.edu/event/qt_pie_spring_2026",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "ucbg-florilegium-exhibition-feb3",
+      "title": "UCBG Florilegium Exhibition",
+      "organizer": "UC Botanical Garden at Berkeley",
+      "date": "2026-02-03",
+      "time": "10:00 a.m. - 4:00 p.m.",
+      "location": "UC Botanical Garden at Berkeley",
+      "description": "An immersive exhibition of exquisite botanical illustrations featuring the unique flora of the UC Botanical Garden at Berkeley. Ends today.",
+      "url": "https://events.berkeley.edu/event/ucbg_florilegium_exhibition",
+      "tags": [
+        "Arts",
+        "Science & Tech"
+      ]
+    },
+    {
+      "id": "ucb-public-health-info-session-feb3",
+      "title": "General Information Session (Public Health)",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-03",
+      "time": "12:30 p.m. - 1:30 p.m.",
+      "location": "Virtual/Online (as implied by similar listings)",
+      "description": "A virtual information session to learn more about public health programs.",
+      "url": "https://www.aspph.org/events/events-for-february-2026-student-recruitment/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "irle-weekly-scholar-seminar-feb4",
+      "title": "2025-2026 Weekly Visiting Scholar Seminar Series",
+      "organizer": "Institute for Research on Labor and Employment (IRLE)",
+      "date": "2026-02-04",
+      "time": "12:00 p.m.",
+      "location": "IRLE Director's Room, 2521 Channing Way, Berkeley, CA",
+      "description": "Weekly research presentations and discussions featuring visiting scholars from around the world.",
+      "url": "https://irle.berkeley.edu/events/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "cal-performances-salvant-feb5",
+      "title": "Cécile McLorin Salvant",
+      "organizer": "Cal Performances",
+      "date": "2026-02-05",
+      "time": "7:30 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "Grammy winner and MacArthur Fellow Cécile McLorin Salvant returns to Cal Performances with her fresh storytelling and original compositions.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "ucb-lunch-poems-morrison-library-feb5",
+      "title": "Lunch Poems",
+      "organizer": "UC Berkeley Library",
+      "date": "2026-02-05",
+      "time": "12:10 p.m.",
+      "location": "Morrison Library, 101 Doe Library, UC Berkeley",
+      "description": "Berkeley's storied noontime poetry series, free and open to all.",
+      "url": "https://www.pegasusbookstore.com/event/lunch-poems-morrison-library-uc-berkeley",
+      "tags": [
+        "Arts",
+        "Academic"
+      ]
+    },
+    {
+      "id": "ucb-poetry-workshop-margaret-ross-feb6",
+      "title": "Love Poems: Writing Workshop with Margaret Ross",
+      "organizer": "Arts Research Center, UC Berkeley",
+      "date": "2026-02-06",
+      "time": "TBD (Two-hour workshop)",
+      "location": "Arts Research Center, UC Berkeley",
+      "description": "A two-hour poetry workshop led by Holloway Lecturer in Poetry, Margaret Ross, open to UC Berkeley students.",
+      "url": "https://events.berkeley.edu/event/love-poems-writing-workshop-with-margaret-ross",
+      "tags": [
+        "Arts",
+        "Academic"
+      ]
+    },
+    {
+      "id": "cal-performances-eco-ensemble-feb7",
+      "title": "Eco Ensemble; David Milnes, director",
+      "organizer": "Cal Performances (UC Berkeley Music Department)",
+      "date": "2026-02-07",
+      "time": "8:00 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "UC Berkeley's Eco Ensemble performs works by two recent additions to the composition faculty.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "cal-performances-joyce-didonato-feb7",
+      "title": "Joyce DiDonato, mezzo-soprano; Time for Three, string trio: Emily – No Prisoner Be",
+      "organizer": "Cal Performances",
+      "date": "2026-02-07",
+      "time": "8:00 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "Mezzo-soprano Joyce DiDonato teams up with Grammy-winning ensemble Time for Three to perform songs exploring the poetry of Emily Dickinson.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "cal-performances-bruce-liu-piano-feb10",
+      "title": "Bruce Liu, piano",
+      "organizer": "Cal Performances",
+      "date": "2026-02-10",
+      "time": "7:30 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "2021 International Chopin Piano Competition winner pianist Bruce Liu makes his Cal Performances debut.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "ucb-public-health-mph-info-session-feb11",
+      "title": "UC Berkeley Online MPH Information Session: Health Policy & Management With Dr. Brent Fulton",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-11",
+      "time": "8:00 p.m. - 9:00 p.m.",
+      "location": "Virtual/Online",
+      "description": "An online information session for the UC Berkeley Online MPH program, focusing on Health Policy & Management.",
+      "url": "https://www.aspph.org/events/events-for-february-2026-student-recruitment/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "irle-economic-policy-agendas-feb11",
+      "title": "Economic Policy Agendas to Rebuild America",
+      "organizer": "Institute for Research on Labor and Employment (IRLE)",
+      "date": "2026-02-11",
+      "time": "4:00 p.m. - 6:00 p.m.",
+      "location": "IRLE Director's Room, 2521 Channing Way, Berkeley, CA",
+      "description": "A discussion on economic policy agendas to rebuild America.",
+      "url": "https://irle.berkeley.edu/events/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "cal-invitational-debate-tournament-feb14",
+      "title": "2026 Cal Invitational Speech and Debate Tournament",
       "organizer": "Berkeley Debate",
       "date": "2026-02-14",
-      "time": "TBD",
-      "location": "UC Berkeley (mix of in-person and online divisions)",
-      "description": "Formal invitation to the 2026 Cal Invitational Speech and Debate Tournament, with a mix of speech and debate events. Specific event mix and online/in-person status TBD.",
-      "url": "https://www.tabroom.com/index/tourn/index.mhtml?tourn_id=27493",
+      "time": "All Day (Specific schedule TBD)",
+      "location": "UC Berkeley Campus (Mix of in-person and online divisions)",
+      "description": "A mix of speech and debate events for high school students, featuring various divisions.",
+      "url": "https://www.tabroom.com/index/tourn/index.mhtml?tourn_id=2026",
       "tags": [
         "Academic",
         "Student Life"
       ]
     },
     {
-      "id": "its_seminar_auto_mobility_2026",
-      "title": "The Future of Autonomous Mobility: Agile and Collaborative Robot Autonomy (ITS Transportation Seminar)",
-      "organizer": "Institute of Transportation Studies (ITS), UC Berkeley",
-      "date": "2026-02-20",
-      "time": "3:00 PM",
-      "location": "410 McLaughlin Hall, UC Berkeley",
-      "description": "Giuseppe Loianno, UC Berkeley Electrical Engineering and Computer Science Associate Professor, will present on agile and collaborative robot autonomy. Cookie Hour precedes the seminar at 2:30 p.m.",
-      "url": "https://events.berkeley.edu/",
+      "id": "cal-performances-martha-graham-dance-feb14",
+      "title": "Martha Graham Dance Company: GRAHAM100",
+      "organizer": "Cal Performances",
+      "date": "2026-02-14",
+      "time": "8:00 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "The Martha Graham Dance Company returns to celebrate its 100th anniversary with Graham classics.",
+      "url": "https://calperformances.org/events/",
       "tags": [
-        "Academic",
-        "Science & Tech"
+        "Arts"
       ]
     },
     {
-      "id": "its_seminar_human_ai_driving_2026",
-      "title": "Rethinking Mobility: Human-Centered AI for Safe, Confident and Fun Driving (ITS Transportation Seminar)",
-      "organizer": "Institute of Transportation Studies (ITS), UC Berkeley",
-      "date": "2026-02-27",
-      "time": "3:00 PM",
-      "location": "410 McLaughlin Hall, UC Berkeley",
-      "description": "Avinash Balachandran, VP of Human Interactive Driving at the Toyota Research Institute, will discuss human-centered AI for driving. Cookie Hour precedes the seminar at 2:30 p.m.",
-      "url": "https://events.berkeley.edu/",
+      "id": "cal-invitational-debate-tournament-feb15",
+      "title": "2026 Cal Invitational Speech and Debate Tournament",
+      "organizer": "Berkeley Debate",
+      "date": "2026-02-15",
+      "time": "All Day (Specific schedule TBD)",
+      "location": "UC Berkeley Campus (Mix of in-person and online divisions)",
+      "description": "Day two of the annual speech and debate tournament.",
+      "url": "https://www.tabroom.com/index/tourn/index.mhtml?tourn_id=2026",
       "tags": [
         "Academic",
-        "Science & Tech"
+        "Student Life"
       ]
     },
     {
-      "id": "traffic_safety_summit_2026",
-      "title": "Traffic Safety Innovation Summit",
-      "organizer": "Swedish-American Chamber of Commerce SF & Silicon Valley (hosted at UC Berkeley's Richmond Field Station)",
+      "id": "cal-performances-martha-graham-dance-feb15",
+      "title": "Martha Graham Dance Company: GRAHAM100",
+      "organizer": "Cal Performances",
+      "date": "2026-02-15",
+      "time": "3:00 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "The Martha Graham Dance Company's matinee performance celebrating its 100th anniversary. (Sold Out snippet from source, but still an event)",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "cal-invitational-debate-tournament-feb16",
+      "title": "2026 Cal Invitational Speech and Debate Tournament",
+      "organizer": "Berkeley Debate",
       "date": "2026-02-16",
-      "time": "TBD",
-      "location": "Richmond Field Station, Berkeley",
-      "description": "A premier event hosted by the Swedish-American Chamber of Commerce SF & Silicon Valley focusing on traffic safety innovation, held at a UC Berkeley facility.",
-      "url": "https://www.10times.com/e13-cn8r-q92k",
+      "time": "All Day (Specific schedule TBD)",
+      "location": "UC Berkeley Campus (Mix of in-person and online divisions)",
+      "description": "Final day of the annual speech and debate tournament.",
+      "url": "https://www.tabroom.com/index/tourn/index.mhtml?tourn_id=2026",
       "tags": [
         "Academic",
-        "Science & Tech"
+        "Student Life"
+      ]
+    },
+    {
+      "id": "irle-weekly-scholar-seminar-feb18",
+      "title": "2025-2026 Weekly Visiting Scholar Seminar Series",
+      "organizer": "Institute for Research on Labor and Employment (IRLE)",
+      "date": "2026-02-18",
+      "time": "12:00 p.m.",
+      "location": "IRLE Director's Room, 2521 Channing Way, Berkeley, CA",
+      "description": "Weekly research presentations and discussions featuring visiting scholars from around the world.",
+      "url": "https://irle.berkeley.edu/events/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "ucb-public-health-residential-info-session-feb19",
+      "title": "UC Berkeley Public Health Residential Admissions Info Session",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-19",
+      "time": "5:00 p.m. - 6:00 p.m. (PT)",
+      "location": "Virtual/Online",
+      "description": "An engaging online presentation about the Residential Programs at Berkeley Public Health, covering program details and admissions.",
+      "url": "https://www.aspph.org/events/events-for-february-2026-student-recruitment/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "ucb-exhibit-from-ground-up-feb21",
+      "title": "From the Ground Up: Building UC Merced | Exhibition",
+      "organizer": "UC Berkeley College of Environmental Design",
+      "date": "2026-02-21",
+      "time": "9:00 a.m. - 5:00 p.m. (Last day)",
+      "location": "Bauer Wurster Gallery, College of Environmental Design, UC Berkeley",
+      "description": "An exhibition situating UC Merced within the broader history of the University of California, tracing its architectural, infrastructural, and institutional growth. Today is the last day.",
+      "url": "https://events.berkeley.edu/event/from_the_ground_up_building_uc_merced_exhibition_symposium",
+      "tags": [
+        "Arts",
+        "Academic"
+      ]
+    },
+    {
+      "id": "ucb-exhibit-shape-of-thought-feb21",
+      "title": "Shape of Thought: The Book as Art",
+      "organizer": "The Bancroft Library, UC Berkeley",
+      "date": "2026-02-21",
+      "time": "9:00 a.m. - 5:00 p.m. (Last day)",
+      "location": "Bauer Wurster Gallery, College of Environmental Design, UC Berkeley (Note: snippet indicates Bauer Wurster Gallery, but Bancroft Library is organizer)",
+      "description": "An exhibition highlighting works from The Bancroft Library's collection of contemporary artists' books, including local and international artists. Today is the last day.",
+      "url": "https://events.berkeley.edu/event/shape_of_thought_the_book_as_art",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "cal-performances-aim-kyle-abraham-feb21",
+      "title": "A.I.M by Kyle Abraham",
+      "organizer": "Cal Performances",
+      "date": "2026-02-21",
+      "time": "8:00 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "Kyle Abraham brings his A.I.M company for its Cal Performances debut, featuring three works at the intersection of Black and queer culture.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "cal-performances-somi-feb21",
+      "title": "Somi",
+      "organizer": "Cal Performances",
+      "date": "2026-02-21",
+      "time": "8:00 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "Vocalist and composer Somi makes her Cal Performances debut with music that traverses the cultural bridges between Africa and the US.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "cal-performances-aim-kyle-abraham-feb22",
+      "title": "A.I.M by Kyle Abraham",
+      "organizer": "Cal Performances",
+      "date": "2026-02-22",
+      "time": "3:00 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "Matinee performance by Kyle Abraham's A.I.M company.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "cal-performances-canto-ostinato-feb22",
+      "title": "Canto Ostinato, An AMOC* & Sandbox Percussion Co-Production",
+      "organizer": "Cal Performances",
+      "date": "2026-02-22",
+      "time": "3:00 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "The American Modern Opera Company and Sandbox Percussion perform Simeon ten Holt's mesmerizing Canto Ostinato.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "cal-performances-takacs-quartet-feb22",
+      "title": "Takács Quartet",
+      "organizer": "Cal Performances",
+      "date": "2026-02-22",
+      "time": "3:00 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "The second Takács Quartet performance of the 25–26 season features a new work by Clarice Assad, as well as Haydn and Debussy.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "irle-weekly-scholar-seminar-feb25",
+      "title": "2025-2026 Weekly Visiting Scholar Seminar Series",
+      "organizer": "Institute for Research on Labor and Employment (IRLE)",
+      "date": "2026-02-25",
+      "time": "12:00 p.m.",
+      "location": "IRLE Director's Room, 2521 Channing Way, Berkeley, CA",
+      "description": "Weekly research presentations and discussions featuring visiting scholars from around the world.",
+      "url": "https://irle.berkeley.edu/events/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "ucb-public-health-gpa-overview-feb26",
+      "title": "UC Berkeley Online MPH Advanced GPA Overview",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-26",
+      "time": "3:00 p.m. - 4:00 p.m.",
+      "location": "Virtual/Online",
+      "description": "An online session providing an advanced overview of GPA requirements for the UC Berkeley Online MPH program.",
+      "url": "https://www.aspph.org/events/events-for-february-2026-student-recruitment/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "cal-performances-chris-thile-feb27",
+      "title": "Chris Thile, mandolin and vocals",
+      "organizer": "Cal Performances",
+      "date": "2026-02-27",
+      "time": "8:00 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "MacArthur Fellow and Grammy-winner Chris Thile returns to Berkeley with a program of original songs and interpretations.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "cal-performances-yaa-samar-dance-feb27",
+      "title": "Yaa Samar! Dance Theatre: Gathering",
+      "organizer": "Cal Performances",
+      "date": "2026-02-27",
+      "time": "8:00 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "A performance by Yaa Samar! Dance Theatre, exploring themes of love, loss, trauma, and dislocation through movement.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "cal-performances-yaa-samar-dance-feb28",
+      "title": "Yaa Samar! Dance Theatre: Gathering",
+      "organizer": "Cal Performances",
+      "date": "2026-02-28",
+      "time": "8:00 p.m.",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "An evening performance by Yaa Samar! Dance Theatre, exploring themes of love, loss, trauma, and dislocation through movement.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "ucb-exhibit-anti-apartheid-movement-ongoing",
+      "title": "Student Activism and the Anti-Apartheid Movement at UC Berkeley (Exhibit)",
+      "organizer": "The Bancroft Library, UC Berkeley",
+      "date": "Ongoing (through May 29, 2026)",
+      "time": "Library Hours",
+      "location": "The Bancroft Library, UC Berkeley",
+      "description": "An exhibition showcasing UC Berkeley students' role in the anti-apartheid divestment campaign in 1985.",
+      "url": "https://events.berkeley.edu/event/student_activism_and_the_anti-apartheid_movement_at_uc_berkeley",
+      "tags": [
+        "Academic",
+        "Arts",
+        "Student Life"
       ]
     }
   ],
-  "sources": [
-    {
-      "title": "tabroom.com",
-      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFDAj47ZPH73BYuwsNSSk6FFPXg71aHIkCLlb-Y9yfxV6GQnM9NuF4UYRQyPolffu5yYKslUHqi_CJ_nn6EO-Fria7wxNJwRBMzhns5fMuLQPuZwop-bhijWhqOgPs9ni2DxG5WnpVFCB0HlnAHc_p_Ma-76o-c6jMV"
-    },
-    {
-      "title": "berkeley.edu",
-      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGiynRkAW_4pYVzbZhyQTrTkUfE16QOYJ4uzbv14dmllifHs5KY8D66exkJg-2GMNklusrLQsphBfU1tNZA0CZ4-p7akadAK8syUVNjoGspRs7QrmIZswocko6A"
-    },
-    {
-      "title": "10times.com",
-      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGrI_iYYiOfy4VyJnpMbS2SnUQibP0nJEim_RgRLcjMaxja8AGxGQWW44YGRmOcwiHiG4FhgPRXn0b9HuYI8Qn-cQob_yw3bzpfGfBLP2Igygi97wl_N7_e5s6iVAqkS3IjfgJYAug="
-    }
-  ],
-  "lastUpdated": 1770043235503
+  "sources": [],
+  "lastUpdated": 1770135605713
 }
