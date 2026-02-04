@@ -1,182 +1,20 @@
 {
   "events": [
     {
-      "id": "1",
-      "title": "AI for Executives Program",
-      "organizer": "Berkeley Exec Ed",
-      "date": "2026-02-18",
-      "time": "TBD",
-      "location": "UC Berkeley Campus",
-      "description": "A three-day in-person program for executives focusing on AI. This program starts on February 18, 2026.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic",
-        "Science & Tech"
-      ]
-    },
-    {
-      "id": "2",
-      "title": "Berkeley MFE Explained: Curriculum, Career Outcomes and Admissions",
-      "organizer": "UC Berkeley Haas",
-      "date": "2026-02-04",
-      "time": "06:30 AM PST",
-      "location": "Virtual",
-      "description": "An information session detailing the Berkeley Master of Financial Engineering program, curriculum, career outcomes, and admissions.",
-      "url": "https://www.seedglobaleducation.com/virtual-events",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "3",
-      "title": "Can Bonds Still Diversify Multi-Asset Portfolios? Income versus Duration in Distinct Correlation Regimes",
-      "organizer": "UC Berkeley Haas",
-      "date": "2026-02-25",
-      "time": "06:30 AM PST",
-      "location": "Virtual",
-      "description": "An academic seminar analyzing income, duration, and correlation in multi-asset investing.",
-      "url": "https://www.seedglobaleducation.com/virtual-events",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "4",
-      "title": "Can Bonds Still Diversify Multi-Asset Portfolios? Income versus Duration in Distinct Correlation Regimes",
-      "organizer": "UC Berkeley Haas",
-      "date": "2026-03-05",
-      "time": "07:30 AM PST",
-      "location": "Virtual",
-      "description": "An academic seminar analyzing income, duration, and correlation in multi-asset investing.",
-      "url": "https://www.seedglobaleducation.com/virtual-events",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "5",
-      "title": "Master's Information Session (Public Health)",
-      "organizer": "UC Berkeley Public Health",
-      "date": "2026-02-06",
-      "time": "03:00 PM - 04:00 PM",
-      "location": "Virtual",
-      "description": "Information session for prospective Master's students in Public Health.",
-      "url": "https://publichealth.berkeley.edu/events/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "6",
-      "title": "Virtual Prospective Student Information Session (Public Health)",
-      "organizer": "UC Berkeley Public Health",
-      "date": "2026-02-11",
-      "time": "05:30 PM - 06:30 PM",
-      "location": "Virtual",
-      "description": "A virtual information session for prospective students interested in Public Health programs.",
-      "url": "https://publichealth.berkeley.edu/events/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "7",
-      "title": "UC Berkeley Online MPH Information Session: Health Policy & Management With Dr. Brent Fulton",
-      "organizer": "UC Berkeley Public Health",
-      "date": "2026-02-11",
-      "time": "08:00 PM - 09:00 PM",
-      "location": "Virtual",
-      "description": "An online information session focused on the Health Policy & Management specialization within the MPH program, featuring Dr. Brent Fulton.",
-      "url": "https://publichealth.berkeley.edu/events/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "8",
-      "title": "UC Berkeley Public Health Residential Admissions Info Session",
-      "organizer": "UC Berkeley Public Health",
-      "date": "2026-02-13",
-      "time": "TBD",
-      "location": "UC Berkeley Campus",
-      "description": "An in-person information session for residential Public Health admissions.",
-      "url": "https://publichealth.berkeley.edu/events/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "9",
-      "title": "Virtual MHA Admissions Webinar (Public Health)",
-      "organizer": "UC Berkeley Public Health",
-      "date": "2026-02-26",
-      "time": "12:00 PM - 12:45 PM",
-      "location": "Virtual",
-      "description": "A virtual webinar for admissions to the Master of Health Administration (MHA) program.",
-      "url": "https://publichealth.berkeley.edu/events/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "10",
-      "title": "UC Berkeley Online MPH Advanced GPA Overview",
-      "organizer": "UC Berkeley Public Health",
-      "date": "2026-02-26",
-      "time": "03:00 PM - 04:00 PM",
-      "location": "Virtual",
-      "description": "An online overview of advanced GPA requirements for the UC Berkeley MPH program.",
-      "url": "https://publichealth.berkeley.edu/events/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "11",
+      "id": "cal_debate_2026",
       "title": "2026 Cal Invitational Speech and Debate Tournament",
       "organizer": "Berkeley Debate",
       "date": "2026-02-14",
       "time": "TBD",
-      "location": "UC Berkeley Campus and Online",
-      "description": "The annual Cal Invitational Speech and Debate Tournament, featuring a mix of in-person and online events. The tournament runs from Feb 14-16, 2026.",
-      "url": "https://calinvitational.tabroom.com/",
+      "location": "UC Berkeley Campus, Berkeley, CA",
+      "description": "The annual Cal Invitational Speech and Debate Tournament featuring a mix of in-person and online speech and debate events for high school students.",
+      "url": "https://www.tabroom.com/index/tourn/index.mhtml?tourn_id=2026",
       "tags": [
         "Academic",
         "Student Life"
       ]
-    },
-    {
-      "id": "12",
-      "title": "Choco-love Extravaganza!",
-      "organizer": "STEM*FYI / UC Berkeley Graduate Division",
-      "date": "2026-02-10",
-      "time": "05:00 PM - 07:00 PM",
-      "location": "Inclusive Excellence Hub, 103",
-      "description": "A social event with fruit, snacks, chocolate fountains, dinner, and card/board games, hosted by STEM*FYI for Valentine's. All are welcome.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Student Life",
-        "Science & Tech"
-      ]
     }
   ],
-  "sources": [
-    {
-      "title": "Current time information in San Francisco, CA, US.",
-      "uri": "https://www.google.com/search?q=time+in+San+Francisco,+CA,+US"
-    },
-    {
-      "title": "Current time information in Riverside-San Bernardino-Ontario Metropolitan Area, US.",
-      "uri": "https://www.google.com/search?q=time+in+Riverside-San+Bernardino-Ontario+Metropolitan+Area,+US"
-    },
-    {
-      "title": "kingbishop.com",
-      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHQT7xBGl5ZehwdXDsalb_y6j-edXyHPY15NbFUtIIOQwzE3IiKUWp94gz0ENs6D-GamER-a70YlOtNp_ds1CVzBD4-N3XmENOt0pMKkdwCTISR6UH14hp3CwNF9hTz8voErJ47NckHJD104J-pfWhOqUnwL_gHuVxwNf4s"
-    },
-    {
-      "title": "ucdavis.edu",
-      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFXSVKTJqAAhPxuLOa4AK3godN59nx-_yxn_UkyZindHQdRJWSY_KIA7nkTx2JxRbnrU3ZHBCHT2STWjxqcdmxJJHWSETTu4nF9d92p0wHYmjrcK9ENjdxGc8UjZlAUC0aeHpHfPZzlkevKCHN1WNGm_o4-gQ=="
-    }
-  ],
-  "lastUpdated": 1770156783586
+  "sources": [],
+  "lastUpdated": 1770216047632
 }
