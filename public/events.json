@@ -1,20 +1,1232 @@
 {
   "events": [
     {
-      "id": "cal_debate_2026",
-      "title": "2026 Cal Invitational Speech and Debate Tournament",
-      "organizer": "Berkeley Debate",
-      "date": "2026-02-14",
-      "time": "TBD",
-      "location": "UC Berkeley Campus, Berkeley, CA",
-      "description": "The annual Cal Invitational Speech and Debate Tournament featuring a mix of in-person and online speech and debate events for high school students.",
-      "url": "https://www.tabroom.com/index/tourn/index.mhtml?tourn_id=2026",
+      "id": "UCB_020526_001",
+      "title": "Cécile McLorin Salvant",
+      "organizer": "Cal Performances",
+      "date": "2026-02-05",
+      "time": "7:30 PM",
+      "location": "Zellerbach Hall",
+      "description": "Vocalist and composer Cécile McLorin Salvant, a MacArthur Fellow and three-time Grammy winner, brings fresh perspectives to jazz through dramatic storytelling and original compositions.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_020526_002",
+      "title": "Co-Motion: Re-Thinking Power, Subjects, and Feminist and Queer Alliances - Authors Meet Critics Panel",
+      "organizer": "Department of Gender and Women's Studies, UC Berkeley Events",
+      "date": "2026-02-05",
+      "time": "12:00 PM - 1:30 PM",
+      "location": "Morrison Library (inside Doe Library)",
+      "description": "An Authors Meet Critics panel discussing the book “Co-Motion: Re-Thinking Power, Subjects, and Feminist and Queer Alliances,” by Paola Bacchetta, Professor and Chair of the Department of Gender and Women's Studies.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020526_003",
+      "title": "Lunch Poems: Aracelis Girmay",
+      "organizer": "Lunch Poems, UC Berkeley Events",
+      "date": "2026-02-05",
+      "time": "12:10 PM",
+      "location": "Dwinelle 282 (Level E)",
+      "description": "Berkeley's storied noontime poetry series welcomes poet Aracelis Girmay.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Arts",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020526_004",
+      "title": "Troubled Times: Writing the Present in Contemporary Literature & Theory",
+      "organizer": "UC Berkeley Events",
+      "date": "2026-02-05",
+      "time": "1:00 PM",
+      "location": "Cory Hall 373",
+      "description": "A discussion on writing the present in contemporary literature and theory during troubled times.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020526_005",
+      "title": "AI in action: Autonomous laboratories for materials synthesis",
+      "organizer": "UC Berkeley Events",
+      "date": "2026-02-05",
+      "time": "1:00 PM - 2:00 PM",
+      "location": "Melvin Calvin Laboratory, UC Berkeley",
+      "description": "Learn how autonomous, AI-driven laboratories are transforming materials synthesis by closing the loop between computation and fully automated experiments.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Science & Tech"
+      ]
+    },
+    {
+      "id": "UCB_020526_006",
+      "title": "Alignment Problems in AI Governance",
+      "organizer": "Simons Institute for the Theory of Computing, UC Berkeley Events",
+      "date": "2026-02-05",
+      "time": "3:30 PM - 4:30 PM",
+      "location": "Institute for South Asia Studies",
+      "description": "Simons Institute Law and Society Fellows Rui-Jie Yew and Greg Demirchyan will explore alignment challenges in AI governance through short talks and dialogue.",
+      "url": "https://simons.berkeley.edu/events",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020526_007",
+      "title": "Kazi Khaleed Ashraf | The Great Padma: The Epic River that Made the Bengal Delta",
+      "organizer": "UC Berkeley Events",
+      "date": "2026-02-05",
+      "time": "5:00 PM - 6:30 PM",
+      "location": "Institute for South Asia Studies",
+      "description": "The Chowdhury Center Distinguished Lecture for 2026 by architect, urbanist, and author Kazi Khaleed Ashraf on his new book about the Great Padma River.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020526_008",
+      "title": "Asian American Student Activism and the Story of Ethnic Studies",
+      "organizer": "UC Berkeley Events",
+      "date": "2026-02-05",
+      "time": "5:00 PM - 6:45 PM",
+      "location": "TBD",
+      "description": "An event focused on the history and impact of Asian American student activism and the development of Ethnic Studies at UC Berkeley.",
+      "url": "https://events.berkeley.edu/",
       "tags": [
         "Academic",
         "Student Life"
       ]
+    },
+    {
+      "id": "UCB_020526_009",
+      "title": "Matthew Naythons: Light in Dark Places",
+      "organizer": "UC Berkeley Events",
+      "date": "2026-02-05",
+      "time": "5:30 PM",
+      "location": "TBD",
+      "description": "A presentation or lecture by Matthew Naythons on the theme of 'Light in Dark Places.'",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020526_010",
+      "title": "Forever Ends Here: PFAS & Policy for Worker Health and Safety - Day 1",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-05",
+      "time": "9:00 AM",
+      "location": "TBD",
+      "description": "The first day of a discussion on PFAS chemicals and policies related to worker health and safety.",
+      "url": "https://publichealth.berkeley.edu/events/",
+      "tags": [
+        "Academic",
+        "Science & Tech"
+      ]
+    },
+    {
+      "id": "UCB_020526_011",
+      "title": "Behavioral Health Services Act Community Input Meeting (Virtual)",
+      "organizer": "The City of Berkeley",
+      "date": "2026-02-05",
+      "time": "1:00 PM - 2:30 PM",
+      "location": "Virtual",
+      "description": "A virtual community meeting to gather input on how the City of Berkeley will allocate Behavioral Health Services Act funding.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_020526_012",
+      "title": "Women's Basketball at Georgia Tech",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-05",
+      "time": "4:00 PM PT",
+      "location": "Atlanta, Ga.",
+      "description": "The California Golden Bears women's basketball team competes against Georgia Tech.",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_020626_001",
+      "title": "Know Your Rights Training Session with Palestine Legal",
+      "organizer": "Palestinian & Arab Studies Program, ASUC MEMSSA senate, UC Berkeley Events",
+      "date": "2026-02-06",
+      "time": "10:30 AM - 11:30 AM",
+      "location": "Online",
+      "description": "A virtual training session featuring Palestine Legal Senior Staff Attorney Tori Porell on knowing your rights.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_020626_002",
+      "title": "Democratic Backsliding in the U.S.: Risks and Opportunities for Resistance",
+      "organizer": "UC Berkeley Events",
+      "date": "2026-02-06",
+      "time": "1:00 PM - 3:00 PM",
+      "location": "Hearst Field Annex D23",
+      "description": "Berkeley professors Paul Pierson and Eric Schickler discuss authoritarian tendencies and resistance in the U.S. political system, joined by professor Henry Brady.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020626_003",
+      "title": "Love Poems: Writing Workshop with Margaret Ross",
+      "organizer": "Arts Research Center, UC Berkeley Events",
+      "date": "2026-02-06",
+      "time": "3:00 PM - 9:00 PM",
+      "location": "Berkeley Way West",
+      "description": "A free poetry workshop led by UC Berkeley's Holloway Lecturer in Poetry, Margaret Ross, open to Berkeley students on a first-come, first-served basis.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Arts",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_020626_004",
+      "title": "AI + Emotions Symposium",
+      "organizer": "UC Berkeley Events, School of Public Health",
+      "date": "2026-02-06",
+      "time": "3:00 PM - 9:00 PM",
+      "location": "TBD",
+      "description": "An interdisciplinary symposium exploring critical questions around privacy, autonomy, and human identity as AI becomes capable of detecting and responding to human emotions.",
+      "url": "https://publichealth.berkeley.edu/events/",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020626_005",
+      "title": "Mosse Lecture: Robert Beavers",
+      "organizer": "UC Berkeley Events",
+      "date": "2026-02-06",
+      "time": "3:30 PM",
+      "location": "TBD",
+      "description": "A lecture by filmmaker Robert Beavers as part of the Mosse Lecture series.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Arts",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020626_006",
+      "title": "Nomadic Entanglements Along the Southern Roads: Understanding Early Tibetan Material Culture and Aesthetics",
+      "organizer": "UC Berkeley Events",
+      "date": "2026-02-06",
+      "time": "4:00 PM",
+      "location": "TBD",
+      "description": "A talk exploring early Tibetan material culture and aesthetics through the lens of nomadic entanglements along southern roads.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020626_007",
+      "title": "QT Pie - Spring 2026",
+      "organizer": "UC Berkeley Events",
+      "date": "2026-02-06",
+      "time": "4:00 PM - 6:00 PM",
+      "location": "TBD",
+      "description": "An event likely related to queer and trans student life and community, part of the Spring 2026 series.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_020626_008",
+      "title": "Film Screening & Discussion: Thabyay: Creative Resistance in Myanmar",
+      "organizer": "UC Berkeley Events",
+      "date": "2026-02-06",
+      "time": "5:00 PM",
+      "location": "TBD",
+      "description": "A film screening and discussion of 'Thabyay: Creative Resistance in Myanmar'.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Arts",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020626_009",
+      "title": "The Religious Demos: Rethinking Politics and Religion in Global Antiquity (Day 1)",
+      "organizer": "UC Berkeley Events, History Department",
+      "date": "2026-02-06",
+      "time": "All Day",
+      "location": "Tamalpais Room, David Brower Center, 2150 Allston Way, Berkeley",
+      "description": "The first day of a conference bringing together scholars to recover new histories of religious politics in early societies of Eurasia, focusing on mass populations.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020626_010",
+      "title": "Women's Track & Field at New Mexico Collegiate Classic",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-06",
+      "time": "8:45 AM",
+      "location": "Albuquerque, NM",
+      "description": "The California Golden Bears track and field team competes at the New Mexico Collegiate Classic.",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_020626_011",
+      "title": "Softball: #20 Oklahoma State vs. California",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-06",
+      "time": "2:00 PM PT",
+      "location": "Stanford Invitational, Stanford, CA",
+      "description": "The Cal softball team opens their season against #20 Oklahoma State at the Stanford Invitational.",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_020726_001",
+      "title": "Sick Plant Clinic",
+      "organizer": "UC Botanical Garden",
+      "date": "2026-02-07",
+      "time": "9:15 AM - 11:30 AM",
+      "location": "UC Botanical Garden at Berkeley",
+      "description": "Bring plant samples to this monthly clinic to find out which diseases or pests are afflicting your plants. Free to attend.",
+      "url": "https://botanicalgarden.berkeley.edu/events",
+      "tags": [
+        "Science & Tech",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_020726_002",
+      "title": "Eco Ensemble; David Milnes, director",
+      "organizer": "Cal Performances",
+      "date": "2026-02-07",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "UC Berkeley's Eco Ensemble, directed by David Milnes, will perform works by two recent additions to the composition faculty.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_020726_003",
+      "title": "Joyce DiDonato, mezzo-soprano; Time for Three, string trio: Emily – No Prisoner Be",
+      "organizer": "Cal Performances",
+      "date": "2026-02-07",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "Mezzo-soprano Joyce DiDonato teams up with Grammy-winning ensemble Time for Three to perform songs exploring the poetry of Emily Dickinson.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_020726_004",
+      "title": "Black Life: Memory as Miracle",
+      "organizer": "UC Berkeley Events",
+      "date": "2026-02-07",
+      "time": "5:00 PM",
+      "location": "TBD",
+      "description": "An event focusing on Black life and the concept of memory as a miracle.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic",
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_020726_005",
+      "title": "Softball: California vs. #20 Oklahoma State",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-07",
+      "time": "10:30 AM PT",
+      "location": "Stanford Invitational, Stanford, CA",
+      "description": "The Cal softball team continues their season against #20 Oklahoma State at the Stanford Invitational.",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_020726_006",
+      "title": "Softball: California vs. San Jose State",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-07",
+      "time": "1:30 PM PT",
+      "location": "Stanford Invitational, Stanford, CA",
+      "description": "The Cal softball team plays against San Jose State at the Stanford Invitational.",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_020826_001",
+      "title": "Discovery Station: Newts",
+      "organizer": "UC Botanical Garden",
+      "date": "2026-02-08",
+      "time": "12:00 PM - 3:00 PM",
+      "location": "UC Botanical Garden at Berkeley",
+      "description": "Drop in to our Discovery Station where volunteer docents provide information and an up-close look at newts.",
+      "url": "https://botanicalgarden.berkeley.edu/events",
+      "tags": [
+        "Science & Tech",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_020826_002",
+      "title": "Symposium / Multiple Offerings: New Directions in Research on Theresa Hak Kyung Cha",
+      "organizer": "BAMPFA",
+      "date": "2026-02-08",
+      "time": "12:30 PM - 3:30 PM",
+      "location": "BAMPFA",
+      "description": "A symposium highlighting new research on Theresa Hak Kyung Cha, featuring contributions from graduate students and early career researchers.",
+      "url": "https://bampfa.org/calendar",
+      "tags": [
+        "Academic",
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_020826_003",
+      "title": "Light Catcher Workshop",
+      "organizer": "BAMPFA",
+      "date": "2026-02-08",
+      "time": "1:00 PM",
+      "location": "BAMPFA",
+      "description": "Join Tara Baghdassarian for a workshop where photography and light meet ancestral memory, creating magical glass dream catchers. RSVP is required.",
+      "url": "https://bampfa.org/calendar",
+      "tags": [
+        "Arts",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_020826_004",
+      "title": "Open: Art Lab",
+      "organizer": "BAMPFA",
+      "date": "2026-02-08",
+      "time": "11:00 AM - 7:00 PM",
+      "location": "BAMPFA",
+      "description": "The museum's popular Fisher Family Art Lab welcomes drop-in visitors of all ages to explore their creativity through hands-on artmaking.",
+      "url": "https://bampfa.org/calendar",
+      "tags": [
+        "Arts",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_020826_005",
+      "title": "Exhibition Tour: Theresa Hak Kyung Cha: Multiple Offerings",
+      "organizer": "BAMPFA",
+      "date": "2026-02-08",
+      "time": "2:00 PM",
+      "location": "BAMPFA",
+      "description": "Graduate students from the departments of Art History, English, and Ethnic Studies offer tours of the 'Theresa Hak Kyung Cha: Multiple Offerings' exhibition.",
+      "url": "https://bampfa.org/calendar",
+      "tags": [
+        "Arts",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020826_006",
+      "title": "Women's Basketball at Pittsburgh",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-08",
+      "time": "10:00 AM - 12:00 PM",
+      "location": "Pittsburgh",
+      "description": "The California Golden Bears women's basketball team competes against Pittsburgh.",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_020826_007",
+      "title": "Softball vs San Jose State",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-08",
+      "time": "10:00 AM PT",
+      "location": "Stanford Invitational, Stanford, CA",
+      "description": "The Cal softball team plays against San Jose State.",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_020826_008",
+      "title": "Women's Water Polo at UC Davis",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-08",
+      "time": "12:00 PM - 1:30 PM",
+      "location": "UC Davis",
+      "description": "The California Golden Bears women's water polo team competes against UC Davis.",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_020826_009",
+      "title": "Men's Tennis at San Diego",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-08",
+      "time": "12:00 PM - 3:00 PM",
+      "location": "San Diego",
+      "description": "The California Golden Bears men's tennis team competes in San Diego.",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_020826_010",
+      "title": "Lacrosse at USC",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-08",
+      "time": "12:00 PM - 3:00 PM",
+      "location": "USC",
+      "description": "The California Golden Bears lacrosse team competes against USC.",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_020926_001",
+      "title": "Theory of Computing and Healthcare Workshop",
+      "organizer": "Simons Institute for the Theory of Computing",
+      "date": "2026-02-09",
+      "time": "9:00 AM - 5:00 PM",
+      "location": "Calvin Lab auditorium",
+      "description": "A week-long workshop exploring the intersection of theoretical computer science and healthcare.",
+      "url": "https://simons.berkeley.edu/events",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_020926_002",
+      "title": "Behavioral Health Services Act Community Input Meeting (In-Person)",
+      "organizer": "The City of Berkeley",
+      "date": "2026-02-09",
+      "time": "6:00 PM - 7:30 PM",
+      "location": "South Berkeley Senior Center",
+      "description": "An in-person community meeting to gather input on how the City of Berkeley will allocate Behavioral Health Services Act funding.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_021026_001",
+      "title": "Unmentionables: Textiles, Garment Work, and the Syrian American Working Class",
+      "organizer": "Palestinian & Arab Studies Program, UC Berkeley Events",
+      "date": "2026-02-10",
+      "time": "5:00 PM - 6:30 PM",
+      "location": "TBD",
+      "description": "A lecture by Dr. Stacy Fahrenthold on the Syrian American working class, focusing on textiles and garment work.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_021026_002",
+      "title": "Bruce Liu, piano",
+      "organizer": "Cal Performances",
+      "date": "2026-02-10",
+      "time": "7:30 PM",
+      "location": "Zellerbach Hall",
+      "description": "2021 International Chopin Piano Competition winner pianist Bruce Liu makes his Cal Performances debut with a program including Chopin, Beethoven, and more.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_021026_003",
+      "title": "TLV User Guide and Heat Stress Management Plan",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-10",
+      "time": "12:00 PM",
+      "location": "TBD",
+      "description": "A session on the TLV User Guide and strategies for heat stress management.",
+      "url": "https://publichealth.berkeley.edu/events/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_021026_004",
+      "title": "Facilitating Contraceptive Choice: Market Segmentation, Information Frictions, and Price Regulation",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-10",
+      "time": "12:30 PM",
+      "location": "TBD",
+      "description": "A discussion on factors influencing contraceptive choice, including market segmentation, information frictions, and price regulation.",
+      "url": "https://publichealth.berkeley.edu/events/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_021026_005",
+      "title": "Behavioral Health Services Act Community Input Meeting (Virtual)",
+      "organizer": "The City of Berkeley",
+      "date": "2026-02-10",
+      "time": "5:00 PM - 6:30 PM",
+      "location": "Virtual",
+      "description": "A virtual community meeting to gather input on how the City of Berkeley will allocate Behavioral Health Services Act funding.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_021126_001",
+      "title": "Dmitry Taubinsky | Welfare and the Act of Choosing",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-11",
+      "time": "12:10 PM - 1:30 PM",
+      "location": "TBD",
+      "description": "A talk by Dmitry Taubinsky on welfare and the act of choosing.",
+      "url": "https://publichealth.berkeley.edu/events/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_021126_002",
+      "title": "UC Berkeley Online MPH Information Session: Health Policy & Management",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-11",
+      "time": "5:00 PM - 6:00 PM",
+      "location": "TBD",
+      "description": "An information session for the UC Berkeley Online MPH program, focusing on Health Policy & Management, with a featured doctor.",
+      "url": "https://publichealth.berkeley.edu/events/",
+      "tags": [
+        "Academic",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_021126_003",
+      "title": "Cultures of Power: Electrification, Politics, and Visibility in Greater Los Angeles",
+      "organizer": "UC Berkeley History Department, UC Berkeley Events",
+      "date": "2026-02-11",
+      "time": "4:00 PM - 5:30 PM",
+      "location": "3104 Dwinelle Hall",
+      "description": "A lecture examining the intersection of electrification, politics, and visibility in the historical context of Greater Los Angeles.",
+      "url": "https://events.berkeley.edu/history/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_021126_004",
+      "title": "Behavioral Health Services Act Community Input Meeting (In-Person)",
+      "organizer": "The City of Berkeley",
+      "date": "2026-02-11",
+      "time": "6:00 PM - 7:30 PM",
+      "location": "North Berkeley Senior Center",
+      "description": "An in-person community meeting to gather input on how the City of Berkeley will allocate Behavioral Health Services Act funding.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_021326_001",
+      "title": "Integral Taiji and Qigong",
+      "organizer": "UC Botanical Garden",
+      "date": "2026-02-13",
+      "time": "11:00 AM - 12:00 PM",
+      "location": "UC Botanical Garden at Berkeley",
+      "description": "Join a Friday late morning Integral Taiji & Qigong class. Registration is required.",
+      "url": "https://botanicalgarden.berkeley.edu/events",
+      "tags": [
+        "Recreation"
+      ]
+    },
+    {
+      "id": "UCB_021326_002",
+      "title": "Symbiosis & Cocktails: Lichen Love",
+      "organizer": "UC Botanical Garden",
+      "date": "2026-02-13",
+      "time": "4:00 PM - 5:00 PM",
+      "location": "Julia Morgan Hall, UC Botanical Garden at Berkeley",
+      "description": "A pre-Valentine's day cocktail hour celebrating symbiosis in the plant world, featuring lichen. Waitlist may be available.",
+      "url": "https://botanicalgarden.berkeley.edu/events",
+      "tags": [
+        "Science & Tech",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_021426_001",
+      "title": "FAMILY PROGRAM: Botanical Valentine's Tea (Morning Session)",
+      "organizer": "UC Botanical Garden",
+      "date": "2026-02-14",
+      "time": "10:00 AM - 11:30 AM",
+      "location": "UC Botanical Garden at Berkeley",
+      "description": "A family program for Valentine's Day, featuring a botanical-themed tea. This session is full, check for waitlist.",
+      "url": "https://botanicalgarden.berkeley.edu/events",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_021426_002",
+      "title": "FAMILY PROGRAM: Botanical Valentine's Tea (Afternoon Session)",
+      "organizer": "UC Botanical Garden",
+      "date": "2026-02-14",
+      "time": "1:00 PM - 2:30 PM",
+      "location": "UC Botanical Garden at Berkeley",
+      "description": "A family program for Valentine's Day, featuring a botanical-themed tea. This session is full, check for waitlist.",
+      "url": "https://botanicalgarden.berkeley.edu/events",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_021426_003",
+      "title": "Martha Graham Dance Company: GRAHAM100",
+      "organizer": "Cal Performances",
+      "date": "2026-02-14",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "The Martha Graham Dance Company returns to Cal Performances to celebrate its 100th anniversary with Graham classics and more.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_021526_001",
+      "title": "Discovery Station: Newts",
+      "organizer": "UC Botanical Garden",
+      "date": "2026-02-15",
+      "time": "12:00 PM - 3:00 PM",
+      "location": "UC Botanical Garden at Berkeley",
+      "description": "Drop in to our Discovery Station where volunteer docents provide information and an up-close look at newts.",
+      "url": "https://botanicalgarden.berkeley.edu/events",
+      "tags": [
+        "Science & Tech",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_021526_002",
+      "title": "Martha Graham Dance Company: GRAHAM100",
+      "organizer": "Cal Performances",
+      "date": "2026-02-15",
+      "time": "3:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "The Martha Graham Dance Company's matinee performance celebrating its 100th anniversary with classic and new works.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_021726_001",
+      "title": "Decolonizing Health Knowledge and Practice",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-17",
+      "time": "12:10 PM - 1:00 PM",
+      "location": "TBD",
+      "description": "A discussion on decolonizing health knowledge and practice within public health.",
+      "url": "https://publichealth.berkeley.edu/events/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_021726_002",
+      "title": "Behavioral Health Services Act Community Input Meeting (In-Person)",
+      "organizer": "The City of Berkeley",
+      "date": "2026-02-17",
+      "time": "6:00 PM - 7:30 PM",
+      "location": "North Berkeley Senior Center",
+      "description": "An in-person community meeting to gather input on how the City of Berkeley will allocate Behavioral Health Services Act funding.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_021826_001",
+      "title": "UC Berkeley Online MPH Graduate Writing Workshop",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-18",
+      "time": "5:00 PM - 6:00 PM",
+      "location": "TBD",
+      "description": "A graduate writing workshop tailored for students in the UC Berkeley Online MPH program.",
+      "url": "https://publichealth.berkeley.edu/events/",
+      "tags": [
+        "Academic",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_021826_002",
+      "title": "Behavioral Health Services Act Community Input Meeting (Virtual)",
+      "organizer": "The City of Berkeley",
+      "date": "2026-02-18",
+      "time": "10:00 AM - 11:30 AM",
+      "location": "Virtual",
+      "description": "A virtual community meeting to gather input on how the City of Berkeley will allocate Behavioral Health Services Act funding.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_021926_001",
+      "title": "UC Berkeley Public Health Residential Admissions Information Session",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-19",
+      "time": "5:00 PM - 6:00 PM",
+      "location": "TBD",
+      "description": "An information session for prospective students interested in the UC Berkeley Public Health Residential Admissions program.",
+      "url": "https://publichealth.berkeley.edu/events/",
+      "tags": [
+        "Academic",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_021926_002",
+      "title": "Behavioral Health Services Act Community Input Meeting (In-Person)",
+      "organizer": "The City of Berkeley",
+      "date": "2026-02-19",
+      "time": "6:00 PM - 7:30 PM",
+      "location": "South Berkeley Senior Center",
+      "description": "An in-person community meeting to gather input on how the City of Berkeley will allocate Behavioral Health Services Act funding.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_022026_001",
+      "title": "Botanical Illustration: Spring Bulbs",
+      "organizer": "UC Botanical Garden",
+      "date": "2026-02-20",
+      "time": "10:00 AM - 4:00 PM",
+      "location": "UC Botanical Garden at Berkeley",
+      "description": "A workshop focused on capturing the beauty of spring bulbs through botanical illustration. This event is full, check for waitlist.",
+      "url": "https://botanicalgarden.berkeley.edu/events",
+      "tags": [
+        "Arts",
+        "Science & Tech"
+      ]
+    },
+    {
+      "id": "UCB_022126_001",
+      "title": "Botanical Illustration: Spring Bulbs (Saturday)",
+      "organizer": "UC Botanical Garden",
+      "date": "2026-02-21",
+      "time": "10:00 AM - 4:00 PM",
+      "location": "UC Botanical Garden at Berkeley",
+      "description": "A Saturday workshop dedicated to botanical illustration, focusing on spring bulbs. Registration required.",
+      "url": "https://botanicalgarden.berkeley.edu/events",
+      "tags": [
+        "Arts",
+        "Science & Tech"
+      ]
+    },
+    {
+      "id": "UCB_022126_002",
+      "title": "A.I.M by Kyle Abraham",
+      "organizer": "Cal Performances",
+      "date": "2026-02-21",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "Kyle Abraham brings his A.I.M company for its Cal Performances debut, featuring three works at the intersection of Black and queer culture.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_022126_003",
+      "title": "Somi",
+      "organizer": "Cal Performances",
+      "date": "2026-02-21",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "Vocalist and composer Somi makes her Cal Performances debut with music that traverses cultural bridges between Africa and the US.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_022226_001",
+      "title": "A.I.M by Kyle Abraham",
+      "organizer": "Cal Performances",
+      "date": "2026-02-22",
+      "time": "3:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "Kyle Abraham's A.I.M company performs a matinee featuring works at the intersection of Black and queer culture.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_022226_002",
+      "title": "Canto Ostinato, An AMOC* & Sandbox Percussion Co-Production",
+      "organizer": "Cal Performances",
+      "date": "2026-02-22",
+      "time": "3:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "The American Modern Opera Company and Sandbox Percussion perform Dutch composer Simeon ten Holt's Canto Ostinato. This event is sold out.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_022226_003",
+      "title": "Takács Quartet",
+      "organizer": "Cal Performances",
+      "date": "2026-02-22",
+      "time": "3:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "The second Takács Quartet performance of the 25–26 season features the premiere of a new work by Clarice Assad, as well as Haydn and Debussy.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_022326_001",
+      "title": "Learning from Heterogeneous Sources Workshop",
+      "organizer": "Simons Institute for the Theory of Computing",
+      "date": "2026-02-23",
+      "time": "9:00 AM - 5:00 PM",
+      "location": "Calvin Lab auditorium",
+      "description": "A week-long workshop focusing on learning from heterogeneous data sources.",
+      "url": "https://simons.berkeley.edu/events",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_022326_002",
+      "title": "Behavioral Health Services Act Community Input Meeting (Virtual)",
+      "organizer": "The City of Berkeley",
+      "date": "2026-02-23",
+      "time": "6:00 PM - 7:30 PM",
+      "location": "Virtual",
+      "description": "A virtual community meeting to gather input on how the City of Berkeley will allocate Behavioral Health Services Act funding.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_022426_001",
+      "title": "Healthcare Provider Bankruptcies",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-24",
+      "time": "12:30 PM",
+      "location": "TBD",
+      "description": "A session discussing the topic of healthcare provider bankruptcies.",
+      "url": "https://publichealth.berkeley.edu/events/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_022426_002",
+      "title": "Defining Judaism: Religion, Law, Nation, and Our Current Moment",
+      "organizer": "Berkeley Law",
+      "date": "2026-02-24",
+      "time": "6:00 PM - 7:30 PM",
+      "location": "Berkeley Law Building",
+      "description": "The 17th Annual Robbins Collection Lecture in Jewish Law, Thought, and Identity featuring Princeton Professor Leora Batnitzky, exploring how the modern nation-state shaped understanding of religion, law, and Jewish identity.",
+      "url": "https://www.law.berkeley.edu/events/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_022426_003",
+      "title": "Behavioral Health Services Act Community Input Meeting (In-Person)",
+      "organizer": "The City of Berkeley",
+      "date": "2026-02-24",
+      "time": "6:00 PM - 7:30 PM",
+      "location": "South Berkeley Senior Center",
+      "description": "An in-person community meeting to gather input on how the City of Berkeley will allocate Behavioral Health Services Act funding.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_022626_001",
+      "title": "Behavioral Health Services Act Community Input Meeting (In-Person)",
+      "organizer": "The City of Berkeley",
+      "date": "2026-02-26",
+      "time": "6:00 PM - 7:30 PM",
+      "location": "North Berkeley Senior Center",
+      "description": "An in-person community meeting to gather input on how the City of Berkeley will allocate Behavioral Health Services Act funding.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_022726_001",
+      "title": "Food Politics and Policy 2026: A Conversation with Marion Nestle and Marion Standish",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-02-27",
+      "time": "10:30 AM - 11:30 AM",
+      "location": "TBD",
+      "description": "A conversation with Marion Nestle and Marion Standish on food politics and policy in 2026.",
+      "url": "https://publichealth.berkeley.edu/events/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_022726_002",
+      "title": "Chris Thile, mandolin and vocals",
+      "organizer": "Cal Performances",
+      "date": "2026-02-27",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "MacArthur Fellow and Grammy-winner Chris Thile returns to Berkeley with a program of original songs and interpretations of classical tunes.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_022726_003",
+      "title": "Yaa Samar! Dance Theatre: Gathering",
+      "organizer": "Cal Performances",
+      "date": "2026-02-27",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "Yaa Samar! Dance Theatre presents 'Gathering,' an exploration of love, loss, trauma, and dislocation through movement, text, song, and puppetry.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_022726_004",
+      "title": "Plein AiR Patrol with Forest Stearns",
+      "organizer": "UC Botanical Garden",
+      "date": "2026-02-27",
+      "time": "9:15 AM - 11:00 AM",
+      "location": "UC Botanical Garden at Berkeley",
+      "description": "Discover outdoor painting in the Garden with artist Forest Stearns of DRAWEVERYWHERE Studios in this monthly interactive Artist in Residency project. Free for Garden Members.",
+      "url": "https://botanicalgarden.berkeley.edu/events",
+      "tags": [
+        "Arts",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_022826_001",
+      "title": "Member Event: Member Morning",
+      "organizer": "UC Botanical Garden",
+      "date": "2026-02-28",
+      "time": "10:00 AM - 11:30 AM",
+      "location": "UC Botanical Garden at Berkeley",
+      "description": "A special morning event for members of the UC Botanical Garden.",
+      "url": "https://botanicalgarden.berkeley.edu/events",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_022826_002",
+      "title": "Garden Shop Spring Clearance Sale",
+      "organizer": "UC Botanical Garden",
+      "date": "2026-02-28",
+      "time": "11:00 AM - 4:00 PM",
+      "location": "UC Botanical Garden at Berkeley",
+      "description": "A spring clearance sale at the UC Botanical Garden Shop.",
+      "url": "https://botanicalgarden.berkeley.edu/events",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_022826_003",
+      "title": "Yaa Samar! Dance Theatre: Gathering",
+      "organizer": "Cal Performances",
+      "date": "2026-02-28",
+      "time": "2:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "Yaa Samar! Dance Theatre presents a matinee of 'Gathering,' an exploration of love, loss, trauma, and dislocation. This performance is sold out.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_022826_004",
+      "title": "Yaa Samar! Dance Theatre: Gathering",
+      "organizer": "Cal Performances",
+      "date": "2026-02-28",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall",
+      "description": "Yaa Samar! Dance Theatre presents an evening performance of 'Gathering,' exploring themes of love, loss, trauma, and dislocation.",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
     }
   ],
-  "sources": [],
-  "lastUpdated": 1770216047632
+  "sources": [
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGARVA-X9UlG9Z4QGjMYhNEVZnMDuE_zMqC3yHcRuxVpc__S8epVKx_FBjQVBr87ZfYAJ-bWT5T0skv3hWGbv9uoQnwslXHplLqbqv-G4gu6WOFzUk_I9Lo5oEhkXZ3"
+    },
+    {
+      "title": "calperformances.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQErR6Hgdh1n5yFflZs-YNCSRvbkgUsY9OU4KYxeySGeZUz7x617tCN2hj6P2GA-H5kkq6FiFdLYZZGg_iPlJeEMpuBrSAemJfj7c8L8kNdwLe_r7fXKlj_EAWM_0aZmHgr7wuqS"
+    },
+    {
+      "title": "calperformances.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHFWMBeocFLrXhY6CImjVA3RYgblPBv1_ppDwHb72LPMIC8kIuhlE03QwPCBcUKLszvld-bTWl98rtdQ162z8TmPK_UdwYZ4MiKNAomLTwipncUux06WfO-kgSjLc8j-wKlZBB9U3Ni5AKx"
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGlOxypK1cvSeHNONw8v66KZHXO4rGTs6m8460Flq0nITsK0A8XlYWX3jWh3naiU4CaqwIr4fXBrfbJixSN-147Z14NeVHXaBLTdWZ4gw7UCPiPLVQsYBy6AU2NqYmHbx0="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQErV1Yl1i2gPb__HZvfgrqV_uPdUXiJ4uUVn52uL-ybULwysINjUM4CSCimXR-_rYqNRes6ovD8B_puNdKdZwzn1oiJDIEQ-HbETauMHv5VxIvtoygN15c="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHh7YCKy9dXRaYKgYW90Vdewor40VUNM6kOOr8DyKfp3VvORXnQFCe66UMY_mhwT0viKuz-LlA77NdC-wbUJgRUp5TkgnzKeqjyUKeLSwISKD-PQaTUiaEoLfhFi306rA=="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHOyV0sAttINrkGx_3-I7RCP3iIKVZ0ntCy6Bxj881DJl2bM6HiF9pkM4eov8_VAO40CM0ebJZQ31mQNKzJZadSRLE1tgXn21-l3cgbqBsM_B1qY03JMB70h-gVoVcDew=="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHiki_keqZ2_WFQ-cOwS6XPd2NKuKusNOiGCe9ARElBXrlTDJU5vV3niGeOAcky8zLKvfaUki6KZu1KuEyzaAAgc69sh2S4yikxLO7IpZ8WRBNA0bEfRwWjC2BxHvRP9Rg-LeI="
+    },
+    {
+      "title": "berkeleyca.gov",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEFZmvKBozh8eS4z-8s-b-HLdxW5K3uK0mD9QqZ1NIdnCjbx3MnTM2oQNrtEjafxLO6H4C4P20ztJhTIVB6m5iYLnNvJE8MPbYC-p8GvbBGo6KfVqWy7ChERa9KTEbHw-Fwtq5_WKOI1lcJYZ4XIg41ZYA-9ba51blmJGqJGA=="
+    },
+    {
+      "title": "calbears.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHrDlf1k-xEGLXEO0C11ozGSya7SDs2yXoCk9hEkqnoFgltWDSlzOf4yWIYsgxKhwrj1J79KuP5lT-qLzNsMSdW4McI1BxZGbHsWgxlwDBXhg=="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGGiFD6JNYhkGtXsCj4O_VIpnMDCsybR_weMnSjgp2NCDnKrgUTHgXoANcmKsLZKBUFBFRSpdSYnRLvBs60iZVmjniUqbOaUblvjQlqIJlbQyGf8cfgi6AkaTSxCg=="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFTZVQsFPe9QaIJC9jP80dkEdNwn9LbRol2E9yg2jEJlDYdtQQYVkIVJ0BuYY4qq6rCywSXj_Uc2WJhCGD5dJTsvtezZvQyxkCUS-RSpJ35l5JxlTcS4TzCzgDJ1I_m-Q=="
+    },
+    {
+      "title": "calbears.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFPyxMeskJ9TD9zPI1xdjX9n-TgOxt9x_5cbJfGgoPbjk_QTbTgnkGJ4LV6WTKW_5SO5DJiPSoQFU58eKzQrRndw5Q8XySn99PEPFADJ6DkTZ-OM7q7aBf4ksrRgH3KKFcSVdK7ZcGwLzMNLg1kWUWsmoK8sUm2tk2MjhFNe_KNDeEZu0FoA62xaji6rfDBC8SEeA=="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFCfAquzrzWxO-f71CkaqLeKyJBVnVIngVK8kYdjup8FVT4BPJp5ckBZM83DJSj0zM-ffE4_dM2ioBmIp0RFOO0XviBsDwHZGVos4hfIErvcbFY10-HpxbAzRSyD96-t0CtKR2Ymox-9_2bzjcdZnkwU7QO6qflbDkk8ms="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF59CQ4J0Fn4rmToZ5hHSkF9S1VmqYeGcvfxU5d12z5e0H42h_4ROxa2tySGgdWf3fSaa-F1FqKToAhcB3rofkrgrxh9DeTFEEKLcxyhUCM9SKd2S06Aa1GEDCXBOvFSD2atMdv-FbqTSS9DoJxUS88hcZb81ulfyNV32MlYf9xhPl4zXEdj9AATnWgPQ9pI1zYSKVoKAgZG-6Mwkbbi_J4Kdge59l8Cg=="
+    },
+    {
+      "title": "localnewsmatters.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFRHxuPs_yTRdPtnR7VSbAQyKCYltNcAjV9swrFqcbmqgsWLMW5wWa8e04W5BrXNxjciUel7bCx6FxlVlsR7FiZoYD1K3VLABI1uCQlxe6rMNSX3JnJ96X0M6Zd1arkCZ6lexLAhMQbsSXHvWExL50d54a6M5HEEg4RiyO5WdRw0B0yfnq7cATsGCk72pxsThwx6Ock8LHPyopycnP_G6hAXZAtPNW6rcdPad9A9-ZQOrpgVWRiv7U42ek2P4LqKLuG"
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFc8FYBe-7zlvSz5t98PxCPP1kno927sZ7Cnls4WuPzlGA4lhLnCFVlVZXCE49SbzwzyzymGz-MNw_rd_n8Wsk5Saox_5P1VXbrsU2-f-xg4bSNFtnrGPOTCKZoqGIowKkreMvoksjA7CHMroAhNR3Z_-o="
+    },
+    {
+      "title": "bampfa.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEKuAgUGkX5PzF3dwnv7nrnEr1YvEXL0N1lPPltfz9NYUErUg_qOoJrB1TcqVHOUWyBl1KafElVIsPhV3ZVST4N04Xsm3QgW3JXPp54WmwTboXbUMHfFeBeEQy9cA=="
+    },
+    {
+      "title": "bampfa.org",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGKB5BcgsIJpMd-Ac4WS03zag-iOXQrpXOO4NUqTqVLPwtFiSU0JauCgUum0MYIaLe2Ik19xqA1HPIeCZmpFzXTiJEam2HQr2TSFr25YZ0KGVO5ZrNBfBpxDsfrntAoFXUKc_z1wn5DP7tIG9B_HOw="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEtEUJQBzmjE2Wzm8ZIXTRTk4lQXBkuBClk-qsPtld8HmU32tfgvpalu-WyHSSCAS3TRwJI_pnS6nqBhGz6h9PE-Y5URPrwP1iZCUEOnquTgUgNt1FvXvMiXAFlMixBTFdL8Vw="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE8rrj1opvltvmNuCIjAkpLS7IwJXmO7e--0dbZmg8P8ok2rq-1qe11265_7bpp8ql5gceuBqnDG-NwDj4drY5C0ddhMo7hXrhpoI_6YDHBfl7uOwohVH3-RzZqeYzlHKSjnhb87a4="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGdGKGQ-GyLuJ71AEkQVDlKasBttjxR9N2Li9asdze37ifA8xYyv7CxwxC4jZbbp8scbX50XQRXlZVlnEdfP7R3fJ5yjZQ66ZhYvCSqf5V_EVHn5xmH-i2ElJk-LFNjkrPa_b8LXX-GyWTPejPbBPaJV2Es0aF5uWkUeUXzKhvrR7z5yY9LiWXFFibP"
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEfz3ObBSOMwMuLxp-aYTmXa1GT1x5W8CUffdBg89pDqicJG3qpqKrBlXPKyg2KM1fYaTZ7gVgCwH_vn0_27DmpV4GdOrCVAlMEmaxj4Oo2lfQ0uGYT5N81qXMSRyd28VyDlI03KZdwmtIvThig_9zKWZnh5ag860ySLs_Ro42tz_knoDyy"
+    },
+    {
+      "title": "sfchronicle.com",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG6xTInHFIdqXHeyyy4iDTZwnaH5APbuq4Rl5E9Aew2mngMINHQEFn8OLHewhyEAg_n1WJ5OvFSZc4Ov0-Uwh8A0iu_6_I5bYONNKzWUp564qqmlI0s7rd6rI_AC32A-UyG8MgyI3pC46tricpeqilHy9APrbJ8l2zFpmAwK0pEf8j2uLX0oo62GA8hVNuf7jE0"
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGjEt9HIZR09NgjPrdxZbMRkufa_NDDDPhzvZeE9d_M-RJQZ3cpBE7VIqMeIoO-1hXeRgBRjv02abq3VZ5iRjQrNNLrxpXd8Tqs2q0ee_nXf0coRAYo594YkjLhi3CDmxUnampcLiNZVNymwSdiQ_7IqIM="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGWwapqHguRQGEdEueFfI-6iMSzNKv1qCiJqzHZOtL-Z73c14zxp7Xjq-9RO6nq15WVQLeRpyTvs_JKYTm4THdwZdFV5nFqBPybokUu3-uJM6KaDmPPiIAwESBxrdFVEoMkgnmZmRkLQcQltOQUiqLmzJ4="
+    },
+    {
+      "title": "berkeley.edu",
+      "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHPxJ_bTxK06VzBEsjR6_9A4wJyNx1fZEMd4JnE2IStfnHgHVvoS3bKWzN5HUeOQ2jAz6MQCRpmheSN_CgtSXkFis4IGg7rMk7dy1VNicQ0KVXiLCS4YsSMVQ08zdrgGmRkQ6hxJneK5AYlz3K0ZcRvleI="
+    }
+  ],
+  "lastUpdated": 1770302591050
 }
