@@ -44,10 +44,13 @@ function expandSearchQuery(query: string): string[] {
     terms.push(...SEARCH_SYNONYMS[normalized]);
   }
 
-  // Check for partial matches (e.g., "artificial intelligence" contains both words)
+  // Check if query words match synonym keys (whole word matching only)
+  const queryWords = normalized.split(/\s+/);
   Object.entries(SEARCH_SYNONYMS).forEach(([key, synonyms]) => {
-    if (normalized.includes(key) || key.includes(normalized)) {
-      terms.push(key, ...synonyms);
+    // Only match if the key is exactly one of the query words
+    // or if the query exactly matches a multi-word key
+    if (queryWords.includes(key) || key === normalized) {
+      terms.push(...synonyms);
     }
   });
 
@@ -99,9 +102,10 @@ export default function App() {
         { name: 'organizer', weight: 0.2 },
         { name: 'tags', weight: 0.1 }
       ],
-      threshold: 0.4, // Lower = more strict matching
+      threshold: 0.3, // Lower = more strict matching
       ignoreLocation: true,
       includeScore: true,
+      minMatchCharLength: 2,
     });
   }, [allEvents]);
 
