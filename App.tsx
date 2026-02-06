@@ -644,7 +644,7 @@ export default function App() {
       <footer className="bg-berkeley-blue text-white/70 py-6 mt-10">
         <div className="container mx-auto px-4 text-center text-sm">
           <p className="mb-1">
-            I'm <a href="https://akhilneelam.com/" target="_blank" rel="noopener noreferrer" className="text-berkeley-gold hover:underline font-medium">Akhil</a>, MBA student at <span className="text-berkeley-gold font-medium">Haas School of Business</span>, and I built this to help Berkeley students discover campus events.
+            I'm <a href="https://akhilneelam.com/" target="_blank" rel="noopener noreferrer" className="text-berkeley-gold hover:underline font-medium">Akhil</a>, MBA student at <span className="text-berkeley-gold font-medium">Haas School of Business</span>, and I built this to help Berkeley students discover campus events across different schools.
           </p>
           <p>
             Feedback? Reach out at{' '}
