@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@google/genai": "^1.30.0",
+    "cheerio": "^1.2.0",
     "fuse.js": "^7.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

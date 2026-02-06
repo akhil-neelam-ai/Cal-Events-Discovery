@@ -9,6 +9,7 @@ import { GoogleGenAI } from "@google/genai";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import * as cheerio from "cheerio";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -101,6 +102,83 @@ async function verifyEventUrls(
   await Promise.all(Array.from({ length: Math.min(CONCURRENCY, events.length) }, () => worker()));
   console.log(`URL verification: ${verified} ok, ${replaced} replaced`);
   return results;
+}
+
+async function fetchEHubEvents(): Promise<CalEvent[]> {
+  const EHUB_URL = 'https://ehub.berkeley.edu/events/';
+  const events: CalEvent[] = [];
+
+  try {
+    console.log('Fetching E-Hub events from', EHUB_URL);
+    const response = await fetch(EHUB_URL);
+    if (!response.ok) {
+      console.warn(`E-Hub fetch failed: ${response.status}`);
+      return events;
+    }
+
+    const html = await response.text();
+    const $ = cheerio.load(html);
+
+    $('.wfea-card-item').each((index, element) => {
+      try {
+        const $card = $(element);
+
+        // Extract title
+        const title = $card.find('.eaw-content-block h3').first().text().trim();
+        if (!title) return;
+
+        // Extract description
+        const description = $card.find('.eaw-content-block p').first().text().trim() || title;
+
+        // Extract registration link
+        const registrationLink = $card.find('.eaw-booknow').attr('href') || EHUB_URL;
+
+        // Extract date text (e.g., "Feb 12" or similar)
+        // E-Hub dates are often in the card but format varies, look for common patterns
+        let dateStr = '';
+        const cardText = $card.text();
+
+        // Try to find date patterns like "Feb 12", "February 12", "2/12", etc.
+        const dateMatch = cardText.match(/(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}/i);
+        if (dateMatch) {
+          const currentYear = new Date().getFullYear();
+          const parsedDate = new Date(`${dateMatch[0]}, ${currentYear}`);
+          if (!isNaN(parsedDate.getTime())) {
+            dateStr = parsedDate.toISOString().split('T')[0];
+          }
+        }
+
+        // Skip if we couldn't extract a valid date
+        if (!dateStr) {
+          console.warn(`Skipping E-Hub event "${title}" - could not extract date`);
+          return;
+        }
+
+        // Generate unique ID
+        const id = `EHUB_${dateStr.replace(/-/g, '')}_${String(index + 1).padStart(3, '0')}`;
+
+        events.push({
+          id,
+          title,
+          organizer: 'Berkeley E-Hub',
+          date: dateStr,
+          time: 'See event page',
+          location: 'Berkeley E-Hub',
+          description,
+          url: registrationLink,
+          tags: ['Entrepreneurship']
+        });
+      } catch (err) {
+        console.warn('Error parsing E-Hub event:', err);
+      }
+    });
+
+    console.log(`Found ${events.length} E-Hub events`);
+  } catch (error) {
+    console.error('E-Hub scraper error:', error);
+  }
+
+  return events;
 }
 
 async function updateEvents() {
@@ -296,8 +374,20 @@ async function updateEvents() {
 
     const uniqueSources = Array.from(new Map(sources.map(s => [s.uri, s])).values());
 
+    // Fetch E-Hub events separately via HTML scraping
+    const ehubEvents = await fetchEHubEvents();
+    const allEvents = [...events, ...ehubEvents];
+
+    // Add E-Hub to sources if we found events
+    if (ehubEvents.length > 0) {
+      uniqueSources.push({
+        title: 'Berkeley E-Hub Events',
+        uri: 'https://ehub.berkeley.edu/events/'
+      });
+    }
+
     const outputData = {
-      events,
+      events: allEvents,
       sources: uniqueSources,
       lastUpdated: Date.now()
     };
@@ -306,7 +396,7 @@ async function updateEvents() {
     const outputPath = path.join(__dirname, "..", "public", "events.json");
     fs.writeFileSync(outputPath, JSON.stringify(outputData, null, 2));
 
-    console.log(`Success! Updated ${events.length} events.`);
+    console.log(`Success! Updated ${allEvents.length} events (${events.length} from Gemini + ${ehubEvents.length} from E-Hub).`);
     console.log(`Sources: ${uniqueSources.length}`);
     console.log(`Output: ${outputPath}`);
 

@@ -415,6 +415,12 @@ export default function App() {
       const isLocalEvent = isHomeGame(event);
 
       return matchesCategory && matchesDate && matchesSearch && isLocalEvent;
+    })
+    .sort((a, b) => {
+      // Sort by date ascending (earliest first)
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return dateA - dateB;
     });
   }, [allEvents, filters]);
 
