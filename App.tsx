@@ -56,7 +56,10 @@ function expandSearchQuery(query: string): string[] {
   return [...new Set(terms)]; // Remove duplicates
 }
 
-// Check if event matches any of the search terms (exact substring match)
+// Short terms that should only match as whole words (not inside other words)
+const WHOLE_WORD_ONLY = new Set(['ai', 'ml', 'ar', 'vr', 'it', 'cs']);
+
+// Check if event matches any of the search terms
 function eventMatchesSearch(event: CalEvent, searchTerms: string[]): boolean {
   const searchableText = [
     event.title,
@@ -65,7 +68,16 @@ function eventMatchesSearch(event: CalEvent, searchTerms: string[]): boolean {
     ...(event.tags || [])
   ].join(' ').toLowerCase();
 
-  return searchTerms.some(term => searchableText.includes(term));
+  return searchTerms.some(term => {
+    // For short terms, use word boundary matching to avoid false positives
+    // e.g., "ai" should match "AI event" but not "against" or "training"
+    if (WHOLE_WORD_ONLY.has(term)) {
+      const wordBoundaryRegex = new RegExp(`\\b${term}\\b`, 'i');
+      return wordBoundaryRegex.test(searchableText);
+    }
+    // For longer terms, substring matching is fine
+    return searchableText.includes(term);
+  });
 }
 
 const Categories = ['All', 'Academic', 'Arts', 'Sports', 'Science & Tech', 'Student Life'];
