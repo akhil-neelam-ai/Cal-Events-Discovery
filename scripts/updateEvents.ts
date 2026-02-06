@@ -247,7 +247,7 @@ async function updateEvents() {
     - Sports and recreation
     - Student life and club socials
     - Science & Technology events
-    - Entrepreneurship & startup events (from E-Hub, SCET, Skydeck)
+    - Entrepreneurship & startup events
 
     PRIORITY SOURCES (scan these first):
     ${prioritySources}
@@ -258,14 +258,6 @@ async function updateEvents() {
     - Campus recreation and intramural sports
     - Library events and workshops
     - Graduate division events
-
-    PRIORITY - Search for entrepreneurship events from E-Hub:
-    - Search: "site:ehub.berkeley.edu upcoming events"
-    - Visit: https://ehub.berkeley.edu/events/
-    - Common recurring events include: "Problem of the Month", "Startup Group Therapy", "Dinner @ the eHub"
-    - ONLY include E-Hub events if you can find real, verifiable events with actual dates and registration links
-    - Do NOT make up or guess E-Hub events - only include if you find them on the actual website
-    - Tag verified E-Hub events as "Entrepreneurship"
 
     IMPORTANT GUIDELINES:
     - ONLY include actual public events (lectures, performances, games, workshops, meetings)
