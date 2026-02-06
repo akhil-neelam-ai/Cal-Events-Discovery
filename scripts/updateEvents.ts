@@ -226,6 +226,14 @@ async function updateEvents() {
     const text = response.text || "";
     let events: CalEvent[] = [];
 
+    // Debug logging
+    console.log("\n=== GEMINI RESPONSE DEBUG ===");
+    console.log("Response text length:", text.length);
+    console.log("First 500 chars:", text.substring(0, 500));
+    console.log("Has candidates:", !!response.candidates);
+    console.log("Candidates length:", response.candidates?.length || 0);
+    console.log("=============================\n");
+
     const firstBracket = text.indexOf('[');
     const lastBracket = text.lastIndexOf(']');
 
@@ -234,8 +242,11 @@ async function updateEvents() {
         events = JSON.parse(text.substring(firstBracket, lastBracket + 1));
       } catch (e) {
         console.error("JSON Parse Error:", e);
+        console.error("Attempted to parse:", text.substring(firstBracket, lastBracket + 1));
         process.exit(1);
       }
+    } else {
+      console.warn("No JSON array found in response");
     }
 
     // Filter out events with non-ISO date formats (e.g. "Ongoing (through May 29, 2026)")
