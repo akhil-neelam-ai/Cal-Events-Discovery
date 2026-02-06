@@ -169,6 +169,7 @@ async function updateEvents() {
     - Sports and recreation
     - Student life and club socials
     - Science & Technology events
+    - Entrepreneurship & startup events (from E-Hub, SCET, Skydeck)
 
     PRIORITY SOURCES (scan these first):
     ${prioritySources}
@@ -179,7 +180,11 @@ async function updateEvents() {
     - Campus recreation and intramural sports
     - Library events and workshops
     - Graduate division events
-    - Berkeley E-Hub entrepreneurship events (ehub.berkeley.edu)
+
+    IMPORTANT - Include entrepreneurship events from:
+    - Berkeley E-Hub (ehub.berkeley.edu/events/) - startup workshops, founder talks, networking
+    - SCET (scet.berkeley.edu/events/) - entrepreneurship seminars
+    These should be tagged as "Science & Tech" or "Student Life"
 
     IMPORTANT GUIDELINES:
     - ONLY include actual public events (lectures, performances, games, workshops, meetings)
