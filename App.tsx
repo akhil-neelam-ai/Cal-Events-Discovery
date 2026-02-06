@@ -335,7 +335,7 @@ function eventMatchesSearch(event: CalEvent, searchTerms: string[]): boolean {
   });
 }
 
-const Categories = ['All', 'Academic', 'Arts', 'Sports', 'Science & Tech', 'Student Life'];
+const Categories = ['All', 'Academic', 'Arts', 'Sports', 'Science & Tech', 'Student Life', 'Entrepreneurship'];
 const DateRanges = [
   { label: 'Upcoming', value: 'upcoming' },
   { label: 'Today', value: 'today' },

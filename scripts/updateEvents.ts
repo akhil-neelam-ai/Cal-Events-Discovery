@@ -181,10 +181,12 @@ async function updateEvents() {
     - Library events and workshops
     - Graduate division events
 
-    IMPORTANT - Include entrepreneurship events from:
-    - Berkeley E-Hub (ehub.berkeley.edu/events/) - startup workshops, founder talks, networking
-    - SCET (scet.berkeley.edu/events/) - entrepreneurship seminars
-    These should be tagged as "Science & Tech" or "Student Life"
+    CRITICAL - Must include entrepreneurship events:
+    - Berkeley E-Hub (https://ehub.berkeley.edu/events/) - startup workshops, pitch sessions, founder talks
+      Example events: "Problem of the Month", "Startup Group Therapy", "Dinner @ the eHub"
+    - SCET (scet.berkeley.edu/events/) - entrepreneurship courses and seminars
+    - Tag these as "Entrepreneurship" (this is a required category)
+    - E-Hub events are typically recurring monthly events, check their Eventbrite page if needed
 
     IMPORTANT GUIDELINES:
     - ONLY include actual public events (lectures, performances, games, workshops, meetings)
@@ -207,7 +209,7 @@ async function updateEvents() {
         "location": "Venue",
         "description": "Short summary (1-2 sentences)",
         "url": "Direct link to event page",
-        "tags": ["Category - use: Academic, Arts, Sports, Science & Tech, or Student Life"]
+        "tags": ["Category - use: Academic, Arts, Sports, Science & Tech, Student Life, or Entrepreneurship"]
       }
     ]
   `;
