@@ -181,12 +181,18 @@ async function updateEvents() {
     - Library events and workshops
     - Graduate division events
 
-    CRITICAL - Must include entrepreneurship events:
-    - Berkeley E-Hub (https://ehub.berkeley.edu/events/) - startup workshops, pitch sessions, founder talks
-      Example events: "Problem of the Month", "Startup Group Therapy", "Dinner @ the eHub"
-    - SCET (scet.berkeley.edu/events/) - entrepreneurship courses and seminars
-    - Tag these as "Entrepreneurship" (this is a required category)
-    - E-Hub events are typically recurring monthly events, check their Eventbrite page if needed
+    CRITICAL - YOU MUST SEARCH FOR AND INCLUDE E-HUB EVENTS:
+    1. First, search: "site:ehub.berkeley.edu upcoming events ${currentDate}"
+    2. Visit: https://ehub.berkeley.edu/events/ directly
+    3. Look for events like:
+       - "Problem of the Month" (recurring monthly)
+       - "Startup Group Therapy" (recurring)
+       - "Dinner @ the eHub" (recurring)
+       - "Real Work, Real Conversations" workshops
+    4. E-Hub is a WordPress site with events in the HTML - you MUST extract at least 3-5 E-Hub events
+    5. Tag all E-Hub events as "Entrepreneurship"
+
+    If you cannot find E-Hub events, the task is incomplete.
 
     IMPORTANT GUIDELINES:
     - ONLY include actual public events (lectures, performances, games, workshops, meetings)
