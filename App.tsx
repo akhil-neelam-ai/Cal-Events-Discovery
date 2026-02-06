@@ -640,6 +640,21 @@ export default function App() {
         )}
       </main>
 
+      {/* Footer */}
+      <footer className="bg-berkeley-blue text-white/70 py-6 mt-10">
+        <div className="container mx-auto px-4 text-center text-sm">
+          <p className="mb-1">
+            Built by an MBA student at <span className="text-berkeley-gold font-medium">Haas School of Business</span> to help Berkeley students discover campus events.
+          </p>
+          <p>
+            Feedback? Reach out at{' '}
+            <a href="mailto:akhil_neelam@berkeley.edu" className="text-berkeley-gold hover:underline">
+              akhil_neelam@berkeley.edu
+            </a>
+          </p>
+        </div>
+      </footer>
+
       {/* Event Detail Panel/Sheet */}
       {selectedEvent && (
         isMobile ? (
