@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import Fuse from 'fuse.js';
 import { fetchEventsFromGemini } from './services/geminiService';
 import { CalEvent, SearchFilters, LoadingState, GroundingSource } from './types';
 
@@ -57,6 +56,18 @@ function expandSearchQuery(query: string): string[] {
   return [...new Set(terms)]; // Remove duplicates
 }
 
+// Check if event matches any of the search terms (exact substring match)
+function eventMatchesSearch(event: CalEvent, searchTerms: string[]): boolean {
+  const searchableText = [
+    event.title,
+    event.description,
+    event.organizer,
+    ...(event.tags || [])
+  ].join(' ').toLowerCase();
+
+  return searchTerms.some(term => searchableText.includes(term));
+}
+
 const Categories = ['All', 'Academic', 'Arts', 'Sports', 'Science & Tech', 'Student Life'];
 const DateRanges = [
   { label: 'Upcoming', value: 'upcoming' },
@@ -93,79 +104,15 @@ export default function App() {
     loadEvents();
   }, []);
 
-  // Create Fuse instance for fuzzy search
-  const fuse = useMemo(() => {
-    return new Fuse(allEvents, {
-      keys: [
-        { name: 'title', weight: 0.4 },
-        { name: 'description', weight: 0.3 },
-        { name: 'organizer', weight: 0.2 },
-        { name: 'tags', weight: 0.1 }
-      ],
-      threshold: 0.3, // Lower = more strict matching
-      ignoreLocation: true,
-      includeScore: true,
-      minMatchCharLength: 2,
-    });
-  }, [allEvents]);
-
   // Instant Local Filtering with natural language search
   const filteredEvents = useMemo(() => {
-    const searchQuery = filters.searchQuery.trim();
-
-    // If there's a search query, use Fuse.js with synonym expansion
-    if (searchQuery) {
-      const expandedTerms = expandSearchQuery(searchQuery);
-      const allResults = new Map<string, { event: CalEvent; score: number }>();
-
-      // Search with each expanded term
-      expandedTerms.forEach(term => {
-        const results = fuse.search(term);
-        results.forEach(result => {
-          const existing = allResults.get(result.item.id);
-          // Keep the result with the best (lowest) score
-          if (!existing || (result.score !== undefined && result.score < existing.score)) {
-            allResults.set(result.item.id, {
-              event: result.item,
-              score: result.score ?? 1
-            });
-          }
-        });
-      });
-
-      // Convert to array and apply other filters
-      const searchMatches = Array.from(allResults.values())
-        .sort((a, b) => a.score - b.score)
-        .map(r => r.event);
-
-      return searchMatches.filter(event => {
-        const matchesCategory = filters.category === 'All' ||
-          event.tags?.some(t => t.toLowerCase().includes(filters.category.toLowerCase())) ||
-          event.tags?.includes(filters.category);
-
-        const eventDate = new Date(event.date);
-        const today = new Date();
-        today.setHours(0,0,0,0);
-
-        let matchesDate = true;
-        if (filters.dateRange === 'today') {
-          matchesDate = eventDate.toDateString() === today.toDateString();
-        } else if (filters.dateRange === 'week') {
-          const nextWeek = new Date();
-          nextWeek.setDate(today.getDate() + 7);
-          matchesDate = eventDate >= today && eventDate <= nextWeek;
-        }
-
-        return matchesCategory && matchesDate;
-      });
-    }
-
-    // No search query - just apply category and date filters
     return allEvents.filter(event => {
+      // Category filter
       const matchesCategory = filters.category === 'All' ||
         event.tags?.some(t => t.toLowerCase().includes(filters.category.toLowerCase())) ||
         event.tags?.includes(filters.category);
 
+      // Date filter
       const eventDate = new Date(event.date);
       const today = new Date();
       today.setHours(0,0,0,0);
@@ -179,9 +126,17 @@ export default function App() {
         matchesDate = eventDate >= today && eventDate <= nextWeek;
       }
 
-      return matchesCategory && matchesDate;
+      // Search filter with synonym expansion
+      const searchQuery = filters.searchQuery.trim();
+      let matchesSearch = true;
+      if (searchQuery) {
+        const expandedTerms = expandSearchQuery(searchQuery);
+        matchesSearch = eventMatchesSearch(event, expandedTerms);
+      }
+
+      return matchesCategory && matchesDate && matchesSearch;
     });
-  }, [allEvents, filters, fuse]);
+  }, [allEvents, filters]);
 
   return (
     <div className="min-h-screen bg-berkeley-lightgray text-gray-800 font-sans">
