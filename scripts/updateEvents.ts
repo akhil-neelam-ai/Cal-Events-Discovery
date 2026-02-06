@@ -127,6 +127,7 @@ async function updateEvents() {
     "https://events.berkeley.edu/",
     "https://calperformances.org/events/",
     "https://calbears.com/calendar",
+    "https://ehub.berkeley.edu/events/",
 
     // Schools & Colleges
     "https://events.berkeley.edu/chem/",
@@ -178,6 +179,7 @@ async function updateEvents() {
     - Campus recreation and intramural sports
     - Library events and workshops
     - Graduate division events
+    - Berkeley E-Hub entrepreneurship events (ehub.berkeley.edu)
 
     IMPORTANT GUIDELINES:
     - ONLY include actual public events (lectures, performances, games, workshops, meetings)

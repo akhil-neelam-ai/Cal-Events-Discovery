@@ -1,7 +1,240 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { fetchEventsFromGemini } from './services/geminiService';
 import { CalEvent, SearchFilters, LoadingState, GroundingSource } from './types';
+
+// Hook to detect mobile vs desktop
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return isMobile;
+}
+
+// Bottom Sheet Component (Mobile)
+function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void }) {
+  const [dragY, setDragY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(onClose, 300);
+  }, [onClose]);
+
+  const handleTouchStart = () => setIsDragging(true);
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const touch = e.touches[0];
+    const deltaY = touch.clientY - (e.target as HTMLElement).getBoundingClientRect().top;
+    if (deltaY > 0) setDragY(deltaY);
+  };
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    if (dragY > 150) {
+      handleClose();
+    }
+    setDragY(0);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 md:hidden">
+      {/* Backdrop */}
+      <div
+        className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'animate-fade-in'}`}
+        onClick={handleClose}
+      />
+      {/* Sheet */}
+      <div
+        className={`absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] overflow-hidden shadow-2xl ${isClosing ? '' : 'animate-slide-up'}`}
+        style={{
+          transform: isClosing ? 'translateY(100%)' : `translateY(${dragY}px)`,
+          transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease-out'
+        }}
+      >
+        {/* Drag Handle */}
+        <div
+          className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+        </div>
+
+        {/* Content */}
+        <div className="px-5 pb-8 overflow-y-auto max-h-[calc(85vh-40px)]">
+          <span className="inline-block bg-berkeley-blue text-berkeley-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest mb-3">
+            {event.tags?.[0] || 'Event'}
+          </span>
+
+          <h2 className="text-xl font-bold text-berkeley-blue mb-4">{event.title}</h2>
+
+          <div className="space-y-3 text-sm text-gray-600 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-berkeley-gold/10 rounded-lg">
+                <svg className="h-4 w-4 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <div className="font-bold text-gray-800">{event.date}</div>
+                <div className="text-gray-500">{event.time}</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-berkeley-gold/10 rounded-lg">
+                <svg className="h-4 w-4 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                </svg>
+              </div>
+              <div className="font-medium">{event.location}</div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-berkeley-gold/10 rounded-lg">
+                <svg className="h-4 w-4 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <div className="italic">{event.organizer}</div>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="font-bold text-gray-800 mb-2">About this event</h3>
+            <p className="text-gray-600 leading-relaxed">{event.description}</p>
+          </div>
+
+          {event.url && (
+            <a
+              href={event.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full py-3 bg-berkeley-blue text-white text-center font-bold rounded-lg hover:bg-berkeley-medblue transition"
+            >
+              View Official Page
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Slide-out Panel Component (Desktop)
+function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => void }) {
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(onClose, 350);
+  }, [onClose]);
+
+  // Close on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClose();
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [handleClose]);
+
+  return (
+    <div className="fixed inset-0 z-50 hidden md:block">
+      {/* Backdrop */}
+      <div
+        className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'animate-fade-in'}`}
+        onClick={handleClose}
+      />
+      {/* Panel */}
+      <div
+        className={`absolute top-0 right-0 h-full w-[450px] bg-white shadow-2xl overflow-hidden ${isClosing ? '' : 'animate-slide-in'}`}
+        style={{
+          boxShadow: '-10px 0 40px rgba(0,0,0,0.15)',
+          transform: isClosing ? 'translateX(100%)' : 'translateX(0)',
+          transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)'
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-berkeley-blue text-white">
+          <span className="font-bold">Event Details</span>
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-white/20 rounded transition"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 overflow-y-auto h-[calc(100%-60px)]">
+          <span className="inline-block bg-berkeley-blue text-berkeley-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest mb-3">
+            {event.tags?.[0] || 'Event'}
+          </span>
+
+          <h2 className="text-2xl font-bold text-berkeley-blue mb-6">{event.title}</h2>
+
+          <div className="space-y-4 text-sm text-gray-600 mb-8">
+            <div className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg">
+              <div className="p-2 bg-berkeley-gold/10 rounded-lg">
+                <svg className="h-5 w-5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <div className="font-bold text-gray-800 text-base">{event.date}</div>
+                <div className="text-gray-500">{event.time}</div>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg">
+              <div className="p-2 bg-berkeley-gold/10 rounded-lg">
+                <svg className="h-5 w-5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                </svg>
+              </div>
+              <div className="font-medium text-base">{event.location}</div>
+            </div>
+
+            <div className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg">
+              <div className="p-2 bg-berkeley-gold/10 rounded-lg">
+                <svg className="h-5 w-5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <div className="italic text-base">{event.organizer}</div>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h3 className="font-bold text-gray-800 mb-3 text-lg">About this event</h3>
+            <p className="text-gray-600 leading-relaxed">{event.description}</p>
+          </div>
+
+          {event.url && (
+            <a
+              href={event.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full py-3 bg-berkeley-blue text-white text-center font-bold rounded-lg hover:bg-berkeley-medblue transition"
+            >
+              View Official Page
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // Synonym mapping for natural language search
 const SEARCH_SYNONYMS: Record<string, string[]> = {
@@ -59,6 +292,28 @@ function expandSearchQuery(query: string): string[] {
 // Short terms that should only match as whole words (not inside other words)
 const WHOLE_WORD_ONLY = new Set(['ai', 'ml', 'ar', 'vr', 'it', 'cs']);
 
+// Berkeley/campus locations for filtering home games
+const BERKELEY_LOCATIONS = [
+  'berkeley', 'uc berkeley', 'cal ', 'memorial stadium', 'haas pavilion',
+  'edwards stadium', 'evans diamond', 'hearst', 'recreational sports facility',
+  'rsf', 'zellerbach', 'wheeler', 'dwinelle', 'soda hall', 'cory hall',
+  'doe library', 'moffitt', 'bancroft', 'sproul', 'mlk student union',
+  'california memorial', 'greek theatre', 'hearst greek'
+];
+
+// Check if a sports event is a home game (in Berkeley)
+function isHomeGame(event: CalEvent): boolean {
+  // Only apply this filter to sports events
+  const isSportsEvent = event.tags?.some(tag =>
+    tag.toLowerCase().includes('sport')
+  );
+
+  if (!isSportsEvent) return true; // Non-sports events pass through
+
+  const location = event.location.toLowerCase();
+  return BERKELEY_LOCATIONS.some(loc => location.includes(loc));
+}
+
 // Check if event matches any of the search terms
 function eventMatchesSearch(event: CalEvent, searchTerms: string[]): boolean {
   const searchableText = [
@@ -97,6 +352,16 @@ export default function App() {
     category: 'All',
     searchQuery: ''
   });
+  const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
+  const isMobile = useIsMobile();
+
+  const handleEventClick = useCallback((event: CalEvent) => {
+    setSelectedEvent(event);
+  }, []);
+
+  const handleCloseDetail = useCallback(() => {
+    setSelectedEvent(null);
+  }, []);
 
   const loadEvents = async () => {
     setLoading(LoadingState.LOADING);
@@ -146,7 +411,10 @@ export default function App() {
         matchesSearch = eventMatchesSearch(event, expandedTerms);
       }
 
-      return matchesCategory && matchesDate && matchesSearch;
+      // Filter out away games for sports events
+      const isLocalEvent = isHomeGame(event);
+
+      return matchesCategory && matchesDate && matchesSearch && isLocalEvent;
     });
   }, [allEvents, filters]);
 
@@ -260,14 +528,25 @@ export default function App() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredEvents.map((event, idx) => (
-                  <div key={event.id || idx} className="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col group">
+                  <div
+                    key={event.id || idx}
+                    onClick={() => handleEventClick(event)}
+                    className="bg-white rounded-xl shadow-sm hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ease-out border border-gray-100 overflow-hidden flex flex-col group cursor-pointer animate-card-in opacity-0"
+                    style={{ animationDelay: `${Math.min(idx * 50, 500)}ms`, animationFillMode: 'forwards' }}
+                  >
                     <div className="p-5 flex-grow">
                       <div className="flex justify-between items-start mb-3">
                         <span className="inline-block bg-berkeley-blue text-berkeley-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest">
                           {event.tags?.[0] || 'Event'}
                         </span>
                         {event.url && (
-                          <a href={event.url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-berkeley-gold transition-colors">
+                          <a
+                            href={event.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-gray-400 hover:text-berkeley-gold transition-colors"
+                          >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                             </svg>
@@ -312,10 +591,11 @@ export default function App() {
                     </div>
                     
                     <div className="px-5 py-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
-                       <a 
-                        href={event.url || '#'} 
+                       <a
+                        href={event.url || '#'}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         className="text-berkeley-blue text-sm font-bold hover:underline flex items-center gap-1"
                       >
                         Official Page
@@ -359,6 +639,15 @@ export default function App() {
           </>
         )}
       </main>
+
+      {/* Event Detail Panel/Sheet */}
+      {selectedEvent && (
+        isMobile ? (
+          <BottomSheet event={selectedEvent} onClose={handleCloseDetail} />
+        ) : (
+          <SlideOutPanel event={selectedEvent} onClose={handleCloseDetail} />
+        )
+      )}
     </div>
   );
 }
