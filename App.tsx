@@ -11,6 +11,7 @@ import {
   trackEventClick,
   trackExternalLink,
 } from './utils/analytics';
+import { Analytics } from '@vercel/analytics/react';
 
 // Hook to detect mobile vs desktop
 function useIsMobile() {
@@ -684,6 +685,7 @@ export default function App() {
           <SlideOutPanel event={selectedEvent} onClose={handleCloseDetail} />
         )
       )}
+      <Analytics />
     </div>
   );
 }
