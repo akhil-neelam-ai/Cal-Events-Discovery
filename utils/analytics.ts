@@ -4,8 +4,8 @@
  * Tracks user interactions to understand how students use the app.
  */
 
-// GA4 Measurement ID - Replace with your actual ID
-const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
+// GA4 Measurement ID
+const GA_MEASUREMENT_ID = 'G-E8MCW83PNG';
 
 // Type definitions for analytics events
 interface EventParams {

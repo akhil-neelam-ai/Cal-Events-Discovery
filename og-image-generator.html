@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>OG Image Generator - CalEvents</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f0f0f0;
+      padding: 20px;
+    }
+
+    .og-image {
+      width: 1200px;
+      height: 630px;
+      background: linear-gradient(135deg, #003262 0%, #001a33 100%);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 80px;
+    }
+
+    /* Decorative elements */
+    .decoration {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+    }
+
+    .decoration-1 {
+      width: 400px;
+      height: 400px;
+      background: #FDB515;
+      top: -100px;
+      right: -100px;
+    }
+
+    .decoration-2 {
+      width: 300px;
+      height: 300px;
+      background: #FDB515;
+      bottom: -50px;
+      left: -50px;
+    }
+
+    .decoration-3 {
+      width: 200px;
+      height: 200px;
+      background: #3B7EA1;
+      top: 50%;
+      right: 20%;
+      opacity: 0.05;
+    }
+
+    /* Content */
+    .logo {
+      font-size: 72px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      z-index: 1;
+    }
+
+    .logo-cal {
+      color: #FDB515;
+    }
+
+    .logo-events {
+      color: white;
+    }
+
+    .tagline {
+      font-size: 36px;
+      color: white;
+      font-weight: 600;
+      margin-bottom: 30px;
+      z-index: 1;
+    }
+
+    .description {
+      font-size: 24px;
+      color: rgba(255, 255, 255, 0.8);
+      max-width: 700px;
+      line-height: 1.5;
+      z-index: 1;
+    }
+
+    /* Categories */
+    .categories {
+      display: flex;
+      gap: 12px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+      z-index: 1;
+    }
+
+    .category {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 16px;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    .category.highlight {
+      background: #FDB515;
+      color: #003262;
+      font-weight: 700;
+    }
+
+    /* Footer */
+    .footer {
+      position: absolute;
+      bottom: 40px;
+      left: 80px;
+      right: 80px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1;
+    }
+
+    .url {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 18px;
+    }
+
+    .berkeley-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 16px;
+    }
+
+    .instructions {
+      margin-top: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 1200px;
+    }
+
+    .instructions h3 {
+      margin-bottom: 10px;
+      color: #003262;
+    }
+
+    .instructions ol {
+      margin-left: 20px;
+      color: #333;
+    }
+
+    .instructions li {
+      margin-bottom: 8px;
+    }
+
+    .instructions code {
+      background: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div class="og-image" id="og-image">
+      <!-- Decorative circles -->
+      <div class="decoration decoration-1"></div>
+      <div class="decoration decoration-2"></div>
+      <div class="decoration decoration-3"></div>
+
+      <!-- Main content -->
+      <div class="logo">
+        <span class="logo-cal">Cal</span><span class="logo-events">Events</span>
+      </div>
+
+      <div class="tagline">Discover UC Berkeley Campus Events</div>
+
+      <div class="description">
+        Find lectures, performances, sports games, workshops, and more across all campus schools and departments.
+      </div>
+
+      <div class="categories">
+        <span class="category highlight">Academic</span>
+        <span class="category">Arts</span>
+        <span class="category">Sports</span>
+        <span class="category">Science & Tech</span>
+        <span class="category">Student Life</span>
+        <span class="category">Entrepreneurship</span>
+      </div>
+
+      <div class="footer">
+        <span class="url">calevents-discovery.vercel.app</span>
+        <span class="berkeley-logo">Updated Daily</span>
+      </div>
+    </div>
+
+    <div class="instructions">
+      <h3>How to save as og-image.png:</h3>
+      <ol>
+        <li>Open this file in Chrome/Firefox</li>
+        <li>Right-click on the image above and select <strong>"Inspect"</strong></li>
+        <li>In DevTools, right-click the <code>&lt;div class="og-image"&gt;</code> element</li>
+        <li>Select <strong>"Capture node screenshot"</strong></li>
+        <li>Save the file as <code>og-image.png</code></li>
+        <li>Move it to <code>public/og-image.png</code></li>
+      </ol>
+      <p style="margin-top: 15px; color: #666;">
+        <strong>Alternative:</strong> Use a screenshot tool to capture exactly 1200x630 pixels, or use
+        <a href="https://htmlcsstoimage.com" target="_blank">htmlcsstoimage.com</a> to convert this HTML to PNG.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
