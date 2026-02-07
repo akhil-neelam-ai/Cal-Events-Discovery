@@ -1,7 +1,16 @@
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { fetchEventsFromGemini } from './services/geminiService';
 import { CalEvent, SearchFilters, LoadingState } from './types';
+import {
+  initGA,
+  trackPageView,
+  trackSearch,
+  trackCategoryFilter,
+  trackDateFilter,
+  trackEventClick,
+  trackExternalLink,
+} from './utils/analytics';
 
 // Hook to detect mobile vs desktop
 function useIsMobile() {
@@ -118,6 +127,11 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
               target="_blank"
               rel="noopener noreferrer"
               className="block w-full py-3 bg-berkeley-blue text-white text-center font-bold rounded-lg hover:bg-berkeley-medblue transition"
+              onClick={() => trackExternalLink({
+                event_id: event.id,
+                event_title: event.title,
+                destination_url: event.url,
+              })}
             >
               View Official Page
             </a>
@@ -226,6 +240,11 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
               target="_blank"
               rel="noopener noreferrer"
               className="block w-full py-3 bg-berkeley-blue text-white text-center font-bold rounded-lg hover:bg-berkeley-medblue transition"
+              onClick={() => trackExternalLink({
+                event_id: event.id,
+                event_title: event.title,
+                destination_url: event.url,
+              })}
             >
               View Official Page
             </a>
@@ -353,9 +372,16 @@ export default function App() {
   });
   const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
   const isMobile = useIsMobile();
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleEventClick = useCallback((event: CalEvent) => {
     setSelectedEvent(event);
+    trackEventClick({
+      event_id: event.id,
+      event_title: event.title,
+      event_category: event.tags?.[0] || 'Unknown',
+      event_date: event.date,
+    });
   }, []);
 
   const handleCloseDetail = useCallback(() => {
@@ -376,6 +402,9 @@ export default function App() {
   };
 
   useEffect(() => {
+    // Initialize GA4 and track page view
+    initGA();
+    trackPageView({ page_path: '/', page_title: 'CalEvents - UC Berkeley Events' });
     loadEvents();
   }, []);
 
@@ -441,12 +470,22 @@ export default function App() {
           </div>
           
           <div className="w-full md:w-1/2 relative">
-            <input 
-              type="text" 
-              placeholder="Search for events, concerts and seminars" 
+            <input
+              type="text"
+              placeholder="Search for events, concerts and seminars"
               className="w-full px-4 py-2 rounded-full text-gray-900 focus:outline-none focus:ring-2 focus:ring-berkeley-gold text-sm"
               value={filters.searchQuery}
-              onChange={(e) => setFilters(prev => ({...prev, searchQuery: e.target.value}))}
+              onChange={(e) => {
+                const query = e.target.value;
+                setFilters(prev => ({...prev, searchQuery: query}));
+                // Debounced search tracking (500ms after typing stops)
+                if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+                if (query.trim().length >= 2) {
+                  searchTimeoutRef.current = setTimeout(() => {
+                    trackSearch({ search_term: query.trim(), results_count: filteredEvents.length });
+                  }, 500);
+                }
+              }}
             />
             <svg xmlns="http://www.w3.org/2000/svg" className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -462,7 +501,10 @@ export default function App() {
               {DateRanges.map(range => (
                 <button
                   key={range.value}
-                  onClick={() => setFilters(prev => ({ ...prev, dateRange: range.value as any }))}
+                  onClick={() => {
+                    setFilters(prev => ({ ...prev, dateRange: range.value as any }));
+                    trackDateFilter(range.value);
+                  }}
                   className={`px-3 py-1 rounded-full transition ${filters.dateRange === range.value ? 'bg-white text-berkeley-blue font-bold shadow-inner' : 'hover:bg-white/20'}`}
                 >
                   {range.label}
@@ -475,7 +517,10 @@ export default function App() {
               {Categories.map(cat => (
                 <button
                   key={cat}
-                  onClick={() => setFilters(prev => ({ ...prev, category: cat }))}
+                  onClick={() => {
+                    setFilters(prev => ({ ...prev, category: cat }));
+                    trackCategoryFilter(cat);
+                  }}
                   className={`px-3 py-1 rounded-full transition ${filters.category === cat ? 'bg-white text-berkeley-blue font-bold shadow-inner' : 'hover:bg-white/20'}`}
                 >
                   {cat}
