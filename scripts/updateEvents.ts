@@ -205,7 +205,7 @@ async function updateEvents() {
     "https://events.berkeley.edu/",
     "https://calperformances.org/events/",
     "https://calbears.com/calendar",
-    "https://ehub.berkeley.edu/events/",
+    // Note: E-Hub events are fetched via dedicated HTML scraper (fetchEHubEvents)
 
     // Schools & Colleges
     "https://events.berkeley.edu/chem/",
