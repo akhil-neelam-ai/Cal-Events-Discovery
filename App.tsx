@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { fetchEventsFromGemini } from './services/geminiService';
-import { CalEvent, SearchFilters, LoadingState, GroundingSource } from './types';
+import { CalEvent, SearchFilters, LoadingState } from './types';
 
 // Hook to detect mobile vs desktop
 function useIsMobile() {
@@ -344,7 +344,6 @@ const DateRanges = [
 
 export default function App() {
   const [allEvents, setAllEvents] = useState<CalEvent[]>([]);
-  const [sources, setSources] = useState<GroundingSource[]>([]);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [loading, setLoading] = useState<LoadingState>(LoadingState.IDLE);
   const [filters, setFilters] = useState<SearchFilters>({
@@ -368,7 +367,6 @@ export default function App() {
     try {
       const data = await fetchEventsFromGemini();
       setAllEvents(data.events);
-      setSources(data.sources);
       setLastUpdated(data.lastUpdated);
       setLoading(LoadingState.SUCCESS);
     } catch (error) {
@@ -614,34 +612,6 @@ export default function App() {
               </div>
             )}
 
-            {/* Grounding Sources Section */}
-            {sources.length > 0 && (
-              <div className="mt-20 border-t-2 border-berkeley-blue/5 pt-10 pb-10">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="h-px flex-grow bg-gray-200"></div>
-                  <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] whitespace-nowrap">Daily Sync Verification</h4>
-                  <div className="h-px flex-grow bg-gray-200"></div>
-                </div>
-                <div className="flex flex-wrap justify-center gap-4">
-                  {sources.slice(0, 6).map((source, idx) => (
-                    <a 
-                      key={idx} 
-                      href={source.uri} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="group flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-gray-100 hover:border-berkeley-gold hover:shadow-sm transition-all text-xs text-gray-500"
-                    >
-                      <img 
-                        src={`https://www.google.com/s2/favicons?domain=${new URL(source.uri).hostname}`} 
-                        alt="" 
-                        className="w-3 h-3 grayscale group-hover:grayscale-0"
-                      />
-                      <span className="max-w-[150px] truncate">{source.title}</span>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
           </>
         )}
       </main>
