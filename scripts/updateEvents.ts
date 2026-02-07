@@ -263,6 +263,14 @@ async function updateEvents() {
     - Search "Berkeley campus recreation intramural sports"
     - Search for events from libraries, graduate division, research centers
 
+    CRITICAL LOCATION REQUIREMENT:
+    - ONLY include events happening ON UC Berkeley campus OR in Berkeley, CA
+    - ONLY include events organized by UC Berkeley departments, schools, or student organizations
+    - DO NOT include events in San Francisco, Oakland, Silicon Valley, or other Bay Area cities
+    - DO NOT include events organized by non-Berkeley entities (e.g., Smart Cities Council, external organizations)
+    - Location must contain "Berkeley", "UC Berkeley", "Cal", or specific campus building names
+    - If an event is outside Berkeley city, EXCLUDE IT even if it mentions Berkeley
+
     IMPORTANT GUIDELINES:
     - ONLY include actual public events (lectures, performances, games, workshops, meetings)
     - DO NOT include administrative deadlines, document preparation periods, application windows, or decision dates
