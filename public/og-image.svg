@@ -1,0 +1,58 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#003262"/>
+      <stop offset="100%" style="stop-color:#001a33"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="1100" cy="100" r="200" fill="#FDB515" opacity="0.1"/>
+  <circle cx="100" cy="530" r="150" fill="#FDB515" opacity="0.1"/>
+  <circle cx="900" cy="400" r="100" fill="#3B7EA1" opacity="0.05"/>
+
+  <!-- Logo -->
+  <text x="80" y="200" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800">
+    <tspan fill="#FDB515">Cal</tspan><tspan fill="white">Events</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text x="80" y="270" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="600" fill="white">
+    Discover UC Berkeley Campus Events
+  </text>
+
+  <!-- Description -->
+  <text x="80" y="340" font-family="Inter, Arial, sans-serif" font-size="24" fill="rgba(255,255,255,0.8)">
+    Find lectures, performances, sports games, workshops, and more
+  </text>
+  <text x="80" y="375" font-family="Inter, Arial, sans-serif" font-size="24" fill="rgba(255,255,255,0.8)">
+    across all campus schools and departments.
+  </text>
+
+  <!-- Category pills -->
+  <rect x="80" y="420" width="110" height="36" rx="18" fill="#FDB515"/>
+  <text x="135" y="444" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700" fill="#003262" text-anchor="middle">Academic</text>
+
+  <rect x="205" y="420" width="70" height="36" rx="18" fill="rgba(255,255,255,0.15)"/>
+  <text x="240" y="444" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="white" text-anchor="middle">Arts</text>
+
+  <rect x="290" y="420" width="80" height="36" rx="18" fill="rgba(255,255,255,0.15)"/>
+  <text x="330" y="444" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="white" text-anchor="middle">Sports</text>
+
+  <rect x="385" y="420" width="130" height="36" rx="18" fill="rgba(255,255,255,0.15)"/>
+  <text x="450" y="444" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="white" text-anchor="middle">Science &amp; Tech</text>
+
+  <rect x="530" y="420" width="115" height="36" rx="18" fill="rgba(255,255,255,0.15)"/>
+  <text x="587" y="444" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="500" fill="white" text-anchor="middle">Student Life</text>
+
+  <!-- Footer -->
+  <text x="80" y="580" font-family="Inter, Arial, sans-serif" font-size="18" fill="rgba(255,255,255,0.6)">
+    calevents-discovery.vercel.app
+  </text>
+  <text x="1120" y="580" font-family="Inter, Arial, sans-serif" font-size="16" fill="rgba(255,255,255,0.6)" text-anchor="end">
+    Updated Daily
+  </text>
+</svg>
