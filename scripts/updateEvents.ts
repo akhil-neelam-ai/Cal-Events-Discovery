@@ -205,7 +205,7 @@ async function updateEvents() {
     "https://events.berkeley.edu/",
     "https://calperformances.org/events/",
     "https://calbears.com/calendar",
-    // Note: E-Hub events are fetched via dedicated HTML scraper (fetchEHubEvents)
+    "https://ehub.berkeley.edu/events/",
 
     // Schools & Colleges
     "https://events.berkeley.edu/chem/",
@@ -368,7 +368,28 @@ async function updateEvents() {
 
     // Fetch E-Hub events separately via HTML scraping
     const ehubEvents = await fetchEHubEvents();
-    const allEvents = [...events, ...ehubEvents];
+
+    // Deduplicate events by title and date (prefer scraper events over Gemini events)
+    const combinedEvents = [...events, ...ehubEvents];
+    const eventMap = new Map<string, CalEvent>();
+
+    // Add Gemini events first
+    events.forEach(event => {
+      const key = `${event.title.toLowerCase().trim()}_${event.date}`;
+      eventMap.set(key, event);
+    });
+
+    // E-Hub scraper events override Gemini events (scraper is more reliable)
+    ehubEvents.forEach(event => {
+      const key = `${event.title.toLowerCase().trim()}_${event.date}`;
+      eventMap.set(key, event);
+    });
+
+    const allEvents = Array.from(eventMap.values());
+    const duplicatesRemoved = combinedEvents.length - allEvents.length;
+    if (duplicatesRemoved > 0) {
+      console.log(`Removed ${duplicatesRemoved} duplicate events`);
+    }
 
     // Add E-Hub to sources if we found events
     if (ehubEvents.length > 0) {
