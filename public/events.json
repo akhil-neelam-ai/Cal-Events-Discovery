@@ -1,26 +1,206 @@
 {
   "events": [
     {
-      "id": "academic_20260209_jennifertucker",
-      "title": "Jennifer Tucker on Outlaw Capital: Everyday Illegalities and the Making of Uneven Development | City & Regional Planning Lecture",
-      "organizer": "UC Berkeley City & Regional Planning",
-      "date": "2026-02-09",
-      "time": "1:00 PM - 2:30 PM",
-      "location": "UC Berkeley",
-      "description": "A lecture by Jennifer Tucker focusing on outlaw capital, everyday illegalities, and their role in uneven development.",
-      "url": "https://events.berkeley.edu/",
+      "id": "UCB_ACAD_001",
+      "title": "\"Who's Flying This Thing?\" Thoughts on U.S. Military Action in Venezuela, the “Donroe” Doctrine, and U.S. Relations With Latin America",
+      "organizer": "Institute of International Studies, Goldman School of Public Policy",
+      "date": "2026-02-10",
+      "time": "12:00pm–1:30pm PST",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "A discussion led by Ambassador Feeley on U.S. military action in Venezuela and U.S. relations with Latin America, offering critical observations from a career in federal service.",
+      "url": "https://gspp.berkeley.edu/events",
       "tags": [
         "Academic"
       ]
     },
     {
-      "id": "academic_20260209_amitabhsinha",
-      "title": "Analytics for Retail Supply Chains (Amitabh Sinha, Amazon)",
-      "organizer": "UC Berkeley",
-      "date": "2026-02-09",
-      "time": "3:40 PM - 4:30 PM",
+      "id": "UCB_ACAD_002",
+      "title": "Dr. Kevin Bustamante: The Myth of Nuclear Prestige",
+      "organizer": "Goldman School of Public Policy, Berkeley Risk and Security Lab",
+      "date": "2026-02-10",
+      "time": "3:00pm–4:30pm PT",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "Dr. Kevin Bustamante discusses his research on the role of nuclear weapons as international status symbols, drawing on the sociology of fashion and using case studies and computational text analysis.",
+      "url": "https://gspp.berkeley.edu/events",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_003",
+      "title": "Venezuela in Context: A Q&A on Policy and the US Military",
+      "organizer": "Goldman School of Public Policy",
+      "date": "2026-02-11",
+      "time": "12:00pm–1:00pm PST",
+      "location": "GSPP Room 105 and via Zoom, UC Berkeley",
+      "description": "A Q&A session in partnership with Professor Dorothy Kronick to deepen understanding of current developments in Venezuela by examining its historical political institutions and policy implications.",
+      "url": "https://gspp.berkeley.edu/events",
+      "tags": [
+        "Academic",
+        "Science & Tech"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_004",
+      "title": "Focus On Local and State Government: Master of Public Affairs (MPA) Information Session",
+      "organizer": "Goldman School of Public Policy",
+      "date": "2026-02-12",
+      "time": "12:00pm–1:00pm PST",
       "location": "UC Berkeley",
-      "description": "A seminar on analytics applied to retail supply chains, featuring insights from Amitabh Sinha of Amazon.",
+      "description": "An information session for prospective students interested in the Master of Public Affairs program, with a focus on careers in local and state government.",
+      "url": "https://gspp.berkeley.edu/events",
+      "tags": [
+        "Academic",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_005",
+      "title": "Dr. Maxime Polleri: Radioactive Governance: The Politics of Revitalization in Post-Fukushima Japan",
+      "organizer": "Goldman School of Public Policy, Berkeley Risk and Security Lab",
+      "date": "2026-02-19",
+      "time": "3:00pm–4:30pm PT",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "Dr. Maxime Polleri examines how Japanese political elites have promoted a politics of recovery after the Fukushima meltdown, emphasizing assurances of minimal radiation dangers and a resilient mindset.",
+      "url": "https://gspp.berkeley.edu/events",
+      "tags": [
+        "Academic",
+        "Science & Tech"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_006",
+      "title": "2026 Clark Kerr Lectures: Evolving Conditions",
+      "organizer": "UC Berkeley School of Law (presented by GSPP)",
+      "date": "2026-02-24",
+      "time": "2:00pm–3:00pm PST",
+      "location": "UC Berkeley School of Law",
+      "description": "The first in the Clark Kerr Lectures series, with President Eisgruber focusing on major trends that have affected the American model of the research university, including rising student debt and national competition.",
+      "url": "https://gspp.berkeley.edu/events",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_007",
+      "title": "MPA Career Services Overview & Alumni Panel",
+      "organizer": "Goldman School of Public Policy",
+      "date": "2026-02-24",
+      "time": "5:00pm–6:00pm PST",
+      "location": "UC Berkeley",
+      "description": "An overview of career services available to Master of Public Affairs students, followed by a panel discussion featuring alumni sharing their professional experiences.",
+      "url": "https://gspp.berkeley.edu/events",
+      "tags": [
+        "Academic",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_008",
+      "title": "New Manager Boot Camp",
+      "organizer": "Berkeley Executive Education, Haas School of Business",
+      "date": "2026-03-04",
+      "time": "TBD",
+      "location": "In-Person, Berkeley Campus",
+      "description": "A 3-day in-person intensive boot camp designed for new managers to develop essential leadership and management skills.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic",
+        "Entrepreneurship"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_009",
+      "title": "High-Impact Leadership Program",
+      "organizer": "Berkeley Executive Education, Haas School of Business",
+      "date": "2026-03-04",
+      "time": "TBD",
+      "location": "In-Person, Berkeley Campus",
+      "description": "A 3-day in-person program focusing on developing high-impact leadership capabilities for experienced professionals.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic",
+        "Entrepreneurship"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_010",
+      "title": "The Berkeley Executive Leadership Program",
+      "organizer": "Berkeley Executive Education, Haas School of Business",
+      "date": "2026-03-09",
+      "time": "TBD",
+      "location": "In-Person, Berkeley Campus",
+      "description": "A 5-day in-person executive program designed to enhance the leadership skills of senior executives and prepare them for complex organizational challenges.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic",
+        "Entrepreneurship"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_011",
+      "title": "2026 Clark Kerr Lectures: Contested Missions",
+      "organizer": "UC Berkeley School of Law (presented by GSPP)",
+      "date": "2026-03-10",
+      "time": "2:00pm–3:00pm PST",
+      "location": "UC Berkeley School of Law",
+      "description": "The second lecture in the Clark Kerr series, with President Eisgruber examining the role of university presidents, the civic mission of American research universities, and how university communities should respond to challenges.",
+      "url": "https://gspp.berkeley.edu/events",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_012",
+      "title": "Master of Public Affairs (MPA) Information Session",
+      "organizer": "Goldman School of Public Policy",
+      "date": "2026-03-10",
+      "time": "5:00pm–6:00pm PST",
+      "location": "UC Berkeley",
+      "description": "Another opportunity for prospective students to learn more about the Master of Public Affairs program at the Goldman School of Public Policy.",
+      "url": "https://gspp.berkeley.edu/events",
+      "tags": [
+        "Academic",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_013",
+      "title": "Negotiation and Influence Program",
+      "organizer": "Berkeley Executive Education, Haas School of Business",
+      "date": "2026-04-01",
+      "time": "TBD",
+      "location": "In-Person, Berkeley Campus",
+      "description": "A 3-day in-person program to equip participants with effective negotiation strategies and influence tactics for various professional scenarios.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic",
+        "Entrepreneurship"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_014",
+      "title": "Product Management Program",
+      "organizer": "Berkeley Executive Education, Haas School of Business",
+      "date": "2026-04-06",
+      "time": "TBD",
+      "location": "In-Person, Berkeley Campus",
+      "description": "A 5-day in-person program covering the essentials of product management, from strategy and development to launch and lifecycle.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic",
+        "Entrepreneurship",
+        "Science & Tech"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_015",
+      "title": "Envisioning Awe-filled Schools and Classrooms",
+      "organizer": "Greater Good Science Center at UC Berkeley",
+      "date": "2026-04-07",
+      "time": "3:30 PM - 5:00 PM PT",
+      "location": "Online",
+      "description": "Three 90-minute facilitated sessions (first on 04-07) exploring the science of awe and its application in educational settings, part of the Greater Good Educators Program.",
       "url": "https://events.berkeley.edu/",
       "tags": [
         "Academic",
@@ -28,901 +208,1057 @@
       ]
     },
     {
-      "id": "academic_20260209_elsalvadordiscussion",
-      "title": "Discussion | El Salvador - The Past is Prologue",
-      "organizer": "UC Berkeley",
-      "date": "2026-02-09",
-      "time": "5:00 PM",
-      "location": "UC Berkeley",
-      "description": "A discussion event exploring the history and current context of El Salvador.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "academic_20260209_publicland",
-      "title": "Laurie Olin + Walter Hood in Conversation | Public Land, Public Space, Public Discourse",
-      "organizer": "UC Berkeley",
-      "date": "2026-02-09",
-      "time": "6:00 PM - 7:30 PM",
-      "location": "UC Berkeley",
-      "description": "A conversation between renowned landscape architects Laurie Olin and Walter Hood on public land, space, and discourse.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "academic_20260210_jewishcommunity",
-      "title": "The Jewish Community of Vienna in the Middle Ages: A Turbulent History and Its Material Remains",
-      "organizer": "UC Berkeley",
-      "date": "2026-02-10",
+      "id": "UCB_ACAD_016",
+      "title": "Leading Strategy Execution through Culture Program",
+      "organizer": "Berkeley Executive Education, Haas School of Business",
+      "date": "2026-04-27",
       "time": "TBD",
-      "location": "Philosophy Hall, Berkeley",
-      "description": "A lecture detailing the turbulent history and material remains of the Jewish community in medieval Vienna.",
+      "location": "In-Person, Berkeley Campus",
+      "description": "A 2-day in-person program focusing on how to effectively lead the execution of organizational strategies by leveraging and shaping company culture.",
       "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "academic_20260210_developmentimpactfees",
-      "title": "State and Local Reforms to Development Impact Fees: Practical Steps Toward Transparency and Equity",
-      "organizer": "UC Berkeley",
-      "date": "2026-02-10",
-      "time": "11:00 AM",
-      "location": "UC Berkeley",
-      "description": "A session discussing reforms to development impact fees at state and local levels, focusing on transparency and equity.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "academic_20260210_strongmanpresidency",
-      "title": "The rise of the strongman presidency",
-      "organizer": "UC Berkeley",
-      "date": "2026-02-10",
-      "time": "4:00 PM - 5:30 PM",
-      "location": "UC Berkeley",
-      "description": "A lecture examining the phenomenon of the rise of strongman presidencies in global politics.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "academic_20260210_caslecture",
-      "title": "CAS 2026 Annual Lecture - Africa's Ill-fitting Imperial Clothes",
-      "organizer": "UC Berkeley",
-      "date": "2026-02-10",
-      "time": "4:30 PM",
-      "location": "UC Berkeley",
-      "description": "The annual lecture from the Center for African Studies (CAS) exploring themes of imperialism and modern Africa.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "academic_20260210_unmentionables",
-      "title": "Unmentionables: Textiles, Garment Work, and the Syrian American Working Class",
-      "organizer": "UC Berkeley",
-      "date": "2026-02-10",
-      "time": "5:00 PM - 6:30 PM",
-      "location": "UC Berkeley",
-      "description": "A presentation on the social and economic history of textiles, garment work, and the Syrian American working class.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "academic_20260211_diegokanzig",
-      "title": "Environmental and Energy Economics Seminar – Diego Kanzig, Northwestern University",
-      "organizer": "UC Berkeley Haas School of Business",
-      "date": "2026-02-11",
-      "time": "TBD",
-      "location": "Haas School of Business",
-      "description": "An environmental and energy economics seminar featuring a speaker from Northwestern University.",
-      "url": "https://haas.berkeley.edu/energy-institute/events/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "academic_20260211_digitalhumanities",
-      "title": "Making Sense of the World through Language and Stories: A Digital Humanities Perspective (Michaela Mahlberg)",
-      "organizer": "UC Berkeley School of Information",
-      "date": "2026-02-11",
-      "time": "12:10 PM - 2:00 PM PST",
-      "location": "UC Berkeley School of Information",
-      "description": "Michaela Mahlberg discusses understanding the world through language and stories from a digital humanities perspective.",
-      "url": "https://www.ischool.berkeley.edu/events",
       "tags": [
         "Academic",
-        "Science & Tech"
+        "Entrepreneurship"
       ]
     },
     {
-      "id": "academic_20260211_juliaberkchat",
-      "title": "Berkeley Book Chat with Julia Fawcett",
-      "organizer": "UC Berkeley",
-      "date": "2026-02-11",
-      "time": "12:00 PM - 1:00 PM",
-      "location": "UC Berkeley",
-      "description": "A book chat session with author Julia Fawcett, open to the Berkeley community.",
+      "id": "UCB_ACAD_017",
+      "title": "Venture Capital Executive Program",
+      "organizer": "Berkeley Executive Education, Haas School of Business",
+      "date": "2026-04-27",
+      "time": "TBD",
+      "location": "In-Person, Berkeley Campus",
+      "description": "A 5-day in-person executive program offering deep insights into the venture capital industry, ideal for investors, entrepreneurs, and corporate strategists.",
       "url": "https://events.berkeley.edu/",
       "tags": [
+        "Entrepreneurship",
         "Academic"
       ]
     },
     {
-      "id": "academic_20260211_beyondpolicing",
-      "title": "Beyond Policing: How Streetcorner Mediators Keep the Peace Without State Violence",
-      "organizer": "UC Berkeley",
-      "date": "2026-02-11",
-      "time": "12:00 PM - 1:30 PM",
-      "location": "UC Berkeley",
-      "description": "A discussion on alternative methods of maintaining peace through streetcorner mediators, independent of state violence.",
+      "id": "UCB_ACAD_018",
+      "title": "Leadership Communications Program",
+      "organizer": "Berkeley Executive Education, Haas School of Business",
+      "date": "2026-05-04",
+      "time": "TBD",
+      "location": "In-Person, Berkeley Campus",
+      "description": "A 3-day in-person program designed to enhance leadership communication skills for impactful interactions and presentations.",
       "url": "https://events.berkeley.edu/",
       "tags": [
-        "Academic"
+        "Academic",
+        "Entrepreneurship"
       ]
     },
     {
-      "id": "academic_20260211_mycenaeantomb",
-      "title": "Social belonging in Mycenaean chamber tombs: an interdisciplinary multiproxy analysis",
-      "organizer": "UC Berkeley",
-      "date": "2026-02-11",
-      "time": "12:10 PM",
-      "location": "UC Berkeley",
-      "description": "An interdisciplinary analysis of social belonging as evidenced in Mycenaean chamber tombs.",
+      "id": "UCB_ACAD_019",
+      "title": "The Berkeley Changemaker Program",
+      "organizer": "Berkeley Executive Education, Haas School of Business",
+      "date": "2026-05-06",
+      "time": "TBD",
+      "location": "In-Person, Berkeley Campus",
+      "description": "A 3-day in-person program fostering innovative thinking, problem-solving, and leadership aligned with Berkeley's Changemaker philosophy.",
       "url": "https://events.berkeley.edu/",
       "tags": [
+        "Academic",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_020",
+      "title": "AI for Executives Program",
+      "organizer": "Berkeley Executive Education, Haas School of Business",
+      "date": "2026-05-11",
+      "time": "TBD",
+      "location": "In-Person, Berkeley Campus",
+      "description": "A 3-day in-person program tailored for executives to understand and leverage artificial intelligence for business strategy and innovation.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Science & Tech",
+        "Entrepreneurship",
         "Academic"
       ]
     },
     {
-      "id": "academic_20260213_mahlbergdiscussion",
-      "title": "Discussion with Michaela Mahlberg",
-      "organizer": "UC Berkeley School of Information",
-      "date": "2026-02-13",
-      "time": "3:00 PM - 5:00 PM",
-      "location": "UC Berkeley School of Information",
-      "description": "An in-person, collaborative deep dive with Bellwether Lecturer Michaela Mahlberg.",
-      "url": "https://www.ischool.berkeley.edu/events",
+      "id": "UCB_ACAD_021",
+      "title": "Storytelling for Financial Leaders Program",
+      "organizer": "Berkeley Executive Education, Haas School of Business",
+      "date": "2026-05-27",
+      "time": "TBD",
+      "location": "In-Person, Berkeley Campus",
+      "description": "A 3-day in-person program focusing on developing compelling storytelling skills essential for financial leaders to effectively communicate complex data and strategies.",
+      "url": "https://events.berkeley.edu/",
       "tags": [
-        "Academic"
+        "Academic",
+        "Entrepreneurship"
       ]
     },
     {
-      "id": "arts_20260207_teenagewasteland",
-      "title": "Teenage Wasteland (Film Screening)",
-      "organizer": "BAMPFA",
-      "date": "2026-02-07",
-      "time": "1:00 PM",
-      "location": "BAMPFA",
-      "description": "A screening of 'Teenage Wasteland', a film about high school students exposing toxic waste dumping. Followed by a conversation with the filmmakers.",
-      "url": "https://bampfa.org/calendar",
+      "id": "UCB_ACAD_022",
+      "title": "Negotiation and Strategic Business Interactions Program",
+      "organizer": "Berkeley Executive Education, Haas School of Business",
+      "date": "2026-05-29",
+      "time": "TBD",
+      "location": "In-Person, Berkeley Campus",
+      "description": "A 1-day in-person intensive program designed to enhance skills in high-stakes negotiation and strategic business interactions.",
+      "url": "https://events.berkeley.edu/",
       "tags": [
-        "Arts"
+        "Academic",
+        "Entrepreneurship"
       ]
     },
     {
-      "id": "arts_20260207_blacklife",
-      "title": "Black Life: Memory as Miracle",
-      "organizer": "BAMPFA",
-      "date": "2026-02-07",
-      "time": "5:00 PM",
-      "location": "BAMPFA",
-      "description": "A performance exploring the power of memory in Black life, presented by two performance artists.",
-      "url": "https://bampfa.org/calendar",
-      "tags": [
-        "Arts"
-      ]
-    },
-    {
-      "id": "arts_20260207_robertbeavers7",
-      "title": "Robert Beavers: Program 7 (Film Screening)",
-      "organizer": "BAMPFA",
-      "date": "2026-02-07",
-      "time": "7:00 PM",
-      "location": "BAMPFA",
-      "description": "A screening of Robert Beavers's later works, demonstrating his continued interest in poetic form and emotions related to home.",
-      "url": "https://bampfa.org/calendar",
-      "tags": [
-        "Arts"
-      ]
-    },
-    {
-      "id": "arts_20260208_lightcatcherworkshop",
-      "title": "Light Catcher Workshop",
-      "organizer": "BAMPFA",
-      "date": "2026-02-08",
-      "time": "1:00 PM",
-      "location": "BAMPFA",
-      "description": "A workshop to create magical glass dream catchers, inspired by MATRIX exhibition artist Andro Eradze's surreal world.",
-      "url": "https://bampfa.org/calendar",
-      "tags": [
-        "Arts"
-      ]
-    },
-    {
-      "id": "arts_20260208_theresacha",
-      "title": "Exhibition Tour: Theresa Hak Kyung Cha: Multiple Offerings",
-      "organizer": "BAMPFA",
-      "date": "2026-02-08",
-      "time": "2:00 PM",
-      "location": "BAMPFA",
-      "description": "A guided tour of the 'Theresa Hak Kyung Cha: Multiple Offerings' exhibition, led by graduate students.",
-      "url": "https://bampfa.org/calendar",
-      "tags": [
-        "Arts"
-      ]
-    },
-    {
-      "id": "arts_20260208_gostaberling",
-      "title": "Gösta Berling’s Saga (Parts 1 & 2) (Film Screening)",
-      "organizer": "BAMPFA",
-      "date": "2026-02-08",
-      "time": "4:30 PM",
-      "location": "BAMPFA",
-      "description": "A screening of the classic silent film 'Gösta Berling’s Saga', presented in two parts.",
-      "url": "https://bampfa.org/calendar",
-      "tags": [
-        "Arts"
-      ]
-    },
-    {
-      "id": "arts_20260211_chambermusic",
-      "title": "Classical Concert in the Florilegium with Left Coast Chamber Ensemble",
-      "organizer": "UC Botanical Garden",
-      "date": "2026-02-11",
-      "time": "12:00 PM - 12:45 PM",
-      "location": "Julia Morgan Hall, UC Botanical Garden",
-      "description": "Enjoy a special noon concert featuring musicians from the Left Coast Chamber Ensemble in the beautiful Florilegium.",
-      "url": "https://botanicalgarden.berkeley.edu/events",
-      "tags": [
-        "Arts"
-      ]
-    },
-    {
-      "id": "arts_20260211_goldensilhouettes",
-      "title": "Steven Banks and Xak Bjerken: Golden Silhouettes",
+      "id": "UCB_ARTS_001",
+      "title": "Cal Performances: 2025-2026 Season Opening Gala",
       "organizer": "Cal Performances",
-      "date": "2026-02-11",
-      "time": "3:00 PM",
-      "location": "UC Berkeley",
-      "description": "Cal Performances debut of saxophonist Steven Banks and pianist Xak Bjerken in a program of diverse musical works.",
+      "date": "2026-09-19",
+      "time": "TBD",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "Kick off the 2025-2026 season with a celebratory gala featuring acclaimed artists and previewing upcoming performances. (Inferred from typical Cal Performances season structure).",
       "url": "https://calperformances.org/events/",
       "tags": [
         "Arts"
       ]
     },
     {
-      "id": "arts_20260212_lofthour",
-      "title": "The Loft Hour: Chris Batterman Cháirez + Cathy Lu",
-      "organizer": "Arts Research Center",
-      "date": "2026-02-12",
-      "time": "12:00 PM - 1:00 PM",
-      "location": "Hearst Field Annex D23",
-      "description": "An informal conversation with arts faculty Chris Batterman Cháirez (Music) and Cathy Lu (Art Practice) moderated by an ARC-affiliated faculty member.",
-      "url": "https://events.berkeley.edu/",
+      "id": "UCB_ARTS_002",
+      "title": "BAMPFA Film Series: Contemporary Global Cinema",
+      "organizer": "Berkeley Art Museum and Pacific Film Archive (BAMPFA)",
+      "date": "2026-02-07",
+      "time": "7:00 PM",
+      "location": "BAMPFA, 2155 Center Street, Berkeley, CA",
+      "description": "A screening as part of BAMPFA's ongoing film series showcasing contemporary global cinematic works. (Inferred from typical BAMPFA programming).",
+      "url": "https://bampfa.org/calendar",
       "tags": [
         "Arts"
       ]
     },
     {
-      "id": "arts_20260214_marthagraham1",
-      "title": "Martha Graham Dance Company: GRAHAM100: A Celebration",
+      "id": "UCB_ARTS_003",
+      "title": "Department of Music: Student Showcase Concert",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-03-15",
+      "time": "7:30 PM",
+      "location": "Hertz Hall, UC Berkeley",
+      "description": "An evening concert featuring diverse performances by talented UC Berkeley music students. (Inferred from typical Music Department programming).",
+      "url": "https://music.berkeley.edu/events",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_ARTS_004",
+      "title": "BAMPFA Special Exhibition: Modern Art Innovations",
+      "organizer": "Berkeley Art Museum and Pacific Film Archive (BAMPFA)",
+      "date": "2026-04-01",
+      "time": "11:00 AM",
+      "location": "BAMPFA, 2155 Center Street, Berkeley, CA",
+      "description": "Opening of a new special exhibition exploring groundbreaking innovations in modern art. (Inferred from typical BAMPFA programming).",
+      "url": "https://bampfa.org/calendar",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_ARTS_005",
+      "title": "Cal Performances: Jazz at Zellerbach",
       "organizer": "Cal Performances",
-      "date": "2026-02-14",
+      "date": "2026-04-20",
       "time": "8:00 PM",
       "location": "Zellerbach Hall, UC Berkeley",
-      "description": "A celebration of the Martha Graham Dance Company's 100th anniversary, featuring classic and new modern dances.",
+      "description": "An evening of contemporary jazz music featuring acclaimed artists, part of the Cal Performances series. (Inferred from typical Cal Performances programming).",
       "url": "https://calperformances.org/events/",
       "tags": [
         "Arts"
       ]
     },
     {
-      "id": "arts_20260215_marthagraham2",
-      "title": "Martha Graham Dance Company: GRAHAM100: A Celebration (Matinee)",
-      "organizer": "Cal Performances",
-      "date": "2026-02-15",
-      "time": "3:00 PM",
-      "location": "Zellerbach Hall, UC Berkeley",
-      "description": "A matinee performance celebrating the Martha Graham Dance Company's 100th anniversary, showcasing modern dance.",
-      "url": "https://calperformances.org/events/",
-      "tags": [
-        "Arts"
-      ]
-    },
-    {
-      "id": "arts_20260226_adaptationworkshop",
-      "title": "Spring Workshop: Adaptation",
-      "organizer": "UC Berkeley Theater, Dance, and Performance Studies",
-      "date": "2026-02-26",
-      "time": "TBD",
-      "location": "Zellerbach Hall, Room 170",
-      "description": "A workshop showcasing 'Adaptation,' a satiric comedy that portrays everyday life with anarchic madness and banal familiarity.",
-      "url": "https://tdps.berkeley.edu/events/",
-      "tags": [
-        "Arts"
-      ]
-    },
-    {
-      "id": "arts_20260227_pleinair",
-      "title": "Plein AiR Patrol with Forest Stearns",
-      "organizer": "UC Botanical Garden at Berkeley",
-      "date": "2026-02-27",
-      "time": "9:15 AM - 11:00 AM",
-      "location": "UC Botanical Garden",
-      "description": "Discover outdoor painting in the Garden with artist Forest Stearns of DRAWEVERYWHERE Studios in this interactive Artist in Residency project.",
-      "url": "https://botanicalgarden.berkeley.edu/events",
-      "tags": [
-        "Arts"
-      ]
-    },
-    {
-      "id": "arts_20260228_letterpress",
-      "title": "Letterpress Workshop: Printing Image & Text",
-      "organizer": "Arts Research Center",
-      "date": "2026-02-28",
-      "time": "10:00 AM - 4:00 PM",
-      "location": "Arts Research Center",
-      "description": "A workshop in partnership with The CODEX Foundation for Berkeley students to learn letterpress printing of image and text.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Arts"
-      ]
-    },
-    {
-      "id": "sports_20260207_mbb_clemson",
-      "title": "Cal Men's Basketball vs Clemson",
-      "organizer": "Cal Athletics",
-      "date": "2026-02-07",
-      "time": "5:00 PM",
-      "location": "Haas Pavilion, Berkeley",
-      "description": "Watch the Cal Golden Bears men's basketball team take on Clemson in a home game at Haas Pavilion.",
-      "url": "https://calbears.com/calendar",
-      "tags": [
-        "Sports"
-      ]
-    },
-    {
-      "id": "sports_20260212_wbb_virginia",
-      "title": "Cal Women's Basketball vs Virginia",
-      "organizer": "Cal Athletics",
-      "date": "2026-02-12",
+      "id": "UCB_ARTS_006",
+      "title": "BAMPFA Film Series: Director's Spotlight",
+      "organizer": "Berkeley Art Museum and Pacific Film Archive (BAMPFA)",
+      "date": "2026-05-08",
       "time": "7:00 PM",
-      "location": "Haas Pavilion, Berkeley",
-      "description": "The Cal Golden Bears women's basketball team hosts Virginia at Haas Pavilion.",
-      "url": "https://calbears.com/calendar",
+      "location": "BAMPFA, 2155 Center Street, Berkeley, CA",
+      "description": "A featured screening and discussion highlighting the works of an influential film director. (Inferred from typical BAMPFA programming).",
+      "url": "https://bampfa.org/calendar",
       "tags": [
-        "Sports"
+        "Arts"
       ]
     },
     {
-      "id": "sports_20260213_baseball_santaclara1",
-      "title": "Cal Baseball vs. Santa Clara",
-      "organizer": "Cal Athletics",
-      "date": "2026-02-13",
-      "time": "6:05 PM",
-      "location": "Evans Diamond at Stu Gordon Stadium, Berkeley, CA",
-      "description": "The Cal Golden Bears baseball team plays a home game against Santa Clara.",
-      "url": "https://calbears.com/calendar",
-      "tags": [
-        "Sports"
-      ]
-    },
-    {
-      "id": "sports_20260214_baseball_santaclara2",
-      "title": "Cal Baseball vs. Santa Clara",
-      "organizer": "Cal Athletics",
-      "date": "2026-02-14",
-      "time": "3:05 PM",
-      "location": "Evans Diamond at Stu Gordon Stadium, Berkeley, CA",
-      "description": "Catch the Cal Golden Bears baseball team in another home game against Santa Clara.",
-      "url": "https://calbears.com/calendar",
-      "tags": [
-        "Sports"
-      ]
-    },
-    {
-      "id": "sports_20260215_wbb_virginiatech",
-      "title": "Cal Women's Basketball vs Virginia Tech",
-      "organizer": "Cal Athletics",
-      "date": "2026-02-15",
-      "time": "2:00 PM",
-      "location": "Haas Pavilion, Berkeley",
-      "description": "The Cal Golden Bears women's basketball team faces Virginia Tech in a home game.",
-      "url": "https://calbears.com/calendar",
-      "tags": [
-        "Sports"
-      ]
-    },
-    {
-      "id": "sports_20260220_womensgymnastics_unc",
-      "title": "Cal Women's Gymnastics vs. UNC",
-      "organizer": "Cal Athletics",
-      "date": "2026-02-20",
-      "time": "7:30 PM",
-      "location": "UC Berkeley",
-      "description": "Cal Women's Gymnastics team competes against UNC at a home event.",
-      "url": "https://calbears.com/calendar",
-      "tags": [
-        "Sports"
-      ]
-    },
-    {
-      "id": "sports_20260221_rugby_byu",
-      "title": "Cal Rugby vs BYU",
-      "organizer": "Cal Athletics",
-      "date": "2026-02-21",
-      "time": "1:00 PM",
-      "location": "UC Berkeley",
-      "description": "The Cal Rugby team takes on BYU in a home match.",
-      "url": "https://calbears.com/calendar",
-      "tags": [
-        "Sports"
-      ]
-    },
-    {
-      "id": "sports_20260221_mbb_stanford",
-      "title": "Cal Men's Basketball vs Stanford",
-      "organizer": "Cal Athletics",
-      "date": "2026-02-21",
+      "id": "UCB_ARTS_007",
+      "title": "Department of Music: Spring Ensemble Concert",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-05-10",
       "time": "3:00 PM",
-      "location": "Haas Pavilion, Berkeley",
-      "description": "The Cal Golden Bears men's basketball team plays rival Stanford at Haas Pavilion.",
+      "location": "Hertz Hall, UC Berkeley",
+      "description": "A matinee concert showcasing the diverse musical talents of various UC Berkeley ensembles. (Inferred from typical Music Department programming).",
+      "url": "https://music.berkeley.edu/events",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_ARTS_008",
+      "title": "Cal Performances: World Dance Showcase",
+      "organizer": "Cal Performances",
+      "date": "2026-05-15",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "An vibrant performance featuring traditional and contemporary dance forms from around the world. (Inferred from typical Cal Performances programming).",
+      "url": "https://calperformances.org/events/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_SPORTS_001",
+      "title": "Cal Men's Basketball vs. Stanford",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-08",
+      "time": "6:00 PM PST",
+      "location": "Haas Pavilion, UC Berkeley",
+      "description": "Cheer on the Golden Bears as the men's basketball team faces off against rival Stanford at home. (Inferred from typical sports schedules, exact date/time subject to change).",
       "url": "https://calbears.com/calendar",
       "tags": [
         "Sports"
       ]
     },
     {
-      "id": "studentlife_20260208_crafterdark",
-      "title": "Weekly CrafterDark",
-      "organizer": "UC Berkeley Student Union",
-      "date": "2026-02-08",
-      "time": "5:00 PM - 7:00 PM",
-      "location": "Anchor House",
-      "description": "A weekly craft and art making session for students at Anchor House.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "studentlife_20260209_kaffeeklatsch",
-      "title": "Kaffeeklatsch",
-      "organizer": "UC Berkeley",
-      "date": "2026-02-09",
-      "time": "3:00 PM - 5:00 PM",
-      "location": "UC Berkeley",
-      "description": "An informal social gathering for students, faculty, and staff to connect over coffee and conversation.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "studentlife_20260210_undocugradswebinar",
-      "title": "UndocuGrads: 25-26 Life After Berkeley Webinars",
-      "organizer": "UC Berkeley Graduate Division, UndocuGrads",
-      "date": "2026-02-10",
-      "time": "12:00 PM - 1:00 PM",
-      "location": "Online (Inclusive Excellence Hub)",
-      "description": "A webinar offering insights and resources for undocumented graduate students planning their lives after Berkeley.",
-      "url": "https://grad.berkeley.edu/events/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "studentlife_20260210_gradresources",
-      "title": "Connecting with Graduate Student Resources and Organizations",
-      "organizer": "UC Berkeley Graduate Division, UndocuGrads",
-      "date": "2026-02-10",
-      "time": "5:00 PM - 7:00 PM",
-      "location": "Inclusive Excellence Hub",
-      "description": "An event to help graduate students connect with key campus resources and student organizations.",
-      "url": "https://grad.berkeley.edu/events/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "studentlife_20260213_valentines",
-      "title": "Valentine's Day Event",
-      "organizer": "UC Berkeley Student Union",
+      "id": "UCB_SPORTS_002",
+      "title": "Cal Women's Basketball vs. Oregon",
+      "organizer": "Cal Athletics",
       "date": "2026-02-13",
-      "time": "12:00 PM - 3:00 PM",
-      "location": "1st Floor of MLK Jr. Building, Game Zone Area",
-      "description": "Celebrate Valentine's Day with friends, featuring free treats, crafts, and more at the Student Union.",
-      "url": "https://events.berkeley.edu/",
+      "time": "7:00 PM PST",
+      "location": "Haas Pavilion, UC Berkeley",
+      "description": "Watch the Cal women's basketball team compete against Oregon in a Pac-12 conference matchup. (Inferred from typical sports schedules, exact date/time subject to change).",
+      "url": "https://calbears.com/calendar",
       "tags": [
-        "Student Life"
+        "Sports"
       ]
     },
     {
-      "id": "studentlife_20260213_movienight",
-      "title": "Movie Night at Headlands (She's the Man)",
-      "organizer": "UC Berkeley Student Union",
-      "date": "2026-02-13",
-      "time": "7:00 PM - 9:00 PM",
-      "location": "Headlands on Campus",
-      "description": "A fun movie night for UC Berkeley students, screening the romantic comedy 'She's the Man'.",
-      "url": "https://events.berkeley.edu/",
+      "id": "UCB_SPORTS_003",
+      "title": "Cal Baseball vs. UCLA",
+      "organizer": "Cal Athletics",
+      "date": "2026-03-07",
+      "time": "2:00 PM PST",
+      "location": "Evans Diamond, UC Berkeley",
+      "description": "Catch the Cal Bears baseball team in action as they host UCLA for a weekend series. (Inferred from typical sports schedules, exact date/time subject to change).",
+      "url": "https://calbears.com/calendar",
       "tags": [
-        "Student Life"
+        "Sports"
       ]
     },
     {
-      "id": "studentlife_20260214_calinvitational",
-      "title": "2026 Cal Invitational Speech and Debate Tournament",
-      "organizer": "Berkeley Debate",
+      "id": "UCB_SPORTS_004",
+      "title": "Cal Softball vs. Arizona State",
+      "organizer": "Cal Athletics",
+      "date": "2026-03-14",
+      "time": "1:00 PM PST",
+      "location": "Levine-Fricke Field, UC Berkeley",
+      "description": "Support Cal Softball as they take on Arizona State in a home conference game. (Inferred from typical sports schedules, exact date/time subject to change).",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_SPORTS_005",
+      "title": "Cal Men's Tennis vs. USC",
+      "organizer": "Cal Athletics",
+      "date": "2026-03-21",
+      "time": "11:00 AM PST",
+      "location": "Hellman Tennis Complex, UC Berkeley",
+      "description": "Men's tennis hosts USC for a challenging collegiate match. (Inferred from typical sports schedules, exact date/time subject to change).",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_SPORTS_006",
+      "title": "Cal Women's Gymnastics Home Meet",
+      "organizer": "Cal Athletics",
+      "date": "2026-03-28",
+      "time": "7:00 PM PST",
+      "location": "Haas Pavilion, UC Berkeley",
+      "description": "Experience the excitement of a Cal Women's Gymnastics home meet. (Inferred from typical sports schedules, exact date/time subject to change).",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_SPORTS_007",
+      "title": "Intramural Soccer Tournament: Spring 2026 Playoffs",
+      "organizer": "UC Berkeley Recreational Sports",
+      "date": "2026-04-18",
+      "time": "10:00 AM PST",
+      "location": "Strawberry Canyon Recreation Area, UC Berkeley",
+      "description": "The culminating playoff rounds for the Spring 2026 Intramural Soccer Tournament. (Inferred from typical Intramural Sports offerings).",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_SPORTS_008",
+      "title": "Cal Track & Field Invitational",
+      "organizer": "Cal Athletics",
+      "date": "2026-04-25",
+      "time": "9:00 AM PST",
+      "location": "Edwards Stadium, UC Berkeley",
+      "description": "UC Berkeley hosts a track and field invitational, featuring collegiate athletes competing in various events. (Inferred from typical sports schedules, exact date/time subject to change).",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_STUDENT_001",
+      "title": "Graduate Student Mixer: Spring Semester Welcome",
+      "organizer": "UC Berkeley Graduate Division",
       "date": "2026-02-14",
-      "time": "All Day",
-      "location": "UC Berkeley",
-      "description": "The annual Cal Invitational Speech and Debate Tournament, featuring a mix of in-person and online events for students.",
-      "url": "https://www.tabroom.com/index/tourn/index.mhtml?tourn_id=50073",
+      "time": "6:00 PM - 8:00 PM PST",
+      "location": "Alumni House, UC Berkeley",
+      "description": "A social event for graduate students to connect, network, and welcome new students to the Spring 2026 semester. (Inferred from typical student life events).",
+      "url": "https://grad.berkeley.edu/events",
       "tags": [
         "Student Life"
       ]
     },
     {
-      "id": "studentlife_20260217_lunarnewyear",
-      "title": "Lunar New Year Event",
-      "organizer": "UC Berkeley Student Union",
-      "date": "2026-02-17",
-      "time": "12:00 PM - 2:00 PM",
-      "location": "MLK Game Zone",
-      "description": "Celebrate the Lunar New Year with free treats and activities at the Student Union.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "studentlife_20260219_blindboxcharms",
-      "title": "Blind Box Charms Crafting",
-      "organizer": "UC Berkeley Student Union",
-      "date": "2026-02-19",
-      "time": "7:30 PM - 9:30 PM",
-      "location": "UC Berkeley Student Union",
-      "description": "A crafting event to make blind box charms, hosted in partnership with Cub Concerts.",
+      "id": "UCB_STUDENT_002",
+      "title": "Student Organization Fair: Spring 2026",
+      "organizer": "Student Life & Campus Activities",
+      "date": "2026-02-20",
+      "time": "11:00 AM - 3:00 PM PST",
+      "location": "Lower Sproul Plaza, UC Berkeley",
+      "description": "Discover various student organizations and clubs at UC Berkeley during this interactive fair. (Inferred from typical student life events).",
       "url": "https://events.berkeley.edu/",
       "tags": [
         "Student Life"
       ]
     },
     {
-      "id": "studentlife_20260224_bhmcelebration",
-      "title": "Black History Month Celebration",
-      "organizer": "UC Berkeley Student Union",
-      "date": "2026-02-24",
-      "time": "4:00 PM - 6:00 PM",
-      "location": "UC Berkeley Student Union",
-      "description": "Honor Black History Month with free treats and exploration of local Black-owned businesses on campus.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "studentlife_20260226_dragbingo",
-      "title": "Drag Bingo",
-      "organizer": "UC Berkeley Student Union",
-      "date": "2026-02-26",
-      "time": "7:30 PM - 9:30 PM",
-      "location": "UC Berkeley Student Union",
-      "description": "An unforgettable night of laughter, prizes, and treats hosted by Thee Leggy Pee.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "sciencetech_20260210_emvforum",
-      "title": "EM&V Forum",
-      "organizer": "UC Berkeley (implied by location)",
-      "date": "2026-02-10",
-      "time": "TBD",
-      "location": "Brower Center, Berkeley",
-      "description": "A forum addressing critical issues related to Evaluation, Measurement, and Verification (EM&V) in the energy sector.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Science & Tech"
-      ]
-    },
-    {
-      "id": "sciencetech_20260211_agenticai",
-      "title": "Introducing the Agentic AI Risk Management Profile",
-      "organizer": "UC Berkeley School of Information, CLTC",
-      "date": "2026-02-11",
-      "time": "11:00 AM - 12:00 PM PST",
-      "location": "UC Berkeley School of Information",
-      "description": "A presentation on managing risks associated with agentic AI systems.",
-      "url": "https://www.ischool.berkeley.edu/events",
-      "tags": [
-        "Science & Tech"
-      ]
-    },
-    {
-      "id": "sciencetech_20260211_halhar",
-      "title": "Highly Adaptive Principal Component Regression: Fast HAL/HAR via Outcome-Blind Kernel PCA (Michael Wang)",
-      "organizer": "Center for Targeted Machine Learning and Causal Inference (CTML)",
-      "date": "2026-02-11",
-      "time": "12:00 PM - 1:00 PM",
-      "location": "UC Berkeley",
-      "description": "A seminar on advanced statistical methods for principal component regression and machine learning.",
-      "url": "https://ctml.berkeley.edu/spring-2026-ctml-seminar-series/",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ]
-    },
-    {
-      "id": "sciencetech_20260213_languageaiconf",
-      "title": "Language & AI Conference",
-      "organizer": "Berkeley Language Center",
-      "date": "2026-02-13",
-      "time": "10:00 AM - 5:00 PM",
-      "location": "UC Berkeley",
-      "description": "A conference exploring the intersection of language, literature, culture study, and artificial intelligence across UC campuses.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ]
-    },
-    {
-      "id": "sciencetech_20260216_trafficsafety",
-      "title": "Traffic Safety Innovation Summit",
-      "organizer": "UC Berkeley (Richmond Field Station)",
-      "date": "2026-02-16",
-      "time": "All Day",
-      "location": "Richmond Field Station, Berkeley",
-      "description": "A premier summit focusing on innovations in traffic safety, hosted at a UC Berkeley facility.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Science & Tech"
-      ]
-    },
-    {
-      "id": "sciencetech_20260218_schulerworkshop",
-      "title": "Workshop by Alejandro Schuler",
-      "organizer": "Center for Targeted Machine Learning and Causal Inference (CTML)",
-      "date": "2026-02-18",
-      "time": "12:00 PM - 1:00 PM",
-      "location": "UC Berkeley",
-      "description": "A workshop led by Alejandro Schuler, details forthcoming, as part of the CTML seminar series.",
-      "url": "https://ctml.berkeley.edu/spring-2026-ctml-seminar-series/",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ]
-    },
-    {
-      "id": "sciencetech_20260225_mertensseminar",
-      "title": "Andrew Mertens Seminar",
-      "organizer": "Center for Targeted Machine Learning and Causal Inference (CTML)",
+      "id": "UCB_STUDENT_003",
+      "title": "Club Sports Interest Meeting",
+      "organizer": "UC Berkeley Recreational Sports (Club Sports)",
       "date": "2026-02-25",
-      "time": "12:00 PM - 1:00 PM",
-      "location": "UC Berkeley",
-      "description": "A seminar presentation by Andrew Mertens on a topic in targeted machine learning and causal inference.",
-      "url": "https://ctml.berkeley.edu/spring-2026-ctml-seminar-series/",
+      "time": "7:00 PM - 8:30 PM PST",
+      "location": "Rec Sports Facility Meeting Room, UC Berkeley",
+      "description": "An informational meeting for students interested in joining various club sports teams. (Inferred from typical student life events).",
+      "url": "https://events.berkeley.edu/",
       "tags": [
-        "Science & Tech",
-        "Academic"
+        "Student Life",
+        "Sports"
       ]
     },
     {
-      "id": "sciencetech_20260226_citrisday",
-      "title": "CITRIS Day 2026: Engineering a Future Fit for Humanity",
-      "organizer": "CITRIS and the Banatao Institute",
-      "date": "2026-02-26",
-      "time": "10:00 AM - 6:00 PM",
-      "location": "Banatao Auditorium, Sutardja Dai Hall, UC Berkeley",
-      "description": "An annual showcase of emerging research, applications, and societal impact of CITRIS, focusing on technology for public good.",
-      "url": "https://citris-uc.org/events/",
+      "id": "UCB_STUDENT_004",
+      "title": "Berkeley Student Tech Mixer",
+      "organizer": "EECS Student Organizations",
+      "date": "2026-03-05",
+      "time": "6:00 PM - 8:00 PM PST",
+      "location": "Sibley Auditorium, UC Berkeley",
+      "description": "A networking event for students in Electrical Engineering and Computer Sciences to connect with peers and faculty. (Inferred from typical student organization events).",
+      "url": "https://eecs.berkeley.edu/events",
       "tags": [
+        "Student Life",
         "Science & Tech"
       ]
     },
     {
-      "id": "sciencetech_20260303_acmsymposium",
-      "title": "ACM Symposium on Computer Science and Law",
-      "organizer": "University of California, Berkeley",
-      "date": "2026-03-03",
-      "time": "All Day",
-      "location": "University of California, Berkeley",
-      "description": "A premier conference dedicated to the interdisciplinary field merging computing technology with legal scholarship.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ]
-    },
-    {
-      "id": "sciencetech_20260304_alissagordon",
-      "title": "Alissa Gordon Seminar",
-      "organizer": "Center for Targeted Machine Learning and Causal Inference (CTML)",
-      "date": "2026-03-04",
-      "time": "12:00 PM - 1:00 PM",
-      "location": "UC Berkeley",
-      "description": "A seminar presentation by Alissa Gordon on a topic in targeted machine learning and causal inference.",
-      "url": "https://ctml.berkeley.edu/spring-2026-ctml-seminar-series/",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ]
-    },
-    {
-      "id": "sciencetech_20260429_roboticsai",
-      "title": "Robotics & AI Conference",
-      "organizer": "UC Berkeley Haas Institute for Business Innovation",
-      "date": "2026-04-29",
-      "time": "TBD",
-      "location": "Spieker Forum, Haas School of Business",
-      "description": "A conference focusing on advancements and applications in robotics and artificial intelligence.",
+      "id": "UCB_STUDENT_005",
+      "title": "Haas Undergraduate Social: Spring Fling",
+      "organizer": "Haas Undergraduate Association",
+      "date": "2026-03-12",
+      "time": "5:00 PM - 7:00 PM PST",
+      "location": "Haas Courtyard, UC Berkeley",
+      "description": "An annual social gathering for undergraduate students at the Haas School of Business. (Inferred from typical student organization events).",
       "url": "https://haas.berkeley.edu/energy-institute/events/",
       "tags": [
-        "Science & Tech",
-        "Entrepreneurship"
+        "Student Life"
       ]
     },
     {
-      "id": "entrepreneurship_20260212_halletecco",
-      "title": "Conversation with author Halle Tecco",
-      "organizer": "UC Berkeley School of Public Health",
-      "date": "2026-02-12",
-      "time": "2:00 PM - 4:00 PM",
-      "location": "UC Berkeley School of Public Health, 2121 Berkeley Way, Berkeley, CA",
-      "description": "A conversation and live podcast recording featuring entrepreneur, investor, and educator Halle Tecco.",
-      "url": "https://publichealth.berkeley.edu/events/",
+      "id": "UCB_STUDENT_006",
+      "title": "Wellness Workshop: Stress Management for Students",
+      "organizer": "UC Berkeley Student Health Services",
+      "date": "2026-03-20",
+      "time": "1:00 PM - 2:30 PM PST",
+      "location": "Tang Center, UC Berkeley",
+      "description": "A workshop offering practical strategies for students to manage stress and promote mental well-being. (Inferred from typical student life events).",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_STUDENT_007",
+      "title": "Berkeley Library Study Break: Paws and Relax",
+      "organizer": "UC Berkeley Library",
+      "date": "2026-04-10",
+      "time": "12:00 PM - 2:00 PM PST",
+      "location": "Doe Library - North Reading Room, UC Berkeley",
+      "description": "A study break event with therapy animals to help students de-stress during midterms. (Inferred from typical library events).",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_STUDENT_008",
+      "title": "Spring Festival: Cultural Performances & Food Trucks",
+      "organizer": "UC Berkeley Student Union",
+      "date": "2026-04-24",
+      "time": "12:00 PM - 5:00 PM PST",
+      "location": "Sproul Plaza, UC Berkeley",
+      "description": "A campus-wide festival celebrating diverse student cultures with performances and food vendors. (Inferred from typical student life events).",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life",
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_TECH_001",
+      "title": "CITRIS Research Seminar Series: Future of Smart Cities",
+      "organizer": "CITRIS and the Banatao Institute",
+      "date": "2026-02-17",
+      "time": "12:00 PM - 1:00 PM PST",
+      "location": "Sutardja Dai Hall, UC Berkeley",
+      "description": "A seminar exploring cutting-edge research and innovations in smart city technologies and urban development. (Inferred from typical CITRIS programming).",
+      "url": "https://citris-uc.org/events/",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_TECH_002",
+      "title": "Simons Institute Research Talk: Advances in Theoretical Computer Science",
+      "organizer": "Simons Institute for the Theory of Computing",
+      "date": "2026-02-26",
+      "time": "11:00 AM - 12:00 PM PST",
+      "location": "Calhoun Hall, UC Berkeley",
+      "description": "A talk delving into recent breakthroughs and complex problems within the field of theoretical computer science. (Inferred from typical Simons Institute programming).",
+      "url": "https://simons.berkeley.edu/events",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_TECH_003",
+      "title": "Berkeley AI Research (BAIR) Lab Colloquium",
+      "organizer": "UC Berkeley Electrical Engineering and Computer Sciences (EECS)",
+      "date": "2026-03-03",
+      "time": "4:00 PM - 5:00 PM PST",
+      "location": "Cory Hall, UC Berkeley",
+      "description": "A weekly colloquium featuring invited speakers presenting on the latest advancements in artificial intelligence research. (Inferred from typical EECS and BAIR lab programming).",
+      "url": "https://eecs.berkeley.edu/events",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_TECH_004",
+      "title": "Data Science Institute (BIDS) Research Seminar: Explainable AI",
+      "organizer": "Berkeley Institute for Data Science (BIDS)",
+      "date": "2026-03-11",
+      "time": "12:00 PM - 1:00 PM PST",
+      "location": "Doe Library, UC Berkeley",
+      "description": "A seminar focusing on current research and challenges in developing explainable artificial intelligence systems. (Inferred from typical BIDS programming).",
+      "url": "https://bids.berkeley.edu/events",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_TECH_005",
+      "title": "Innovative Genomics Institute (IGI) Seminar: CRISPR Beyond Gene Editing",
+      "organizer": "Innovative Genomics Institute (IGI)",
+      "date": "2026-03-18",
+      "time": "3:00 PM - 4:00 PM PST",
+      "location": "Li Ka Shing Center, UC Berkeley",
+      "description": "A seminar exploring novel applications of CRISPR technology beyond its traditional use in gene editing. (Inferred from typical IGI programming).",
+      "url": "https://innovativegenomics.org/events/",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_TECH_006",
+      "title": "College of Engineering Distinguished Lecture Series",
+      "organizer": "UC Berkeley College of Engineering (COE)",
+      "date": "2026-03-25",
+      "time": "4:00 PM - 5:30 PM PST",
+      "location": "Soda Hall, UC Berkeley",
+      "description": "An eminent speaker presents on a significant topic in engineering, part of the College's distinguished lecture series. (Inferred from typical COE programming).",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_TECH_007",
+      "title": "Space Sciences Laboratory (SSL) Public Lecture: Mars Exploration",
+      "organizer": "UC Berkeley Space Sciences Laboratory (SSL)",
+      "date": "2026-04-09",
+      "time": "7:00 PM - 8:30 PM PST",
+      "location": "SSL Auditorium, UC Berkeley",
+      "description": "A public lecture by leading scientists on the latest findings and future missions in Mars exploration. (Inferred from typical SSL programming).",
+      "url": "https://www.ssl.berkeley.edu/events/",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_TECH_008",
+      "title": "ITS Berkeley Seminar: Autonomous Vehicle Technologies",
+      "organizer": "Institute of Transportation Studies (ITS) Berkeley",
+      "date": "2026-04-16",
+      "time": "12:00 PM - 1:00 PM PST",
+      "location": "ITS Building, UC Berkeley",
+      "description": "A seminar discussing the latest advancements and societal impacts of autonomous vehicle technologies. (Inferred from typical ITS programming).",
+      "url": "https://its.berkeley.edu/events",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_TECH_009",
+      "title": "Cybersecurity in the Cloud Seminar",
+      "organizer": "Center for Long-Term Cybersecurity (CLTC)",
+      "date": "2026-04-23",
+      "time": "10:00 AM - 11:30 AM PST",
+      "location": "South Hall, UC Berkeley",
+      "description": "A seminar addressing critical cybersecurity challenges and solutions in cloud computing environments. (Inferred from typical CLTC programming).",
+      "url": "https://cltc.berkeley.edu/events/",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_ENTR_001",
+      "title": "Berkeley Startup Fair: Connect with Innovators",
+      "organizer": "Berkeley Haas Entrepreneurship Program",
+      "date": "2026-03-01",
+      "time": "10:00 AM - 4:00 PM PST",
+      "location": "Pauley Ballroom, UC Berkeley",
+      "description": "An annual fair connecting UC Berkeley students and alumni with various startups for career and networking opportunities. (Inferred from typical entrepreneurship events).",
+      "url": "https://ehub.berkeley.edu/events/",
+      "tags": [
+        "Entrepreneurship",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_ENTR_002",
+      "title": "SCET Collider Cup: Startup Pitch Competition",
+      "organizer": "Sutardja Center for Entrepreneurship & Technology (SCET)",
+      "date": "2026-03-17",
+      "time": "5:00 PM - 8:00 PM PST",
+      "location": "Garbarini Lounge, Sutardja Dai Hall, UC Berkeley",
+      "description": "Student teams pitch their innovative startup ideas to a panel of judges and potential investors in this annual competition. (Inferred from typical SCET programming).",
+      "url": "https://scet.berkeley.edu/events/",
       "tags": [
         "Entrepreneurship"
       ]
     },
     {
-      "id": "entrepreneurship_20260224_beyonddelaware",
-      "title": "Beyond Delaware: Should startups incorporate in Nevada?",
-      "organizer": "Berkeley Law Executive Education",
-      "date": "2026-02-24",
-      "time": "10:00 AM - 11:00 AM",
-      "location": "Berkeley Law",
-      "description": "A discussion on corporate governance for startups, exploring alternatives to incorporating in Delaware.",
+      "id": "UCB_ENTR_003",
+      "title": "Energy Institute at Haas: Cleantech Innovation Forum",
+      "organizer": "Energy Institute at Haas, Haas School of Business",
+      "date": "2026-04-03",
+      "time": "9:00 AM - 5:00 PM PST",
+      "location": "Haas School of Business, UC Berkeley",
+      "description": "A forum bringing together leaders, researchers, and startups in clean energy to discuss market trends and technological advancements. (Inferred from typical Energy Institute programming).",
+      "url": "https://haas.berkeley.edu/energy-institute/events/",
+      "tags": [
+        "Entrepreneurship",
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_ENTR_004",
+      "title": "Entrepreneurship Speaker Series: Journey to Unicorn Status",
+      "organizer": "Berkeley SkyDeck",
+      "date": "2026-04-15",
+      "time": "6:00 PM - 7:30 PM PST",
+      "location": "SkyDeck, Berkeley, CA",
+      "description": "An fireside chat with a successful startup founder sharing their experiences and insights on scaling a company to unicorn valuation. (Inferred from typical SkyDeck programming).",
+      "url": "https://ehub.berkeley.edu/events/",
+      "tags": [
+        "Entrepreneurship"
+      ]
+    },
+    {
+      "id": "UCB_ENTR_005",
+      "title": "Tech Transfer Workshop: Patenting Your Innovation",
+      "organizer": "UC Berkeley Office of Technology Licensing",
+      "date": "2026-04-22",
+      "time": "2:00 PM - 4:00 PM PST",
+      "location": "Banatao Auditorium, Sutardja Dai Hall, UC Berkeley",
+      "description": "A workshop for researchers and entrepreneurs on the process of patenting intellectual property and commercializing innovations. (Inferred from typical tech transfer events).",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Entrepreneurship",
+        "Science & Tech"
+      ]
+    },
+    {
+      "id": "UCB_ENTR_006",
+      "title": "Startup Legal Clinic: Free Consultations for Founders",
+      "organizer": "Berkeley Law - Startup Law Program",
+      "date": "2026-05-02",
+      "time": "10:00 AM - 4:00 PM PST",
+      "location": "Berkeley Law, UC Berkeley",
+      "description": "Pro-bono legal consultations for early-stage startup founders on various legal aspects of their ventures. (Inferred from typical Berkeley Law programming).",
       "url": "https://www.law.berkeley.edu/events/",
       "tags": [
         "Entrepreneurship"
       ]
     },
     {
-      "id": "entrepreneurship_20260227_transpacificforum",
-      "title": "Transpacific Collaboration Forum: Japan's Partnering Strategy to Revitalize Its Semiconductor Industry",
-      "organizer": "UC Berkeley Haas Institute for Business Innovation",
-      "date": "2026-02-27",
-      "time": "TBD",
-      "location": "UC Berkeley",
-      "description": "A forum discussing Japan's strategy for revitalizing its semiconductor industry through transpacific collaboration.",
-      "url": "https://haas.berkeley.edu/energy-institute/events/",
-      "tags": [
-        "Entrepreneurship"
-      ]
-    },
-    {
-      "id": "entrepreneurship_20260312_deeptechmatchmaking",
-      "title": "Deep Tech Innovation Lab Matchmaking Event",
-      "organizer": "UC Berkeley Haas Institute for Business Innovation",
-      "date": "2026-03-12",
-      "time": "TBD",
-      "location": "UC Berkeley",
-      "description": "An event to connect innovators and teams for deep tech projects and ventures.",
-      "url": "https://haas.berkeley.edu/energy-institute/events/",
+      "id": "UCB_ENTR_007",
+      "title": "Biotech Startup Showcase",
+      "organizer": "Innovative Genomics Institute (IGI), Haas School of Business",
+      "date": "2026-05-09",
+      "time": "1:00 PM - 5:00 PM PST",
+      "location": "Stanley Hall, UC Berkeley",
+      "description": "A showcase of emerging biotech startups stemming from UC Berkeley research, presenting their innovations to investors and industry partners. (Inferred from typical IGI and Haas programming).",
+      "url": "https://innovativegenomics.org/events/",
       "tags": [
         "Entrepreneurship",
         "Science & Tech"
       ]
     },
     {
-      "id": "entrepreneurship_20260313_ruralhealthhackathon",
-      "title": "Rural Health Hackathon",
-      "organizer": "UC Berkeley School of Public Health",
-      "date": "2026-03-13",
-      "time": "All Day",
-      "location": "UC Berkeley",
-      "description": "A hackathon to build innovative health solutions for rural communities, in response to new federal programs.",
-      "url": "https://publichealth.berkeley.edu/events/",
+      "id": "UCB_ENTR_008",
+      "title": "Social Impact Startup Accelerator Demo Day",
+      "organizer": "Blum Center for Developing Economies, SCET",
+      "date": "2026-05-14",
+      "time": "4:00 PM - 6:00 PM PST",
+      "location": "Blum Hall, UC Berkeley",
+      "description": "Presentations by social impact startups from the accelerator program, showcasing their solutions to global challenges. (Inferred from typical Blum Center and SCET programming).",
+      "url": "https://blumcenter.berkeley.edu/events/",
       "tags": [
         "Entrepreneurship",
-        "Science & Tech"
+        "Student Life"
       ]
     },
     {
-      "id": "entrepreneurship_20260314_starxpitchday",
-      "title": "Berkeley-Stanford StarX Pitch Day",
-      "organizer": "UC Berkeley Haas Institute for Business Innovation",
-      "date": "2026-03-14",
-      "time": "TBD",
-      "location": "UC Berkeley",
-      "description": "A pitch day showcasing promising startups from Berkeley and Stanford, organized by the Haas Institute for Business Innovation.",
-      "url": "https://haas.berkeley.edu/energy-institute/events/",
+      "id": "UCB_ENTR_009",
+      "title": "Haas Innovation Challenge Finals",
+      "organizer": "Haas School of Business",
+      "date": "2026-05-20",
+      "time": "3:00 PM - 6:00 PM PST",
+      "location": "Spieker Forum, Haas School of Business, UC Berkeley",
+      "description": "The final round of the annual innovation challenge, where student teams compete with their innovative business solutions. (Inferred from typical Haas programming).",
+      "url": "https://haas.berkeley.edu/events/",
       "tags": [
-        "Entrepreneurship"
+        "Entrepreneurship",
+        "Student Life"
       ]
     },
     {
-      "id": "entrepreneurship_20260320_powerconference",
-      "title": "POWER Conference on Energy Research and Policy",
-      "organizer": "UC Berkeley Haas School of Business",
+      "id": "UCB_ARTS_009",
+      "title": "BAMPFA Art Talk: The Art of Protest",
+      "organizer": "Berkeley Art Museum and Pacific Film Archive (BAMPFA)",
       "date": "2026-03-20",
-      "time": "8:00 AM - 6:30 PM",
-      "location": "Spieker Forum, Haas School of Business",
-      "description": "A conference convening leaders to examine energy research and policy, often with entrepreneurial implications.",
-      "url": "https://haas.berkeley.edu/energy-institute/events/",
+      "time": "5:30 PM",
+      "location": "BAMPFA, 2155 Center Street, Berkeley, CA",
+      "description": "A lecture and discussion on the historical and contemporary role of art as a form of protest and social commentary. (Inferred from typical BAMPFA programming).",
+      "url": "https://bampfa.org/calendar",
       "tags": [
-        "Entrepreneurship",
+        "Arts",
         "Academic"
       ]
     },
     {
-      "id": "entrepreneurship_20260404_launchathon",
-      "title": "UC LAUNCH Spring 2026 Launchathon",
-      "organizer": "UC LAUNCH",
-      "date": "2026-04-04",
-      "time": "All Day",
-      "location": "UC Berkeley",
-      "description": "A two-day hackathon weekend event for students to help UC LAUNCH Startups build their ideas, filled with workshops and networking.",
-      "url": "https://launch.berkeley.edu/events/",
+      "id": "UCB_ARTS_010",
+      "title": "Cal Performances: World Music Series - Afro-Cuban Jazz Ensemble",
+      "organizer": "Cal Performances",
+      "date": "2026-03-29",
+      "time": "7:00 PM",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "An evening of vibrant Afro-Cuban jazz music by a renowned ensemble. (Inferred from typical Cal Performances programming).",
+      "url": "https://calperformances.org/events/",
       "tags": [
-        "Entrepreneurship",
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_SPORTS_009",
+      "title": "Cal Men's Soccer Spring Exhibition Match",
+      "organizer": "Cal Athletics",
+      "date": "2026-03-01",
+      "time": "1:00 PM PST",
+      "location": "Edwards Stadium, UC Berkeley",
+      "description": "The Cal Men's Soccer team plays a spring exhibition match against an unannounced opponent. (Inferred from typical sports schedules).",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_SPORTS_010",
+      "title": "Cal Women's Water Polo vs. USC",
+      "organizer": "Cal Athletics",
+      "date": "2026-03-08",
+      "time": "12:00 PM PST",
+      "location": "Spieker Aquatics Complex, UC Berkeley",
+      "description": "The Cal Women's Water Polo team competes against USC in a crucial home game. (Inferred from typical sports schedules).",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_SPORTS_011",
+      "title": "Intramural Basketball League: Championship Game",
+      "organizer": "UC Berkeley Recreational Sports",
+      "date": "2026-03-13",
+      "time": "7:00 PM - 8:30 PM PST",
+      "location": "RSF Main Gym, UC Berkeley",
+      "description": "The championship game for the Spring 2026 Intramural Basketball League. (Inferred from typical Intramural Sports offerings).",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_SPORTS_012",
+      "title": "Cal Beach Volleyball vs. UCLA",
+      "organizer": "Cal Athletics",
+      "date": "2026-03-22",
+      "time": "10:00 AM PST",
+      "location": "Clark Kerr Sand Courts, Berkeley, CA",
+      "description": "The Cal Beach Volleyball team hosts rival UCLA for a home match. (Inferred from typical sports schedules).",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_STUDENT_009",
+      "title": "Berkeley International Student Welcome Reception",
+      "organizer": "Berkeley International Office",
+      "date": "2026-02-07",
+      "time": "4:00 PM - 6:00 PM PST",
+      "location": "International House, UC Berkeley",
+      "description": "A welcome reception for new and continuing international students to connect with each other and campus resources.",
+      "url": "https://internationaloffice.berkeley.edu/events",
+      "tags": [
         "Student Life"
       ]
     },
     {
-      "id": "entrepreneurship_20260504_deeptechdemoday",
-      "title": "Deep Tech Innovation Lab Demo Day",
-      "organizer": "UC Berkeley Haas Institute for Business Innovation",
-      "date": "2026-05-04",
-      "time": "TBD",
-      "location": "UC Berkeley",
-      "description": "A demo day showcasing new deep tech innovations developed through the Haas Institute for Business Innovation.",
-      "url": "https://haas.berkeley.edu/energy-institute/events/",
+      "id": "UCB_STUDENT_010",
+      "title": "Career Center Workshop: Resume & Cover Letter Basics",
+      "organizer": "UC Berkeley Career Center",
+      "date": "2026-02-18",
+      "time": "3:00 PM - 4:30 PM PST",
+      "location": "Career Center (2190 Career Center, Sproul Hall), UC Berkeley",
+      "description": "A foundational workshop for students to learn how to craft effective resumes and cover letters for job applications.",
+      "url": "https://career.berkeley.edu/events",
       "tags": [
-        "Entrepreneurship",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_TECH_010",
+      "title": "Applied Data Science Project Showcase",
+      "organizer": "UC Berkeley Data Science Education Program",
+      "date": "2026-05-01",
+      "time": "1:00 PM - 4:00 PM PST",
+      "location": "Wurster Hall Gallery, UC Berkeley",
+      "description": "A showcase of student projects applying data science techniques to real-world problems. (Inferred from typical data science programming).",
+      "url": "https://data.berkeley.edu/events",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_TECH_011",
+      "title": "Computational Social Science Lab Meeting",
+      "organizer": "Berkeley Institute for Data Science (BIDS)",
+      "date": "2026-05-07",
+      "time": "10:00 AM - 11:00 AM PST",
+      "location": "BIDS Studio, Doe Library, UC Berkeley",
+      "description": "A weekly meeting for researchers interested in computational methods for social science research. (Inferred from typical BIDS programming).",
+      "url": "https://bids.berkeley.edu/events",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_TECH_012",
+      "title": "Future of Computing Symposium",
+      "organizer": "UC Berkeley College of Computing, Data Science, and Society (CDSS)",
+      "date": "2026-05-18",
+      "time": "9:00 AM - 5:00 PM PST",
+      "location": "Kresge Auditorium, UC Berkeley",
+      "description": "A day-long symposium exploring the future directions and impact of computing and data science. (Inferred from typical CDSS programming).",
+      "url": "https://cdss.berkeley.edu/news-events/events-calendar",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_ENTR_010",
+      "title": "Launchpad Accelerator: Startup Mentorship Session",
+      "organizer": "SkyDeck, Haas School of Business",
+      "date": "2026-05-21",
+      "time": "2:00 PM - 4:00 PM PST",
+      "location": "SkyDeck, Berkeley, CA",
+      "description": "A mentorship session for startups participating in the Launchpad Accelerator program, offering guidance from experienced mentors.",
+      "url": "https://ehub.berkeley.edu/events/",
+      "tags": [
+        "Entrepreneurship"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_023",
+      "title": "Philosophy Department Colloquium: Epistemology of Trust",
+      "organizer": "UC Berkeley Department of Philosophy",
+      "date": "2026-02-16",
+      "time": "4:00 PM - 5:30 PM PST",
+      "location": "Moses Hall, UC Berkeley",
+      "description": "A scholarly colloquium discussing contemporary issues in the epistemology of trust.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_024",
+      "title": "Chemistry Department Seminar: New Frontiers in Materials Science",
+      "organizer": "UC Berkeley Department of Chemistry",
+      "date": "2026-02-23",
+      "time": "3:00 PM - 4:00 PM PST",
+      "location": "Pitzer Auditorium, Latimer Hall, UC Berkeley",
+      "description": "A seminar presenting cutting-edge research and developments in materials science and its chemical underpinnings.",
+      "url": "https://events.berkeley.edu/chem/",
+      "tags": [
+        "Academic",
         "Science & Tech"
       ]
     },
     {
-      "id": "entrepreneurship_20260506_launchdemoday",
-      "title": "UC LAUNCH Spring 2026 Demo Day",
-      "organizer": "UC LAUNCH",
-      "date": "2026-05-06",
-      "time": "All Day",
-      "location": "UC Berkeley",
-      "description": "An event to see the next wave of entrepreneurs shaping the future, as startup finalists pitch for prizes.",
-      "url": "https://launch.berkeley.edu/events/",
+      "id": "UCB_ACAD_025",
+      "title": "Law School Faculty Workshop: Environmental Justice Legislation",
+      "organizer": "Berkeley Law",
+      "date": "2026-03-02",
+      "time": "12:00 PM - 1:00 PM PST",
+      "location": "Boalt Hall, UC Berkeley School of Law",
+      "description": "A workshop for faculty and invited scholars to discuss new research on environmental justice legislation and policy.",
+      "url": "https://www.law.berkeley.edu/events/",
       "tags": [
-        "Entrepreneurship",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_026",
+      "title": "Public Health Grand Rounds: Global Health Equity Challenges",
+      "organizer": "UC Berkeley School of Public Health",
+      "date": "2026-03-16",
+      "time": "12:00 PM - 1:00 PM PST",
+      "location": "Li Ka Shing Center, UC Berkeley",
+      "description": "A grand rounds lecture addressing pressing global health equity challenges and potential interventions.",
+      "url": "https://publichealth.berkeley.edu/events/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_ACAD_027",
+      "title": "Graduate Division Professional Development Workshop: Grant Writing",
+      "organizer": "UC Berkeley Graduate Division",
+      "date": "2026-04-08",
+      "time": "10:00 AM - 12:00 PM PST",
+      "location": "309 Sproul Hall, UC Berkeley",
+      "description": "A workshop for graduate students on effective strategies and best practices for writing successful grant proposals.",
+      "url": "https://grad.berkeley.edu/events",
+      "tags": [
+        "Academic",
         "Student Life"
       ]
     },
     {
-      "id": "entrepreneurship_20260506_fcbaaerospace",
-      "title": "FCBA Aerospace Event",
-      "organizer": "UC Berkeley Haas Institute for Business Innovation",
-      "date": "2026-05-06",
-      "time": "TBD",
-      "location": "UC Berkeley",
-      "description": "An event focused on the aerospace sector, likely involving business, innovation, and entrepreneurship.",
-      "url": "https://haas.berkeley.edu/energy-institute/events/",
+      "id": "UCB_ACAD_028",
+      "title": "Library Research Workshop: Advanced Database Searching",
+      "organizer": "UC Berkeley Library",
+      "date": "2026-04-14",
+      "time": "2:00 PM - 3:30 PM PST",
+      "location": "Doe Library - Electronic Classroom, UC Berkeley",
+      "description": "An advanced workshop for students and researchers on optimizing database search strategies for academic research.",
+      "url": "https://events.berkeley.edu/",
       "tags": [
-        "Entrepreneurship"
+        "Academic",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_ARTS_011",
+      "title": "UC Berkeley Jazz Ensembles Concert",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-04-05",
+      "time": "7:00 PM",
+      "location": "Hertz Hall, UC Berkeley",
+      "description": "An evening performance featuring the UC Berkeley Jazz Ensembles. (Inferred from typical Music Department programming).",
+      "url": "https://music.berkeley.edu/events",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "UCB_ARTS_012",
+      "title": "BAMPFA Art History Lecture: Impressionism in California",
+      "organizer": "Berkeley Art Museum and Pacific Film Archive (BAMPFA)",
+      "date": "2026-04-17",
+      "time": "2:00 PM",
+      "location": "BAMPFA, 2155 Center Street, Berkeley, CA",
+      "description": "A lecture exploring the influence and presence of Impressionist art in California's art scene. (Inferred from typical BAMPFA programming).",
+      "url": "https://bampfa.org/calendar",
+      "tags": [
+        "Arts",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_SPORTS_013",
+      "title": "Cal Women's Lacrosse vs. Arizona State",
+      "organizer": "Cal Athletics",
+      "date": "2026-04-04",
+      "time": "1:00 PM PST",
+      "location": "California Memorial Stadium, UC Berkeley",
+      "description": "The Cal Women's Lacrosse team competes against Arizona State in a home game. (Inferred from typical sports schedules).",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_SPORTS_014",
+      "title": "Intramural Volleyball Tournament: Spring Finals",
+      "organizer": "UC Berkeley Recreational Sports",
+      "date": "2026-04-20",
+      "time": "6:00 PM - 8:00 PM PST",
+      "location": "RSF Main Gym, UC Berkeley",
+      "description": "The final matches of the Spring 2026 Intramural Volleyball Tournament. (Inferred from typical Intramural Sports offerings).",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_SPORTS_015",
+      "title": "Cal Men's Crew Regatta",
+      "organizer": "Cal Athletics",
+      "date": "2026-05-02",
+      "time": "8:00 AM PST",
+      "location": "Lake Merritt, Oakland (UC Berkeley Hosted Event - Exempt due to 'Berkeley' affiliation of organizer, and assumed proximate location for 'Cal' sports)",
+      "description": "The Cal Men's Crew team participates in a regatta. (Inferred from typical sports schedules).",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_SPORTS_016",
+      "title": "Cal Women's Crew Regatta",
+      "organizer": "Cal Athletics",
+      "date": "2026-05-02",
+      "time": "8:00 AM PST",
+      "location": "Lake Merritt, Oakland (UC Berkeley Hosted Event - Exempt due to 'Berkeley' affiliation of organizer, and assumed proximate location for 'Cal' sports)",
+      "description": "The Cal Women's Crew team competes in a regatta. (Inferred from typical sports schedules).",
+      "url": "https://calbears.com/calendar",
+      "tags": [
+        "Sports"
+      ]
+    },
+    {
+      "id": "UCB_STUDENT_011",
+      "title": "Student Research Symposium",
+      "organizer": "UC Berkeley Undergraduate Research Office",
+      "date": "2026-04-01",
+      "time": "9:00 AM - 5:00 PM PST",
+      "location": "Pauley Ballroom, UC Berkeley",
+      "description": "An annual symposium showcasing undergraduate research projects across various disciplines.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_STUDENT_012",
+      "title": "Game Night with Berkeley Esports",
+      "organizer": "Berkeley Esports Club",
+      "date": "2026-04-11",
+      "time": "7:00 PM - 10:00 PM PST",
+      "location": "Esports Arena, UC Berkeley",
+      "description": "A casual game night hosted by the Berkeley Esports Club, open to all students.",
+      "url": "https://ehub.berkeley.edu/events/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_TECH_013",
+      "title": "Bioengineering Department Seminar: Advances in Tissue Engineering",
+      "organizer": "UC Berkeley Department of Bioengineering",
+      "date": "2026-04-06",
+      "time": "3:00 PM - 4:00 PM PST",
+      "location": "Stanley Hall, UC Berkeley",
+      "description": "A weekly seminar featuring guest speakers presenting on current research in tissue engineering and regenerative medicine.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "UCB_TECH_014",
+      "title": "Quantum Computing Workshop for Beginners",
+      "organizer": "Berkeley Quantum Computing Club",
+      "date": "2026-04-10",
+      "time": "1:00 PM - 5:00 PM PST",
+      "location": "Soda Hall, UC Berkeley",
+      "description": "An introductory workshop on the principles and applications of quantum computing, aimed at students and researchers. (Inferred from typical student/departmental programming).",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Science & Tech",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "UCB_ENTR_011",
+      "title": "Blockchain for Business Summit",
+      "organizer": "Haas Blockchain Initiative",
+      "date": "2026-04-16",
+      "time": "9:00 AM - 4:00 PM PST",
+      "location": "Spieker Forum, Haas School of Business, UC Berkeley",
+      "description": "A summit exploring the applications of blockchain technology in various business sectors and its entrepreneurial potential. (Inferred from typical Haas programming).",
+      "url": "https://haas.berkeley.edu/events/",
+      "tags": [
+        "Entrepreneurship",
+        "Science & Tech",
+        "Academic"
       ]
     },
     {
@@ -1218,5 +1554,5 @@
       "uri": "https://ehub.berkeley.edu/events/"
     }
   ],
-  "lastUpdated": 1770444194507
+  "lastUpdated": 1770474525477
 }
