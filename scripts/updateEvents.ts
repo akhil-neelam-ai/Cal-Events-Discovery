@@ -293,7 +293,7 @@ async function updateEvents() {
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3.0-pro',
+      model: 'gemini-2.5-pro',
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
