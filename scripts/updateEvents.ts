@@ -241,23 +241,27 @@ async function updateEvents() {
     Task: Generate the DAILY BATCH of upcoming events.
     Current Date: ${currentDate}
 
-    GOAL: Find a diverse list of 50-70 upcoming events spanning:
-    - Academic seminars & lectures
-    - Arts, music, and performances
-    - Sports and recreation
-    - Student life and club socials
-    - Science & Technology events
-    - Entrepreneurship & startup events
+    GOAL: Find a diverse list of 50-70 upcoming events spanning ALL categories below.
+    You MUST include events from EVERY category:
+
+    REQUIRED CATEGORIES (include events from ALL of these):
+    1. Academic seminars & lectures (at least 10 events)
+    2. Arts, music, and performances (at least 8 events)
+    3. Sports and recreation - Cal Bears games, intramurals (at least 8 events)
+    4. Student life and club socials (at least 8 events)
+    5. Science & Technology events - CS, AI, data science, engineering (at least 8 events)
+    6. Entrepreneurship & startup events (at least 8 events)
 
     PRIORITY SOURCES (scan these first):
     ${prioritySources}
 
-    SEARCH EXPANSION:
-    Beyond the priority sources, also search for events from:
-    - UC Berkeley student organizations and clubs
-    - Campus recreation and intramural sports
-    - Library events and workshops
-    - Graduate division events
+    ADDITIONAL SEARCHES REQUIRED:
+    - Search "Cal Bears basketball schedule 2026" for sports events
+    - Search "UC Berkeley computer science events" for tech events
+    - Search "Berkeley data science seminars" for science events
+    - Search "UC Berkeley student organizations events" for student life
+    - Search "Berkeley campus recreation intramural sports"
+    - Search for events from libraries, graduate division, research centers
 
     IMPORTANT GUIDELINES:
     - ONLY include actual public events (lectures, performances, games, workshops, meetings)
@@ -289,10 +293,12 @@ async function updateEvents() {
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-2.0-flash-exp',
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
+        temperature: 1.0,
+        topP: 0.95,
       }
     });
 
