@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { fetchEventsFromGemini } from './services/geminiService';
 import { CalEvent, SearchFilters, LoadingState } from './types';
 import {
@@ -684,6 +685,7 @@ export default function App() {
           <SlideOutPanel event={selectedEvent} onClose={handleCloseDetail} />
         )
       )}
+      <Analytics />
     </div>
   );
 }
