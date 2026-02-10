@@ -26,6 +26,26 @@ function useIsMobile() {
   return isMobile;
 }
 
+// Format date from YYYY-MM-DD to "10th Feb"
+function formatEventDate(dateString: string): string {
+  const date = new Date(dateString + 'T00:00:00');
+  const day = date.getDate();
+  const month = date.toLocaleString('en-US', { month: 'short' });
+
+  // Add ordinal suffix (st, nd, rd, th)
+  const ordinal = (n: number) => {
+    if (n > 3 && n < 21) return 'th';
+    switch (n % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  };
+
+  return `${day}${ordinal(day)} ${month}`;
+}
+
 // Bottom Sheet Component (Mobile)
 function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void }) {
   const [dragY, setDragY] = useState(0);
@@ -93,7 +113,7 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
                 </svg>
               </div>
               <div>
-                <div className="font-bold text-gray-800">{event.date}</div>
+                <div className="font-bold text-gray-800">{formatEventDate(event.date)}</div>
                 <div className="text-gray-500">{event.time}</div>
               </div>
             </div>
@@ -206,7 +226,7 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
                 </svg>
               </div>
               <div>
-                <div className="font-bold text-gray-800 text-base">{event.date}</div>
+                <div className="font-bold text-gray-800 text-base">{formatEventDate(event.date)}</div>
                 <div className="text-gray-500">{event.time}</div>
               </div>
             </div>
@@ -615,7 +635,7 @@ export default function App() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                           </div>
-                          <span className="font-bold text-gray-800">{event.date}</span>
+                          <span className="font-bold text-gray-800">{formatEventDate(event.date)}</span>
                           <span className="text-gray-300">•</span>
                           <span className="font-medium">{event.time}</span>
                         </div>
