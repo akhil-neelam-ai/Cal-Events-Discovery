@@ -55,27 +55,41 @@ declare global {
 /**
  * Initialize Google Analytics
  * Call this once when the app loads
+ * Waits for Google's gtag script to load before configuring
  */
 export function initGA(): void {
   if (typeof window === 'undefined') return;
 
-  // Avoid double initialization
-  if (typeof window.gtag === 'function') return;
-
-  // Initialize dataLayer
+  // Initialize dataLayer first
   window.dataLayer = window.dataLayer || [];
 
-  // Define gtag function
-  window.gtag = function gtag(...args: unknown[]) {
-    window.dataLayer.push(args);
+  // Wait for Google's gtag to be ready (from the script tag)
+  const checkGtag = () => {
+    if (typeof window.gtag === 'function') {
+      // Google's gtag is ready - configure it
+      window.gtag('config', GA_MEASUREMENT_ID, {
+        send_page_view: false, // We'll send manually for SPA
+      });
+      console.log('[Analytics] GA4 initialized with Google\'s gtag');
+      return true;
+    }
+    return false;
   };
 
-  window.gtag('js', new Date());
-  window.gtag('config', GA_MEASUREMENT_ID, {
-    send_page_view: false, // We'll send manually for SPA
-  });
+  // Try immediately
+  if (checkGtag()) return;
 
-  console.log('[Analytics] GA4 initialized');
+  // If not ready, poll for up to 3 seconds
+  let attempts = 0;
+  const interval = setInterval(() => {
+    attempts++;
+    if (checkGtag() || attempts >= 30) {
+      clearInterval(interval);
+      if (attempts >= 30) {
+        console.warn('[Analytics] GA4 gtag not found - Google Analytics script may have failed to load');
+      }
+    }
+  }, 100);
 }
 
 /**
@@ -83,24 +97,34 @@ export function initGA(): void {
  * Call on initial load and route changes
  */
 export function trackPageView(params: PageViewParams): void {
-  if (typeof window === 'undefined' || !window.gtag) return;
+  if (typeof window === 'undefined') return;
+
+  if (!window.gtag) {
+    console.warn('[Analytics] gtag not available - page view not tracked');
+    return;
+  }
 
   window.gtag('event', 'page_view', {
     page_path: params.page_path,
     page_title: params.page_title || document.title,
   });
 
-  console.log('[Analytics] Page view:', params.page_path);
+  console.log('[Analytics] Page view tracked:', params.page_path);
 }
 
 /**
  * Track generic events
  */
 export function trackEvent(eventName: string, params?: EventParams): void {
-  if (typeof window === 'undefined' || !window.gtag) return;
+  if (typeof window === 'undefined') return;
+
+  if (!window.gtag) {
+    console.warn('[Analytics] gtag not available - event not tracked:', eventName);
+    return;
+  }
 
   window.gtag('event', eventName, params);
-  console.log('[Analytics] Event:', eventName, params);
+  console.log('[Analytics] Event tracked:', eventName, params);
 }
 
 /**

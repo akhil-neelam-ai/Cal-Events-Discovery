@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { inject } from '@vercel/analytics';
 import { fetchEventsFromGemini } from './services/geminiService';
 import { CalEvent, SearchFilters, LoadingState } from './types';
 import {
@@ -402,8 +403,9 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Initialize GA4 and track page view
+    // Initialize GA4 and Vercel Analytics, then track page view
     initGA();
+    inject();
     trackPageView({ page_path: '/', page_title: 'CalEvents - UC Berkeley Events' });
     loadEvents();
   }, []);
