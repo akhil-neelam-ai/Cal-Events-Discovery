@@ -696,6 +696,11 @@ export default function App() {
               akhil_neelam@berkeley.edu
             </a>
           </p>
+          <p className="mt-2">
+            <a href="/architecture.png" target="_blank" rel="noopener noreferrer" className="text-white/40 hover:text-white/70 text-xs transition-colors">
+              How this works →
+            </a>
+          </p>
         </div>
       </footer>
 
