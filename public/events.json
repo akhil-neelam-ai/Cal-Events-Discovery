@@ -1,174 +1,107 @@
 {
   "events": [
     {
-      "id": "gd-cc-0324",
-      "title": "Career Counseling 1:1's Drop Ins",
-      "organizer": "UC Berkeley Graduate Division",
-      "date": "2026-03-24",
-      "time": "11:30 AM – 12:30 PM",
-      "location": "Inclusive Excellence Hub",
-      "description": "One-on-one career counseling sessions for graduate students.",
-      "url": "https://grad.berkeley.edu/events/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "calleg-policy-0324",
-      "title": "California Legislature: Previewing the Year Ahead in California State Housing Policy",
-      "organizer": "UC Berkeley",
-      "date": "2026-03-24",
-      "time": "11:00 AM",
-      "location": "UC Berkeley Campus",
-      "description": "A preview of upcoming California state housing policy for the year ahead.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "mktwain-openhouse-0324",
-      "title": "Mark Twain Papers and Project Open House",
-      "organizer": "UC Berkeley",
-      "date": "2026-03-24",
-      "time": "11:00 AM - 2:00 PM",
-      "location": "UC Berkeley Campus",
-      "description": "An open house showcasing the Mark Twain Papers and Project.",
+      "id": "AC001",
+      "title": "Curator's Tour: Tausif Noor on Rhapsody: Works from the Cooper Rosenwasser Collection",
+      "organizer": "UC Berkeley Art Museum and Pacific Film Archive (BAMPFA)",
+      "date": "2026-03-25",
+      "time": "12:15 PM",
+      "location": "BAMPFA, Berkeley, CA",
+      "description": "Curatorial Associate Tausif Noor guides viewers through the themes of the exhibition, 'Rhapsody: Works from the Cooper Rosenwasser Collection'.",
       "url": "https://events.berkeley.edu/",
       "tags": [
         "Academic",
-        "Student Life"
+        "Arts"
       ]
     },
     {
-      "id": "batepapo-0324",
-      "title": "Bate-Papo",
-      "organizer": "UC Berkeley",
-      "date": "2026-03-24",
-      "time": "1:00 PM",
-      "location": "UC Berkeley Campus",
-      "description": "A social gathering for conversation.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "bampfa-tour-0325",
-      "title": "Curator's Tour: Tausif Noor on Rhapsody: Works from the Cooper Rosenwasser Collection",
-      "organizer": "BAMPFA",
-      "date": "2026-03-25",
-      "time": "12:15 PM",
-      "location": "BAMPFA",
-      "description": "A guided tour of the 'Rhapsody: Works from the Cooper Rosenwasser Collection' exhibition.",
-      "url": "https://bampfa.org/calendar",
-      "tags": [
-        "Arts",
-        "Academic"
-      ]
-    },
-    {
-      "id": "cal-ai-human-0326",
+      "id": "ST001",
       "title": "California Live!: Alone in the Algorithm: Human Connection in the Age of AI",
       "organizer": "UC Berkeley",
       "date": "2026-03-26",
       "time": "6:30 PM",
-      "location": "UC Berkeley Campus",
-      "description": "A live discussion on human connection in the age of AI.",
+      "location": "Berkeley, CA",
+      "description": "Explore the seductions and dangers of artificial intelligence against the backdrop of America's deepening loneliness epidemic.",
       "url": "https://events.berkeley.edu/",
       "tags": [
-        "Academic",
-        "Science & Tech"
+        "Science & Tech",
+        "Academic"
       ]
     },
     {
-      "id": "finckel-han-0329",
-      "title": "David Finckel, cello and Wu Han, piano",
-      "organizer": "Cal Performances",
-      "date": "2026-03-29",
-      "time": "3:00 PM",
-      "location": "Zellerbach Hall, UC Berkeley",
-      "description": "A classical music performance by David Finckel (cello) and Wu Han (piano).",
-      "url": "https://calperformances.org/events/",
+      "id": "AR001",
+      "title": "Psychedelia & Cinema: The Holy Mountain",
+      "organizer": "BAMPFA",
+      "date": "2026-03-25",
+      "time": "7:00 PM",
+      "location": "BAMPFA, Berkeley, CA",
+      "description": "A screening of 'The Holy Mountain' as part of the 'Psychedelia & Cinema' series.",
+      "url": "https://bampfa.org/calendar",
       "tags": [
         "Arts"
       ]
     },
     {
-      "id": "bampfa-tour-0329",
-      "title": "Graduate Student Tour: Theresa Hak Kyung Cha: Multiple Offerings",
+      "id": "AR002",
+      "title": "Fassbinder and the New German Cinema: The Lost Honor of Katharina Blum",
       "organizer": "BAMPFA",
-      "date": "2026-03-29",
-      "time": "2:00 PM",
-      "location": "BAMPFA",
-      "description": "A tour of the Theresa Hak Kyung Cha exhibition led by graduate students.",
+      "date": "2026-03-27",
+      "time": "7:00 PM",
+      "location": "BAMPFA, Berkeley, CA",
+      "description": "A film screening as part of the 'Fassbinder and the New German Cinema' series.",
       "url": "https://bampfa.org/calendar",
       "tags": [
-        "Arts",
-        "Academic"
+        "Arts"
       ]
     },
     {
-      "id": "chile-conv-0330",
+      "id": "AC002",
       "title": "Conversación | Chile hoy: una conversación con Javiera Manzi Araneda y Claudio Alvarado Lincopi",
       "organizer": "UC Berkeley",
       "date": "2026-03-30",
       "time": "12:00 PM",
-      "location": "UC Berkeley Campus",
-      "description": "A conversation about contemporary Chile with Javiera Manzi Araneda and Claudio Alvarado Lincopi.",
+      "location": "Berkeley, CA",
+      "description": "A conversation with Javiera Manzi Araneda and Claudio Alvarado Lincopi about contemporary Chile.",
       "url": "https://events.berkeley.edu/",
       "tags": [
         "Academic"
       ]
     },
     {
-      "id": "mit-timeseries-0330",
+      "id": "ST002",
       "title": "Time Series As A Unit Square: Towards a Compute Efficient Foundation Model (Devavrat Shah, MIT)",
       "organizer": "UC Berkeley",
       "date": "2026-03-30",
-      "time": "3:40 PM - 4:30 PM",
-      "location": "UC Berkeley Campus",
-      "description": "A seminar by Devavrat Shah from MIT on compute-efficient foundation models for time series.",
+      "time": "3:40 PM",
+      "location": "Berkeley, CA",
+      "description": "A presentation by Devavrat Shah from MIT on compute-efficient foundation models for time series.",
       "url": "https://events.berkeley.edu/",
       "tags": [
-        "Academic",
-        "Science & Tech"
+        "Science & Tech",
+        "Academic"
       ]
     },
     {
-      "id": "biohacking-law-0330",
+      "id": "ST003",
       "title": "Biohacking: Law, food systems, and the future of optimization",
       "organizer": "UC Berkeley",
       "date": "2026-03-30",
-      "time": "4:00 PM - 5:30 PM",
-      "location": "UC Berkeley Campus",
-      "description": "A discussion on the intersection of biohacking, law, food systems, and future optimization.",
+      "time": "4:00 PM",
+      "location": "Berkeley, CA",
+      "description": "A discussion on the intersection of biohacking, law, food systems, and the future of optimization.",
       "url": "https://events.berkeley.edu/",
       "tags": [
-        "Academic",
-        "Science & Tech"
+        "Science & Tech",
+        "Academic"
       ]
     },
     {
-      "id": "postramadan-0330",
-      "title": "Post Ramadan Market",
-      "organizer": "ASUC Student Union",
-      "date": "2026-03-30",
-      "time": "5:30 PM - 8:30 PM",
-      "location": "MLK Jr. Building / Lower Sproul",
-      "description": "Celebrate the end of Ramadan with a Muslim-inspired market featuring food, vendors, and crafts.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "mozingo-lecture-0330",
+      "id": "AC003",
       "title": "Louise Mozingo | Public Land, Public Space, Public Discourse",
       "organizer": "UC Berkeley",
       "date": "2026-03-30",
-      "time": "6:00 PM - 7:30 PM",
-      "location": "UC Berkeley Campus",
+      "time": "6:00 PM",
+      "location": "Berkeley, CA",
       "description": "A lecture by Louise Mozingo on public land, public space, and public discourse.",
       "url": "https://events.berkeley.edu/",
       "tags": [
@@ -176,90 +109,103 @@
       ]
     },
     {
-      "id": "gd-minibook-0330",
+      "id": "SL001",
+      "title": "Kaffeeklatsch",
+      "organizer": "UC Berkeley",
+      "date": "2026-03-30",
+      "time": "3:00 PM",
+      "location": "Berkeley, CA",
+      "description": "A social gathering for students, faculty, and staff.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "SL002",
+      "title": "Post Ramadan Market",
+      "organizer": "Student Union at UC Berkeley",
+      "date": "2026-03-30",
+      "time": "5:30 PM",
+      "location": "MLK/Lower Sproul, UC Berkeley",
+      "description": "Celebrate the end of Ramadan with a Muslim-inspired market featuring food, vendors, and crafts.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "SL003",
+      "title": "OASIS Graduate Community Care Lounge",
+      "organizer": "UC Berkeley Graduate Division",
+      "date": "2026-03-30",
+      "time": "11:00 AM",
+      "location": "In Person (Graduate Division)",
+      "description": "A community care lounge for graduate students.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "SL004",
       "title": "Mini Book Fair: Career Exploration and Preparation",
       "organizer": "UC Berkeley Graduate Division",
       "date": "2026-03-30",
-      "time": "3:00 PM – 5:00 PM",
-      "location": "Inclusive Excellence Hub",
-      "description": "A book fair focused on career exploration and preparation for students.",
-      "url": "https://grad.berkeley.edu/events/",
+      "time": "3:00 PM",
+      "location": "In Person (Graduate Division)",
+      "description": "A mini book fair focused on career exploration and preparation for graduate students.",
+      "url": "https://events.berkeley.edu/",
       "tags": [
         "Student Life"
       ]
     },
     {
-      "id": "gd-breakfast-0331",
-      "title": "Breakfast at the Graduate Assembly",
-      "organizer": "UC Berkeley Graduate Division",
-      "date": "2026-03-31",
-      "time": "10:00 AM – 12:00 PM",
-      "location": "Graduate Assembly",
-      "description": "A casual breakfast gathering for graduate students.",
-      "url": "https://grad.berkeley.edu/events/",
+      "id": "ET001",
+      "title": "SCET Decal Workshop",
+      "organizer": "Sutardja Center for Entrepreneurship & Technology (SCET)",
+      "date": "2026-03-30",
+      "time": "12:00 PM",
+      "location": "Grimes Engineering Center 304, UC Berkeley",
+      "description": "Mandatory workshop for students interested in leading an SCET Decal, preparing proposals.",
+      "url": "https://scet.berkeley.edu/events/",
       "tags": [
-        "Student Life"
+        "Entrepreneurship"
       ]
     },
     {
-      "id": "gd-cc-0331",
-      "title": "Career Counseling 1:1's Drop Ins",
-      "organizer": "UC Berkeley Graduate Division",
-      "date": "2026-03-31",
-      "time": "11:30 AM – 12:30 PM",
-      "location": "Inclusive Excellence Hub",
-      "description": "One-on-one career counseling sessions for graduate students.",
-      "url": "https://grad.berkeley.edu/events/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "gd-librarytotes-0331",
-      "title": "The Library TOTES Appreciates You!",
-      "organizer": "UC Berkeley Graduate Division",
-      "date": "2026-03-31",
-      "time": "12:00 PM – 2:00 PM",
-      "location": "UC Berkeley Library",
-      "description": "An appreciation event hosted by the library for students.",
-      "url": "https://grad.berkeley.edu/events/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "sph-swartzberg-0331",
+      "id": "AC004",
       "title": "The Inaugural UC Berkeley School of Public Health John Swartzberg Lecture",
       "organizer": "UC Berkeley School of Public Health",
       "date": "2026-03-31",
       "time": "3:30 PM",
-      "location": "Online",
-      "description": "The inaugural annual lecture by the School of Public Health.",
+      "location": "Berkeley, CA",
+      "description": "The inaugural lecture from the UC Berkeley School of Public Health.",
       "url": "https://events.berkeley.edu/",
       "tags": [
         "Academic"
       ]
     },
     {
-      "id": "anwar-qawwali-0331",
-      "title": "Kamran Anwar | Songs of the Sufi: The Untold Story of Classical Qawwali",
-      "organizer": "UC Berkeley Institute for South Asia Studies",
+      "id": "AC005",
+      "title": "Carla Shapreau | The Nazi-Era Theft of the 1709 Mendelssohn Stradivari – A Case Study",
+      "organizer": "UC Berkeley Department of Music",
       "date": "2026-03-31",
-      "time": "5:00 PM - 6:30 PM",
-      "location": "UC Berkeley Campus",
-      "description": "A performance and talk on the untold story of classical Qawwali music.",
+      "time": "12:00 PM",
+      "location": "201 Philosophy Hall, UC Berkeley",
+      "description": "Carla Shapreau discusses her discovery of the stolen 1709 Mendelssohn Stradivari violin and issues of looted cultural property.",
       "url": "https://events.berkeley.edu/",
       "tags": [
-        "Arts"
+        "Academic"
       ]
     },
     {
-      "id": "caen-lecture-0331",
+      "id": "AC006",
       "title": "2026 Herb Caen Lecture: Press Freedom in Peril",
       "organizer": "UC Berkeley",
       "date": "2026-03-31",
       "time": "5:30 PM",
-      "location": "North Gate Hall, UC Berkeley",
+      "location": "Berkeley, CA",
       "description": "The annual Herb Caen Lecture focusing on the challenges to press freedom.",
       "url": "https://events.berkeley.edu/",
       "tags": [
@@ -267,64 +213,90 @@
       ]
     },
     {
-      "id": "gd-coffee-0401",
-      "title": "Coffee with Grad Div at the Gate",
-      "organizer": "UC Berkeley Graduate Division",
-      "date": "2026-04-01",
-      "time": "10:00 AM – 10:00 AM",
-      "location": "UC Berkeley Campus",
-      "description": "An informal coffee gathering with the Graduate Division.",
-      "url": "https://grad.berkeley.edu/events/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "gd-submission-0401",
-      "title": "Submission Success Sessions – Dissertation and Thesis Review",
-      "organizer": "UC Berkeley Graduate Division",
-      "date": "2026-04-01",
-      "time": "11:30 AM – 12:30 PM",
-      "location": "Inclusive Excellence Hub",
-      "description": "Sessions for reviewing dissertations and theses for submission success.",
-      "url": "https://grad.berkeley.edu/events/",
+      "id": "AC007",
+      "title": "From Justice to Climate Justice: A Human Rights Journey with Mary Robinson",
+      "organizer": "College of Computing, Data Science, and Society (CDSS)",
+      "date": "2026-03-31",
+      "time": "TBD",
+      "location": "UC Berkeley",
+      "description": "Mary Robinson discusses her human rights journey from justice to climate justice.",
+      "url": "https://cdss.berkeley.edu/news-events/events-calendar",
       "tags": [
         "Academic"
       ]
     },
     {
-      "id": "gd-librarytotes-0401",
-      "title": "The Library TOTES Appreciates You!",
-      "organizer": "UC Berkeley Graduate Division",
-      "date": "2026-04-01",
-      "time": "12:00 PM – 2:00 PM",
-      "location": "UC Berkeley Library",
-      "description": "An appreciation event hosted by the library for students.",
-      "url": "https://grad.berkeley.edu/events/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "berkeley-wind-0401",
-      "title": "Noon Concert: UC Berkeley Wind Ensemble",
-      "organizer": "UC Berkeley Department of Music",
-      "date": "2026-04-01",
-      "time": "12:00 PM",
-      "location": "Hertz Concert Hall",
-      "description": "A noon concert featuring the UC Berkeley Wind Ensemble.",
+      "id": "AR003",
+      "title": "Kamran Anwar | Songs of the Sufi: The Untold Story of Classical Qawwali",
+      "organizer": "UC Berkeley",
+      "date": "2026-03-31",
+      "time": "5:00 PM",
+      "location": "Berkeley, CA",
+      "description": "A presentation by Kamran Anwar on the untold story of classical Qawwali music.",
       "url": "https://events.berkeley.edu/",
       "tags": [
         "Arts"
       ]
     },
     {
-      "id": "china-platform-0401",
+      "id": "SL005",
+      "title": "Breakfast at the Graduate Assembly",
+      "organizer": "UC Berkeley Graduate Division",
+      "date": "2026-03-31",
+      "time": "10:00 AM",
+      "location": "In Person (Graduate Division)",
+      "description": "Breakfast gathering hosted by the Graduate Assembly.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "SL006",
+      "title": "The Library TOTES Appreciates You!",
+      "organizer": "UC Berkeley Graduate Division",
+      "date": "2026-03-31",
+      "time": "12:00 PM",
+      "location": "In Person (Graduate Division)",
+      "description": "An appreciation event for graduate students by the library.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "SL007",
+      "title": "Career Counseling 1:1's Drop Ins",
+      "organizer": "UC Berkeley Graduate Division",
+      "date": "2026-03-31",
+      "time": "11:30 AM",
+      "location": "Inclusive Excellence Hub, UC Berkeley",
+      "description": "One-on-one career counseling drop-in sessions for graduate students.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "ET002",
+      "title": "Entrepreneurship is for Everyone – Startup Roles for Non-Technical Majors",
+      "organizer": "Sutardja Center for Entrepreneurship & Technology (SCET)",
+      "date": "2026-03-31",
+      "time": "6:00 PM",
+      "location": "UC Berkeley",
+      "description": "Panel discussion on startup roles for non-technical majors, exploring opportunities in entrepreneurial settings.",
+      "url": "https://scet.berkeley.edu/events/",
+      "tags": [
+        "Entrepreneurship"
+      ]
+    },
+    {
+      "id": "AC008",
       "title": "Arbitraging China's platform economy in the Silicon Savanna",
       "organizer": "UC Berkeley",
       "date": "2026-04-01",
-      "time": "3:30 PM - 5:00 PM",
-      "location": "UC Berkeley Campus",
+      "time": "3:30 PM",
+      "location": "Berkeley, CA",
       "description": "A seminar discussing China's platform economy and its implications.",
       "url": "https://events.berkeley.edu/",
       "tags": [
@@ -332,79 +304,65 @@
       ]
     },
     {
-      "id": "ableism-ancient-0401",
+      "id": "AC009",
       "title": "Ableism When Accessing the Past: Studies of Disability in the Ancient World (Hannah Vogel)",
       "organizer": "UC Berkeley",
       "date": "2026-04-01",
       "time": "4:30 PM",
-      "location": "UC Berkeley Campus",
-      "description": "A lecture by Hannah Vogel on studies of disability in the ancient world.",
+      "location": "Berkeley, CA",
+      "description": "Hannah Vogel presents studies of disability in the ancient world, focusing on ableism when accessing the past.",
       "url": "https://events.berkeley.edu/",
       "tags": [
         "Academic"
       ]
     },
     {
-      "id": "longsoldier-poetry-0401",
+      "id": "AR004",
+      "title": "Noon Concert: UC Berkeley Wind Ensemble",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-04-01",
+      "time": "12:00 PM",
+      "location": "Hertz Concert Hall, UC Berkeley",
+      "description": "The UC Berkeley Wind Ensemble performs works by Gustav Holst, Zhou Tian, and Mark Camphouse.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "AR005",
       "title": "Layli Long Soldier: Poetry Reading",
       "organizer": "UC Berkeley",
       "date": "2026-04-01",
       "time": "5:00 PM",
-      "location": "Maude Fife Room 315, Wheeler Hall",
-      "description": "A poetry reading by award-winning author Layli Long Soldier.",
+      "location": "Berkeley, CA",
+      "description": "A poetry reading by acclaimed poet Layli Long Soldier.",
       "url": "https://events.berkeley.edu/",
       "tags": [
         "Arts"
       ]
     },
     {
-      "id": "bampfa-tour-0402",
-      "title": "Graduate Student Tour: Theresa Hak Kyung Cha: Multiple Offerings",
-      "organizer": "BAMPFA",
-      "date": "2026-04-02",
-      "time": "1:15 PM",
-      "location": "BAMPFA",
-      "description": "A tour of the Theresa Hak Kyung Cha exhibition led by graduate students.",
-      "url": "https://bampfa.org/calendar",
-      "tags": [
-        "Arts",
-        "Academic"
-      ]
-    },
-    {
-      "id": "gradstudent-patio-0402",
-      "title": "Graduate Student Appreciation Patio Party",
-      "organizer": "ASUC Student Union & Graduate Division",
-      "date": "2026-04-02",
-      "time": "4:00 PM - 6:00 PM",
-      "location": "Headlands on Campus",
-      "description": "A patio party to show appreciation for graduate students, with tasty bites.",
+      "id": "SL008",
+      "title": "Coffee with Grad Div at the Gate",
+      "organizer": "UC Berkeley Graduate Division",
+      "date": "2026-04-01",
+      "time": "10:00 AM",
+      "location": "In Person (Graduate Division)",
+      "description": "Casual coffee gathering with the Graduate Division.",
       "url": "https://events.berkeley.edu/",
       "tags": [
         "Student Life"
       ]
     },
     {
-      "id": "lang-colonial-0402",
-      "title": "Language and Colonial Legacies in Portuguese Higher Education: The Experiences of Brazilian and African Portuguese-Speaking Students",
-      "organizer": "UC Berkeley",
-      "date": "2026-04-02",
-      "time": "3:30 PM",
-      "location": "Wheeler 200",
-      "description": "A seminar on language and colonial legacies in Portuguese higher education.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "szilvasi-heterogeneous-0402",
+      "id": "AC010",
       "title": "Tibor Szilvasi: Enabling the Next Level of Understanding in Heterogeneous Catalysis Using Machine Learning Interatomic Potentials",
       "organizer": "UC Berkeley",
       "date": "2026-04-02",
-      "time": "12:00 PM - 1:00 PM",
-      "location": "Cory Hall 373",
-      "description": "A talk on using machine learning for heterogeneous catalysis.",
+      "time": "12:00 PM",
+      "location": "Berkeley, CA",
+      "description": "Tibor Szilvasi presents on using machine learning interatomic potentials for understanding heterogeneous catalysis.",
       "url": "https://events.berkeley.edu/",
       "tags": [
         "Academic",
@@ -412,642 +370,821 @@
       ]
     },
     {
-      "id": "lunchpoems-foster-0402",
+      "id": "AC011",
       "title": "Lunch Poems: Tonya Foster",
       "organizer": "UC Berkeley Library",
       "date": "2026-04-02",
       "time": "12:10 PM",
-      "location": "Morrison Library (inside Doe Library)",
+      "location": "Morrison Library, Doe Library, UC Berkeley",
       "description": "A poetry reading by Tonya Foster as part of the Lunch Poems series.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "ST004",
+      "title": "OSPO Monthly Knowledge Exchange: April",
+      "organizer": "College of Computing, Data Science, and Society (CDSS)",
+      "date": "2026-04-02",
+      "time": "TBD",
+      "location": "UC Berkeley",
+      "description": "Monthly knowledge exchange session organized by the Open Source Program Office (OSPO).",
+      "url": "https://cdss.berkeley.edu/news-events/events-calendar",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "SL009",
+      "title": "Graduate Student Patio Party",
+      "organizer": "ASUC Student Union & Graduate Division",
+      "date": "2026-04-02",
+      "time": "4:00 PM",
+      "location": "Headlands On Campus, UC Berkeley",
+      "description": "A patio party for graduate students in partnership with the Graduate Social Club and Grad Division.",
+      "url": "https://studentunion.berkeley.edu/programs",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "EHUB_20260402_042",
+      "title": "Outside Your Comfort Zone",
+      "organizer": "Berkeley E-Hub",
+      "date": "2026-04-02",
+      "time": "See event page",
+      "location": "Berkeley E-Hub",
+      "description": "Outside Your Comfort Zone",
+      "url": "https://ehub.berkeley.edu/events/",
+      "tags": [
+        "Entrepreneurship"
+      ]
+    },
+    {
+      "id": "AR006",
+      "title": "Composition Colloquium: Tacet(i) Ensemble",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-04-03",
+      "time": "3:00 PM",
+      "location": "Wu Performance Hall (Morrison 125), UC Berkeley",
+      "description": "Tacet(i) Ensemble, Southeast Asia's leading contemporary music ensemble, dedicated to new works.",
       "url": "https://events.berkeley.edu/",
       "tags": [
         "Arts"
       ]
     },
     {
-      "id": "haas-healthcare-0403",
-      "title": "19th Annual Haas Healthcare Association Conference",
-      "organizer": "UC Berkeley Haas School of Business",
+      "id": "AR007",
+      "title": "UC Berkeley Chamber Chorus, University Chorus, UCBSO",
+      "organizer": "UC Berkeley Department of Music",
       "date": "2026-04-03",
-      "time": "9:00 AM",
-      "location": "Spieker Forum (6th Floor), Chou Hall, Haas School of Business",
-      "description": "Annual conference by the Haas Healthcare Association covering critical issues in healthcare.",
+      "time": "8:00 PM",
+      "location": "Hertz Concert Hall, UC Berkeley",
+      "description": "A joint performance by the UC Berkeley Chamber Chorus, University Chorus, and UCBSO.",
       "url": "https://events.berkeley.edu/",
       "tags": [
-        "Academic"
+        "Arts"
       ]
     },
     {
-      "id": "policymaking-booktalk-0403",
-      "title": "Policymaking for Realists: Book Talk w/ Matt Grossmann",
-      "organizer": "UC Berkeley",
-      "date": "2026-04-03",
-      "time": "12:00 PM - 1:30 PM",
-      "location": "820 Social Sciences Building",
-      "description": "A book talk by Matt Grossmann on realistic approaches to policymaking.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "writing-workshop-0403",
-      "title": "A Writing Workshop with Andrea Paluch",
-      "organizer": "UC Berkeley",
-      "date": "2026-04-03",
-      "time": "12:00 PM",
-      "location": "Dwinelle 282 (Level E)",
-      "description": "A writing workshop led by Andrea Paluch.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "aerospace-seminar-0403",
-      "title": "Aerospace Seminar",
-      "organizer": "UC Berkeley",
-      "date": "2026-04-03",
-      "time": "1:00 PM",
-      "location": "Jarvis Auditorium, Grimes Engineering Center",
-      "description": "A seminar on topics in aerospace engineering.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic",
-        "Science & Tech"
-      ]
-    },
-    {
-      "id": "discarded-civilization-0403",
-      "title": "Discarded Civilization: Music, Intimate Nightlife Labor, and the Development of Thailand during the Cold War",
-      "organizer": "UC Berkeley",
-      "date": "2026-04-03",
-      "time": "5:00 PM",
-      "location": "2111 Bancroft Way, 5th Floor, IEAS Conference Room",
-      "description": "A presentation on the development of Thailand during the Cold War through music and nightlife labor.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "fotovision-lecture-0403",
+      "id": "AC012",
       "title": "2026 Fotovision Lecture: An Evening with Ed Kashi",
       "organizer": "UC Berkeley",
       "date": "2026-04-03",
       "time": "7:00 PM",
-      "location": "Jarvis Auditorium (former Sibley) in Bechtel Engin",
-      "description": "An evening lecture with renowned photographer Ed Kashi.",
+      "location": "Berkeley, CA",
+      "description": "An evening lecture with renowned photojournalist Ed Kashi as part of the Fotovision series.",
       "url": "https://events.berkeley.edu/",
       "tags": [
-        "Academic",
-        "Arts"
+        "Academic"
       ]
     },
     {
-      "id": "eyh-0404",
-      "title": "Expanding Your Horizons (EYH) Conference",
-      "organizer": "EYH at Berkeley (UC Berkeley grad students, post docs, and staff)",
+      "id": "SL010",
+      "title": "Power in Community Day",
+      "organizer": "UC Berkeley Undergraduate Admissions",
       "date": "2026-04-04",
-      "time": "All Day",
+      "time": "TBD",
       "location": "UC Berkeley Campus",
-      "description": "Conference designed to introduce 5th-8th grade girls, trans youth, and gender non-conforming and/or non-binary youth to careers in STEM.",
-      "url": "https://eyh.berkeley.edu/",
+      "description": "On-campus event to celebrate and support underrepresented, low-income, and first-generation first-year admits.",
+      "url": "https://events.berkeley.edu/",
       "tags": [
-        "Science & Tech",
         "Student Life"
       ]
     },
     {
-      "id": "launchathon-0404",
-      "title": "UC LAUNCH Spring 2026 LAUNCHATHON",
-      "organizer": "UC LAUNCH Startup Accelerator",
-      "date": "2026-04-04",
+      "id": "ST005",
+      "title": "OSPO Monthly Knowledge Exchange: May",
+      "organizer": "College of Computing, Data Science, and Society (CDSS)",
+      "date": "2026-05-07",
       "time": "TBD",
-      "location": "UC Berkeley Campus",
-      "description": "A two-day hackathon weekend event with workshops and networking for students to help UC LAUNCH Startups build ideas.",
-      "url": "https://launch.berkeley.edu/events/",
+      "location": "UC Berkeley",
+      "description": "Monthly knowledge exchange session organized by the Open Source Program Office (OSPO).",
+      "url": "https://cdss.berkeley.edu/news-events/events-calendar",
       "tags": [
-        "Entrepreneurship",
-        "Science & Tech"
-      ]
-    },
-    {
-      "id": "launchathon-0405",
-      "title": "UC LAUNCH Spring 2026 LAUNCHATHON - Day 2",
-      "organizer": "UC LAUNCH Startup Accelerator",
-      "date": "2026-04-05",
-      "time": "TBD",
-      "location": "UC Berkeley Campus",
-      "description": "Day two of the hackathon event for UC LAUNCH Startups.",
-      "url": "https://launch.berkeley.edu/events/",
-      "tags": [
-        "Entrepreneurship",
-        "Science & Tech"
-      ]
-    },
-    {
-      "id": "ailey-dance-0407",
-      "title": "Alvin Ailey American Dance Theater",
-      "organizer": "Cal Performances",
-      "date": "2026-04-07",
-      "time": "TBD",
-      "location": "Zellerbach Hall, UC Berkeley",
-      "description": "A performance by the renowned Alvin Ailey American Dance Theater.",
-      "url": "https://calperformances.org/events/",
-      "tags": [
-        "Arts"
-      ]
-    },
-    {
-      "id": "insatiable-machine-0407",
-      "title": "The Insatiable Machine: How Capitalism Conquered the World",
-      "organizer": "UC Berkeley",
-      "date": "2026-04-07",
-      "time": "12:00 PM",
-      "location": "820 Social Sciences Building",
-      "description": "A lecture discussing the historical spread of capitalism.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
+        "Science & Tech",
         "Academic"
       ]
     },
     {
-      "id": "boxer-lecture-0407",
-      "title": "2026 Barbara Boxer Lecture: City, State and Nation: A Conversation with Mayor Barbara Lee",
-      "organizer": "UC Berkeley",
-      "date": "2026-04-07",
-      "time": "4:00 PM - 5:15 PM",
-      "location": "Banatao Auditorium Sutardja Dai Hall",
-      "description": "A conversation with Mayor Barbara Lee as part of the Barbara Boxer Lecture series.",
-      "url": "https://events.berkeley.edu/",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "grads-slam-0408",
-      "title": "UC Berkeley Grad Slam Competition",
+      "id": "AC013",
+      "title": "Grad Slam 2026!",
       "organizer": "UC Berkeley Graduate Division",
       "date": "2026-04-08",
-      "time": "3:00 PM – 5:30 PM",
-      "location": "Banatao Auditorium, Sutardja Dai Hall",
-      "description": "Graduate students showcase their research in three-minute talks.",
-      "url": "https://grad.berkeley.edu/news/dont-miss-grad-slam-2026/",
+      "time": "3:00 PM",
+      "location": "Banatao Auditorium, UC Berkeley",
+      "description": "Nine semi-finalists present their three-minute talks at the campus-wide Grad Slam competition.",
+      "url": "https://events.berkeley.edu/",
       "tags": [
-        "Academic",
-        "Science & Tech"
+        "Academic"
       ]
     },
     {
-      "id": "vc-startup-summit-0408",
-      "title": "Berkeley VC & Startup Summit",
-      "organizer": "UC Berkeley",
+      "id": "EHUB_20260408_043",
+      "title": "International Founder Roadmap: F-1, CPT/OPT & Beyond",
+      "organizer": "Berkeley E-Hub",
       "date": "2026-04-08",
-      "time": "11:00 AM",
-      "location": "Alumni House - UC Berkeley Campus",
-      "description": "A summit connecting venture capitalists with startup founders.",
-      "url": "https://events.berkeley.edu/",
+      "time": "See event page",
+      "location": "Berkeley E-Hub",
+      "description": "International Founder Roadmap: F-1, CPT/OPT & Beyond",
+      "url": "https://ehub.berkeley.edu/events/",
       "tags": [
         "Entrepreneurship"
       ]
     },
     {
-      "id": "crafterdark-0409",
+      "id": "SL011",
       "title": "Crafter Dark – DIY Shirt Patches",
       "organizer": "ASUC Student Union",
       "date": "2026-04-09",
-      "time": "7:30 PM – 9:30 PM",
-      "location": "1st Floor of MLK Jr. Building, Game Zone Area",
-      "description": "A night to make DIY shirt patches, hosted in partnership with Cub Concerts at Berkeley.",
+      "time": "7:30 PM",
+      "location": "1st Floor of MLK Jr. Building, Game Zone Area, UC Berkeley",
+      "description": "Take a break and make your own DIY shirt patches, hosted in partnership with Cub Concerts.",
+      "url": "https://studentunion.berkeley.edu/programs",
+      "tags": [
+        "Student Life",
+        "Arts"
+      ]
+    },
+    {
+      "id": "EHUB_20260409_045",
+      "title": "Problem of the Month: Framing the Problem",
+      "organizer": "Berkeley E-Hub",
+      "date": "2026-04-09",
+      "time": "See event page",
+      "location": "Berkeley E-Hub",
+      "description": "Problem of the Month: Framing the Problem",
+      "url": "https://ehub.berkeley.edu/events/",
+      "tags": [
+        "Entrepreneurship"
+      ]
+    },
+    {
+      "id": "AC014",
+      "title": "Networking for Non-Academic Career Preparation and Exploration",
+      "organizer": "UC Berkeley Graduate Division",
+      "date": "2026-04-10",
+      "time": "3:00 PM",
+      "location": "Virtual (GradPro)",
+      "description": "A virtual workshop for graduate students on networking for non-academic career exploration.",
       "url": "https://events.berkeley.edu/",
       "tags": [
-        "Student Life"
+        "Academic"
       ]
     },
     {
-      "id": "eecs-hafezi-0410",
-      "title": "BETR/EECS Solid State Technologies Seminar: Prof. Mohammad Hafezi | Topology Meets Nonlinear Optics",
-      "organizer": "UC Berkeley EECS",
-      "date": "2026-04-10",
-      "time": "1:00 PM",
-      "location": "Hogan Room, Cory Hall (room 521)",
-      "description": "Prof. Mohammad Hafezi from the University of Maryland discusses new frontiers in nanophotonic devices.",
-      "url": "https://eecs.berkeley.edu/events",
-      "tags": [
-        "Academic",
-        "Science & Tech"
-      ]
-    },
-    {
-      "id": "movie-night-0410",
+      "id": "SL012",
       "title": "Movie Night at Headlands - Legally Blonde",
       "organizer": "ASUC Student Union",
       "date": "2026-04-10",
-      "time": "7:00 PM - 9:00 PM",
-      "location": "Headlands on Campus",
-      "description": "An enjoyable evening screening of the film Legally Blonde.",
+      "time": "7:00 PM",
+      "location": "Headlands on Campus, UC Berkeley",
+      "description": "An enjoyable evening screening of the film 'Legally Blonde', free to all UC Berkeley students.",
+      "url": "https://studentunion.berkeley.edu/programs",
+      "tags": [
+        "Student Life",
+        "Arts"
+      ]
+    },
+    {
+      "id": "ET006",
+      "title": "SkyDeck Virtual Intern Fair",
+      "organizer": "Berkeley SkyDeck",
+      "date": "2026-04-10",
+      "time": "8:45 AM",
+      "location": "Virtual",
+      "description": "Virtual intern fair to connect students with startup founders for summer internships.",
+      "url": "https://scet.berkeley.edu/events/",
+      "tags": [
+        "Entrepreneurship"
+      ]
+    },
+    {
+      "id": "AR008",
+      "title": "African Music Ensemble",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-04-11",
+      "time": "TBD",
+      "location": "UC Berkeley",
+      "description": "A performance by the UC Berkeley African Music Ensemble.",
+      "url": "https://tickets.berkeley.edu/events",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "ST006",
+      "title": "EECS Colloquium | Can AI assist in Mathematics and Computer Science research?",
+      "organizer": "UC Berkeley Electrical Engineering & Computer Sciences (EECS)",
+      "date": "2026-04-15",
+      "time": "4:00 PM",
+      "location": "Banatao Auditorium, Sutardja Dai Hall, UC Berkeley",
+      "description": "Dedicated to hosting presentations at the intersection of Electrical Engineering and Computer Science.",
+      "url": "https://events.berkeley.edu/eecs/",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "AC015",
+      "title": "Celebrate Mentorship at Cal for 2026!",
+      "organizer": "UC Berkeley Graduate Division",
+      "date": "2026-04-16",
+      "time": "5:00 PM",
+      "location": "Alumni House, Toll Room, UC Berkeley",
+      "description": "An event to recognize outstanding faculty and graduate student mentors.",
       "url": "https://events.berkeley.edu/",
       "tags": [
-        "Arts",
-        "Student Life"
+        "Academic"
       ]
     },
     {
-      "id": "eecs-ai-cs-0415",
-      "title": "EECS Colloquium | Can AI assist in Mathematics and Computer Science research?",
-      "organizer": "UC Berkeley EECS",
-      "date": "2026-04-15",
-      "time": "4:00 PM – 5:00 PM",
-      "location": "310 (Banatao Auditorium) - Sutardja Dai Hall",
-      "description": "A colloquium exploring the role of AI in mathematics and computer science research.",
-      "url": "https://eecs.berkeley.edu/events",
+      "id": "ST007",
+      "title": "OSPO Monthly Meetup: What can your OSPO do for you?",
+      "organizer": "College of Computing, Data Science, and Society (CDSS)",
+      "date": "2026-04-16",
+      "time": "TBD",
+      "location": "UC Berkeley",
+      "description": "Monthly meetup of the Open Source Program Office (OSPO) to discuss its functions.",
+      "url": "https://cdss.berkeley.edu/news-events/events-calendar",
       "tags": [
-        "Academic",
-        "Science & Tech"
+        "Science & Tech",
+        "Academic"
       ]
     },
     {
-      "id": "EHUB_20260415_046",
-      "title": "Real Work, Real Conversations",
+      "id": "EHUB_20260416_048",
+      "title": "Problem of the Month: Empathy & Ideation",
       "organizer": "Berkeley E-Hub",
-      "date": "2026-04-15",
+      "date": "2026-04-16",
       "time": "See event page",
       "location": "Berkeley E-Hub",
-      "description": "Real Work, Real Conversations",
+      "description": "Problem of the Month: Empathy & Ideation",
       "url": "https://ehub.berkeley.edu/events/",
       "tags": [
         "Entrepreneurship"
       ]
     },
     {
-      "id": "eecs-baraket-0417",
-      "title": "BETR/EECS Solid State Technologies Seminar: Dr. Mira Baraket | Direct Atomic Layer Processing",
-      "organizer": "UC Berkeley EECS",
-      "date": "2026-04-17",
-      "time": "1:00 PM",
-      "location": "Hogan Room, Cory Hall (room 521)",
-      "description": "Dr. Mira Baraket discusses direct atomic layer processing for next-generation devices.",
-      "url": "https://eecs.berkeley.edu/events",
+      "id": "AR009",
+      "title": "No Lines in the Sea: featuring Elana Sasson. A Flowing through Time and Tradition Program",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-04-16",
+      "time": "TBD",
+      "location": "UC Berkeley",
+      "description": "A program featuring Elana Sasson, exploring themes of flowing through time and tradition.",
+      "url": "https://tickets.berkeley.edu/events",
       "tags": [
-        "Academic",
-        "Science & Tech"
+        "Arts"
       ]
     },
     {
-      "id": "community-day-0421",
-      "title": "Community Day - Explore Community Service Orgs",
+      "id": "AR010",
+      "title": "Latin American & Caribbean Music",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-04-16",
+      "time": "TBD",
+      "location": "UC Berkeley",
+      "description": "A performance showcasing Latin American and Caribbean music.",
+      "url": "https://tickets.berkeley.edu/events",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "SL013",
+      "title": "Cal Day",
+      "organizer": "UC Berkeley",
+      "date": "2026-04-18",
+      "time": "TBD",
+      "location": "UC Berkeley Campus",
+      "description": "UC Berkeley's largest on-campus event for newly admitted first-year students and their families, with exploration, celebration, and connection.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Student Life"
+      ]
+    },
+    {
+      "id": "SL014",
+      "title": "Community Day",
       "organizer": "ASUC Student Union",
       "date": "2026-04-21",
-      "time": "12:00 PM - 2:00 PM",
-      "location": "MLK Jr. Building / Lower Sproul",
-      "description": "An event to learn about and connect with community service student organizations on campus.",
-      "url": "https://events.berkeley.edu/",
+      "time": "12:00 PM",
+      "location": "Student Union, UC Berkeley",
+      "description": "Get to know community service student organizations as they host activities and workshops.",
+      "url": "https://studentunion.berkeley.edu/programs",
       "tags": [
         "Student Life"
       ]
     },
     {
-      "id": "imagine-next-0421",
-      "title": "Imagine Next 2026, Silicon Valley's Global Climate Tech Capital Summit",
-      "organizer": "UC Berkeley Haas School of Business",
-      "date": "2026-04-21",
-      "time": "9:30 AM",
-      "location": "UC Berkeley Haas School of Business",
-      "description": "A summit focusing on climate technology and capital in Silicon Valley.",
+      "id": "AC016",
+      "title": "Handshake for Graduate Students",
+      "organizer": "UC Berkeley Graduate Division",
+      "date": "2026-04-23",
+      "time": "3:00 PM",
+      "location": "Virtual (GradPro)",
+      "description": "A virtual workshop on using Handshake for networking, connecting with employers, and discovering job opportunities.",
       "url": "https://events.berkeley.edu/",
       "tags": [
-        "Entrepreneurship",
-        "Science & Tech"
+        "Academic"
       ]
     },
     {
-      "id": "eecs-climb-0422",
-      "title": "EECS Colloquium/CLIMB Seminar | Formal Models of Language Generation",
-      "organizer": "UC Berkeley EECS",
-      "date": "2026-04-22",
-      "time": "4:00 PM – 5:00 PM",
-      "location": "Banatao Auditorium, 310 Sutardja Dai Hall",
-      "description": "A seminar on formal models of language generation in computer science.",
-      "url": "https://eecs.berkeley.edu/events",
+      "id": "AR011",
+      "title": "Spring Workshop Performance: “Whatever You Want, Man” By Erin Weitzman",
+      "organizer": "Department of Theater, Dance, and Performance Studies (TDPS)",
+      "date": "2026-04-23",
+      "time": "TBD",
+      "location": "Bancroft Dance Studio, UC Berkeley",
+      "description": "A performance by Erin Weitzman, likely an adaptation of Shakespeare's As You Like It.",
+      "url": "https://tdps.berkeley.edu/events",
       "tags": [
-        "Academic",
-        "Science & Tech"
+        "Arts"
       ]
     },
     {
-      "id": "eecs-rosenfeld-0424",
-      "title": "BETR/EECS Solid State Technologies Seminar: Dr. Emma Rosenfeld | Magic State Cultivation",
-      "organizer": "UC Berkeley EECS",
+      "id": "AR012",
+      "title": "Sam Aros-Mitchell: Performance as Ceremony",
+      "organizer": "Department of Theater, Dance, and Performance Studies (TDPS)",
+      "date": "2026-04-23",
+      "time": "4:00 PM",
+      "location": "Bancroft Dance Studio, UC Berkeley",
+      "description": "Yaqui choreographer, cultural producer, scholar, and performer Sam Aros-Mitchell offers a lecture–performance hybrid.",
+      "url": "https://tdps.berkeley.edu/events",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "AC017",
+      "title": "P FKN R: How Bad Bunny Became the Global Voice of Puerto Rican Resistance (Book Presentation)",
+      "organizer": "UC Berkeley Department of Music",
       "date": "2026-04-24",
-      "time": "1:00 PM",
-      "location": "Hogan Room, Cory Hall (room 521)",
-      "description": "Dr. Emma Rosenfeld from Google Quantum AI discusses magic state cultivation on a superconducting quantum processor.",
-      "url": "https://eecs.berkeley.edu/events",
+      "time": "12:00 PM",
+      "location": "650 Social Sciences Building, UC Berkeley",
+      "description": "Book presentation for 'P FKN R: How Bad Bunny Became the Global Voice of Puerto Rican Resistance'.",
+      "url": "https://events.berkeley.edu/",
       "tags": [
-        "Academic",
+        "Academic"
+      ]
+    },
+    {
+      "id": "AC018",
+      "title": "Music Studies Colloquium: Birgit Lodes. Echoes of Dedication",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-04-24",
+      "time": "4:30 PM",
+      "location": "Wu Performance Hall (Morrison Hall, Room 125), UC Berkeley",
+      "description": "A music studies colloquium featuring Birgit Lodes.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "AR013",
+      "title": "An Evening of Creative Jazz",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-04-24",
+      "time": "8:00 PM",
+      "location": "Hertz Hall, UC Berkeley",
+      "description": "An evening performance showcasing creative jazz.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "SL015",
+      "title": "Earth Day Celebration",
+      "organizer": "The Lawrence Hall of Science & UC Berkeley Student Organizations",
+      "date": "2026-04-26",
+      "time": "11:00 AM",
+      "location": "The Lawrence Hall of Science, Berkeley, CA",
+      "description": "Join community partners and UC Berkeley student organizations for the third-annual Earth Day celebration!",
+      "url": "https://www.lawrencehallofscience.org/events/earth-day-celebration",
+      "tags": [
+        "Student Life",
         "Science & Tech"
       ]
     },
     {
-      "id": "lhs-earthday-0426",
-      "title": "Earth Day Celebration",
-      "organizer": "The Lawrence Hall of Science",
-      "date": "2026-04-26",
-      "time": "11:00 AM – 3:00 PM",
-      "location": "The Lawrence Hall of Science",
-      "description": "An annual Earth Day celebration featuring activities, climate science, Ohlone culture, and live performance.",
-      "url": "https://www.lawrencehallofscience.org/events/",
-      "tags": [
-        "Science & Tech",
-        "Student Life"
-      ]
-    },
-    {
-      "id": "drag-bingo-0430",
+      "id": "SL016",
       "title": "Drag Bingo",
       "organizer": "ASUC Student Union",
       "date": "2026-04-30",
-      "time": "7:30 PM - 9:30 PM",
-      "location": "1st Floor of MLK Jr. Building, Game Zone Area",
-      "description": "The final Drag Bingo of the semester with laughter, prizes, and treats.",
-      "url": "https://events.berkeley.edu/",
+      "time": "7:30 PM",
+      "location": "Student Union, UC Berkeley",
+      "description": "An unforgettable night filled with laughter, prizes, and treats hosted by Thee Leggy Pee.",
+      "url": "https://studentunion.berkeley.edu/programs",
       "tags": [
-        "Student Life"
+        "Student Life",
+        "Arts"
       ]
     },
     {
-      "id": "unwind-recharge-0501",
-      "title": "Unwind & Recharge Before Exams",
+      "id": "AR014",
+      "title": "Berkeley Dance Project 2026 Performance",
+      "organizer": "Department of Theater, Dance, and Performance Studies (TDPS)",
+      "date": "2026-04-30",
+      "time": "8:00 PM",
+      "location": "Zellerbach Playhouse, UC Berkeley",
+      "description": "A dynamic concert celebrating diverse dancemakers from the UC Berkeley campus.",
+      "url": "https://tdps.berkeley.edu/events",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "ET008",
+      "title": "Commence Your Career: Connecting Seniors & Alums",
       "organizer": "ASUC Student Union",
+      "date": "2026-04-30",
+      "time": "TBD",
+      "location": "ASUC Student Union, UC Berkeley",
+      "description": "Interactive event connecting graduating students and Cal alums for career-building opportunities.",
+      "url": "https://asuc.org/events",
+      "tags": [
+        "Entrepreneurship",
+        "Student Life"
+      ]
+    },
+    {
+      "id": "AR015",
+      "title": "Berkeley Dance Project 2026 Performance",
+      "organizer": "Department of Theater, Dance, and Performance Studies (TDPS)",
       "date": "2026-05-01",
-      "time": "2:00 PM - 5:00 PM",
-      "location": "MLK Jr. Building, 1st Floor Game Zone",
-      "description": "An event for students to relax and recharge before final exams.",
+      "time": "8:00 PM",
+      "location": "Zellerbach Playhouse, UC Berkeley",
+      "description": "A dynamic concert celebrating diverse dancemakers from the UC Berkeley campus.",
+      "url": "https://tdps.berkeley.edu/events",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "SL017",
+      "title": "Golden Bear Welcome",
+      "organizer": "UC Berkeley Undergraduate Admissions",
+      "date": "2026-05-02",
+      "time": "TBD",
+      "location": "UC Berkeley Campus",
+      "description": "Exclusive on-campus event for newly admitted transfer students and their families to connect with resources and community.",
       "url": "https://events.berkeley.edu/",
       "tags": [
         "Student Life"
       ]
     },
     {
-      "id": "eecs-muppala-0505",
-      "title": "BSAC Technology Seminar: Prof. Aditya Varma Muppala | Affine Virtual",
-      "organizer": "UC Berkeley EECS",
-      "date": "2026-05-05",
-      "time": "TBD",
-      "location": "UC Berkeley Campus",
-      "description": "A technology seminar by Prof. Aditya Varma Muppala.",
-      "url": "https://eecs.berkeley.edu/events",
+      "id": "AR016",
+      "title": "BAMPFA Art & Film Benefit",
+      "organizer": "Berkeley Art Museum and Pacific Film Archive (BAMPFA)",
+      "date": "2026-05-02",
+      "time": "5:30 PM",
+      "location": "BAMPFA, 2155 Center Street, Berkeley, CA",
+      "description": "A vibrant celebration uniting artists, filmmakers, philanthropists, and cultural leaders to honor the creative spirit of Berkeley.",
+      "url": "https://bampfa.org/calendar",
       "tags": [
-        "Academic",
-        "Science & Tech"
+        "Arts"
       ]
     },
     {
-      "id": "launch-demoday-0506",
-      "title": "UC LAUNCH Spring 2026 DEMO DAY",
-      "organizer": "UC LAUNCH Startup Accelerator",
-      "date": "2026-05-06",
-      "time": "TBD",
-      "location": "UC Berkeley Campus",
-      "description": "An event to showcase startup finalists and their pitches.",
-      "url": "https://launch.berkeley.edu/events/",
+      "id": "AR017",
+      "title": "Berkeley Dance Project 2026 Performance",
+      "organizer": "Department of Theater, Dance, and Performance Studies (TDPS)",
+      "date": "2026-05-02",
+      "time": "8:00 PM",
+      "location": "Zellerbach Playhouse, UC Berkeley",
+      "description": "A dynamic concert celebrating diverse dancemakers from the UC Berkeley campus.",
+      "url": "https://tdps.berkeley.edu/events",
       "tags": [
-        "Entrepreneurship"
+        "Arts"
       ]
     },
     {
-      "id": "firstgen-celebration-0514",
-      "title": "2026 First Generation End of Year Celebration",
-      "organizer": "UC Berkeley Graduate Division",
-      "date": "2026-05-14",
-      "time": "12:00 PM - 2:00 PM",
-      "location": "The Inclusive Excellence Hub, 2515 Channing Way, Berkeley, CA 94704",
-      "description": "A celebration for first-generation graduate students, faculty, staff, and allies.",
-      "url": "https://grad.berkeley.edu/events/",
-      "tags": [
-        "Student Life"
-      ]
-    },
-    {
-      "id": "cdss-commencement-am-0522",
-      "title": "2026 CDSS Undergraduate Commencement Ceremony (Morning)",
-      "organizer": "College of Computing, Data Science, and Society (CDSS)",
-      "date": "2026-05-22",
-      "time": "9:00 AM",
-      "location": "Hearst Greek Theatre, Berkeley",
-      "description": "Undergraduate commencement ceremony for Computer Science, Data Science, and Statistics majors.",
-      "url": "https://cdss.berkeley.edu/news-events/events-calendar",
-      "tags": [
-        "Academic"
-      ]
-    },
-    {
-      "id": "cdss-commencement-pm-0522",
-      "title": "2026 CDSS Undergraduate Commencement Ceremony (Afternoon)",
-      "organizer": "College of Computing, Data Science, and Society (CDSS)",
-      "date": "2026-05-22",
+      "id": "AR018",
+      "title": "Berkeley Dance Project 2026 Performance",
+      "organizer": "Department of Theater, Dance, and Performance Studies (TDPS)",
+      "date": "2026-05-03",
       "time": "2:00 PM",
-      "location": "Hearst Greek Theatre, Berkeley",
-      "description": "Undergraduate commencement ceremony for Computer Science, Data Science, and Statistics majors.",
-      "url": "https://cdss.berkeley.edu/news-events/events-calendar",
+      "location": "Zellerbach Playhouse, UC Berkeley",
+      "description": "A dynamic concert celebrating diverse dancemakers from the UC Berkeley campus.",
+      "url": "https://tdps.berkeley.edu/events",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "ET009",
+      "title": "Collider Cup XVIII",
+      "organizer": "Sutardja Center for Entrepreneurship & Technology (SCET)",
+      "date": "2026-05-08",
+      "time": "2:00 PM",
+      "location": "Jarvis Auditorium, Grimes Engineering Center, UC Berkeley",
+      "description": "Berkeley's premier student startup pitch competition, where top student teams pitch to experts.",
+      "url": "https://scet.berkeley.edu/events/",
+      "tags": [
+        "Entrepreneurship"
+      ]
+    },
+    {
+      "id": "AR019",
+      "title": "UC Berkeley Symphony Orchestra",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-05-08",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "A performance by the UC Berkeley Symphony Orchestra.",
+      "url": "https://tickets.berkeley.edu/events",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "AR020",
+      "title": "UC Berkeley Symphony Orchestra",
+      "organizer": "UC Berkeley Department of Music",
+      "date": "2026-05-09",
+      "time": "8:00 PM",
+      "location": "Zellerbach Hall, UC Berkeley",
+      "description": "A performance by the UC Berkeley Symphony Orchestra.",
+      "url": "https://tickets.berkeley.edu/events",
+      "tags": [
+        "Arts"
+      ]
+    },
+    {
+      "id": "AC019",
+      "title": "Theater, Dance, and Performance Studies Spring 2026 Commencement",
+      "organizer": "Department of Theater, Dance, and Performance Studies (TDPS)",
+      "date": "2026-05-18",
+      "time": "TBD",
+      "location": "UC Berkeley",
+      "description": "Commencement ceremony for the graduating students of the Department of Theater, Dance, and Performance Studies.",
+      "url": "https://tdps.berkeley.edu/events",
       "tags": [
         "Academic"
       ]
     },
     {
-      "id": "cal-baseball-gt-0402",
-      "title": "Cal Bears Baseball vs. Georgia Tech",
-      "organizer": "Cal Athletics",
-      "date": "2026-04-02",
+      "id": "AC020",
+      "title": "Planning Your Summer",
+      "organizer": "UC Berkeley Graduate Division",
+      "date": "2026-05-19",
+      "time": "3:00 PM",
+      "location": "Virtual (GradPro)",
+      "description": "An interactive workshop for graduate students on setting meaningful summer goals for internships, research, or dissertations.",
+      "url": "https://events.berkeley.edu/",
+      "tags": [
+        "Academic"
+      ]
+    },
+    {
+      "id": "ST008",
+      "title": "OSPO Monthly Meetup: May",
+      "organizer": "College of Computing, Data Science, and Society (CDSS)",
+      "date": "2026-05-21",
       "time": "TBD",
-      "location": "Stu Gordon Stadium, Berkeley, CA",
-      "description": "ACC baseball game between the Cal Bears and Georgia Tech.",
+      "location": "UC Berkeley",
+      "description": "Monthly meetup of the Open Source Program Office (OSPO) to discuss current topics.",
+      "url": "https://cdss.berkeley.edu/news-events/events-calendar",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "ST009",
+      "title": "National Workshop on Data Science Education",
+      "organizer": "UC Berkeley Data Science Undergraduate Studies (CDSS)",
+      "date": "2026-06-22",
+      "time": "TBD",
+      "location": "UC Berkeley",
+      "description": "Multi-day workshop exploring the future of data science education, AI in education, and human contexts and ethics.",
+      "url": "https://cdss.berkeley.edu/news-events/events-calendar",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "ST010",
+      "title": "CDSS Data Discovery Fall Symposium",
+      "organizer": "College of Computing, Data Science, and Society (CDSS)",
+      "date": "2026-12-10",
+      "time": "TBD",
+      "location": "UC Berkeley",
+      "description": "Symposium showcasing data discovery research and projects from CDSS.",
+      "url": "https://cdss.berkeley.edu/news-events/events-calendar",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ]
+    },
+    {
+      "id": "SP001",
+      "title": "Cal Men's Basketball vs. Cal State Bakersfield",
+      "organizer": "Cal Athletics",
+      "date": "2025-11-03",
+      "time": "TBD",
+      "location": "Berkeley, CA",
+      "description": "The Cal Bears men's basketball team faces Cal State Bakersfield in a home game.",
       "url": "https://calbears.com/calendar",
       "tags": [
         "Sports"
       ]
     },
     {
-      "id": "cal-baseball-gt-0403",
-      "title": "Cal Bears Baseball vs. Georgia Tech",
+      "id": "SP002",
+      "title": "Cal Women's Basketball vs. TBD (Exhibition)",
       "organizer": "Cal Athletics",
-      "date": "2026-04-03",
-      "time": "TBD",
-      "location": "Stu Gordon Stadium, Berkeley, CA",
-      "description": "ACC baseball game between the Cal Bears and Georgia Tech.",
+      "date": "2025-10-28",
+      "time": "7:00 PM",
+      "location": "Haas Pavilion, UC Berkeley",
+      "description": "Exhibition game for the Cal Bears women's basketball team.",
       "url": "https://calbears.com/calendar",
       "tags": [
         "Sports"
       ]
     },
     {
-      "id": "cal-baseball-gt-0404",
-      "title": "Cal Bears Baseball vs. Georgia Tech",
+      "id": "SP003",
+      "title": "Cal Men's Basketball vs. Wright State",
       "organizer": "Cal Athletics",
-      "date": "2026-04-04",
+      "date": "2025-11-06",
       "time": "TBD",
-      "location": "Stu Gordon Stadium, Berkeley, CA",
-      "description": "ACC baseball game between the Cal Bears and Georgia Tech.",
+      "location": "Berkeley, CA",
+      "description": "The Cal Bears men's basketball team faces Wright State in a home game.",
       "url": "https://calbears.com/calendar",
       "tags": [
         "Sports"
       ]
     },
     {
-      "id": "cal-baseball-louisville-0417",
-      "title": "Cal Bears Baseball vs. Louisville",
+      "id": "SP004",
+      "title": "Cal Men's Basketball vs. Cal State",
       "organizer": "Cal Athletics",
-      "date": "2026-04-17",
+      "date": "2025-11-10",
       "time": "TBD",
-      "location": "Stu Gordon Stadium, Berkeley, CA",
-      "description": "ACC baseball game between the Cal Bears and Louisville.",
+      "location": "Berkeley, CA",
+      "description": "The Cal Bears men's basketball team faces an opponent from Cal State in a home game.",
       "url": "https://calbears.com/calendar",
       "tags": [
         "Sports"
       ]
     },
     {
-      "id": "cal-baseball-louisville-0418",
-      "title": "Cal Bears Baseball vs. Louisville",
+      "id": "SP005",
+      "title": "Cal Women's Basketball Raising the B.A.R. Invitational",
       "organizer": "Cal Athletics",
-      "date": "2026-04-18",
+      "date": "2025-11-15",
       "time": "TBD",
-      "location": "Stu Gordon Stadium, Berkeley, CA",
-      "description": "ACC baseball game between the Cal Bears and Louisville.",
+      "location": "Berkeley, CA",
+      "description": "The Cal Bears women's basketball team hosts the Raising the B.A.R. Invitational.",
       "url": "https://calbears.com/calendar",
       "tags": [
         "Sports"
       ]
     },
     {
-      "id": "cal-baseball-louisville-0419",
-      "title": "Cal Bears Baseball vs. Louisville",
+      "id": "SP006",
+      "title": "Cal Women's Basketball Hoopfest",
       "organizer": "Cal Athletics",
-      "date": "2026-04-19",
+      "date": "2025-11-24",
       "time": "TBD",
-      "location": "Stu Gordon Stadium, Berkeley, CA",
-      "description": "ACC baseball game between the Cal Bears and Louisville.",
+      "location": "Berkeley, CA",
+      "description": "The Cal Bears women's basketball team hosts Hoopfest.",
       "url": "https://calbears.com/calendar",
       "tags": [
         "Sports"
       ]
     },
     {
-      "id": "cal-baseball-stanford-0514",
-      "title": "Cal Bears Baseball vs. Stanford",
+      "id": "SP007",
+      "title": "Cal Men's Basketball vs. Utah",
       "organizer": "Cal Athletics",
-      "date": "2026-05-14",
+      "date": "2025-12-02",
       "time": "TBD",
-      "location": "Stu Gordon Stadium, Berkeley, CA",
-      "description": "ACC baseball game between the Cal Bears and rival Stanford.",
+      "location": "Berkeley, CA",
+      "description": "The Cal Bears men's basketball team faces Utah in a home game.",
       "url": "https://calbears.com/calendar",
       "tags": [
         "Sports"
       ]
     },
     {
-      "id": "cal-baseball-stanford-0515",
-      "title": "Cal Bears Baseball vs. Stanford",
+      "id": "SP008",
+      "title": "Cal Women's Basketball ACC/SEC Challenge",
       "organizer": "Cal Athletics",
-      "date": "2026-05-15",
+      "date": "2025-12-04",
       "time": "TBD",
-      "location": "Stu Gordon Stadium, Berkeley, CA",
-      "description": "ACC baseball game between the Cal Bears and rival Stanford.",
+      "location": "Berkeley, CA",
+      "description": "The Cal Bears women's basketball team participates in the ACC/SEC Challenge.",
       "url": "https://calbears.com/calendar",
       "tags": [
         "Sports"
       ]
     },
     {
-      "id": "cal-baseball-stanford-0516",
-      "title": "Cal Bears Baseball vs. Stanford",
+      "id": "SP009",
+      "title": "Cal Men's Basketball vs. Louisville",
       "organizer": "Cal Athletics",
-      "date": "2026-05-16",
+      "date": "2025-12-30",
       "time": "TBD",
-      "location": "Stu Gordon Stadium, Berkeley, CA",
-      "description": "ACC baseball game between the Cal Bears and rival Stanford.",
+      "location": "Haas Pavilion, UC Berkeley",
+      "description": "The Cal Bears men's basketball team hosts Louisville in an ACC conference game.",
       "url": "https://calbears.com/calendar",
       "tags": [
         "Sports"
       ]
     },
     {
-      "id": "alvinailey-0408",
-      "title": "Alvin Ailey American Dance Theater",
-      "organizer": "Cal Performances",
-      "date": "2026-04-08",
+      "id": "SP010",
+      "title": "Cal Men's Basketball vs. Duke",
+      "organizer": "Cal Athletics",
+      "date": "2026-01-13",
       "time": "TBD",
-      "location": "Zellerbach Hall, UC Berkeley",
-      "description": "A performance by the renowned Alvin Ailey American Dance Theater.",
-      "url": "https://calperformances.org/events/",
+      "location": "Haas Pavilion, UC Berkeley",
+      "description": "The Cal Bears men's basketball team hosts national powerhouse Duke.",
+      "url": "https://calbears.com/calendar",
       "tags": [
-        "Arts"
+        "Sports"
       ]
     },
     {
-      "id": "alvinailey-0409",
-      "title": "Alvin Ailey American Dance Theater",
-      "organizer": "Cal Performances",
-      "date": "2026-04-09",
-      "time": "TBD",
-      "location": "Zellerbach Hall, UC Berkeley",
-      "description": "A performance by the renowned Alvin Ailey American Dance Theater.",
-      "url": "https://calperformances.org/events/",
+      "id": "SP011",
+      "title": "Cal Men's Basketball vs. North Carolina",
+      "organizer": "Cal Athletics",
+      "date": "2026-01-17",
+      "time": "1:00 PM",
+      "location": "Haas Pavilion, UC Berkeley",
+      "description": "The Cal Bears men's basketball team hosts national powerhouse North Carolina.",
+      "url": "https://calbears.com/calendar",
       "tags": [
-        "Arts"
+        "Sports"
       ]
     },
     {
-      "id": "alvinailey-0410",
-      "title": "Alvin Ailey American Dance Theater",
-      "organizer": "Cal Performances",
-      "date": "2026-04-10",
+      "id": "SP012",
+      "title": "Cal Men's Basketball vs. Stanford",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-21",
       "time": "TBD",
-      "location": "Zellerbach Hall, UC Berkeley",
-      "description": "A performance by the renowned Alvin Ailey American Dance Theater.",
-      "url": "https://calperformances.org/events/",
+      "location": "Haas Pavilion, UC Berkeley",
+      "description": "The Cal Bears men's basketball team faces rival Stanford in a home game.",
+      "url": "https://calbears.com/calendar",
       "tags": [
-        "Arts"
+        "Sports"
       ]
     },
     {
-      "id": "alvinailey-0411",
-      "title": "Alvin Ailey American Dance Theater",
-      "organizer": "Cal Performances",
-      "date": "2026-04-11",
+      "id": "SP013",
+      "title": "Cal Men's Basketball vs. SMU",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-24",
       "time": "TBD",
-      "location": "Zellerbach Hall, UC Berkeley",
-      "description": "A performance by the renowned Alvin Ailey American Dance Theater.",
-      "url": "https://calperformances.org/events/",
+      "location": "Haas Pavilion, UC Berkeley",
+      "description": "The Cal Bears men's basketball team hosts SMU.",
+      "url": "https://calbears.com/calendar",
       "tags": [
-        "Arts"
+        "Sports"
       ]
     },
     {
-      "id": "alvinailey-0412",
-      "title": "Alvin Ailey American Dance Theater",
-      "organizer": "Cal Performances",
-      "date": "2026-04-12",
+      "id": "SP014",
+      "title": "Cal Men's Basketball vs. Pitt",
+      "organizer": "Cal Athletics",
+      "date": "2026-02-28",
       "time": "TBD",
-      "location": "Zellerbach Hall, UC Berkeley",
-      "description": "A performance by the renowned Alvin Ailey American Dance Theater.",
-      "url": "https://calperformances.org/events/",
+      "location": "Haas Pavilion, UC Berkeley",
+      "description": "The Cal Bears men's basketball team hosts Pitt in an ACC conference game.",
+      "url": "https://calbears.com/calendar",
       "tags": [
-        "Arts"
-      ]
-    },
-    {
-      "id": "EHUB_20260323_053",
-      "title": "SEARCH Labs: Structured Momentum for Builders",
-      "organizer": "Berkeley E-Hub",
-      "date": "2026-03-23",
-      "time": "See event page",
-      "location": "Berkeley E-Hub",
-      "description": "SEARCH Labs: Structured Momentum for Builders",
-      "url": "https://ehub.berkeley.edu/events/",
-      "tags": [
-        "Entrepreneurship"
+        "Sports"
       ]
     },
     {
@@ -1168,19 +1305,6 @@
       ]
     },
     {
-      "id": "EHUB_20260402_042",
-      "title": "Outside Your Comfort Zone",
-      "organizer": "Berkeley E-Hub",
-      "date": "2026-04-02",
-      "time": "See event page",
-      "location": "Berkeley E-Hub",
-      "description": "Outside Your Comfort Zone",
-      "url": "https://ehub.berkeley.edu/events/",
-      "tags": [
-        "Entrepreneurship"
-      ]
-    },
-    {
       "id": "EHUB_20260403_062",
       "title": "SEARCH Labs: Structured Momentum for Builders",
       "organizer": "Berkeley E-Hub",
@@ -1201,19 +1325,6 @@
       "time": "See event page",
       "location": "Berkeley E-Hub",
       "description": "SEARCH Labs: Structured Momentum for Builders",
-      "url": "https://ehub.berkeley.edu/events/",
-      "tags": [
-        "Entrepreneurship"
-      ]
-    },
-    {
-      "id": "EHUB_20260408_043",
-      "title": "International Founder Roadmap: F-1, CPT/OPT & Beyond",
-      "organizer": "Berkeley E-Hub",
-      "date": "2026-04-08",
-      "time": "See event page",
-      "location": "Berkeley E-Hub",
-      "description": "International Founder Roadmap: F-1, CPT/OPT & Beyond",
       "url": "https://ehub.berkeley.edu/events/",
       "tags": [
         "Entrepreneurship"
@@ -1272,19 +1383,6 @@
       ]
     },
     {
-      "id": "EHUB_20260409_045",
-      "title": "Problem of the Month: Framing the Problem",
-      "organizer": "Berkeley E-Hub",
-      "date": "2026-04-09",
-      "time": "See event page",
-      "location": "Berkeley E-Hub",
-      "description": "Problem of the Month: Framing the Problem",
-      "url": "https://ehub.berkeley.edu/events/",
-      "tags": [
-        "Entrepreneurship"
-      ]
-    },
-    {
       "id": "EHUB_20260410_067",
       "title": "SEARCH Labs: Structured Momentum for Builders",
       "organizer": "Berkeley E-Hub",
@@ -1305,6 +1403,19 @@
       "time": "See event page",
       "location": "Berkeley E-Hub",
       "description": "SEARCH Labs: Structured Momentum for Builders",
+      "url": "https://ehub.berkeley.edu/events/",
+      "tags": [
+        "Entrepreneurship"
+      ]
+    },
+    {
+      "id": "EHUB_20260415_046",
+      "title": "Real Work, Real Conversations",
+      "organizer": "Berkeley E-Hub",
+      "date": "2026-04-15",
+      "time": "See event page",
+      "location": "Berkeley E-Hub",
+      "description": "Real Work, Real Conversations",
       "url": "https://ehub.berkeley.edu/events/",
       "tags": [
         "Entrepreneurship"
@@ -1357,19 +1468,6 @@
       "time": "See event page",
       "location": "Berkeley E-Hub",
       "description": "BUILD Community",
-      "url": "https://ehub.berkeley.edu/events/",
-      "tags": [
-        "Entrepreneurship"
-      ]
-    },
-    {
-      "id": "EHUB_20260416_048",
-      "title": "Problem of the Month: Empathy & Ideation",
-      "organizer": "Berkeley E-Hub",
-      "date": "2026-04-16",
-      "time": "See event page",
-      "location": "Berkeley E-Hub",
-      "description": "Problem of the Month: Empathy & Ideation",
       "url": "https://ehub.berkeley.edu/events/",
       "tags": [
         "Entrepreneurship"
@@ -1558,6 +1656,19 @@
       ]
     },
     {
+      "id": "EHUB_20260323_053",
+      "title": "SEARCH Labs: Structured Momentum for Builders",
+      "organizer": "Berkeley E-Hub",
+      "date": "2026-03-23",
+      "time": "See event page",
+      "location": "Berkeley E-Hub",
+      "description": "SEARCH Labs: Structured Momentum for Builders",
+      "url": "https://ehub.berkeley.edu/events/",
+      "tags": [
+        "Entrepreneurship"
+      ]
+    },
+    {
       "id": "EHUB_20260501_082",
       "title": "SEARCH Labs: Structured Momentum for Builders",
       "organizer": "Berkeley E-Hub",
@@ -1629,5 +1740,5 @@
       "uri": "https://ehub.berkeley.edu/events/"
     }
   ],
-  "lastUpdated": 1774189707327
+  "lastUpdated": 1774364354110
 }
