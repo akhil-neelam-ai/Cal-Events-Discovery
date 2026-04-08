@@ -712,6 +712,7 @@ export default function App() {
           <SlideOutPanel event={selectedEvent} onClose={handleCloseDetail} />
         )
       )}
+      <Analytics />
     </div>
   );
 }
