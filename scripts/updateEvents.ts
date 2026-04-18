@@ -33,6 +33,59 @@ interface GroundingSource {
 
 const URL_TIMEOUT_MS = 10_000;
 const CONCURRENCY = 10;
+const GEMINI_MAX_ATTEMPTS = 3;
+const GEMINI_BACKOFF_MS = [2_000, 8_000, 30_000];
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function extractJsonArray(text: string): CalEvent[] | null {
+  const stripped = text
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```\s*$/i, '')
+    .trim();
+
+  const firstBracket = stripped.indexOf('[');
+  const lastBracket = stripped.lastIndexOf(']');
+  if (firstBracket === -1 || lastBracket === -1 || lastBracket <= firstBracket) {
+    return null;
+  }
+
+  const candidate = stripped.substring(firstBracket, lastBracket + 1);
+  try {
+    const parsed = JSON.parse(candidate);
+    return Array.isArray(parsed) ? parsed : null;
+  } catch {
+    // Trailing malformed object — retry by truncating to the last complete "}"
+    const lastBrace = candidate.lastIndexOf('}');
+    if (lastBrace === -1) return null;
+    try {
+      const repaired = candidate.substring(0, lastBrace + 1) + ']';
+      const parsed = JSON.parse(repaired);
+      return Array.isArray(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+}
+
+function loadLastGoodEvents(outputPath: string): {
+  events: CalEvent[];
+  sources: GroundingSource[];
+} {
+  try {
+    const raw = fs.readFileSync(outputPath, 'utf-8');
+    const data = JSON.parse(raw);
+    const todayIso = new Date().toISOString().split('T')[0];
+    const futureEvents = (data.events || []).filter(
+      (e: CalEvent) => e.date >= todayIso
+    );
+    return { events: futureEvents, sources: data.sources || [] };
+  } catch {
+    return { events: [], sources: [] };
+  }
+}
 
 function buildFallbackMap(urls: string[]): Map<string, string> {
   const map = new Map<string, string>();
@@ -297,23 +350,42 @@ async function updateEvents() {
     ]
   `;
 
+  const outputPath = path.join(__dirname, "..", "public", "events.json");
+
   console.log("Fetching events from Gemini API...");
 
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        tools: [{ googleSearch: {} }],
-        temperature: 1.0,
-        topP: 0.95,
+  let response: any = null;
+  let geminiFailureReason = "";
+  for (let attempt = 1; attempt <= GEMINI_MAX_ATTEMPTS; attempt++) {
+    try {
+      response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+        config: {
+          tools: [{ googleSearch: {} }],
+          temperature: 0.3,
+          topP: 0.95,
+        }
+      });
+      break;
+    } catch (error: any) {
+      const status = error?.status ?? error?.response?.status;
+      geminiFailureReason = `status=${status ?? 'unknown'} message=${error?.message ?? error}`;
+      console.warn(`Gemini attempt ${attempt}/${GEMINI_MAX_ATTEMPTS} failed: ${geminiFailureReason}`);
+      if (attempt < GEMINI_MAX_ATTEMPTS) {
+        const wait = GEMINI_BACKOFF_MS[attempt - 1];
+        console.log(`Retrying in ${wait}ms...`);
+        await sleep(wait);
       }
-    });
+    }
+  }
 
+  let events: CalEvent[] = [];
+  let geminiSucceeded = false;
+  const uniqueSourcesFromGemini: GroundingSource[] = [];
+
+  if (response) {
     const text = response.text || "";
-    let events: CalEvent[] = [];
-
-    // Debug logging
     console.log("\n=== GEMINI RESPONSE DEBUG ===");
     console.log("Response text length:", text.length);
     console.log("First 500 chars:", text.substring(0, 500));
@@ -321,51 +393,50 @@ async function updateEvents() {
     console.log("Candidates length:", response.candidates?.length || 0);
     console.log("=============================\n");
 
-    const firstBracket = text.indexOf('[');
-    const lastBracket = text.lastIndexOf(']');
-
-    if (firstBracket !== -1 && lastBracket !== -1) {
-      try {
-        events = JSON.parse(text.substring(firstBracket, lastBracket + 1));
-      } catch (e) {
-        console.error("JSON Parse Error:", e);
-        console.error("Attempted to parse:", text.substring(firstBracket, lastBracket + 1));
-        process.exit(1);
-      }
+    const parsed = extractJsonArray(text);
+    if (parsed) {
+      events = parsed;
+      geminiSucceeded = true;
     } else {
-      console.warn("No JSON array found in response");
+      geminiFailureReason = "failed to extract JSON array from response";
+      console.warn(geminiFailureReason);
     }
+  }
 
-    // Filter out events with non-ISO date formats (e.g. "Ongoing (through May 29, 2026)")
-    const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    const validEvents = events.filter(event => {
-      if (!isoDateRegex.test(event.date)) {
-        console.warn(`Skipping event "${event.title}" — invalid date format: "${event.date}"`);
-        return false;
-      }
-      return true;
-    });
-    events = validEvents;
+  if (!geminiSucceeded) {
+    console.warn(`\n⚠️  Gemini step failed (${geminiFailureReason}). Falling back to last-good events.json + E-Hub scraper.`);
+    const lastGood = loadLastGoodEvents(outputPath);
+    events = lastGood.events;
+    uniqueSourcesFromGemini.push(...lastGood.sources);
+    console.log(`Loaded ${events.length} future events from last-good events.json`);
+  }
 
-    // Verify URLs — replace broken ones with the best known fallback for that domain
-    console.log("Verifying event URLs...");
-    const fallbackMap = buildFallbackMap(prioritySourceUrls);
-    events = await verifyEventUrls(events, fallbackMap);
+  // Filter out events with non-ISO date formats (e.g. "Ongoing (through May 29, 2026)")
+  const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  events = events.filter(event => {
+    if (!isoDateRegex.test(event.date)) {
+      console.warn(`Skipping event "${event.title}" — invalid date format: "${event.date}"`);
+      return false;
+    }
+    return true;
+  });
 
-    // Extract sources: try groundingChunks first (older models), then content parts (Gemini 2.5+)
-    const sources: GroundingSource[] = [];
+  // Verify URLs — replace broken ones with the best known fallback for that domain
+  console.log("Verifying event URLs...");
+  const fallbackMap = buildFallbackMap(prioritySourceUrls);
+  events = await verifyEventUrls(events, fallbackMap);
+
+  // Extract grounding sources only when Gemini succeeded; otherwise reuse last-good sources
+  const sources: GroundingSource[] = [...uniqueSourcesFromGemini];
+  if (geminiSucceeded && response) {
     const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
     chunks.forEach((chunk: any) => {
       if (chunk.web?.uri) {
-        sources.push({
-          title: chunk.web.title || chunk.web.uri,
-          uri: chunk.web.uri
-        });
+        sources.push({ title: chunk.web.title || chunk.web.uri, uri: chunk.web.uri });
       }
     });
 
     if (sources.length === 0) {
-      // Gemini 2.5+ returns search results as content parts instead of groundingChunks
       const parts = response.candidates?.[0]?.content?.parts || [];
       parts.forEach((part: any) => {
         if (part.googleSearchResult?.result) {
@@ -377,59 +448,59 @@ async function updateEvents() {
         }
       });
     }
+  }
 
-    const uniqueSources = Array.from(new Map(sources.map(s => [s.uri, s])).values());
+  const uniqueSources = Array.from(new Map(sources.map(s => [s.uri, s])).values());
 
-    // Fetch E-Hub events separately via HTML scraping
-    const ehubEvents = await fetchEHubEvents();
+  // Fetch E-Hub events separately via HTML scraping
+  const ehubEvents = await fetchEHubEvents();
 
-    // Deduplicate events by title and date (prefer scraper events over Gemini events)
-    const combinedEvents = [...events, ...ehubEvents];
-    const eventMap = new Map<string, CalEvent>();
+  // Deduplicate events by title and date (prefer scraper events over Gemini events)
+  const eventMap = new Map<string, CalEvent>();
+  events.forEach(event => {
+    const key = `${event.title.toLowerCase().trim()}_${event.date}`;
+    eventMap.set(key, event);
+  });
+  ehubEvents.forEach(event => {
+    const key = `${event.title.toLowerCase().trim()}_${event.date}`;
+    eventMap.set(key, event);
+  });
 
-    // Add Gemini events first
-    events.forEach(event => {
-      const key = `${event.title.toLowerCase().trim()}_${event.date}`;
-      eventMap.set(key, event);
+  const allEvents = Array.from(eventMap.values());
+  const duplicatesRemoved = (events.length + ehubEvents.length) - allEvents.length;
+  if (duplicatesRemoved > 0) {
+    console.log(`Removed ${duplicatesRemoved} duplicate events`);
+  }
+
+  if (ehubEvents.length > 0) {
+    uniqueSources.push({
+      title: 'Berkeley E-Hub Events',
+      uri: 'https://ehub.berkeley.edu/events/'
     });
+  }
 
-    // E-Hub scraper events override Gemini events (scraper is more reliable)
-    ehubEvents.forEach(event => {
-      const key = `${event.title.toLowerCase().trim()}_${event.date}`;
-      eventMap.set(key, event);
-    });
-
-    const allEvents = Array.from(eventMap.values());
-    const duplicatesRemoved = combinedEvents.length - allEvents.length;
-    if (duplicatesRemoved > 0) {
-      console.log(`Removed ${duplicatesRemoved} duplicate events`);
-    }
-
-    // Add E-Hub to sources if we found events
-    if (ehubEvents.length > 0) {
-      uniqueSources.push({
-        title: 'Berkeley E-Hub Events',
-        uri: 'https://ehub.berkeley.edu/events/'
-      });
-    }
-
-    const outputData = {
-      events: allEvents,
-      sources: uniqueSources,
-      lastUpdated: Date.now()
-    };
-
-    // Write to public/events.json
-    const outputPath = path.join(__dirname, "..", "public", "events.json");
-    fs.writeFileSync(outputPath, JSON.stringify(outputData, null, 2));
-
-    console.log(`Success! Updated ${allEvents.length} events (${events.length} from Gemini + ${ehubEvents.length} from E-Hub).`);
-    console.log(`Sources: ${uniqueSources.length}`);
-    console.log(`Output: ${outputPath}`);
-
-  } catch (error) {
-    console.error("Gemini API Error:", error);
+  // Safety: never overwrite a healthy events.json with an empty file.
+  // If both sources produced 0 events, keep the old file and exit non-zero
+  // so the workflow surfaces the problem rather than silently deploying nothing.
+  if (allEvents.length === 0) {
+    console.error("Aborting: both Gemini and E-Hub returned 0 events. Keeping existing events.json unchanged.");
     process.exit(1);
+  }
+
+  const outputData = {
+    events: allEvents,
+    sources: uniqueSources,
+    lastUpdated: Date.now()
+  };
+
+  fs.writeFileSync(outputPath, JSON.stringify(outputData, null, 2));
+
+  console.log(`\nSuccess! Wrote ${allEvents.length} events (${geminiSucceeded ? 'Gemini live' : 'Gemini fallback from last-good'} + ${ehubEvents.length} from E-Hub).`);
+  console.log(`Sources: ${uniqueSources.length}`);
+  console.log(`Output: ${outputPath}`);
+
+  if (!geminiSucceeded) {
+    console.warn("⚠️  Ran in fallback mode. Check Gemini API quota / key.");
   }
 }
 
