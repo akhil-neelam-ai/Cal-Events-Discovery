@@ -98,4 +98,7 @@ export interface StatusReport {
   invalid_events_filtered: number;
   sources: SourceStatus[];
   fallback_used: boolean;
+  degraded: boolean;
+  degraded_reason?: string;
+  last_good_used?: number;
 }

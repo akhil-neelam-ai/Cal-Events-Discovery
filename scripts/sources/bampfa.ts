@@ -50,11 +50,28 @@ function todayPT(): string {
 }
 
 /**
+ * Compute the Pacific-time UTC offset (e.g. "-07:00" PDT, "-08:00" PST) for a
+ * given calendar date. We probe noon UTC on that date through Intl with
+ * `timeZoneName: 'longOffset'` to get DST correct without hard-coding rules.
+ */
+function ptOffsetFor(year: number, month: number, day: number): string {
+  const probe = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles',
+    timeZoneName: 'longOffset',
+  }).formatToParts(probe);
+  const tz = parts.find(p => p.type === 'timeZoneName')?.value ?? '';
+  const match = tz.match(/GMT([+-])(\d{2}):(\d{2})/);
+  return match ? `${match[1]}${match[2]}:${match[3]}` : '-08:00';
+}
+
+/**
  * Convert the compact Google Calendar date token (YYYYMMDDTHHMMSS or
  * YYYYMMDD) to an ISO-8601 string suitable for CanonicalEvent.start_at.
  *
- * BAMPFA does not publish timezone info in these tokens; we treat them as
- * local PT time.
+ * BAMPFA's GCal links carry naive Pacific-time tokens with no offset. We
+ * append an explicit PT offset so downstream consumers (and `new Date(...)`
+ * on UTC CI runners) interpret the moment correctly.
  */
 function gcalTokenToIso(token: string): { iso: string; allDay: boolean } {
   // All-day: YYYYMMDD (8 chars, no T)
@@ -71,21 +88,8 @@ function gcalTokenToIso(token: string): { iso: string; allDay: boolean } {
   const hour = token.slice(9, 11);
   const min = token.slice(11, 13);
   const sec = token.slice(13, 15) || '00';
-  // Build a local-time ISO string with PT offset. We construct a Date in
-  // America/Los_Angeles and convert to UTC ISO.
-  const localStr = `${year}-${month}-${day}T${hour}:${min}:${sec}`;
-  const d = new Date(
-    new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'America/Los_Angeles',
-      year: 'numeric', month: '2-digit', day: '2-digit',
-    }).formatToParts(new Date()).reduce((acc, p) => acc, 0) // dummy — we parse below
-  );
-  // Simplest reliable approach: use Date.parse with explicit offset.
-  // America/Los_Angeles is UTC-7 (PDT, Mar–Nov) or UTC-8 (PST).
-  // Rather than computing the exact offset, we store as a naive local string
-  // and set timezone: 'America/Los_Angeles' on the CanonicalEvent so
-  // downstream consumers know how to interpret it.
-  return { iso: localStr, allDay: false };
+  const offset = ptOffsetFor(Number(year), Number(month), Number(day));
+  return { iso: `${year}-${month}-${day}T${hour}:${min}:${sec}${offset}`, allDay: false };
 }
 
 /**

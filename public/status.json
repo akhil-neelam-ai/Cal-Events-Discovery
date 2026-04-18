@@ -1,53 +1,54 @@
 {
-  "generated_at": "2026-04-18T17:55:36.345Z",
-  "total_events": 210,
-  "duplicates_removed": 19,
-  "past_events_filtered": 510,
+  "generated_at": "2026-04-18T21:17:42.938Z",
+  "total_events": 980,
+  "duplicates_removed": 227,
+  "past_events_filtered": 511,
   "invalid_events_filtered": 0,
   "sources": [
     {
       "name": "livewhale",
-      "ok": false,
-      "count": 0,
-      "duration_ms": 7427,
-      "error": "LiveWhale fetch failed after 3 attempts: empty/short feed (0 VEVENTs, need ≥ 50)",
-      "fetched_at": "2026-04-18T17:55:19.126Z"
+      "ok": true,
+      "count": 979,
+      "duration_ms": 4752,
+      "fetched_at": "2026-04-18T21:16:49.114Z"
     },
     {
       "name": "callink",
       "ok": true,
       "count": 10,
-      "duration_ms": 1310,
-      "fetched_at": "2026-04-18T17:55:19.144Z"
+      "duration_ms": 1476,
+      "fetched_at": "2026-04-18T21:16:49.132Z"
     },
     {
       "name": "cal_performances",
       "ok": true,
       "count": 7,
-      "duration_ms": 14630,
-      "fetched_at": "2026-04-18T17:55:19.146Z"
+      "duration_ms": 13877,
+      "fetched_at": "2026-04-18T21:16:49.135Z"
     },
     {
       "name": "calbears",
       "ok": true,
-      "count": 99,
-      "duration_ms": 874,
-      "fetched_at": "2026-04-18T17:55:19.148Z"
+      "count": 98,
+      "duration_ms": 1443,
+      "fetched_at": "2026-04-18T21:16:49.136Z"
     },
     {
       "name": "bampfa",
       "ok": true,
       "count": 76,
-      "duration_ms": 17164,
-      "fetched_at": "2026-04-18T17:55:19.149Z"
+      "duration_ms": 53672,
+      "fetched_at": "2026-04-18T21:16:49.137Z"
     },
     {
       "name": "ehub",
       "ok": true,
       "count": 37,
-      "duration_ms": 1224,
-      "fetched_at": "2026-04-18T17:55:19.150Z"
+      "duration_ms": 2001,
+      "fetched_at": "2026-04-18T21:16:49.139Z"
     }
   ],
-  "fallback_used": false
+  "fallback_used": false,
+  "degraded": false,
+  "last_good_used": 0
 }

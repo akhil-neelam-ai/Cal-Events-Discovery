@@ -27,6 +27,9 @@ import type { CanonicalEvent, LegacyCalEvent, PublishedSource, SourceStatus, Sta
 import { dedupeEvents } from './lib/dedupe.js';
 import { projectToLegacy } from './lib/normalize.js';
 import { fetchLiveWhale } from './sources/livewhale.js';
+
+/** Below this many LiveWhale events we treat the run as degraded and fall back to last-good. */
+const LIVEWHALE_HEALTHY_THRESHOLD = 100;
 import { fetchCallink } from './sources/callink.js';
 import { fetchCalPerformances } from './sources/cal_performances.js';
 import { fetchCalBears } from './sources/calbears.js';
@@ -103,6 +106,27 @@ function loadExistingEvents(): { events: LegacyCalEvent[]; sources: PublishedSou
   }
 }
 
+function todayPT(): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Los_Angeles',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+}
+
+/**
+ * Pull last-good events for a given source from the previously-published
+ * events.json, filtered to today-or-future PT dates. Used when a tier-1
+ * source flakes (returns 0 or below the healthy threshold) so we don't
+ * silently ship a partial corpus.
+ */
+function loadLastGoodForSource(source: string): LegacyCalEvent[] {
+  const today = todayPT();
+  const { events } = loadExistingEvents();
+  return events.filter(e => e.source === source && e.date && e.date >= today);
+}
+
 async function main(): Promise<void> {
   const apiKey = process.env.API_KEY;
 
@@ -137,6 +161,43 @@ async function main(): Promise<void> {
   // Project to legacy shape
   const legacy: LegacyCalEvent[] = deduped.map(projectToLegacy);
 
+  // Tier-1 health check: LiveWhale is the spine of the corpus. If it failed
+  // outright OR returned an implausibly low count (the 200-OK-empty-feed
+  // flake), splice in the last-good LiveWhale slice from events.json so a
+  // single upstream wobble doesn't drop ~75% of the catalog.
+  const livewhaleRun = runs.find(r => r.status.name === 'livewhale');
+  const livewhaleCount = livewhaleRun?.status.count ?? 0;
+  const livewhaleDegraded =
+    !livewhaleRun ||
+    !livewhaleRun.status.ok ||
+    livewhaleCount < LIVEWHALE_HEALTHY_THRESHOLD;
+
+  let degraded = false;
+  let degradedReason: string | undefined;
+  let lastGoodUsed = 0;
+
+  if (livewhaleDegraded) {
+    const lastGood = loadLastGoodForSource('livewhale');
+    if (lastGood.length > 0) {
+      const seenIds = new Set(legacy.map(e => e.id));
+      const merged = lastGood.filter(e => !seenIds.has(e.id));
+      legacy.push(...merged);
+      legacy.sort((a, b) => a.date.localeCompare(b.date));
+      lastGoodUsed = merged.length;
+      degraded = true;
+      degradedReason = livewhaleRun?.status.ok
+        ? `LiveWhale returned ${livewhaleCount} events (below healthy threshold ${LIVEWHALE_HEALTHY_THRESHOLD})`
+        : `LiveWhale failed: ${livewhaleRun?.status.error ?? 'unknown error'}`;
+      console.warn(
+        `[orchestrator] DEGRADED — ${degradedReason}. Spliced ${merged.length} last-good LiveWhale events.`
+      );
+    } else {
+      degraded = true;
+      degradedReason = 'LiveWhale unhealthy and no last-good cache available';
+      console.warn(`[orchestrator] DEGRADED — ${degradedReason}.`);
+    }
+  }
+
   // Build the source list shown in the UI
   const sourceLinks: PublishedSource[] = [
     { title: 'UC Berkeley Events (LiveWhale)', uri: 'https://events.berkeley.edu/' },
@@ -155,12 +216,12 @@ async function main(): Promise<void> {
     if (allFailed) {
       const existing = loadExistingEvents();
       console.error('[orchestrator] every source failed and produced 0 events. Keeping existing events.json.');
-      writeStatus(runs, deduped.length, duplicatesRemoved, true);
+      writeStatus(runs, deduped.length, duplicatesRemoved, true, true, 'all sources failed', 0);
       console.error(`[orchestrator] existing file preserved (${existing.events.length} events)`);
       process.exit(1);
     } else {
       console.error('[orchestrator] sources ran but produced 0 events. Refusing to overwrite events.json.');
-      writeStatus(runs, 0, duplicatesRemoved, true);
+      writeStatus(runs, 0, duplicatesRemoved, true, true, 'sources produced 0 events', 0);
       process.exit(1);
     }
   }
@@ -173,14 +234,17 @@ async function main(): Promise<void> {
   fs.writeFileSync(eventsOutPath, JSON.stringify(outputData, null, 2));
   console.log(`[orchestrator] wrote ${legacy.length} events → ${eventsOutPath}`);
 
-  writeStatus(runs, legacy.length, duplicatesRemoved, false);
+  writeStatus(runs, legacy.length, duplicatesRemoved, false, degraded, degradedReason, lastGoodUsed);
 }
 
 function writeStatus(
   runs: AdapterRun[],
   totalEvents: number,
   duplicatesRemoved: number,
-  fallback_used: boolean
+  fallback_used: boolean,
+  degraded: boolean,
+  degraded_reason: string | undefined,
+  last_good_used: number
 ): void {
   const report: StatusReport = {
     generated_at: new Date().toISOString(),
@@ -190,6 +254,9 @@ function writeStatus(
     invalid_events_filtered: runs.reduce((s, r) => s + r.invalid, 0),
     sources: runs.map(r => r.status),
     fallback_used,
+    degraded,
+    degraded_reason,
+    last_good_used,
   };
   fs.writeFileSync(statusOutPath, JSON.stringify(report, null, 2));
   console.log(`[orchestrator] wrote status report → ${statusOutPath}`);

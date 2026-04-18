@@ -432,10 +432,16 @@ const DateRanges = [
   { label: 'This Week', value: 'week' },
 ];
 
+interface DegradedStatus {
+  degraded: boolean;
+  reason?: string;
+}
+
 export default function App() {
   const [allEvents, setAllEvents] = useState<CalEvent[]>([]);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [loading, setLoading] = useState<LoadingState>(LoadingState.IDLE);
+  const [degradedStatus, setDegradedStatus] = useState<DegradedStatus | null>(null);
   const [filters, setFilters] = useState<SearchFilters>({
     dateRange: 'upcoming',
     category: 'All',
@@ -479,6 +485,17 @@ export default function App() {
     initGA();
     trackPageView({ page_path: '/', page_title: 'CalEvents - UC Berkeley Events' });
     loadEvents();
+
+    // Fetch the orchestrator's status report so we can surface a banner when
+    // a tier-1 source flaked and we're serving spliced last-good data.
+    fetch('/status.json', { cache: 'no-store' })
+      .then(r => (r.ok ? r.json() : null))
+      .then(data => {
+        if (data && data.degraded) {
+          setDegradedStatus({ degraded: true, reason: data.degraded_reason });
+        }
+      })
+      .catch(() => { /* status.json is best-effort */ });
   }, []);
 
   // Instant Local Filtering with natural language search
@@ -625,6 +642,19 @@ export default function App() {
           </div>
         </div>
       </header>
+
+      {degradedStatus?.degraded && (
+        <div className="bg-yellow-50 border-b border-yellow-200 text-yellow-900 text-xs">
+          <div className="container mx-auto px-4 py-2 flex items-start gap-2">
+            <svg className="w-4 h-4 flex-shrink-0 mt-px text-yellow-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M5.07 19h13.86a2 2 0 001.74-2.99l-6.93-12a2 2 0 00-3.48 0l-6.93 12A2 2 0 005.07 19z" />
+            </svg>
+            <span>
+              <strong>Showing partial data.</strong> One of our event sources is having trouble{degradedStatus.reason ? ` (${degradedStatus.reason})` : ''}. We've filled in with the most recent cached events.
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
