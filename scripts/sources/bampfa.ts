@@ -1,0 +1,301 @@
+/**
+ * BAMPFA HTML scraper — Berkeley Art Museum & Pacific Film Archive.
+ *
+ * bampfa.org publishes no iCal or RSS feed. The Drupal-based calendar at
+ * /visit/calendar (and /visit/calendar/YYYY-MM for future months) embeds a
+ * Google Calendar "Add to Calendar" link for every event. Those links carry
+ * machine-readable dates (YYYYMMDDTHHMMSS), the event title, a description,
+ * and a canonical bampfa.org event URL — enough to build CanonicalEvent
+ * without page-by-page scraping of individual event detail pages.
+ *
+ * We fetch the current month plus the next 3 months (4 requests total),
+ * deduplicate by event URL (multi-day recurring events appear once per
+ * occurrence), and emit one CanonicalEvent per occurrence.
+ *
+ * Discovery: bampfa.org DOES push a subset of events to events.berkeley.edu
+ * (LiveWhale), but only ~9 events appear there vs. 64+ on bampfa.org itself.
+ * This adapter covers the gap.
+ */
+
+import * as cheerio from 'cheerio';
+import type { CanonicalEvent } from '../lib/schema.js';
+import { CanonicalEventSchema } from '../lib/schema.js';
+
+const BASE_URL = 'https://bampfa.org';
+const CALENDAR_URL = `${BASE_URL}/visit/calendar`;
+const FETCH_TIMEOUT_MS = 30_000;
+const MAX_FETCH_ATTEMPTS = 3;
+const RETRY_DELAY_MS = 1_500;
+/** Fetch the current month plus this many future months. */
+const MONTHS_AHEAD = 3;
+
+export interface FetchResult {
+  events: CanonicalEvent[];
+  rawCount: number;
+  filteredPast: number;
+  invalid: number;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function todayPT(): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Los_Angeles',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+}
+
+/**
+ * Convert the compact Google Calendar date token (YYYYMMDDTHHMMSS or
+ * YYYYMMDD) to an ISO-8601 string suitable for CanonicalEvent.start_at.
+ *
+ * BAMPFA does not publish timezone info in these tokens; we treat them as
+ * local PT time.
+ */
+function gcalTokenToIso(token: string): { iso: string; allDay: boolean } {
+  // All-day: YYYYMMDD (8 chars, no T)
+  if (!token.includes('T')) {
+    const year = token.slice(0, 4);
+    const month = token.slice(4, 6);
+    const day = token.slice(6, 8);
+    return { iso: `${year}-${month}-${day}`, allDay: true };
+  }
+  // Date-time: YYYYMMDDTHHMMSS
+  const year = token.slice(0, 4);
+  const month = token.slice(4, 6);
+  const day = token.slice(6, 8);
+  const hour = token.slice(9, 11);
+  const min = token.slice(11, 13);
+  const sec = token.slice(13, 15) || '00';
+  // Build a local-time ISO string with PT offset. We construct a Date in
+  // America/Los_Angeles and convert to UTC ISO.
+  const localStr = `${year}-${month}-${day}T${hour}:${min}:${sec}`;
+  const d = new Date(
+    new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Los_Angeles',
+      year: 'numeric', month: '2-digit', day: '2-digit',
+    }).formatToParts(new Date()).reduce((acc, p) => acc, 0) // dummy — we parse below
+  );
+  // Simplest reliable approach: use Date.parse with explicit offset.
+  // America/Los_Angeles is UTC-7 (PDT, Mar–Nov) or UTC-8 (PST).
+  // Rather than computing the exact offset, we store as a naive local string
+  // and set timezone: 'America/Los_Angeles' on the CanonicalEvent so
+  // downstream consumers know how to interpret it.
+  return { iso: localStr, allDay: false };
+}
+
+/**
+ * Parse Google Calendar "Add to Calendar" URLs embedded in the BAMPFA
+ * calendar page. Each URL encodes text (title), dates (start/end), details
+ * (description + bampfa.org event URL), and location.
+ *
+ * Example:
+ *   https://calendar.google.com/calendar/r/eventedit?text=Film+Title&
+ *   dates=20260422T190000/20260422T210000&details=...&location=BAMPFA
+ */
+interface ParsedGCalLink {
+  title: string;
+  startToken: string;
+  endToken: string | undefined;
+  canonicalUrl: string;
+  description: string;
+  location: string;
+}
+
+function parseGCalLink(href: string): ParsedGCalLink | null {
+  try {
+    // The href may be HTML-entity-encoded (& → &amp;) — cheerio already
+    // decodes .attr() values, but guard against raw strings.
+    const url = new URL(href.replace(/&amp;/g, '&'));
+    const text = url.searchParams.get('text') ?? '';
+    const dates = url.searchParams.get('dates') ?? '';
+    const details = url.searchParams.get('details') ?? '';
+    const location = url.searchParams.get('location') ?? 'BAMPFA';
+
+    if (!text || !dates) return null;
+
+    const [startToken, endToken] = dates.split('/');
+
+    // Extract canonical bampfa.org URL from the details string.
+    // BAMPFA embeds it at the end: "... event details: https://bampfa.org/event/slug"
+    const urlMatch = details.match(/https:\/\/bampfa\.org\/event\/\S+/);
+    const canonicalUrl = urlMatch ? urlMatch[0].trimEnd() : '';
+    if (!canonicalUrl) return null;
+
+    // Strip the boilerplate preamble from the description.
+    const descPreamble = /Please note that event details are subject to change[^:]*:\s*/i;
+    const cleanDesc = details.replace(descPreamble, '').replace(urlMatch?.[0] ?? '', '').trim();
+
+    return {
+      title: text.trim(),
+      startToken,
+      endToken: endToken && endToken !== startToken ? endToken : undefined,
+      canonicalUrl,
+      description: cleanDesc || text.trim(),
+      location: location.trim(),
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function fetchCalendarPage(url: string): Promise<string> {
+  let lastErr = '';
+  for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
+    console.log(`[bampfa] fetching ${url} (attempt ${attempt}/${MAX_FETCH_ATTEMPTS})`);
+    try {
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        headers: { 'User-Agent': 'Cal-Events-Discovery-Bot' },
+        redirect: 'follow',
+      });
+      if (!res.ok) {
+        lastErr = `${res.status} ${res.statusText}`;
+        console.warn(`[bampfa] non-2xx (${lastErr})`);
+      } else {
+        return await res.text();
+      }
+    } catch (err) {
+      lastErr = err instanceof Error ? err.message : String(err);
+      console.warn(`[bampfa] fetch error: ${lastErr}`);
+    }
+    if (attempt < MAX_FETCH_ATTEMPTS) await sleep(RETRY_DELAY_MS * attempt);
+  }
+  throw new Error(`BAMPFA fetch failed for ${url} after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr}`);
+}
+
+/** Return YYYY-MM strings for the current month and the next MONTHS_AHEAD months. */
+function targetMonths(): string[] {
+  const months: string[] = [];
+  const now = new Date();
+  for (let i = 0; i <= MONTHS_AHEAD; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    months.push(`${y}-${m}`);
+  }
+  return months;
+}
+
+export async function fetchBampfa(): Promise<FetchResult> {
+  const todayIso = todayPT();
+  const fetched_at = new Date().toISOString();
+  const events: CanonicalEvent[] = [];
+  let rawCount = 0;
+  let filteredPast = 0;
+  let invalid = 0;
+
+  // Track seen canonical URLs to avoid duplicating recurring events that appear
+  // across month boundaries in the scraped pages (same event, same date).
+  const seenKeys = new Set<string>();
+
+  const months = targetMonths();
+
+  for (const ym of months) {
+    // The first month uses the base URL (BAMPFA defaults to current month).
+    // Subsequent months use /visit/calendar/YYYY-MM.
+    const [, firstYm] = months;
+    void firstYm; // suppress unused-var lint; we always use explicit URLs
+    const pageUrl = `${CALENDAR_URL}/${ym}`;
+    let html: string;
+    try {
+      html = await fetchCalendarPage(pageUrl);
+    } catch (err) {
+      console.warn(`[bampfa] skipping month ${ym}: ${err instanceof Error ? err.message : err}`);
+      continue;
+    }
+
+    const $ = cheerio.load(html);
+
+    // Each event in the BAMPFA calendar has a Google Calendar "Add" link.
+    // Selector: anchor tags whose href starts with the Google Calendar eventedit URL.
+    $('a[href*="calendar.google.com/calendar/r/eventedit"]').each((_i, el) => {
+      rawCount++;
+      try {
+        const href = $(el).attr('href') ?? '';
+        const parsed = parseGCalLink(href);
+        if (!parsed) {
+          invalid++;
+          return;
+        }
+
+        const { title, startToken, endToken, canonicalUrl, description, location } = parsed;
+
+        const { iso: start_at, allDay: all_day } = gcalTokenToIso(startToken);
+        const end_at = endToken ? gcalTokenToIso(endToken).iso : undefined;
+
+        // Filter past events using date prefix (YYYY-MM-DD).
+        const eventDate = start_at.slice(0, 10);
+        if (eventDate < todayIso) {
+          filteredPast++;
+          return;
+        }
+
+        // Deduplicate: same canonical URL + same date = same occurrence.
+        const dedupeKey = `${canonicalUrl}::${eventDate}`;
+        if (seenKeys.has(dedupeKey)) {
+          return; // silently skip duplicate (not a past filter)
+        }
+        seenKeys.add(dedupeKey);
+
+        // Derive a stable source_id from the event slug + date.
+        const slugMatch = canonicalUrl.match(/\/event\/([^/?#]+)/);
+        const slug = slugMatch ? slugMatch[1] : canonicalUrl;
+        const source_id = `${slug}::${eventDate}`;
+
+        const candidate: CanonicalEvent = {
+          source_name: 'bampfa',
+          source_id,
+          source_url: CALENDAR_URL,
+          evidence_url: canonicalUrl,
+          title,
+          description,
+          start_at,
+          end_at,
+          timezone: 'America/Los_Angeles',
+          all_day,
+          venue: location || 'BAMPFA',
+          building: 'Berkeley Art Museum & Pacific Film Archive',
+          address: '2155 Center St, Berkeley, CA 94720',
+          modality: 'in_person',
+          organizer: 'BAMPFA',
+          organizer_unit: 'BAMPFA',
+          audience: '',
+          cost: '',
+          registration_url: undefined,
+          canonical_url: canonicalUrl,
+          categories: ['Arts'],
+          tags: ['Arts'],
+          last_seen_at: fetched_at,
+          confidence: 0.95,
+          quality_flags: [],
+        };
+
+        const validated = CanonicalEventSchema.safeParse(candidate);
+        if (!validated.success) {
+          invalid++;
+          if (invalid <= 5) {
+            console.warn(
+              `[bampfa] schema reject "${title}": ${validated.error.issues
+                .map(i => `${i.path.join('.')}:${i.message}`)
+                .join('; ')}`
+            );
+          }
+          return;
+        }
+        events.push(validated.data);
+      } catch {
+        invalid++;
+      }
+    });
+
+    console.log(`[bampfa] month ${ym}: collected ${events.length} events so far`);
+  }
+
+  console.log(`[bampfa] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`);
+  return { events, rawCount, filteredPast, invalid };
+}
