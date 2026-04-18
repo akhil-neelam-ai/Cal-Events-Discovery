@@ -1,23 +1,31 @@
 {
-  "generated_at": "2026-04-18T17:32:42.570Z",
-  "total_events": 161,
-  "duplicates_removed": 43,
-  "past_events_filtered": 808,
+  "generated_at": "2026-04-18T17:51:10.787Z",
+  "total_events": 117,
+  "duplicates_removed": 19,
+  "past_events_filtered": 142,
   "invalid_events_filtered": 0,
   "sources": [
     {
       "name": "livewhale",
+      "ok": false,
+      "count": 0,
+      "duration_ms": 7594,
+      "error": "LiveWhale fetch failed after 3 attempts: empty/short feed (0 VEVENTs, need ≥ 50)",
+      "fetched_at": "2026-04-18T17:51:03.183Z"
+    },
+    {
+      "name": "calbears",
       "ok": true,
-      "count": 167,
-      "duration_ms": 2548,
-      "fetched_at": "2026-04-18T17:32:39.998Z"
+      "count": 99,
+      "duration_ms": 794,
+      "fetched_at": "2026-04-18T17:51:03.201Z"
     },
     {
       "name": "ehub",
       "ok": true,
       "count": 37,
-      "duration_ms": 1324,
-      "fetched_at": "2026-04-18T17:32:40.017Z"
+      "duration_ms": 1242,
+      "fetched_at": "2026-04-18T17:51:03.203Z"
     }
   ],
   "fallback_used": false

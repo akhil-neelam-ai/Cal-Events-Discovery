@@ -8,6 +8,7 @@ export interface CalEvent {
   description: string;
   tags: string[];
   url: string;
+  source?: string;
 }
 
 export interface GroundingSource {
@@ -24,6 +25,7 @@ export interface SearchFilters {
   dateRange: 'upcoming' | 'today' | 'week' | 'month' | 'weekend';
   category: string;
   searchQuery: string;
+  source: string;
 }
 
 export enum LoadingState {

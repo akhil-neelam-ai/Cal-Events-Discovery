@@ -87,6 +87,7 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
     description: event.description || event.title,
     tags,
     url: event.canonical_url || event.source_url,
+    source: event.source_name,
   };
 }
 

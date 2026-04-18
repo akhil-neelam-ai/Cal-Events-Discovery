@@ -10,7 +10,8 @@ import type { CanonicalEvent, SourceName } from './schema.js';
 import { isoDateInPT, normalizeForDedupe } from './normalize.js';
 
 const SOURCE_PRIORITY: Record<SourceName, number> = {
-  livewhale: 3,
+  livewhale: 4,
+  calbears: 3,
   ehub: 2,
   gemini: 1,
 };

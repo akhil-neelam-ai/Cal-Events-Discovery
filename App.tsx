@@ -11,7 +11,50 @@ import {
   trackDateFilter,
   trackEventClick,
   trackExternalLink,
+  trackFilter,
 } from './utils/analytics';
+
+// Source provenance helpers
+const SOURCE_LABELS: Record<string, string> = {
+  livewhale: 'UC Berkeley Events',
+  ehub: 'Berkeley E-Hub',
+  gemini: 'Discovered',
+  cal_performances: 'Cal Performances',
+  bampfa: 'BAMPFA',
+  calbears: 'Cal Bears',
+  callink: 'CalLink',
+};
+
+const SOURCE_URLS: Record<string, string> = {
+  livewhale: 'https://events.berkeley.edu',
+  ehub: 'https://ehub.berkeley.edu/events/',
+  cal_performances: 'https://calperformances.org',
+  bampfa: 'https://bampfa.org/events',
+  calbears: 'https://calbears.com/calendar',
+  callink: 'https://callink.berkeley.edu/events',
+};
+
+function SourceBadge({ source }: { source?: string }) {
+  if (!source || !SOURCE_LABELS[source]) return null;
+  const label = SOURCE_LABELS[source];
+  const url = SOURCE_URLS[source];
+  const inner = (
+    <span className="inline-flex items-center gap-1 text-[10px] text-gray-400 font-medium">
+      <svg className="w-2.5 h-2.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+      </svg>
+      {label}
+    </span>
+  );
+  if (url) {
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-gray-600 transition-colors">
+        {inner}
+      </a>
+    );
+  }
+  return inner;
+}
 
 // Hook to detect mobile vs desktop
 function useIsMobile() {
@@ -99,9 +142,12 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
 
         {/* Content */}
         <div className="px-5 pb-8 overflow-y-auto max-h-[calc(85vh-40px)]">
-          <span className="inline-block bg-berkeley-blue text-berkeley-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest mb-3">
-            {event.tags?.[0] || 'Event'}
-          </span>
+          <div className="flex items-center justify-between mb-3">
+            <span className="inline-block bg-berkeley-blue text-berkeley-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest">
+              {event.tags?.[0] || 'Event'}
+            </span>
+            <SourceBadge source={event.source} />
+          </div>
 
           <h2 className="text-xl font-bold text-berkeley-blue mb-4">{event.title}</h2>
 
@@ -212,9 +258,12 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
 
         {/* Content */}
         <div className="p-6 overflow-y-auto h-[calc(100%-60px)]">
-          <span className="inline-block bg-berkeley-blue text-berkeley-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest mb-3">
-            {event.tags?.[0] || 'Event'}
-          </span>
+          <div className="flex items-center justify-between mb-3">
+            <span className="inline-block bg-berkeley-blue text-berkeley-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest">
+              {event.tags?.[0] || 'Event'}
+            </span>
+            <SourceBadge source={event.source} />
+          </div>
 
           <h2 className="text-2xl font-bold text-berkeley-blue mb-6">{event.title}</h2>
 
@@ -376,6 +425,7 @@ function eventMatchesSearch(event: CalEvent, searchTerms: string[]): boolean {
 }
 
 const Categories = ['All', 'Academic', 'Arts', 'Sports', 'Science & Tech', 'Student Life', 'Entrepreneurship'];
+const ALL_SOURCES = ['All', 'livewhale', 'ehub', 'gemini', 'cal_performances', 'bampfa', 'calbears', 'callink'];
 const DateRanges = [
   { label: 'Upcoming', value: 'upcoming' },
   { label: 'Today', value: 'today' },
@@ -389,7 +439,8 @@ export default function App() {
   const [filters, setFilters] = useState<SearchFilters>({
     dateRange: 'upcoming',
     category: 'All',
-    searchQuery: ''
+    searchQuery: '',
+    source: 'All',
   });
   const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
   const isMobile = useIsMobile();
@@ -465,7 +516,10 @@ export default function App() {
       // Filter out away games for sports events
       const isLocalEvent = isHomeGame(event);
 
-      return matchesCategory && matchesDate && matchesSearch && isLocalEvent;
+      // Source filter
+      const matchesSource = filters.source === 'All' || event.source === filters.source;
+
+      return matchesCategory && matchesDate && matchesSearch && isLocalEvent && matchesSource;
     })
     .sort((a, b) => {
       // Sort by date ascending (earliest first)
@@ -552,6 +606,22 @@ export default function App() {
                 </button>
               ))}
             </div>
+            <div className="w-px h-4 bg-white/30 mx-1"></div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-berkeley-gold uppercase text-[10px]">Source</span>
+              {ALL_SOURCES.filter(s => s === 'All' || allEvents.some(e => e.source === s)).map(src => (
+                <button
+                  key={src}
+                  onClick={() => {
+                    setFilters(prev => ({ ...prev, source: src }));
+                    trackFilter({ filter_type: 'source', filter_value: src });
+                  }}
+                  className={`px-3 py-1 rounded-full transition ${filters.source === src ? 'bg-white text-berkeley-blue font-bold shadow-inner' : 'hover:bg-white/20'}`}
+                >
+                  {src === 'All' ? 'All' : (SOURCE_LABELS[src] || src)}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </header>
@@ -593,7 +663,7 @@ export default function App() {
               <div className="text-center py-24 bg-white rounded-2xl border-2 border-dashed border-gray-200">
                 <p className="text-xl text-gray-400 font-medium">No events match these filters in today's batch.</p>
                 <button 
-                  onClick={() => setFilters({dateRange: 'upcoming', category: 'All', searchQuery: ''})}
+                  onClick={() => setFilters({dateRange: 'upcoming', category: 'All', searchQuery: '', source: 'All'})}
                   className="mt-4 text-berkeley-medblue font-bold hover:underline"
                 >
                   Clear all filters
@@ -675,7 +745,7 @@ export default function App() {
                         Official Page
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
                       </a>
-                      <span className="text-[10px] text-gray-400 font-mono tracking-tighter">ID: {event.id.slice(0, 8)}</span>
+                      <SourceBadge source={event.source} />
                     </div>
                   </div>
                 ))}

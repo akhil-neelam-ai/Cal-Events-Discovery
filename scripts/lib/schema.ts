@@ -8,7 +8,7 @@
 
 import { z } from 'zod';
 
-export const SourceName = z.enum(['livewhale', 'ehub', 'gemini']);
+export const SourceName = z.enum(['livewhale', 'calbears', 'ehub', 'gemini']);
 export type SourceName = z.infer<typeof SourceName>;
 
 export const Modality = z.enum(['in_person', 'virtual', 'hybrid', 'unknown']);
@@ -73,6 +73,7 @@ export interface LegacyCalEvent {
   description: string;
   tags: string[];
   url: string;
+  source?: string;
 }
 
 export interface PublishedSource {

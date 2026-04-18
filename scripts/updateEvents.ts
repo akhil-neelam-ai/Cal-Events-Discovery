@@ -23,6 +23,7 @@ import type { CanonicalEvent, LegacyCalEvent, PublishedSource, SourceStatus, Sta
 import { dedupeEvents } from './lib/dedupe.js';
 import { projectToLegacy } from './lib/normalize.js';
 import { fetchLiveWhale } from './sources/livewhale.js';
+import { fetchCalBears } from './sources/calbears.js';
 import { fetchEHub } from './sources/ehub.js';
 import { fetchGeminiLongTail } from './sources/gemini.js';
 
@@ -98,9 +99,10 @@ function loadExistingEvents(): { events: LegacyCalEvent[]; sources: PublishedSou
 async function main(): Promise<void> {
   const apiKey = process.env.API_KEY;
 
-  // LiveWhale + E-Hub run regardless. Gemini only if we have a key.
+  // LiveWhale + Cal Bears + E-Hub run regardless. Gemini only if we have a key.
   const adapterPromises: Array<Promise<AdapterRun>> = [
     runAdapter('livewhale', fetchLiveWhale),
+    runAdapter('calbears', fetchCalBears),
     runAdapter('ehub', fetchEHub),
   ];
   if (apiKey) {
@@ -128,6 +130,7 @@ async function main(): Promise<void> {
   // Build the source list shown in the UI
   const sourceLinks: PublishedSource[] = [
     { title: 'UC Berkeley Events (LiveWhale)', uri: 'https://events.berkeley.edu/' },
+    { title: 'Cal Bears Athletics', uri: 'https://calbears.com/calendar' },
     { title: 'Berkeley E-Hub Events', uri: 'https://ehub.berkeley.edu/events/' },
     ...groundingSources,
   ];
