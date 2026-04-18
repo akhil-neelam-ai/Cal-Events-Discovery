@@ -3,7 +3,7 @@
  *
  * Strategy: bucket by (normalized_title, date). Within a bucket, keep the
  * highest-priority source. Source priority reflects data quality:
- *   livewhale (structured iCal) > ehub (parsed HTML) > gemini (LLM extraction)
+ *   livewhale (structured iCal) > callink/cal_performances/calbears (JSON APIs) > ehub (parsed HTML) > gemini (LLM extraction)
  */
 
 import type { CanonicalEvent, SourceName } from './schema.js';
@@ -11,6 +11,8 @@ import { isoDateInPT, normalizeForDedupe } from './normalize.js';
 
 const SOURCE_PRIORITY: Record<SourceName, number> = {
   livewhale: 4,
+  callink: 3,
+  cal_performances: 3,
   calbears: 3,
   ehub: 2,
   gemini: 1,

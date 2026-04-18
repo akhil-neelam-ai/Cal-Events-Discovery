@@ -3,9 +3,12 @@
  * to the legacy CalEvent shape, write public/events.json + public/status.json.
  *
  * Source priority (configured in scripts/lib/dedupe.ts):
- *   livewhale (structured iCal, official campus calendar) >
- *   ehub      (HTML scraper, entrepreneurship hub) >
- *   gemini    (LLM long-tail, lowest confidence)
+ *   livewhale        (structured iCal, official campus calendar) >
+ *   callink          (CampusGroups JSON API, student org events) =
+ *   cal_performances (WP REST API, arts presenter) =
+ *   calbears         (athletics iCal) >
+ *   ehub             (HTML scraper, entrepreneurship hub) >
+ *   gemini           (LLM long-tail, lowest confidence)
  *
  * Failure handling: each source is independent. If a source throws, we
  * record it in status.json and continue. We refuse to overwrite a healthy
@@ -23,6 +26,8 @@ import type { CanonicalEvent, LegacyCalEvent, PublishedSource, SourceStatus, Sta
 import { dedupeEvents } from './lib/dedupe.js';
 import { projectToLegacy } from './lib/normalize.js';
 import { fetchLiveWhale } from './sources/livewhale.js';
+import { fetchCallink } from './sources/callink.js';
+import { fetchCalPerformances } from './sources/cal_performances.js';
 import { fetchCalBears } from './sources/calbears.js';
 import { fetchEHub } from './sources/ehub.js';
 import { fetchGeminiLongTail } from './sources/gemini.js';
@@ -99,9 +104,10 @@ function loadExistingEvents(): { events: LegacyCalEvent[]; sources: PublishedSou
 async function main(): Promise<void> {
   const apiKey = process.env.API_KEY;
 
-  // LiveWhale + Cal Bears + E-Hub run regardless. Gemini only if we have a key.
+  // LiveWhale + Cal Performances + Cal Bears + E-Hub run regardless. Gemini only if we have a key.
   const adapterPromises: Array<Promise<AdapterRun>> = [
     runAdapter('livewhale', fetchLiveWhale),
+    runAdapter('cal_performances', fetchCalPerformances),
     runAdapter('calbears', fetchCalBears),
     runAdapter('ehub', fetchEHub),
   ];
@@ -130,6 +136,7 @@ async function main(): Promise<void> {
   // Build the source list shown in the UI
   const sourceLinks: PublishedSource[] = [
     { title: 'UC Berkeley Events (LiveWhale)', uri: 'https://events.berkeley.edu/' },
+    { title: 'Cal Performances', uri: 'https://calperformances.org/events/' },
     { title: 'Cal Bears Athletics', uri: 'https://calbears.com/calendar' },
     { title: 'Berkeley E-Hub Events', uri: 'https://ehub.berkeley.edu/events/' },
     ...groundingSources,
