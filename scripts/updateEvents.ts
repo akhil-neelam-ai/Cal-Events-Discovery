@@ -207,6 +207,12 @@ async function fetchEHubEvents(): Promise<CalEvent[]> {
           return;
         }
 
+        // Skip past events — E-Hub sometimes lists yesterday's events in today's HTML
+        const todayIso = new Date().toISOString().split('T')[0];
+        if (dateStr < todayIso) {
+          return;
+        }
+
         // Generate unique ID
         const id = `EHUB_${dateStr.replace(/-/g, '')}_${String(index + 1).padStart(3, '0')}`;
 

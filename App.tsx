@@ -450,6 +450,8 @@ export default function App() {
         const nextWeek = new Date();
         nextWeek.setDate(today.getDate() + 7);
         matchesDate = eventDate >= today && eventDate <= nextWeek;
+      } else if (filters.dateRange === 'upcoming') {
+        matchesDate = eventDate >= today;
       }
 
       // Search filter with synonym expansion
