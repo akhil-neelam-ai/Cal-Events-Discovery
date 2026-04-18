@@ -14,6 +14,7 @@ const SOURCE_PRIORITY: Record<SourceName, number> = {
   callink: 3,
   cal_performances: 3,
   calbears: 3,
+  bampfa: 3,
   ehub: 2,
   gemini: 1,
 };

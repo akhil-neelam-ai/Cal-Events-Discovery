@@ -6,7 +6,8 @@
  *   livewhale        (structured iCal, official campus calendar) >
  *   callink          (CampusGroups JSON API, student org events) =
  *   cal_performances (WP REST API, arts presenter) =
- *   calbears         (athletics iCal) >
+ *   calbears         (athletics iCal) =
+ *   bampfa           (HTML scraper, art museum & film archive) >
  *   ehub             (HTML scraper, entrepreneurship hub) >
  *   gemini           (LLM long-tail, lowest confidence)
  *
@@ -29,6 +30,7 @@ import { fetchLiveWhale } from './sources/livewhale.js';
 import { fetchCallink } from './sources/callink.js';
 import { fetchCalPerformances } from './sources/cal_performances.js';
 import { fetchCalBears } from './sources/calbears.js';
+import { fetchBampfa } from './sources/bampfa.js';
 import { fetchEHub } from './sources/ehub.js';
 import { fetchGeminiLongTail } from './sources/gemini.js';
 
@@ -104,11 +106,13 @@ function loadExistingEvents(): { events: LegacyCalEvent[]; sources: PublishedSou
 async function main(): Promise<void> {
   const apiKey = process.env.API_KEY;
 
-  // LiveWhale + Cal Performances + Cal Bears + E-Hub run regardless. Gemini only if we have a key.
+  // LiveWhale + CalLink + Cal Performances + Cal Bears + E-Hub run regardless. Gemini only if we have a key.
   const adapterPromises: Array<Promise<AdapterRun>> = [
     runAdapter('livewhale', fetchLiveWhale),
+    runAdapter('callink', fetchCallink),
     runAdapter('cal_performances', fetchCalPerformances),
     runAdapter('calbears', fetchCalBears),
+    runAdapter('bampfa', fetchBampfa),
     runAdapter('ehub', fetchEHub),
   ];
   if (apiKey) {
@@ -136,8 +140,10 @@ async function main(): Promise<void> {
   // Build the source list shown in the UI
   const sourceLinks: PublishedSource[] = [
     { title: 'UC Berkeley Events (LiveWhale)', uri: 'https://events.berkeley.edu/' },
+    { title: 'CalLink Student Org Events', uri: 'https://callink.berkeley.edu/events' },
     { title: 'Cal Performances', uri: 'https://calperformances.org/events/' },
     { title: 'Cal Bears Athletics', uri: 'https://calbears.com/calendar' },
+    { title: 'BAMPFA Events', uri: 'https://bampfa.org/visit/calendar' },
     { title: 'Berkeley E-Hub Events', uri: 'https://ehub.berkeley.edu/events/' },
     ...groundingSources,
   ];

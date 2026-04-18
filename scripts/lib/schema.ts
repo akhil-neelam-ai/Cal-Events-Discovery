@@ -8,7 +8,7 @@
 
 import { z } from 'zod';
 
-export const SourceName = z.enum(['livewhale', 'callink', 'cal_performances', 'calbears', 'ehub', 'gemini']);
+export const SourceName = z.enum(['livewhale', 'callink', 'cal_performances', 'calbears', 'bampfa', 'ehub', 'gemini']);
 export type SourceName = z.infer<typeof SourceName>;
 
 export const Modality = z.enum(['in_person', 'virtual', 'hybrid', 'unknown']);
