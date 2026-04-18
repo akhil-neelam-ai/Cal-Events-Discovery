@@ -15,6 +15,12 @@ const SOURCE_PRIORITY: Record<SourceName, number> = {
   cal_performances: 3,
   calbears: 3,
   bampfa: 3,
+  // Haas and Berkeley Law run The Events Calendar (Tribe) on WordPress —
+  // structured JSON is higher-quality than HTML scraping, on par with the
+  // other JSON-API sources. Below livewhale because the central feed is a
+  // superset for any events that happen to be cross-published.
+  haas: 3,
+  berkeley_law: 3,
   ehub: 2,
   gemini: 1,
 };

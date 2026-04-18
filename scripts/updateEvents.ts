@@ -34,6 +34,7 @@ import { fetchCallink } from './sources/callink.js';
 import { fetchCalPerformances } from './sources/cal_performances.js';
 import { fetchCalBears } from './sources/calbears.js';
 import { fetchBampfa } from './sources/bampfa.js';
+import { fetchHaas, fetchBerkeleyLaw } from './sources/tribe.js';
 import { fetchEHub } from './sources/ehub.js';
 import { fetchGeminiLongTail } from './sources/gemini.js';
 
@@ -130,13 +131,15 @@ function loadLastGoodForSource(source: string): LegacyCalEvent[] {
 async function main(): Promise<void> {
   const apiKey = process.env.API_KEY;
 
-  // LiveWhale + CalLink + Cal Performances + Cal Bears + E-Hub run regardless. Gemini only if we have a key.
+  // All non-Gemini adapters run regardless. Gemini only if we have a key.
   const adapterPromises: Array<Promise<AdapterRun>> = [
     runAdapter('livewhale', fetchLiveWhale),
     runAdapter('callink', fetchCallink),
     runAdapter('cal_performances', fetchCalPerformances),
     runAdapter('calbears', fetchCalBears),
     runAdapter('bampfa', fetchBampfa),
+    runAdapter('haas', fetchHaas),
+    runAdapter('berkeley_law', fetchBerkeleyLaw),
     runAdapter('ehub', fetchEHub),
   ];
   if (apiKey) {
@@ -205,6 +208,8 @@ async function main(): Promise<void> {
     { title: 'Cal Performances', uri: 'https://calperformances.org/events/' },
     { title: 'Cal Bears Athletics', uri: 'https://calbears.com/calendar' },
     { title: 'BAMPFA Events', uri: 'https://bampfa.org/visit/calendar' },
+    { title: 'Berkeley Haas Events', uri: 'https://haas.berkeley.edu/events/' },
+    { title: 'Berkeley Law Events', uri: 'https://www.law.berkeley.edu/events/' },
     { title: 'Berkeley E-Hub Events', uri: 'https://ehub.berkeley.edu/events/' },
     ...groundingSources,
   ];

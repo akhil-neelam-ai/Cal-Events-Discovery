@@ -23,6 +23,8 @@ const SOURCE_LABELS: Record<string, string> = {
   bampfa: 'BAMPFA',
   calbears: 'Cal Bears',
   callink: 'CalLink',
+  haas: 'Berkeley Haas',
+  berkeley_law: 'Berkeley Law',
 };
 
 const SOURCE_URLS: Record<string, string> = {
@@ -32,6 +34,8 @@ const SOURCE_URLS: Record<string, string> = {
   bampfa: 'https://bampfa.org/events',
   calbears: 'https://calbears.com/calendar',
   callink: 'https://callink.berkeley.edu/events',
+  haas: 'https://haas.berkeley.edu/events/',
+  berkeley_law: 'https://www.law.berkeley.edu/events/',
 };
 
 function SourceBadge({ source }: { source?: string }) {
@@ -425,7 +429,7 @@ function eventMatchesSearch(event: CalEvent, searchTerms: string[]): boolean {
 }
 
 const Categories = ['All', 'Academic', 'Arts', 'Sports', 'Science & Tech', 'Student Life', 'Entrepreneurship'];
-const ALL_SOURCES = ['All', 'livewhale', 'ehub', 'gemini', 'cal_performances', 'bampfa', 'calbears', 'callink'];
+const ALL_SOURCES = ['All', 'livewhale', 'ehub', 'gemini', 'cal_performances', 'bampfa', 'calbears', 'callink', 'haas', 'berkeley_law'];
 const DateRanges = [
   { label: 'Upcoming', value: 'upcoming' },
   { label: 'Today', value: 'today' },
