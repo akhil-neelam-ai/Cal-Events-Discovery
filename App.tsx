@@ -352,6 +352,13 @@ function formatPacificDateTime(timestamp: number): string {
   return PACIFIC_SYNC_FORMATTER.format(new Date(timestamp));
 }
 
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
 function formatStatusSources(status: IngestionStatus): string {
   const failed = status.sources.filter(source => !source.ok).map(source => SOURCE_LABELS[source.name] || source.name);
   if (failed.length === 0) {
@@ -974,16 +981,16 @@ function DesktopHero({
           </div>
         </div>
 
-        <div className="max-w-4xl">
-          <h1 className="max-w-3xl text-4xl lg:text-[3.35rem] font-semibold leading-tight tracking-tight font-serif" style={{ textWrap: 'balance' }}>
-            Find what&apos;s happening
-            <span className="ml-3 text-berkeley-gold italic font-medium">across Berkeley.</span>
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-4xl lg:text-[3.35rem] font-semibold leading-tight tracking-tight font-serif" style={{ textWrap: 'balance' }}>
+            Good {getGreeting()},&nbsp;
+            <span className="text-berkeley-gold italic font-medium">what&apos;s the move?</span>
           </h1>
-          <p className="mt-3 max-w-2xl text-[15px] leading-7 text-white/72">
+          <p className="mt-3 text-[15px] leading-7 text-white/72">
             {summaryCopy}
           </p>
 
-          <div className="mt-6 max-w-3xl rounded-[1.5rem] border border-white/10 bg-white p-4 shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
+          <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-white p-4 shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
             <div className="relative">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1003,7 +1010,7 @@ function DesktopHero({
               />
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-3">
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-3 border-t border-slate-100 pt-3">
               <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
                 Quick Start
               </span>
@@ -1017,9 +1024,6 @@ function DesktopHero({
                   {preset.label}
                 </button>
               ))}
-              <span className="ml-auto text-sm text-slate-500">
-                Use the filters below to narrow by time, topic, and source.
-              </span>
             </div>
           </div>
         </div>
@@ -1083,12 +1087,17 @@ function DesktopFiltersBar({
           ))}
         </div>
 
-        <SourceDropdown
-          value={filters.source}
-          options={sourceOptions}
-          onChange={onSourceChange}
-          tone="light"
-        />
+        <div className="hidden h-6 w-px flex-shrink-0 bg-slate-200 lg:block" />
+
+        <div className="flex flex-shrink-0 items-center gap-2">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Source</span>
+          <SourceDropdown
+            value={filters.source}
+            options={sourceOptions}
+            onChange={onSourceChange}
+            tone="light"
+          />
+        </div>
       </div>
     </div>
   );
