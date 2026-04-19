@@ -377,6 +377,19 @@ function formatNamedSources(names: string[] | undefined): string {
   return `${labels.slice(0, 2).join(', ')} and ${labels.length - 2} more`;
 }
 
+// Format date key into a section header label (Today / Tomorrow / "Friday, Apr 25")
+function dateGroupLabel(dateKey: string): string {
+  const todayKey = getCurrentPacificDateKey();
+  const tomorrowKey = addDaysToDateKey(todayKey, 1);
+  if (dateKey === todayKey) return 'Today';
+  if (dateKey === tomorrowKey) return 'Tomorrow';
+  const [year, month, day] = dateKey.split('-').map(Number);
+  if (!year || !month || !day) return dateKey;
+  const date = new Date(Date.UTC(year, month - 1, day));
+  const dayName = date.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+  return `${dayName}, ${MONTHS[month - 1]} ${day}`;
+}
+
 // Format date from YYYY-MM-DD to "10th Feb"
 function formatEventDate(dateString: string): string {
   const key = getPacificDateKey(dateString) || dateString.slice(0, 10);
@@ -738,9 +751,9 @@ function eventMatchesSearch(event: CalEvent, searchTerms: string[]): boolean {
 const Categories = ['All', 'Academic', 'Arts', 'Sports', 'Science & Tech', 'Student Life', 'Entrepreneurship'];
 const ALL_SOURCES = ['All', 'livewhale', 'ehub', 'gemini', 'cal_performances', 'bampfa', 'calbears', 'callink', 'haas', 'berkeley_law', 'simons'];
 const DateRanges = [
-  { label: 'Upcoming', value: 'upcoming' },
   { label: 'Today', value: 'today' },
   { label: 'This Week', value: 'week' },
+  { label: 'Browse All', value: 'upcoming' },
 ];
 
 interface QuickFilterPreset {
@@ -866,42 +879,45 @@ function FiltersBar({
   onSourceChange: (next: string) => void;
 }) {
   return (
-    <div className="bg-berkeley-medblue text-white text-xs overflow-x-auto border-t border-white/10">
-      <div className="container mx-auto px-4 py-2 flex items-center gap-4 whitespace-nowrap">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-berkeley-gold uppercase text-[10px]">Time</span>
-          {DateRanges.map(range => (
+    <div className="bg-berkeley-medblue text-white text-xs border-t border-white/10">
+      {/* ViewSwitcher — prominent time tabs */}
+      <div className="container mx-auto px-4 pt-2 pb-0 flex items-center gap-1 overflow-x-auto no-scrollbar whitespace-nowrap">
+        {DateRanges.map(range => {
+          const active = filters.dateRange === range.value;
+          return (
             <button
               key={range.value}
               onClick={() => onDateChange(range.value as SearchFilters['dateRange'])}
-              className={`px-3 py-1 rounded-full transition ${filters.dateRange === range.value ? 'bg-white text-berkeley-blue font-bold shadow-inner' : 'hover:bg-white/20'}`}
+              className={`px-4 py-1.5 text-sm font-bold rounded-t-lg transition flex-shrink-0 ${
+                active
+                  ? 'bg-white text-berkeley-blue border-t-2 border-x-2 border-berkeley-gold shadow-sm'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
+              }`}
             >
               {range.label}
             </button>
-          ))}
-        </div>
-        <div className="w-px h-4 bg-white/30 mx-1" />
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-berkeley-gold uppercase text-[10px]">Topic</span>
-          {Categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => onCategoryChange(cat)}
-              className={`px-3 py-1 rounded-full transition ${filters.category === cat ? 'bg-white text-berkeley-blue font-bold shadow-inner' : 'hover:bg-white/20'}`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-        <div className="w-px h-4 bg-white/30 mx-1" />
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-berkeley-gold uppercase text-[10px]">Source</span>
-          <SourceDropdown
-            value={filters.source}
-            options={sourceOptions}
-            onChange={onSourceChange}
-          />
-        </div>
+          );
+        })}
+      </div>
+      {/* CategoryRail + Source */}
+      <div className="container mx-auto px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap border-t border-white/10">
+        {Categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => onCategoryChange(cat)}
+            className={`px-3 py-1 rounded-full transition flex-shrink-0 ${
+              filters.category === cat ? 'bg-white text-berkeley-blue font-bold' : 'hover:bg-white/20'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+        <div className="w-px h-4 bg-white/30 mx-1 flex-shrink-0" />
+        <SourceDropdown
+          value={filters.source}
+          options={sourceOptions}
+          onChange={onSourceChange}
+        />
       </div>
     </div>
   );
@@ -913,7 +929,7 @@ export default function App() {
   const [loading, setLoading] = useState<LoadingState>(LoadingState.IDLE);
   const [statusReport, setStatusReport] = useState<IngestionStatus | null>(null);
   const [filters, setFilters] = useState<SearchFilters>({
-    dateRange: 'upcoming',
+    dateRange: 'today',
     category: 'All',
     searchQuery: '',
     source: 'All',
@@ -1086,6 +1102,21 @@ export default function App() {
     });
   }, [allEvents, filters]);
 
+  // Group sorted filtered events by Pacific date key
+  const eventGroups = useMemo(() => {
+    const groups: { dateKey: string; label: string; events: CalEvent[] }[] = [];
+    for (const event of filteredEvents) {
+      const dateKey = getPacificDateKey(event.date);
+      const last = groups[groups.length - 1];
+      if (last && last.dateKey === dateKey) {
+        last.events.push(event);
+      } else {
+        groups.push({ dateKey, label: dateGroupLabel(dateKey), events: [event] });
+      }
+    }
+    return groups;
+  }, [filteredEvents]);
+
   const handleSearchChange = useCallback((query: string) => {
     setFilters(prev => ({ ...prev, searchQuery: query }));
 
@@ -1139,16 +1170,16 @@ export default function App() {
       {isMobile ? (
         <div className="sticky top-0 z-50 shadow-md">
           <header className="bg-berkeley-blue text-white">
-            <div className="container mx-auto px-4 py-4 flex flex-col justify-between items-center gap-4">
-              <div className="flex flex-col items-center">
+            <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-berkeley-gold text-2xl font-bold">Cal</span>
                   <span className="text-2xl font-light tracking-wide">Events</span>
                 </div>
                 {lastUpdated && (
-                  <span className="text-[10px] text-berkeley-gold/70 uppercase tracking-tighter -mt-1 flex items-center gap-1">
+                  <span className="text-[10px] text-berkeley-gold/70 flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                    Last Synced: {formatPacificDateTime(lastUpdated)}
+                    {formatPacificDateTime(lastUpdated)}
                   </span>
                 )}
               </div>
@@ -1237,18 +1268,19 @@ export default function App() {
 
         {loading === LoadingState.SUCCESS && (
           <>
-            <div className="flex justify-between items-end mb-6">
-              <h2 className="text-2xl font-bold text-berkeley-blue">
-                {filters.category === 'All' ? 'Latest Events' : `${filters.category} Events`}
-                <span className="ml-2 text-sm font-normal text-gray-400">({filteredEvents.length} found)</span>
+            <div className="flex justify-between items-end mb-4">
+              <h2 className="text-xl font-bold text-berkeley-blue">
+                {filters.category !== 'All' ? `${filters.category} · ` : ''}
+                {filters.dateRange === 'today' ? 'Today' : filters.dateRange === 'week' ? 'This Week' : 'All Upcoming'}
+                <span className="ml-2 text-sm font-normal text-gray-400">({filteredEvents.length})</span>
               </h2>
             </div>
 
             {filteredEvents.length === 0 ? (
               <div className="text-center py-24 bg-white rounded-2xl border-2 border-dashed border-gray-200">
-                <p className="text-xl text-gray-400 font-medium">No events match these filters in today's batch.</p>
-                <button 
-                  onClick={() => setFilters({dateRange: 'upcoming', category: 'All', searchQuery: '', source: 'All'})}
+                <p className="text-xl text-gray-400 font-medium">No events match these filters.</p>
+                <button
+                  onClick={() => setFilters({dateRange: 'today', category: 'All', searchQuery: '', source: 'All'})}
                   className="mt-4 text-berkeley-medblue font-bold hover:underline"
                 >
                   Clear all filters
@@ -1256,7 +1288,18 @@ export default function App() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredEvents.map((event, idx) => (
+                {(() => {
+                  let globalIdx = 0;
+                  return eventGroups.map(group => (
+                    <React.Fragment key={group.dateKey}>
+                      <div className="col-span-full pt-4 pb-1 flex items-center gap-3">
+                        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">{group.label}</h3>
+                        <div className="flex-1 h-px bg-gray-200" />
+                        <span className="text-xs text-gray-400">{group.events.length} event{group.events.length !== 1 ? 's' : ''}</span>
+                      </div>
+                      {group.events.map((event) => {
+                        const idx = globalIdx++;
+                        return (
                   <div
                     key={event.id || idx}
                     onClick={() => handleEventClick(event)}
@@ -1264,23 +1307,10 @@ export default function App() {
                     style={{ animationDelay: `${Math.min(idx * 50, 500)}ms`, animationFillMode: 'forwards' }}
                   >
                     <div className="p-5 flex-grow">
-                      <div className="flex justify-between items-start mb-3">
+                      <div className="mb-3">
                         <span className="inline-block bg-berkeley-blue text-berkeley-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest">
                           {event.tags?.[0] || 'Event'}
                         </span>
-                        {event.url && (
-                          <a
-                            href={event.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-gray-400 hover:text-berkeley-gold transition-colors"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                            </svg>
-                          </a>
-                        )}
                       </div>
                       
                       <h3 className="text-lg font-bold text-berkeley-blue mb-3 leading-tight group-hover:text-berkeley-medblue transition-colors">{event.title}</h3>
@@ -1314,9 +1344,6 @@ export default function App() {
                         </div>
                       </div>
 
-                      <p className="text-gray-600 text-sm line-clamp-2 italic leading-relaxed">
-                        "{event.description}"
-                      </p>
                     </div>
                     
                     <div className="px-5 py-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
@@ -1333,7 +1360,11 @@ export default function App() {
                       <SourceBadge source={event.source} />
                     </div>
                   </div>
-                ))}
+                        );
+                      })}
+                    </React.Fragment>
+                  ));
+                })()}
               </div>
             )}
 
