@@ -50,7 +50,7 @@ export interface IngestionStatus {
 }
 
 export interface SearchFilters {
-  dateRange: 'upcoming' | 'today' | 'week' | 'month' | 'weekend';
+  dateRange: 'upcoming' | 'today' | 'week';
   category: string;
   searchQuery: string;
   source: string;

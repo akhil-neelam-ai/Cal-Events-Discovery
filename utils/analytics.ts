@@ -70,7 +70,7 @@ export function initGA(): void {
       window.gtag('config', GA_MEASUREMENT_ID, {
         send_page_view: false, // We'll send manually for SPA
       });
-      console.log('[Analytics] GA4 initialized with Google\'s gtag');
+      if (import.meta.env.DEV) console.log('[Analytics] GA4 initialized');
       return true;
     }
     return false;
@@ -86,7 +86,7 @@ export function initGA(): void {
     if (checkGtag() || attempts >= 30) {
       clearInterval(interval);
       if (attempts >= 30) {
-        console.warn('[Analytics] GA4 gtag not found - Google Analytics script may have failed to load');
+        if (import.meta.env.DEV) console.warn('[Analytics] GA4 gtag not found - Google Analytics script may have failed to load');
       }
     }
   }, 100);
@@ -100,7 +100,7 @@ export function trackPageView(params: PageViewParams): void {
   if (typeof window === 'undefined') return;
 
   if (!window.gtag) {
-    console.warn('[Analytics] gtag not available - page view not tracked');
+    if (import.meta.env.DEV) console.warn('[Analytics] gtag not available - page view not tracked');
     return;
   }
 
@@ -109,7 +109,7 @@ export function trackPageView(params: PageViewParams): void {
     page_title: params.page_title || document.title,
   });
 
-  console.log('[Analytics] Page view tracked:', params.page_path);
+  if (import.meta.env.DEV) console.log('[Analytics] Page view tracked:', params.page_path);
 }
 
 /**
@@ -119,12 +119,12 @@ export function trackEvent(eventName: string, params?: EventParams): void {
   if (typeof window === 'undefined') return;
 
   if (!window.gtag) {
-    console.warn('[Analytics] gtag not available - event not tracked:', eventName);
+    if (import.meta.env.DEV) console.warn('[Analytics] gtag not available - event not tracked:', eventName);
     return;
   }
 
   window.gtag('event', eventName, params);
-  console.log('[Analytics] Event tracked:', eventName, params);
+  if (import.meta.env.DEV) console.log('[Analytics] Event tracked:', eventName, params);
 }
 
 /**
