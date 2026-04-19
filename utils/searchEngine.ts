@@ -1,0 +1,216 @@
+import Fuse from 'fuse.js';
+import type { CalEvent } from '../types';
+import { tokenize, stem } from './textUtils';
+import type { SearchIndex } from './textUtils';
+
+export type { SearchIndex };
+
+// ─── Intent parsing ───────────────────────────────────────────────────────────
+
+export interface QueryIntent {
+  dateRange?: 'today' | 'week';
+  category?: string;
+}
+
+export interface ParsedQuery {
+  raw: string;
+  /** Query text after intent phrases are stripped */
+  cleaned: string;
+  tokens: string[];
+  intents: QueryIntent;
+}
+
+const RE_TODAY   = /\b(tonight|today|this evening|this afternoon|this morning)\b/i;
+const RE_WEEK    = /\b(this week|next 7 days|this weekend|weekend)\b/i;
+const RE_SPORTS  = /\b(cal game|bears game|cal bears|athletics|sport|sports)\b/i;
+const RE_ARTS    = /\b(film screening|movie|concert|performance|theater|theatre|gallery|bampfa)\b/i;
+const RE_TECH    = /\b(ai talk|ai talks|tech talk|hackathon|coding|computer science)\b/i;
+const RE_STUDENT = /\b(free food|student org|greek|frat|sorority)\b/i;
+
+export function parseQuery(query: string): ParsedQuery {
+  const raw = query.trim();
+  const intents: QueryIntent = {};
+  let cleaned = raw;
+
+  if (RE_TODAY.test(raw)) {
+    intents.dateRange = 'today';
+    cleaned = cleaned.replace(RE_TODAY, '').trim();
+  } else if (RE_WEEK.test(raw)) {
+    intents.dateRange = 'week';
+    cleaned = cleaned.replace(RE_WEEK, '').trim();
+  }
+
+  if (RE_SPORTS.test(raw))       intents.category = 'Sports';
+  else if (RE_ARTS.test(raw))    intents.category = 'Arts';
+  else if (RE_TECH.test(raw))    intents.category = 'Science & Tech';
+  else if (RE_STUDENT.test(raw)) intents.category = 'Student Life';
+
+  const tokens = tokenize(cleaned || raw);
+  return { raw, cleaned, tokens, intents };
+}
+
+// ─── Scoring ──────────────────────────────────────────────────────────────────
+
+const W = { title: 60, titlePhrase: 100, tag: 45, org: 30, desc: 10, recency: 15 } as const;
+
+function recencyBonus(dateStr: string): number {
+  try {
+    const ms = new Date(dateStr).getTime() - Date.now();
+    const days = ms / 86_400_000;
+    if (days < 0 || days > 30) return 0;
+    return Math.round(W.recency * (1 - days / 30));
+  } catch {
+    return 0;
+  }
+}
+
+function scoreByPos(
+  pos: number,
+  queryTokens: string[],
+  rawQuery: string,
+  index: SearchIndex,
+  eventByPos: (p: number) => CalEvent | undefined,
+): number {
+  const ev = eventByPos(pos);
+  if (!ev) return 0;
+
+  let score = 0;
+  let matched = 0;
+
+  if (rawQuery && ev.title.toLowerCase().includes(rawQuery.toLowerCase())) {
+    score += W.titlePhrase;
+    matched++;
+  }
+
+  for (const qt of queryTokens) {
+    if (index.t[qt]?.includes(pos)) { score += W.title; matched++; }
+    if (index.g[qt]?.includes(pos)) { score += W.tag;   matched++; }
+    if (index.o[qt]?.includes(pos)) { score += W.org;   matched++; }
+    if (index.d[qt]?.includes(pos)) { score += W.desc;  matched++; }
+  }
+
+  if (matched === 0) return 0;
+  score += recencyBonus(ev.date);
+  return score;
+}
+
+// ─── Main search function ─────────────────────────────────────────────────────
+
+export interface SearchResult {
+  event: CalEvent;
+  score: number;
+}
+
+export function searchEvents(
+  events: CalEvent[],
+  query: string,
+  index: SearchIndex | null,
+): { results: CalEvent[]; intents: QueryIntent; matchedTokens: string[] } {
+  if (!query.trim()) return { results: events, intents: {}, matchedTokens: [] };
+
+  const { tokens, intents, raw } = parseQuery(query);
+  if (tokens.length === 0 && !raw) return { results: events, intents, matchedTokens: [] };
+
+  // Build a position-based lookup for the current event pool
+  const eventMap = new Map(events.map(e => [e.id, e]));
+  const scored: SearchResult[] = [];
+  const scoredIds = new Set<string>();
+
+  // Phase 1: inverted index lookup + field-weight scoring
+  if (index && tokens.length > 0) {
+    // pos → eventId lookup helper (only valid if event is in our filtered pool)
+    const eventByPos = (pos: number) => {
+      const id = index.ids[pos];
+      return id ? eventMap.get(id) : undefined;
+    };
+
+    const candidatePos = new Set<number>();
+    for (const token of tokens) {
+      for (const pos of index.t[token] ?? []) candidatePos.add(pos);
+      for (const pos of index.g[token] ?? []) candidatePos.add(pos);
+      for (const pos of index.o[token] ?? []) candidatePos.add(pos);
+      for (const pos of index.d[token] ?? []) candidatePos.add(pos);
+    }
+
+    for (const pos of candidatePos) {
+      const ev = eventByPos(pos);
+      if (!ev) continue;
+      const score = scoreByPos(pos, tokens, raw, index, eventByPos);
+      if (score > 0) {
+        scored.push({ event: ev, score });
+        scoredIds.add(ev.id);
+      }
+    }
+  }
+
+  // Phase 2: Fuse.js fuzzy fallback
+  // — runs on un-indexed tokens, or as the sole engine when index is null
+  const tokensWithHits = index
+    ? new Set(tokens.filter(t =>
+        (index.t[t]?.length ?? 0) > 0 ||
+        (index.g[t]?.length ?? 0) > 0 ||
+        (index.o[t]?.length ?? 0) > 0 ||
+        (index.d[t]?.length ?? 0) > 0
+      ))
+    : new Set<string>();
+  const fuzzyTokens = tokens.filter(t => !tokensWithHits.has(t));
+
+  if (fuzzyTokens.length > 0 || scored.length === 0) {
+    const fuzzyPool = scored.length === 0 ? events : events.filter(e => !scoredIds.has(e.id));
+    const fuse = new Fuse(fuzzyPool, {
+      keys: [
+        { name: 'title',       weight: 4 },
+        { name: 'tags',        weight: 3 },
+        { name: 'organizer',   weight: 2 },
+        { name: 'description', weight: 1 },
+      ],
+      threshold: 0.4,
+      includeScore: true,
+      minMatchCharLength: 2,
+    });
+
+    const fuseQuery = fuzzyTokens.length > 0 ? fuzzyTokens.join(' ') : raw;
+    for (const { item, score: fs } of fuse.search(fuseQuery)) {
+      const relevance = Math.round((1 - (fs ?? 1)) * 40) + recencyBonus(item.date);
+      if (scoredIds.has(item.id)) {
+        const existing = scored.find(r => r.event.id === item.id);
+        if (existing) existing.score += relevance;
+      } else {
+        scored.push({ event: item, score: relevance });
+      }
+    }
+  }
+
+  scored.sort((a, b) => b.score - a.score);
+  return {
+    results: scored.map(r => r.event),
+    intents,
+    matchedTokens: tokens,
+  };
+}
+
+// ─── Synonym expansion (kept for backwards-compat with old search paths) ──────
+
+const SYNONYMS: Record<string, string> = {
+  ai: 'artificial intelligence machine learning',
+  ml: 'machine learning artificial intelligence',
+  film: 'movie cinema screening',
+  concert: 'music performance recital',
+  talk: 'lecture seminar presentation speaker',
+  workshop: 'class training hands-on session',
+  career: 'job employment networking recruiting',
+};
+
+/** Expand a raw query with synonyms, return unique stems. */
+export function expandTokens(query: string): string[] {
+  const base = tokenize(query);
+  const extra: string[] = [];
+  for (const word of query.toLowerCase().split(/\s+/)) {
+    const expanded = SYNONYMS[word];
+    if (expanded) extra.push(...tokenize(expanded));
+  }
+  return [...new Set([...base, ...extra])];
+}
+
+// Re-export stem for consumers that need it
+export { stem, tokenize };

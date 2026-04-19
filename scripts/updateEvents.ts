@@ -44,12 +44,14 @@ import { fetchHaas, fetchBerkeleyLaw } from './sources/tribe.js';
 import { fetchSimons } from './sources/simons.js';
 import { fetchEHub } from './sources/ehub.js';
 import { fetchGeminiLongTail } from './sources/gemini.js';
+import { buildSearchIndex } from './lib/buildIndex.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const eventsOutPath = path.join(__dirname, '..', 'public', 'events.json');
-const statusOutPath = path.join(__dirname, '..', 'public', 'status.json');
+const eventsOutPath  = path.join(__dirname, '..', 'public', 'events.json');
+const statusOutPath  = path.join(__dirname, '..', 'public', 'status.json');
+const indexOutPath   = path.join(__dirname, '..', 'public', 'search-index.json');
 
 interface AdapterRun {
   status: SourceStatus;
@@ -297,6 +299,11 @@ async function main(): Promise<void> {
   };
   fs.writeFileSync(eventsOutPath, JSON.stringify(outputData, null, 2));
   console.log(`[orchestrator] wrote ${legacy.length} events → ${eventsOutPath}`);
+
+  const searchIndex = buildSearchIndex(legacy);
+  fs.writeFileSync(indexOutPath, JSON.stringify(searchIndex));
+  const stemCount = Object.keys(searchIndex.t).length;
+  console.log(`[orchestrator] wrote search index (${stemCount} title-stems) → ${indexOutPath}`);
 
   writeStatus(runs, legacy.length, duplicatesRemoved, recovery);
 }

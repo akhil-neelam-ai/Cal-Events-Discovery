@@ -13,6 +13,9 @@ import {
   trackExternalLink,
   trackFilter,
 } from './utils/analytics';
+import { searchEvents, parseQuery } from './utils/searchEngine';
+import type { SearchIndex } from './utils/textUtils';
+import { getRecentSearches, addRecentSearch, clearRecentSearches } from './utils/recentSearches';
 
 // Source provenance helpers
 const SOURCE_LABELS: Record<string, string> = {
@@ -940,6 +943,65 @@ const DESKTOP_HERO_PRESETS: QuickFilterPreset[] = [
   { label: 'Cal games', dateRange: 'week', category: 'Sports', searchQuery: '' },
 ];
 
+const POPULAR_SEARCHES = [
+  'Free food', 'AI', 'Film screening', 'Career fair',
+  'Hackathon', 'Speaker', 'Workshop', 'Wellness',
+];
+
+function SearchSuggestionsDropdown({
+  recents,
+  onSelect,
+  onClear,
+}: {
+  recents: string[];
+  onSelect: (q: string) => void;
+  onClear: () => void;
+}) {
+  return (
+    <div className="absolute top-full left-0 right-0 z-50 mt-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+      {recents.length > 0 && (
+        <div className="p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Recent</span>
+            <button
+              onMouseDown={(e) => { e.preventDefault(); onClear(); }}
+              className="text-[11px] text-slate-400 transition hover:text-slate-600"
+            >
+              Clear
+            </button>
+          </div>
+          {recents.map(s => (
+            <button
+              key={s}
+              onMouseDown={(e) => { e.preventDefault(); onSelect(s); }}
+              className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-50"
+            >
+              <svg className="h-3.5 w-3.5 flex-shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className={`p-3 ${recents.length > 0 ? 'border-t border-slate-100' : ''}`}>
+        <span className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-slate-400">Popular</span>
+        <div className="flex flex-wrap gap-1.5">
+          {POPULAR_SEARCHES.map(s => (
+            <button
+              key={s}
+              onMouseDown={(e) => { e.preventDefault(); onSelect(s); }}
+              className="rounded-full border border-berkeley-gold/30 bg-berkeley-gold/10 px-3 py-1 text-xs text-berkeley-blue transition hover:bg-berkeley-gold/20"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function DesktopHero({
   lastUpdated,
   totalEvents,
@@ -957,6 +1019,25 @@ function DesktopHero({
   onSearchChange: (query: string) => void;
   onPresetSelect: (preset: QuickFilterPreset) => void;
 }) {
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [recents, setRecents] = useState<string[]>([]);
+  const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleFocus = () => {
+    if (blurTimerRef.current) clearTimeout(blurTimerRef.current);
+    setRecents(getRecentSearches());
+    setSearchFocused(true);
+  };
+  const handleBlur = () => {
+    blurTimerRef.current = setTimeout(() => setSearchFocused(false), 150);
+  };
+  const handleSelectSuggestion = (q: string) => {
+    onSearchChange(q);
+    addRecentSearch(q);
+    setRecents(getRecentSearches());
+    setSearchFocused(false);
+  };
+
   const statusCopy = lastUpdated
     ? `Synced ${formatPacificDateTime(lastUpdated)}`
     : loading === LoadingState.ERROR
@@ -1007,7 +1088,22 @@ function DesktopHero({
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-5 text-base text-slate-900 outline-none transition focus:border-berkeley-medblue focus:bg-white focus:ring-2 focus:ring-berkeley-gold/50"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && searchQuery.trim()) {
+                    addRecentSearch(searchQuery.trim());
+                    setSearchFocused(false);
+                  }
+                }}
               />
+              {searchFocused && !searchQuery && (
+                <SearchSuggestionsDropdown
+                  recents={recents}
+                  onSelect={handleSelectSuggestion}
+                  onClear={() => { clearRecentSearches(); setRecents([]); }}
+                />
+              )}
             </div>
 
             <div className="mt-3 flex flex-wrap items-center justify-center gap-3 border-t border-slate-100 pt-3">
@@ -1238,6 +1334,7 @@ export default function App() {
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [loading, setLoading] = useState<LoadingState>(LoadingState.IDLE);
   const [statusReport, setStatusReport] = useState<IngestionStatus | null>(null);
+  const [searchIndex, setSearchIndex] = useState<SearchIndex | null>(null);
   const [filters, setFilters] = useState<SearchFilters>({
     dateRange: 'today',
     category: 'All',
@@ -1246,11 +1343,20 @@ export default function App() {
   });
   const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
   const [shouldAnimateCards, setShouldAnimateCards] = useState(true);
+  // Mobile search suggestions
+  const [mobileSearchFocused, setMobileSearchFocused] = useState(false);
+  const [mobileRecents, setMobileRecents] = useState<string[]>([]);
+  const mobileBlurRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isMobile = useIsMobile();
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleEventClick = useCallback((event: CalEvent) => {
     setSelectedEvent(event);
+    // Persist the search term that led to this click
+    setFilters(prev => {
+      if (prev.searchQuery.trim()) addRecentSearch(prev.searchQuery.trim());
+      return prev;
+    });
     trackEventClick({
       event_id: event.id,
       event_title: event.title,
@@ -1267,7 +1373,13 @@ export default function App() {
     setLoading(LoadingState.LOADING);
     setStatusReport(null);
     try {
-      const data = await fetchEventsFromGemini();
+      const [data] = await Promise.all([
+        fetchEventsFromGemini(),
+        fetch('/search-index.json', { cache: 'no-cache' })
+          .then(r => r.ok ? r.json() : null)
+          .then((idx: SearchIndex | null) => { if (idx) setSearchIndex(idx); })
+          .catch(() => { /* index not yet generated — fall back to Fuse-only */ }),
+      ]);
       setAllEvents(data.events);
       setLastUpdated(data.lastUpdated);
       setStatusReport(data.status || null);
@@ -1366,39 +1478,35 @@ export default function App() {
     return { todayKey: today, nextWeekKey: addDaysToDateKey(today, 7) };
   }, []);
 
-  // Instant local filtering for everything except date windows.
+  // Instant local filtering — category + source + home-game, then ranked search.
   const baseFilteredEvents = useMemo(() => {
-    const searchQuery = filters.searchQuery.trim();
-    const expandedTerms = searchQuery ? expandSearchQuery(searchQuery) : [];
+    const q = filters.searchQuery.trim();
 
-    return allEvents
-      .filter(event => {
-        const eventDateKey = getPacificDateKey(event.date);
-        if (!eventDateKey) {
-          return false;
-        }
+    // Non-search filters applied to the full event pool
+    const pool = allEvents.filter(event => {
+      const eventDateKey = getPacificDateKey(event.date);
+      if (!eventDateKey) return false;
 
-        const matchesCategory = filters.category === 'All' ||
-          event.tags?.some(t => t.toLowerCase().includes(filters.category.toLowerCase())) ||
-          event.tags?.includes(filters.category);
+      const matchesCategory = filters.category === 'All' ||
+        event.tags?.some(t => t.toLowerCase().includes(filters.category.toLowerCase())) ||
+        event.tags?.includes(filters.category);
 
-        const matchesSearch = searchQuery
-          ? eventMatchesSearch(event, expandedTerms)
-          : true;
+      const matchesSource = filters.source === 'All' || event.source === filters.source;
+      return matchesCategory && matchesSource && isHomeGame(event);
+    });
 
-        const matchesSource = filters.source === 'All' || event.source === filters.source;
-        const isLocalEvent = isHomeGame(event);
-
-        return matchesCategory && matchesSearch && matchesSource && isLocalEvent;
-      })
-      .sort((a, b) => {
-        const dateA = getPacificDateKey(a.date);
-        const dateB = getPacificDateKey(b.date);
-        const dateCompare = dateA.localeCompare(dateB);
+    if (!q) {
+      return [...pool].sort((a, b) => {
+        const dateCompare = (getPacificDateKey(a.date) || '').localeCompare(getPacificDateKey(b.date) || '');
         if (dateCompare !== 0) return dateCompare;
         return (a.time || '').localeCompare(b.time || '') || a.title.localeCompare(b.title);
       });
-  }, [allEvents, filters.category, filters.searchQuery, filters.source]);
+    }
+
+    // With a query: relevance-ranked results (date sort handled within scorer via recency bonus)
+    const { results } = searchEvents(pool, q, searchIndex);
+    return results;
+  }, [allEvents, filters.category, filters.searchQuery, filters.source, searchIndex]);
 
   const todayEvents = useMemo(
     () => filterEventsByDateRange(baseFilteredEvents, 'today', todayKey, nextWeekKey),
@@ -1431,26 +1539,54 @@ export default function App() {
   const showingTodayFallback = filters.dateRange === 'today' && effectiveDateRange === 'week' && weekEvents.length > 0;
 
   const emptyState = useMemo<EmptyStateConfig>(() => {
+    const q = filters.searchQuery.trim();
+    const hasSearch = !!q;
+    const hasCategory = filters.category !== 'All';
+
     const resetAll = () => setFilters({ dateRange: 'today', category: 'All', searchQuery: '', source: 'All' });
     const clearSearch = () => setFilters(prev => ({ ...prev, searchQuery: '' }));
+    const clearCategory = () => setFilters(prev => ({ ...prev, category: 'All' }));
     const showWeek = () => setFilters(prev => ({ ...prev, dateRange: 'week' }));
     const showUpcoming = () => setFilters(prev => ({ ...prev, dateRange: 'upcoming' }));
 
-    if (filters.searchQuery.trim() && upcomingEvents.length > 0) {
+    if (hasSearch && upcomingEvents.length > 0) {
+      const dateLabel = effectiveDateRange === 'today' ? 'today' : 'this week';
       return {
-        title: `No matches for “${filters.searchQuery.trim()}”.`,
-        description: `${upcomingEvents.length} event${upcomingEvents.length !== 1 ? 's are' : ' is'} available in Upcoming if you broaden the search.`,
+        title: `No “${q}” events ${dateLabel}.`,
+        description: `${upcomingEvents.length} match${upcomingEvents.length !== 1 ? 'es' : ''} found in the coming weeks — broaden your date range to see them.`,
+        primaryLabel: effectiveDateRange !== 'upcoming' ? 'See all upcoming' : 'Clear search',
+        primaryAction: effectiveDateRange !== 'upcoming' ? showUpcoming : clearSearch,
+        secondaryLabel: 'Clear search',
+        secondaryAction: clearSearch,
+      };
+    }
+
+    if (hasSearch && hasCategory) {
+      return {
+        title: `No “${q}” in ${filters.category}.`,
+        description: `Try removing the ${filters.category} filter — there may be matches across other categories.`,
+        primaryLabel: `Clear “${filters.category}”`,
+        primaryAction: clearCategory,
+        secondaryLabel: 'Clear search',
+        secondaryAction: clearSearch,
+      };
+    }
+
+    if (hasSearch) {
+      return {
+        title: `No results for “${q}”.`,
+        description: 'Try a different search term or browse upcoming events.',
         primaryLabel: 'Clear search',
         primaryAction: clearSearch,
-        secondaryLabel: 'Show Upcoming',
-        secondaryAction: showUpcoming,
+        secondaryLabel: 'Show all upcoming',
+        secondaryAction: resetAll,
       };
     }
 
     if (filters.dateRange === 'today' && weekEvents.length > 0) {
       return {
-        title: 'No events today.',
-        description: `${weekEvents.length} event${weekEvents.length !== 1 ? 's are' : ' is'} scheduled this week.`,
+        title: 'Nothing on today.',
+        description: `${weekEvents.length} event${weekEvents.length !== 1 ? 's' : ''} coming up this week though.`,
         primaryLabel: 'Show This Week',
         primaryAction: showWeek,
         secondaryLabel: 'Show Upcoming',
@@ -1487,7 +1623,7 @@ export default function App() {
       secondaryLabel: filters.dateRange !== 'upcoming' ? 'Show Upcoming' : undefined,
       secondaryAction: filters.dateRange !== 'upcoming' ? showUpcoming : undefined,
     };
-  }, [filters, upcomingEvents.length, weekEvents.length]);
+  }, [filters, upcomingEvents.length, weekEvents.length, effectiveDateRange]);
 
   // Group sorted filtered events by Pacific date key
   const eventGroups = useMemo(() => {
@@ -1512,12 +1648,18 @@ export default function App() {
   }, [loading, filteredEvents.length, shouldAnimateCards]);
 
   const handleSearchChange = useCallback((query: string) => {
-    setFilters(prev => ({ ...prev, searchQuery: query }));
+    setFilters(prev => {
+      const next = { ...prev, searchQuery: query };
+      // Apply intent hints when user types intent-bearing phrases
+      if (query.trim()) {
+        const { intents } = parseQuery(query);
+        if (intents.dateRange) next.dateRange = intents.dateRange;
+        if (intents.category) next.category = intents.category;
+      }
+      return next;
+    });
 
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     if (query.trim().length >= 2) {
       searchTimeoutRef.current = setTimeout(() => {
         trackSearch({ search_term: query.trim(), results_count: filteredEvents.length });
@@ -1588,6 +1730,20 @@ export default function App() {
                   className="w-full rounded-2xl border border-white/10 bg-white py-3 pl-11 pr-11 text-sm text-slate-900 outline-none transition focus:border-berkeley-gold focus:ring-2 focus:ring-berkeley-gold/40"
                   value={filters.searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
+                  onFocus={() => {
+                    if (mobileBlurRef.current) clearTimeout(mobileBlurRef.current);
+                    setMobileRecents(getRecentSearches());
+                    setMobileSearchFocused(true);
+                  }}
+                  onBlur={() => {
+                    mobileBlurRef.current = setTimeout(() => setMobileSearchFocused(false), 150);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && filters.searchQuery.trim()) {
+                      addRecentSearch(filters.searchQuery.trim());
+                      setMobileSearchFocused(false);
+                    }
+                  }}
                 />
                 {filters.searchQuery && (
                   <button
@@ -1600,6 +1756,18 @@ export default function App() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
+                )}
+                {mobileSearchFocused && !filters.searchQuery && (
+                  <SearchSuggestionsDropdown
+                    recents={mobileRecents}
+                    onSelect={(q) => {
+                      handleSearchChange(q);
+                      addRecentSearch(q);
+                      setMobileRecents(getRecentSearches());
+                      setMobileSearchFocused(false);
+                    }}
+                    onClear={() => { clearRecentSearches(); setMobileRecents([]); }}
+                  />
                 )}
               </div>
             </div>
