@@ -66,17 +66,23 @@ interface RecoveryState {
   lastGoodUsed: number;
 }
 
-const FALLBACK_POLICIES: Partial<Record<SourceName, { allowLastGood: boolean; minHealthyCount?: number }>> = {
-  livewhale: { allowLastGood: true, minHealthyCount: LIVEWHALE_HEALTHY_THRESHOLD },
-  callink: { allowLastGood: true },
-  cal_performances: { allowLastGood: true },
-  calbears: { allowLastGood: true },
-  bampfa: { allowLastGood: true },
-  haas: { allowLastGood: true },
-  berkeley_law: { allowLastGood: true },
-  simons: { allowLastGood: true },
-  ehub: { allowLastGood: true },
-  gemini: { allowLastGood: false },
+interface RecoveryPolicy {
+  allowLastGood: boolean;
+  degradeOnFailure: boolean;
+  minHealthyCount?: number;
+}
+
+const FALLBACK_POLICIES: Partial<Record<SourceName, RecoveryPolicy>> = {
+  livewhale: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: LIVEWHALE_HEALTHY_THRESHOLD },
+  callink: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
+  cal_performances: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
+  calbears: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
+  bampfa: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
+  haas: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
+  berkeley_law: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
+  simons: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
+  ehub: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
+  gemini: { allowLastGood: false, degradeOnFailure: false },
 };
 
 async function runAdapter<T extends {
@@ -178,6 +184,10 @@ function markRecovery(
     typeof policy?.minHealthyCount === 'number' && run.status.ok && run.status.count < policy.minHealthyCount;
   const degraded = !run.status.ok || belowHealthyThreshold;
   if (!degraded) return;
+
+  if (!policy?.degradeOnFailure) {
+    return;
+  }
 
   run.status.degraded = true;
 

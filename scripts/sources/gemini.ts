@@ -100,8 +100,10 @@ If you cannot find ${MAX_EVENTS} events that satisfy ALL requirements, return fe
 
   let response: { text?: string; candidates?: unknown[] } | null = null;
   let lastError = '';
+  let attemptsMade = 0;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    attemptsMade = attempt;
     try {
       response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
@@ -117,12 +119,15 @@ If you cannot find ${MAX_EVENTS} events that satisfy ALL requirements, return fe
       const msg = error instanceof Error ? error.message : String(error);
       lastError = msg;
       console.warn(`[gemini] attempt ${attempt}/${MAX_ATTEMPTS} failed: ${msg}`);
+      if (/API_KEY_INVALID|API key not valid/i.test(msg)) {
+        break;
+      }
       if (attempt < MAX_ATTEMPTS) await sleep(BACKOFF_MS[attempt - 1]);
     }
   }
 
   if (!response) {
-    throw new Error(`Gemini failed after ${MAX_ATTEMPTS} attempts: ${lastError}`);
+    throw new Error(`Gemini failed after ${attemptsMade} attempt${attemptsMade === 1 ? '' : 's'}: ${lastError}`);
   }
 
   const text = response.text || '';

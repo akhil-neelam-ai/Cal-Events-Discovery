@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-04-19T04:37:54.620Z",
-  "total_events": 1064,
+  "generated_at": "2026-04-19T05:16:20.976Z",
+  "total_events": 1065,
   "duplicates_removed": 260,
   "past_events_filtered": 3112,
   "invalid_events_filtered": 3,
@@ -8,68 +8,78 @@
     {
       "name": "livewhale",
       "ok": true,
-      "count": 978,
-      "duration_ms": 14602,
-      "fetched_at": "2026-04-19T04:37:39.889Z"
+      "count": 979,
+      "duration_ms": 17098,
+      "fetched_at": "2026-04-19T05:16:03.751Z"
     },
     {
       "name": "callink",
       "ok": true,
       "count": 10,
-      "duration_ms": 1513,
-      "fetched_at": "2026-04-19T04:37:39.909Z"
+      "duration_ms": 1551,
+      "fetched_at": "2026-04-19T05:16:03.770Z"
     },
     {
       "name": "cal_performances",
       "ok": true,
       "count": 7,
-      "duration_ms": 13552,
-      "fetched_at": "2026-04-19T04:37:39.912Z"
+      "duration_ms": 12802,
+      "fetched_at": "2026-04-19T05:16:03.772Z"
     },
     {
       "name": "calbears",
       "ok": true,
       "count": 93,
-      "duration_ms": 1179,
-      "fetched_at": "2026-04-19T04:37:39.913Z"
+      "duration_ms": 1352,
+      "fetched_at": "2026-04-19T05:16:03.773Z"
     },
     {
       "name": "bampfa",
       "ok": true,
       "count": 76,
-      "duration_ms": 2151,
-      "fetched_at": "2026-04-19T04:37:39.914Z"
+      "duration_ms": 2278,
+      "fetched_at": "2026-04-19T05:16:03.775Z"
     },
     {
       "name": "haas",
       "ok": true,
       "count": 25,
-      "duration_ms": 1356,
-      "fetched_at": "2026-04-19T04:37:39.915Z"
+      "duration_ms": 1479,
+      "fetched_at": "2026-04-19T05:16:03.776Z"
     },
     {
       "name": "berkeley_law",
       "ok": true,
       "count": 54,
-      "duration_ms": 2019,
-      "fetched_at": "2026-04-19T04:37:39.916Z"
+      "duration_ms": 2149,
+      "fetched_at": "2026-04-19T05:16:03.777Z"
     },
     {
       "name": "simons",
       "ok": true,
       "count": 44,
-      "duration_ms": 1653,
-      "fetched_at": "2026-04-19T04:37:39.917Z"
+      "duration_ms": 1775,
+      "fetched_at": "2026-04-19T05:16:03.778Z"
     },
     {
       "name": "ehub",
       "ok": true,
       "count": 37,
-      "duration_ms": 1918,
-      "fetched_at": "2026-04-19T04:37:39.918Z"
+      "duration_ms": 2047,
+      "fetched_at": "2026-04-19T05:16:03.779Z"
+    },
+    {
+      "name": "gemini",
+      "ok": false,
+      "count": 0,
+      "duration_ms": 1276,
+      "error": "Gemini failed after 1 attempt: {\"error\":{\"code\":400,\"message\":\"API key not valid. Please pass a valid API key.\",\"status\":\"INVALID_ARGUMENT\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"API_KEY_INVALID\",\"domain\":\"googleapis.com\",\"metadata\":{\"service\":\"generativelanguage.googleapis.com\"}},{\"@type\":\"type.googleapis.com/google.rpc.LocalizedMessage\",\"locale\":\"en-US\",\"message\":\"API key not valid. Please pass a valid API key.\"}]}}",
+      "fetched_at": "2026-04-19T05:16:03.781Z"
     }
   ],
   "fallback_used": false,
   "degraded": false,
-  "last_good_used": 0
+  "last_good_used": 0,
+  "fallback_sources": [],
+  "degraded_sources": []
 }

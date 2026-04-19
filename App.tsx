@@ -362,6 +362,21 @@ function formatStatusSources(status: IngestionStatus): string {
   return `${failed.slice(0, 2).join(', ')} and ${failed.length - 2} more`;
 }
 
+function formatNamedSources(names: string[] | undefined): string {
+  if (!names || names.length === 0) {
+    return '';
+  }
+
+  const labels = names.map(name => SOURCE_LABELS[name] || name);
+  if (labels.length === 1) {
+    return labels[0];
+  }
+  if (labels.length === 2) {
+    return `${labels[0]} and ${labels[1]}`;
+  }
+  return `${labels.slice(0, 2).join(', ')} and ${labels.length - 2} more`;
+}
+
 // Format date from YYYY-MM-DD to "10th Feb"
 function formatEventDate(dateString: string): string {
   const key = getPacificDateKey(dateString) || dateString.slice(0, 10);
@@ -810,14 +825,26 @@ export default function App() {
 
     const failedSources = statusReport.sources.filter(source => !source.ok);
     const failedLabel = formatStatusSources(statusReport);
+    const fallbackLabel = formatNamedSources(statusReport.fallback_sources);
+    const degradedLabel = formatNamedSources(statusReport.degraded_sources);
 
     if (statusReport.degraded || statusReport.fallback_used || statusReport.last_good_used > 0) {
       return {
         tone: 'warning' as const,
-        title: 'Showing partial data.',
-        message: failedLabel
-          ? `The latest update had source issues (${failedLabel}) and fell back to cached data for part of the feed.`
-          : 'The latest update used cached data for part of the feed.',
+        title: statusReport.fallback_used ? 'Showing mostly fresh data.' : 'Showing partial data.',
+        message: statusReport.fallback_used
+          ? (
+              fallbackLabel
+                ? `The latest update reused cached events for ${fallbackLabel}.`
+                : failedLabel
+                  ? `The latest update had source issues (${failedLabel}) and reused cached events for part of the feed.`
+                  : 'The latest update reused cached events for part of the feed.'
+            )
+          : (
+              degradedLabel
+                ? `${degradedLabel} did not return a healthy result in the latest run.`
+                : statusReport.degraded_reason || 'One or more sources did not return a healthy result in the latest run.'
+            ),
       };
     }
 

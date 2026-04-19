@@ -17,6 +17,15 @@ const FRONTEND_CATEGORIES = [
 ] as const;
 export type FrontendCategory = (typeof FRONTEND_CATEGORIES)[number];
 
+const TAG_PRIORITY: readonly FrontendCategory[] = [
+  'Entrepreneurship',
+  'Student Life',
+  'Science & Tech',
+  'Arts',
+  'Sports',
+  'Academic',
+];
+
 const CATEGORY_PATTERNS: Array<[FrontendCategory, RegExp]> = [
   [
     'Academic',
@@ -40,35 +49,38 @@ const CATEGORY_PATTERNS: Array<[FrontendCategory, RegExp]> = [
   ],
   [
     'Student Life',
-    /\b(club|social|mixer|orientation|workshop|career|networking|student org|grad student|undergrad|outing|trip|tour|reception|meetup|tabling|info session|open house|coffee chat|lunch|dinner|brunch|retreat)\b/i,
+    /\b(club|social|mixer|orientation|workshop|career|networking|student org|grad student|undergrad|outing|trip|tour|reception|meetup|tabling|info session|open house|coffee chat|lunch|dinner|brunch|retreat|celebration|commencement|graduation|wellness|housing|welcome|student association)\b/i,
   ],
 ];
 
-function classifyText(text: string): FrontendCategory | undefined {
+function classifyText(text: string): FrontendCategory[] {
   const normalized = text.trim().toLowerCase();
-  if (normalized === 'academic') return 'Academic';
-  if (normalized === 'arts' || normalized === 'art') return 'Arts';
-  if (normalized === 'sports' || normalized === 'sport') return 'Sports';
+  const matches = new Set<FrontendCategory>();
+
+  if (normalized === 'academic') matches.add('Academic');
+  if (normalized === 'arts' || normalized === 'art') matches.add('Arts');
+  if (normalized === 'sports' || normalized === 'sport') matches.add('Sports');
   if (normalized === 'science & tech' || normalized === 'science and tech' || normalized === 'science' || normalized === 'tech') {
-    return 'Science & Tech';
+    matches.add('Science & Tech');
   }
-  if (normalized === 'student life' || normalized === 'student') return 'Student Life';
-  if (normalized === 'entrepreneurship' || normalized === 'entrepreneur') return 'Entrepreneurship';
+  if (normalized === 'student life' || normalized === 'student') matches.add('Student Life');
+  if (normalized === 'entrepreneurship' || normalized === 'entrepreneur') matches.add('Entrepreneurship');
   for (const [category, pattern] of CATEGORY_PATTERNS) {
-    if (pattern.test(text)) return category;
+    if (pattern.test(text)) matches.add(category);
   }
-  return undefined;
+  return Array.from(matches);
 }
 
 function dedupeOrderedTags(tags: FrontendCategory[]): FrontendCategory[] {
-  return FRONTEND_CATEGORIES.filter(category => tags.includes(category));
+  return TAG_PRIORITY.filter(category => tags.includes(category));
 }
 
 export function deriveFrontendTags(event: { title: string; description: string; categories: string[]; organizer: string }): FrontendCategory[] {
   const matches = new Set<FrontendCategory>();
   for (const text of [event.title, event.description, event.organizer, ...event.categories]) {
-    const category = classifyText(text);
-    if (category) matches.add(category);
+    for (const category of classifyText(text)) {
+      matches.add(category);
+    }
   }
   return dedupeOrderedTags(Array.from(matches));
 }

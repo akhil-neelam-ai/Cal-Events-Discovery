@@ -28,6 +28,10 @@ export interface SourceStatus {
   duration_ms: number;
   fetched_at: string;
   error?: string;
+  degraded?: boolean;
+  fallback_used?: boolean;
+  fallback_count?: number;
+  degraded_reason?: string;
 }
 
 export interface IngestionStatus {
@@ -39,7 +43,10 @@ export interface IngestionStatus {
   sources: SourceStatus[];
   fallback_used: boolean;
   degraded: boolean;
+  degraded_reason?: string;
   last_good_used: number;
+  fallback_sources?: string[];
+  degraded_sources?: string[];
 }
 
 export interface SearchFilters {
