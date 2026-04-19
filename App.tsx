@@ -1219,7 +1219,7 @@ function DesktopHero({
 
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-4xl lg:text-[3.35rem] font-semibold leading-tight tracking-tight font-serif" style={{ textWrap: 'balance' }}>
-            Good {getGreeting()},&nbsp;
+            {getGreeting()},&nbsp;
             <span className="text-berkeley-gold italic font-medium">what&apos;s the move?</span>
           </h1>
           <p className="mt-3 text-[15px] leading-7 text-white/72">
