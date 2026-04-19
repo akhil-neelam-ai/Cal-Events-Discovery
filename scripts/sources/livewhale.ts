@@ -28,6 +28,9 @@ function sleep(ms: number): Promise<void> {
  * Map known LiveWhale calendar slugs (the path segment after the host) to
  * a human-readable organizer unit. Anything missing falls back to the slug
  * itself, capitalized.
+ *
+ * Keys are normalized to lower-case at lookup time (LiveWhale uses a mix of
+ * casing, e.g. `Library`, `BAMPFA`, `Magnes`).
  */
 const ORG_UNIT_MAP: Record<string, string> = {
   sports: 'Cal Athletics',
@@ -62,23 +65,109 @@ const ORG_UNIT_MAP: Record<string, string> = {
   ce: 'Civil & Environmental Engineering',
   me: 'Mechanical Engineering',
   bioe: 'Bioengineering',
+  // Units surfaced by redirect resolution on /live/events/ URLs
+  magnes: 'Magnes Collection of Jewish Art & Life',
+  music: 'Department of Music',
 };
 
-function unitFromUrl(url: string | undefined): { slug: string; unit: string } {
-  if (!url) return { slug: '', unit: '' };
+/**
+ * Path segments that are LiveWhale platform namespaces, not organizer slugs.
+ * `events.berkeley.edu/live/events/<id>` means "a generic event on the
+ * LiveWhale platform" — the first segment is not an organizer. Similarly,
+ * `/event/<id>` and `/events/<id>` on other hosts are generic paths. We
+ * resolve the unit from the 302 redirect (events.berkeley.edu) or fall back
+ * to "UC Berkeley" rather than mislabel these as "Live" / "Event" / "Events".
+ */
+const GENERIC_URL_SLUGS = new Set(['live', 'event', 'events']);
+const HOST_EVENTS_BERKELEY = 'events.berkeley.edu';
+
+/** Cache: /live/events/<slug> URL → resolved unit slug (after 302 redirect). */
+const redirectSlugCache = new Map<string, string>();
+
+/**
+ * For events.berkeley.edu/live/events/<id> URLs, the LiveWhale server
+ * 302-redirects to the unit-specific URL, e.g. /Library/event/<id>.
+ * Some events first 301-redirect to an updated /live/events/ slug (title
+ * change, "postponed" prefix added, etc.), then 302 to the unit — we follow
+ * up to MAX_REDIRECT_HOPS hops to recover the unit slug in that chain.
+ * We HEAD each URL to avoid downloading bodies.
+ */
+const MAX_REDIRECT_HOPS = 4;
+
+async function resolveUnitSlugViaRedirect(url: string): Promise<string> {
+  if (redirectSlugCache.has(url)) return redirectSlugCache.get(url) || '';
+  let current = url;
   try {
-    const path = new URL(url).pathname;
-    const segments = path.split('/').filter(Boolean);
-    const slug = segments[0] || '';
-    const unit =
-      ORG_UNIT_MAP[slug] ||
-      slug
-        .replace(/[-_]/g, ' ')
-        .replace(/\b\w/g, c => c.toUpperCase());
-    return { slug, unit };
+    for (let hop = 0; hop < MAX_REDIRECT_HOPS; hop++) {
+      const res = await fetch(current, {
+        method: 'HEAD',
+        redirect: 'manual',
+        headers: { 'User-Agent': 'Cal-Events-Discovery-Bot' },
+        signal: AbortSignal.timeout(8_000),
+      });
+      if (res.status < 300 || res.status >= 400) break;
+      const loc = res.headers.get('location');
+      if (!loc) break;
+      const target = new URL(loc, current);
+      const firstSeg = target.pathname.split('/').filter(Boolean)[0] || '';
+      if (firstSeg && !GENERIC_URL_SLUGS.has(firstSeg.toLowerCase())) {
+        redirectSlugCache.set(url, firstSeg);
+        return firstSeg;
+      }
+      // Still on a generic namespace — keep following.
+      current = target.toString();
+      if (current === url) break; // guard against loops
+    }
   } catch {
-    return { slug: '', unit: '' };
+    // Network error, timeout, etc — fall through.
   }
+  redirectSlugCache.set(url, '');
+  return '';
+}
+
+function prettifySlug(slug: string): string {
+  return slug.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function unitFromSlug(slug: string): string {
+  if (!slug) return '';
+  return ORG_UNIT_MAP[slug.toLowerCase()] || prettifySlug(slug);
+}
+
+/**
+ * Extract (slug, unit) from an event URL.
+ * If the URL's first path segment is a generic LiveWhale namespace
+ * ("live", "event", "events"), attempt to resolve the real unit via the
+ * 302 redirect that LiveWhale serves for /live/events/<id> URLs.
+ * On failure, fall back to "UC Berkeley" rather than emit "Live".
+ */
+async function unitFromUrl(url: string | undefined): Promise<{ slug: string; unit: string }> {
+  if (!url) return { slug: '', unit: 'UC Berkeley' };
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return { slug: '', unit: 'UC Berkeley' };
+  }
+  const segments = parsed.pathname.split('/').filter(Boolean);
+  const firstSeg = segments[0] || '';
+  const slugLower = firstSeg.toLowerCase();
+
+  if (slugLower && !GENERIC_URL_SLUGS.has(slugLower)) {
+    return { slug: firstSeg, unit: unitFromSlug(firstSeg) };
+  }
+
+  // Generic namespace — try the redirect trick for events.berkeley.edu.
+  if (parsed.hostname === HOST_EVENTS_BERKELEY && slugLower === 'live') {
+    const resolved = await resolveUnitSlugViaRedirect(url);
+    if (resolved) {
+      return { slug: resolved, unit: unitFromSlug(resolved) };
+    }
+  }
+
+  // Last-resort fallback: keep the generic slug for the quality flag,
+  // but emit a neutral organizer name instead of "Live" / "Event" / "Events".
+  return { slug: firstSeg, unit: 'UC Berkeley' };
 }
 
 function asString(value: unknown): string {
@@ -164,6 +253,36 @@ async function fetchFeed(): Promise<Record<string, unknown>> {
   throw new Error(`LiveWhale fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr}`);
 }
 
+/**
+ * Resolve redirects in parallel for any URLs whose first path segment is a
+ * generic LiveWhale namespace ("live"). Populates `redirectSlugCache` so the
+ * subsequent synchronous mapping pass can read results without awaiting.
+ */
+async function prewarmRedirectCache(urls: string[]): Promise<void> {
+  const CONCURRENCY = 8;
+  const toResolve: string[] = [];
+  for (const u of urls) {
+    try {
+      const parsed = new URL(u);
+      if (parsed.hostname !== HOST_EVENTS_BERKELEY) continue;
+      const first = (parsed.pathname.split('/').filter(Boolean)[0] || '').toLowerCase();
+      if (first === 'live' && !redirectSlugCache.has(u)) toResolve.push(u);
+    } catch {
+      // skip invalid URLs
+    }
+  }
+  if (toResolve.length === 0) return;
+  console.log(`[livewhale] resolving ${toResolve.length} /live/events/ redirects (concurrency ${CONCURRENCY})`);
+  let idx = 0;
+  const worker = async (): Promise<void> => {
+    while (idx < toResolve.length) {
+      const myIdx = idx++;
+      await resolveUnitSlugViaRedirect(toResolve[myIdx]);
+    }
+  };
+  await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+}
+
 export async function fetchLiveWhale(): Promise<FetchResult> {
   const parsed = await fetchFeed();
 
@@ -173,6 +292,17 @@ export async function fetchLiveWhale(): Promise<FetchResult> {
   let rawCount = 0;
   let filteredPast = 0;
   let invalid = 0;
+
+  // First pass: collect URLs that need redirect resolution, warm the cache in parallel.
+  const urlsToPrewarm: string[] = [];
+  for (const key of Object.keys(parsed)) {
+    const component = parsed[key] as { type?: string };
+    if (!component || component.type !== 'VEVENT') continue;
+    const ve = component as unknown as VEvent;
+    const url = asString(ve.url) || `https://events.berkeley.edu/live/events/${(ve as unknown as { uid?: string }).uid}`;
+    urlsToPrewarm.push(url);
+  }
+  await prewarmRedirectCache(urlsToPrewarm);
 
   for (const key of Object.keys(parsed)) {
     const component = parsed[key] as { type?: string };
@@ -205,7 +335,7 @@ export async function fetchLiveWhale(): Promise<FetchResult> {
       }
 
       const url = asString(ve.url) || `https://events.berkeley.edu/live/events/${(ve as unknown as { uid?: string }).uid}`;
-      const { slug, unit } = unitFromUrl(url);
+      const { slug, unit } = await unitFromUrl(url);
 
       const summary = decodeIcalText(asString(ve.summary));
       const description = decodeIcalText(asString(ve.description));
@@ -246,7 +376,11 @@ export async function fetchLiveWhale(): Promise<FetchResult> {
         tags: [],
         last_seen_at: fetched_at,
         confidence: 1,
-        quality_flags: slug ? [] : ['unknown_org_slug'],
+        quality_flags: !slug
+          ? ['unknown_org_slug']
+          : GENERIC_URL_SLUGS.has(slug.toLowerCase())
+          ? ['generic_org_slug']
+          : [],
       };
 
       const validated = CanonicalEventSchema.safeParse(candidate);

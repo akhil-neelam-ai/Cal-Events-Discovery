@@ -1,65 +1,65 @@
 {
-  "generated_at": "2026-04-18T22:17:18.035Z",
+  "generated_at": "2026-04-19T04:26:46.084Z",
   "total_events": 1023,
-  "duplicates_removed": 261,
-  "past_events_filtered": 513,
+  "duplicates_removed": 258,
+  "past_events_filtered": 516,
   "invalid_events_filtered": 0,
   "sources": [
     {
       "name": "livewhale",
       "ok": true,
       "count": 979,
-      "duration_ms": 2788,
-      "fetched_at": "2026-04-18T22:17:03.660Z"
+      "duration_ms": 15300,
+      "fetched_at": "2026-04-19T04:26:30.652Z"
     },
     {
       "name": "callink",
       "ok": true,
       "count": 10,
-      "duration_ms": 1306,
-      "fetched_at": "2026-04-18T22:17:03.678Z"
+      "duration_ms": 1251,
+      "fetched_at": "2026-04-19T04:26:30.671Z"
     },
     {
       "name": "cal_performances",
       "ok": true,
       "count": 7,
-      "duration_ms": 14218,
-      "fetched_at": "2026-04-18T22:17:03.680Z"
+      "duration_ms": 13291,
+      "fetched_at": "2026-04-19T04:26:30.673Z"
     },
     {
       "name": "calbears",
       "ok": true,
-      "count": 96,
+      "count": 93,
       "duration_ms": 1110,
-      "fetched_at": "2026-04-18T22:17:03.681Z"
+      "fetched_at": "2026-04-19T04:26:30.675Z"
     },
     {
       "name": "bampfa",
       "ok": true,
       "count": 76,
-      "duration_ms": 1849,
-      "fetched_at": "2026-04-18T22:17:03.682Z"
+      "duration_ms": 1903,
+      "fetched_at": "2026-04-19T04:26:30.676Z"
     },
     {
       "name": "haas",
       "ok": true,
       "count": 25,
-      "duration_ms": 953,
-      "fetched_at": "2026-04-18T22:17:03.684Z"
+      "duration_ms": 1094,
+      "fetched_at": "2026-04-19T04:26:30.677Z"
     },
     {
       "name": "berkeley_law",
       "ok": true,
       "count": 54,
-      "duration_ms": 1836,
-      "fetched_at": "2026-04-18T22:17:03.684Z"
+      "duration_ms": 1690,
+      "fetched_at": "2026-04-19T04:26:30.678Z"
     },
     {
       "name": "ehub",
       "ok": true,
       "count": 37,
-      "duration_ms": 1482,
-      "fetched_at": "2026-04-18T22:17:03.685Z"
+      "duration_ms": 1514,
+      "fetched_at": "2026-04-19T04:26:30.679Z"
     }
   ],
   "fallback_used": false,
