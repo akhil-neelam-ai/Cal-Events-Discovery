@@ -52,10 +52,12 @@ function SourceDropdown({
   options,
   value,
   onChange,
+  tone = 'light',
 }: {
   options: SourceOption[];
   value: string;
   onChange: (next: string) => void;
+  tone?: 'light' | 'dark';
 }) {
   const [open, setOpen] = useState(false);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
@@ -176,6 +178,10 @@ function SourceDropdown({
     triggerRef.current?.focus();
   };
 
+  const triggerClasses = tone === 'dark'
+    ? 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition text-white'
+    : 'inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-2 text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50';
+
   return (
     <div ref={containerRef} className="relative">
       <button
@@ -185,7 +191,7 @@ function SourceDropdown({
         aria-expanded={open}
         onClick={() => setOpen(o => !o)}
         onKeyDown={handleTriggerKey}
-        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition text-white"
+        className={triggerClasses}
       >
         <span className="font-medium">
           {selected.label} <span className="opacity-70">({selected.count})</span>
@@ -284,6 +290,7 @@ function useIsMobile() {
 const PACIFIC_TIME_ZONE = 'America/Los_Angeles';
 const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const ONLINE_LOCATION_RE = /\b(online|virtual|zoom|remote|livestream|live stream|webinar)\b/i;
 const PACIFIC_DATE_PARTS_FORMATTER = new Intl.DateTimeFormat('en-US', {
   timeZone: PACIFIC_TIME_ZONE,
   year: 'numeric',
@@ -377,17 +384,24 @@ function formatNamedSources(names: string[] | undefined): string {
   return `${labels.slice(0, 2).join(', ')} and ${labels.length - 2} more`;
 }
 
-// Format date key into a section header label (Today / Tomorrow / "Friday, Apr 25")
+function formatShortDateKey(dateKey: string): string {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  if (!year || !month || !day) return dateKey;
+  return `${MONTHS[month - 1]} ${day}`;
+}
+
+// Format date key into a section header label (Today · Apr 19 / Tomorrow · Apr 20 / Friday · Apr 25)
 function dateGroupLabel(dateKey: string): string {
   const todayKey = getCurrentPacificDateKey();
   const tomorrowKey = addDaysToDateKey(todayKey, 1);
-  if (dateKey === todayKey) return 'Today';
-  if (dateKey === tomorrowKey) return 'Tomorrow';
   const [year, month, day] = dateKey.split('-').map(Number);
   if (!year || !month || !day) return dateKey;
   const date = new Date(Date.UTC(year, month - 1, day));
   const dayName = date.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
-  return `${dayName}, ${MONTHS[month - 1]} ${day}`;
+  const shortDate = formatShortDateKey(dateKey);
+  if (dateKey === todayKey) return `Today · ${shortDate}`;
+  if (dateKey === tomorrowKey) return `Tomorrow · ${shortDate}`;
+  return `${dayName} · ${shortDate}`;
 }
 
 // Format date from YYYY-MM-DD to "10th Feb"
@@ -413,11 +427,113 @@ function formatEventDate(dateString: string): string {
   return `${day}${ordinal(day)} ${MONTHS[month - 1]}`;
 }
 
+function filterEventsByDateRange(
+  events: CalEvent[],
+  dateRange: SearchFilters['dateRange'],
+  todayKey: string,
+  nextWeekKey: string,
+): CalEvent[] {
+  return events.filter(event => {
+    const eventDateKey = getPacificDateKey(event.date);
+    if (!eventDateKey) {
+      return false;
+    }
+
+    if (dateRange === 'today') {
+      return eventDateKey === todayKey;
+    }
+
+    if (dateRange === 'week') {
+      return eventDateKey >= todayKey && eventDateKey <= nextWeekKey;
+    }
+
+    return eventDateKey >= todayKey;
+  });
+}
+
+function getDirectionsUrl(location: string): string | null {
+  if (!location || ONLINE_LOCATION_RE.test(location)) {
+    return null;
+  }
+
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
+}
+
+type CategoryStyle = {
+  label: string;
+  badge: string;
+  border: string;
+  accent: string;
+};
+
+const CATEGORY_STYLES: Record<string, CategoryStyle> = {
+  Academic: {
+    label: 'Academic',
+    badge: 'border-sky-200 bg-sky-50 text-sky-800',
+    border: 'border-l-sky-400',
+    accent: 'bg-sky-100 text-sky-800',
+  },
+  Arts: {
+    label: 'Arts',
+    badge: 'border-amber-200 bg-amber-50 text-amber-800',
+    border: 'border-l-amber-400',
+    accent: 'bg-amber-100 text-amber-900',
+  },
+  Sports: {
+    label: 'Sports',
+    badge: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+    border: 'border-l-emerald-400',
+    accent: 'bg-emerald-100 text-emerald-900',
+  },
+  'Science & Tech': {
+    label: 'Science & Tech',
+    badge: 'border-indigo-200 bg-indigo-50 text-indigo-800',
+    border: 'border-l-indigo-400',
+    accent: 'bg-indigo-100 text-indigo-900',
+  },
+  'Student Life': {
+    label: 'Student Life',
+    badge: 'border-rose-200 bg-rose-50 text-rose-800',
+    border: 'border-l-rose-400',
+    accent: 'bg-rose-100 text-rose-900',
+  },
+  Entrepreneurship: {
+    label: 'Entrepreneurship',
+    badge: 'border-violet-200 bg-violet-50 text-violet-800',
+    border: 'border-l-violet-400',
+    accent: 'bg-violet-100 text-violet-900',
+  },
+  Event: {
+    label: 'Event',
+    badge: 'border-slate-200 bg-slate-50 text-slate-700',
+    border: 'border-l-slate-300',
+    accent: 'bg-slate-100 text-slate-800',
+  },
+};
+
+function getCategoryStyle(tag?: string): CategoryStyle {
+  if (!tag) {
+    return CATEGORY_STYLES.Event;
+  }
+
+  const normalized = tag.toLowerCase();
+  if (normalized.includes('art')) return CATEGORY_STYLES.Arts;
+  if (normalized.includes('sport')) return CATEGORY_STYLES.Sports;
+  if (normalized.includes('science') || normalized.includes('tech')) return CATEGORY_STYLES['Science & Tech'];
+  if (normalized.includes('student')) return CATEGORY_STYLES['Student Life'];
+  if (normalized.includes('entrepreneur')) return CATEGORY_STYLES.Entrepreneurship;
+  if (normalized.includes('academic')) return CATEGORY_STYLES.Academic;
+
+  return CATEGORY_STYLES[tag] || CATEGORY_STYLES.Event;
+}
+
 // Bottom Sheet Component (Mobile)
 function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void }) {
   const [dragY, setDragY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const categoryStyle = getCategoryStyle(event.tags?.[0]);
+  const directionsUrl = getDirectionsUrl(event.location);
 
   const handleClose = useCallback(() => {
     setIsClosing(true);
@@ -467,13 +583,13 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
         {/* Content */}
         <div className="px-5 pb-8 overflow-y-auto max-h-[calc(85vh-40px)]">
           <div className="flex items-center justify-between mb-3">
-            <span className="inline-block bg-berkeley-blue text-berkeley-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest">
-              {event.tags?.[0] || 'Event'}
+            <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${categoryStyle.badge}`}>
+              {categoryStyle.label}
             </span>
             <SourceBadge source={event.source} />
           </div>
 
-          <h2 className="text-xl font-bold text-berkeley-blue mb-4">{event.title}</h2>
+          <h2 className="text-xl font-semibold text-berkeley-blue mb-4 md:font-serif">{event.title}</h2>
 
           <div className="space-y-3 text-sm text-gray-600 mb-6">
             <div className="flex items-center gap-3">
@@ -512,21 +628,41 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
             <p className="text-gray-600 leading-relaxed">{event.description}</p>
           </div>
 
-          {event.url && (
-            <a
-              href={event.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full py-3 bg-berkeley-blue text-white text-center font-bold rounded-lg hover:bg-berkeley-medblue transition"
-              onClick={() => trackExternalLink({
-                event_id: event.id,
-                event_title: event.title,
-                destination_url: event.url,
-              })}
-            >
-              View Official Page
-            </a>
-          )}
+          <div className="space-y-3">
+            {event.url && (
+              <a
+                href={event.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full py-3 bg-berkeley-blue text-white text-center font-bold rounded-lg hover:bg-berkeley-medblue transition"
+                onClick={() => trackExternalLink({
+                  event_id: event.id,
+                  event_title: event.title,
+                  destination_url: event.url,
+                })}
+              >
+                View Official Page
+              </a>
+            )}
+            {directionsUrl && (
+              <a
+                href={directionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full py-3 border border-slate-200 text-slate-700 text-center font-semibold rounded-lg hover:bg-slate-50 transition"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  trackExternalLink({
+                    event_id: event.id,
+                    event_title: event.title,
+                    destination_url: directionsUrl,
+                  });
+                }}
+              >
+                Map & Directions
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -536,6 +672,8 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
 // Slide-out Panel Component (Desktop)
 function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => void }) {
   const [isClosing, setIsClosing] = useState(false);
+  const categoryStyle = getCategoryStyle(event.tags?.[0]);
+  const directionsUrl = getDirectionsUrl(event.location);
 
   const handleClose = useCallback(() => {
     setIsClosing(true);
@@ -571,7 +709,8 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-berkeley-blue text-white">
           <span className="font-bold">Event Details</span>
           <button
-            onClick={onClose}
+            onClick={handleClose}
+            aria-label="Close event details"
             className="p-1 hover:bg-white/20 rounded transition"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -583,13 +722,13 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
         {/* Content */}
         <div className="p-6 overflow-y-auto h-[calc(100%-60px)]">
           <div className="flex items-center justify-between mb-3">
-            <span className="inline-block bg-berkeley-blue text-berkeley-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest">
-              {event.tags?.[0] || 'Event'}
+            <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${categoryStyle.badge}`}>
+              {categoryStyle.label}
             </span>
             <SourceBadge source={event.source} />
           </div>
 
-          <h2 className="text-2xl font-bold text-berkeley-blue mb-6">{event.title}</h2>
+          <h2 className="text-2xl font-semibold text-berkeley-blue mb-6 md:font-serif">{event.title}</h2>
 
           <div className="space-y-4 text-sm text-gray-600 mb-8">
             <div className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg">
@@ -628,21 +767,41 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
             <p className="text-gray-600 leading-relaxed">{event.description}</p>
           </div>
 
-          {event.url && (
-            <a
-              href={event.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full py-3 bg-berkeley-blue text-white text-center font-bold rounded-lg hover:bg-berkeley-medblue transition"
-              onClick={() => trackExternalLink({
-                event_id: event.id,
-                event_title: event.title,
-                destination_url: event.url,
-              })}
-            >
-              View Official Page
-            </a>
-          )}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {event.url && (
+              <a
+                href={event.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full py-3 bg-berkeley-blue text-white text-center font-bold rounded-lg hover:bg-berkeley-medblue transition"
+                onClick={() => trackExternalLink({
+                  event_id: event.id,
+                  event_title: event.title,
+                  destination_url: event.url,
+                })}
+              >
+                View Official Page
+              </a>
+            )}
+            {directionsUrl && (
+              <a
+                href={directionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full py-3 border border-slate-200 text-slate-700 text-center font-semibold rounded-lg hover:bg-slate-50 transition"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  trackExternalLink({
+                    event_id: event.id,
+                    event_title: event.title,
+                    destination_url: directionsUrl,
+                  });
+                }}
+              >
+                Map & Directions
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -753,7 +912,7 @@ const ALL_SOURCES = ['All', 'livewhale', 'ehub', 'gemini', 'cal_performances', '
 const DateRanges = [
   { label: 'Today', value: 'today' },
   { label: 'This Week', value: 'week' },
-  { label: 'Browse All', value: 'upcoming' },
+  { label: 'Upcoming', value: 'upcoming' },
 ];
 
 interface QuickFilterPreset {
@@ -799,8 +958,8 @@ function DesktopHero({
 
   return (
     <header className="hidden md:block bg-gradient-to-br from-berkeley-blue via-[#002949] to-[#001b30] text-white border-b-4 border-berkeley-gold shadow-md">
-      <div className="container mx-auto px-6 py-12 lg:py-14">
-        <div className="flex items-center justify-between gap-6 mb-10">
+      <div className="container mx-auto px-6 py-8 lg:py-9">
+        <div className="flex items-center justify-between gap-6 mb-6">
           <div className="flex items-baseline gap-2">
             <span className="text-berkeley-gold text-2xl font-bold tracking-tight">Cal</span>
             <span className="text-2xl font-light tracking-wide">Events</span>
@@ -812,15 +971,15 @@ function DesktopHero({
         </div>
 
         <div className="max-w-4xl">
-          <h1 className="max-w-3xl text-5xl font-semibold leading-tight tracking-tight font-serif" style={{ textWrap: 'balance' }}>
+          <h1 className="max-w-3xl text-4xl lg:text-[3.35rem] font-semibold leading-tight tracking-tight font-serif" style={{ textWrap: 'balance' }}>
             Find what&apos;s happening
             <span className="ml-3 text-berkeley-gold italic font-medium">across Berkeley.</span>
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-white/72">
+          <p className="mt-3 max-w-2xl text-[15px] leading-7 text-white/72">
             {summaryCopy}
           </p>
 
-          <div className="mt-8 max-w-3xl rounded-[1.5rem] border border-white/10 bg-white p-5 shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
+          <div className="mt-6 max-w-3xl rounded-[1.5rem] border border-white/10 bg-white p-4 shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
             <div className="relative">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -840,7 +999,7 @@ function DesktopHero({
               />
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-4">
+            <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-3">
               <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
                 Quick Start
               </span>
@@ -865,62 +1024,200 @@ function DesktopHero({
   );
 }
 
-function FiltersBar({
+function DesktopFiltersBar({
   filters,
+  activeDateRange,
   sourceOptions,
   onDateChange,
   onCategoryChange,
   onSourceChange,
 }: {
   filters: SearchFilters;
+  activeDateRange: SearchFilters['dateRange'];
   sourceOptions: SourceOption[];
   onDateChange: (next: SearchFilters['dateRange']) => void;
   onCategoryChange: (next: string) => void;
   onSourceChange: (next: string) => void;
 }) {
   return (
-    <div className="bg-berkeley-medblue text-white text-xs border-t border-white/10">
-      {/* ViewSwitcher — prominent time tabs */}
-      <div className="container mx-auto px-4 pt-2 pb-0 flex items-center gap-1 overflow-x-auto no-scrollbar whitespace-nowrap">
+    <div className="bg-white/95 backdrop-blur border-b border-slate-200">
+      <div className="container mx-auto px-4 py-3 flex items-center gap-3 overflow-x-auto no-scrollbar whitespace-nowrap">
+        <div className="flex flex-shrink-0 items-center gap-1 rounded-full bg-slate-100 p-1 shadow-inner">
+          {DateRanges.map(range => {
+            const active = activeDateRange === range.value;
+            return (
+              <button
+                key={range.value}
+                onClick={() => onDateChange(range.value as SearchFilters['dateRange'])}
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  active
+                    ? 'bg-berkeley-blue text-white shadow-sm'
+                    : 'text-slate-600 hover:bg-white hover:text-berkeley-blue'
+                }`}
+              >
+                {range.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="hidden h-6 w-px flex-shrink-0 bg-slate-200 lg:block" />
+
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {Categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => onCategoryChange(cat)}
+              className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                filters.category === cat
+                  ? 'border-berkeley-blue bg-berkeley-blue text-white shadow-sm'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        <SourceDropdown
+          value={filters.source}
+          options={sourceOptions}
+          onChange={onSourceChange}
+          tone="light"
+        />
+      </div>
+    </div>
+  );
+}
+
+function MobileFiltersBar({
+  filters,
+  activeDateRange,
+  sourceOptions,
+  onDateChange,
+  onCategoryChange,
+  onSourceChange,
+}: {
+  filters: SearchFilters;
+  activeDateRange: SearchFilters['dateRange'];
+  sourceOptions: SourceOption[];
+  onDateChange: (next: SearchFilters['dateRange']) => void;
+  onCategoryChange: (next: string) => void;
+  onSourceChange: (next: string) => void;
+}) {
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const activeFilterCount = Number(filters.category !== 'All') + Number(filters.source !== 'All');
+
+  useEffect(() => {
+    setAdvancedOpen(false);
+  }, [filters.dateRange]);
+
+  const selectedSource = sourceOptions.find(option => option.value === filters.source)?.label || 'All sources';
+
+  return (
+    <div className="bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+      <div className="container mx-auto px-4 py-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
         {DateRanges.map(range => {
-          const active = filters.dateRange === range.value;
+          const active = activeDateRange === range.value;
           return (
             <button
               key={range.value}
               onClick={() => onDateChange(range.value as SearchFilters['dateRange'])}
-              className={`px-4 py-1.5 text-sm font-bold rounded-t-lg transition flex-shrink-0 ${
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                 active
-                  ? 'bg-white text-berkeley-blue border-t-2 border-x-2 border-berkeley-gold shadow-sm'
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
+                  ? 'bg-berkeley-blue text-white shadow-sm'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
               {range.label}
             </button>
           );
         })}
+
+        <button
+          type="button"
+          onClick={() => setAdvancedOpen(open => !open)}
+          className={`ml-auto inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+            advancedOpen || activeFilterCount > 0
+              ? 'border-berkeley-blue bg-berkeley-blue text-white shadow-sm'
+              : 'border-slate-200 bg-white text-slate-700'
+          }`}
+        >
+          Filters
+          {activeFilterCount > 0 && (
+            <span className={`inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] ${advancedOpen ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700'}`}>
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
       </div>
-      {/* CategoryRail + Source */}
-      <div className="container mx-auto px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap border-t border-white/10">
-        {Categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => onCategoryChange(cat)}
-            className={`px-3 py-1 rounded-full transition flex-shrink-0 ${
-              filters.category === cat ? 'bg-white text-berkeley-blue font-bold' : 'hover:bg-white/20'
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-        <div className="w-px h-4 bg-white/30 mx-1 flex-shrink-0" />
-        <SourceDropdown
-          value={filters.source}
-          options={sourceOptions}
-          onChange={onSourceChange}
-        />
-      </div>
+
+      {advancedOpen && (
+        <div className="border-t border-slate-200 bg-white">
+          <div className="container mx-auto px-4 py-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Filters</p>
+                <p className="mt-1 text-sm text-slate-600">
+                  Category: <span className="font-medium text-slate-800">{filters.category}</span>
+                  <span className="mx-2 text-slate-300">•</span>
+                  Source: <span className="font-medium text-slate-800">{selectedSource}</span>
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAdvancedOpen(false)}
+                className="text-sm font-medium text-slate-500"
+              >
+                Done
+              </button>
+            </div>
+
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Category</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {Categories.map(cat => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => onCategoryChange(cat)}
+                    className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                      filters.category === cat
+                        ? 'border-berkeley-blue bg-berkeley-blue text-white shadow-sm'
+                        : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">Source</p>
+              <div className="mt-2">
+                <SourceDropdown
+                  value={filters.source}
+                  options={sourceOptions}
+                  onChange={onSourceChange}
+                  tone="light"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
+}
+
+interface EmptyStateConfig {
+  title: string;
+  description: string;
+  primaryLabel: string;
+  primaryAction: () => void;
+  secondaryLabel?: string;
+  secondaryAction?: () => void;
 }
 
 export default function App() {
@@ -935,6 +1232,7 @@ export default function App() {
     source: 'All',
   });
   const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
+  const [shouldAnimateCards, setShouldAnimateCards] = useState(true);
   const isMobile = useIsMobile();
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -1050,57 +1348,131 @@ export default function App() {
     return null;
   }, [statusReport]);
 
-  // Instant Local Filtering with natural language search
+  const todayKey = getCurrentPacificDateKey();
+  const nextWeekKey = addDaysToDateKey(todayKey, 7);
+
+  // Instant local filtering for everything except date windows.
+  const baseFilteredEvents = useMemo(() => {
+    const searchQuery = filters.searchQuery.trim();
+    const expandedTerms = searchQuery ? expandSearchQuery(searchQuery) : [];
+
+    return allEvents
+      .filter(event => {
+        const eventDateKey = getPacificDateKey(event.date);
+        if (!eventDateKey) {
+          return false;
+        }
+
+        const matchesCategory = filters.category === 'All' ||
+          event.tags?.some(t => t.toLowerCase().includes(filters.category.toLowerCase())) ||
+          event.tags?.includes(filters.category);
+
+        const matchesSearch = searchQuery
+          ? eventMatchesSearch(event, expandedTerms)
+          : true;
+
+        const matchesSource = filters.source === 'All' || event.source === filters.source;
+        const isLocalEvent = isHomeGame(event);
+
+        return matchesCategory && matchesSearch && matchesSource && isLocalEvent;
+      })
+      .sort((a, b) => {
+        const dateA = getPacificDateKey(a.date);
+        const dateB = getPacificDateKey(b.date);
+        const dateCompare = dateA.localeCompare(dateB);
+        if (dateCompare !== 0) return dateCompare;
+        return (a.time || '').localeCompare(b.time || '') || a.title.localeCompare(b.title);
+      });
+  }, [allEvents, filters.category, filters.searchQuery, filters.source]);
+
+  const todayEvents = useMemo(
+    () => filterEventsByDateRange(baseFilteredEvents, 'today', todayKey, nextWeekKey),
+    [baseFilteredEvents, todayKey, nextWeekKey],
+  );
+
+  const weekEvents = useMemo(
+    () => filterEventsByDateRange(baseFilteredEvents, 'week', todayKey, nextWeekKey),
+    [baseFilteredEvents, todayKey, nextWeekKey],
+  );
+
+  const upcomingEvents = useMemo(
+    () => filterEventsByDateRange(baseFilteredEvents, 'upcoming', todayKey, nextWeekKey),
+    [baseFilteredEvents, todayKey, nextWeekKey],
+  );
+
+  const effectiveDateRange = useMemo<SearchFilters['dateRange']>(() => {
+    if (filters.dateRange === 'today' && todayEvents.length === 0 && weekEvents.length > 0) {
+      return 'week';
+    }
+    return filters.dateRange;
+  }, [filters.dateRange, todayEvents.length, weekEvents.length]);
+
   const filteredEvents = useMemo(() => {
-    const todayKey = getCurrentPacificDateKey();
-    const nextWeekKey = addDaysToDateKey(todayKey, 7);
+    if (effectiveDateRange === 'today') return todayEvents;
+    if (effectiveDateRange === 'week') return weekEvents;
+    return upcomingEvents;
+  }, [effectiveDateRange, todayEvents, weekEvents, upcomingEvents]);
 
-    return allEvents.filter(event => {
-      // Category filter
-      const matchesCategory = filters.category === 'All' ||
-        event.tags?.some(t => t.toLowerCase().includes(filters.category.toLowerCase())) ||
-        event.tags?.includes(filters.category);
+  const showingTodayFallback = filters.dateRange === 'today' && effectiveDateRange === 'week' && weekEvents.length > 0;
 
-      // Date filter
-      const eventDateKey = getPacificDateKey(event.date);
-      if (!eventDateKey) {
-        return false;
-      }
+  const emptyState = useMemo<EmptyStateConfig>(() => {
+    const resetAll = () => setFilters({ dateRange: 'today', category: 'All', searchQuery: '', source: 'All' });
+    const clearSearch = () => setFilters(prev => ({ ...prev, searchQuery: '' }));
+    const showWeek = () => setFilters(prev => ({ ...prev, dateRange: 'week' }));
+    const showUpcoming = () => setFilters(prev => ({ ...prev, dateRange: 'upcoming' }));
 
-      let matchesDate = true;
-      if (filters.dateRange === 'today') {
-        matchesDate = eventDateKey === todayKey;
-      } else if (filters.dateRange === 'week') {
-        matchesDate = eventDateKey >= todayKey && eventDateKey <= nextWeekKey;
-      } else if (filters.dateRange === 'upcoming') {
-        matchesDate = eventDateKey >= todayKey;
-      }
+    if (filters.searchQuery.trim() && upcomingEvents.length > 0) {
+      return {
+        title: `No matches for “${filters.searchQuery.trim()}”.`,
+        description: `${upcomingEvents.length} event${upcomingEvents.length !== 1 ? 's are' : ' is'} available in Upcoming if you broaden the search.`,
+        primaryLabel: 'Clear search',
+        primaryAction: clearSearch,
+        secondaryLabel: 'Show Upcoming',
+        secondaryAction: showUpcoming,
+      };
+    }
 
-      // Search filter with synonym expansion
-      const searchQuery = filters.searchQuery.trim();
-      let matchesSearch = true;
-      if (searchQuery) {
-        const expandedTerms = expandSearchQuery(searchQuery);
-        matchesSearch = eventMatchesSearch(event, expandedTerms);
-      }
+    if (filters.dateRange === 'today' && weekEvents.length > 0) {
+      return {
+        title: 'No events today.',
+        description: `${weekEvents.length} event${weekEvents.length !== 1 ? 's are' : ' is'} scheduled this week.`,
+        primaryLabel: 'Show This Week',
+        primaryAction: showWeek,
+        secondaryLabel: 'Show Upcoming',
+        secondaryAction: showUpcoming,
+      };
+    }
 
-      // Filter out away games for sports events
-      const isLocalEvent = isHomeGame(event);
+    if (filters.dateRange === 'week' && upcomingEvents.length > weekEvents.length) {
+      const upcomingBeyondWeek = upcomingEvents.length - weekEvents.length;
+      return {
+        title: 'Nothing is scheduled this week.',
+        description: `${upcomingBeyondWeek} more upcoming event${upcomingBeyondWeek !== 1 ? 's are' : ' is'} already on the calendar.`,
+        primaryLabel: 'Show Upcoming',
+        primaryAction: showUpcoming,
+        secondaryLabel: 'Clear all filters',
+        secondaryAction: resetAll,
+      };
+    }
 
-      // Source filter
-      const matchesSource = filters.source === 'All' || event.source === filters.source;
+    if (filters.category !== 'All' || filters.source !== 'All') {
+      return {
+        title: 'No events match these filters.',
+        description: 'Try a different category or source, or clear the filters to see the full campus feed.',
+        primaryLabel: 'Clear all filters',
+        primaryAction: resetAll,
+      };
+    }
 
-      return matchesCategory && matchesDate && matchesSearch && isLocalEvent && matchesSource;
-    })
-    .sort((a, b) => {
-      // Sort by date ascending (earliest first)
-      const dateA = getPacificDateKey(a.date);
-      const dateB = getPacificDateKey(b.date);
-      const dateCompare = dateA.localeCompare(dateB);
-      if (dateCompare !== 0) return dateCompare;
-      return (a.time || '').localeCompare(b.time || '') || a.title.localeCompare(b.title);
-    });
-  }, [allEvents, filters]);
+    return {
+      title: 'No events match these filters.',
+      description: 'Try broadening the date range or clearing the active search.',
+      primaryLabel: 'Clear all filters',
+      primaryAction: resetAll,
+      secondaryLabel: filters.dateRange !== 'upcoming' ? 'Show Upcoming' : undefined,
+      secondaryAction: filters.dateRange !== 'upcoming' ? showUpcoming : undefined,
+    };
+  }, [filters, upcomingEvents.length, weekEvents.length]);
 
   // Group sorted filtered events by Pacific date key
   const eventGroups = useMemo(() => {
@@ -1116,6 +1488,13 @@ export default function App() {
     }
     return groups;
   }, [filteredEvents]);
+
+  useEffect(() => {
+    if (loading === LoadingState.SUCCESS && filteredEvents.length > 0 && shouldAnimateCards) {
+      const timeout = window.setTimeout(() => setShouldAnimateCards(false), 800);
+      return () => window.clearTimeout(timeout);
+    }
+  }, [loading, filteredEvents.length, shouldAnimateCards]);
 
   const handleSearchChange = useCallback((query: string) => {
     setFilters(prev => ({ ...prev, searchQuery: query }));
@@ -1168,9 +1547,9 @@ export default function App() {
     <div className="min-h-screen bg-berkeley-lightgray text-gray-800 font-sans">
       <Analytics />
       {isMobile ? (
-        <div className="sticky top-0 z-50 shadow-md">
-          <header className="bg-berkeley-blue text-white">
-            <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
+        <>
+          <header className="bg-berkeley-blue text-white shadow-md">
+            <div className="container mx-auto px-4 py-4 flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-berkeley-gold text-2xl font-bold">Cal</span>
@@ -1184,28 +1563,43 @@ export default function App() {
                 )}
               </div>
 
-              <div className="w-full relative">
+              <div className="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
                 <input
                   type="text"
                   placeholder="Search events, speakers, topics, or venues…"
-                  className="w-full px-4 py-2 rounded-full text-gray-900 focus:outline-none focus:ring-2 focus:ring-berkeley-gold text-sm"
+                  className="w-full rounded-2xl border border-white/10 bg-white py-3 pl-11 pr-11 text-sm text-slate-900 outline-none transition focus:border-berkeley-gold focus:ring-2 focus:ring-berkeley-gold/40"
                   value={filters.searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
                 />
-                <svg xmlns="http://www.w3.org/2000/svg" className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                {filters.searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => handleSearchChange('')}
+                    aria-label="Clear search"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
               </div>
             </div>
           </header>
-          <FiltersBar
-            filters={filters}
-            sourceOptions={sourceOptions}
-            onDateChange={handleDateRangeChange}
-            onCategoryChange={handleCategoryChange}
-            onSourceChange={handleSourceChange}
-          />
-        </div>
+          <div className="sticky top-0 z-50">
+            <MobileFiltersBar
+              filters={filters}
+              activeDateRange={effectiveDateRange}
+              sourceOptions={sourceOptions}
+              onDateChange={handleDateRangeChange}
+              onCategoryChange={handleCategoryChange}
+              onSourceChange={handleSourceChange}
+            />
+          </div>
+        </>
       ) : (
         <>
           <DesktopHero
@@ -1217,9 +1611,10 @@ export default function App() {
             onSearchChange={handleSearchChange}
             onPresetSelect={handleQuickPreset}
           />
-          <div className="sticky top-0 z-50 shadow-md">
-            <FiltersBar
+          <div className="sticky top-0 z-50 shadow-sm">
+            <DesktopFiltersBar
               filters={filters}
+              activeDateRange={effectiveDateRange}
               sourceOptions={sourceOptions}
               onDateChange={handleDateRangeChange}
               onCategoryChange={handleCategoryChange}
@@ -1243,7 +1638,7 @@ export default function App() {
       )}
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-6 md:py-7">
         
         {loading === LoadingState.LOADING && (
           <div className="flex flex-col items-center justify-center py-20 space-y-4">
@@ -1253,7 +1648,7 @@ export default function App() {
             </div>
             <div className="text-center">
               <h3 className="text-berkeley-blue font-bold text-lg">Loading Events</h3>
-              <p className="text-gray-500 text-sm animate-pulse">Fetching today's events...</p>
+              <p className="text-gray-500 text-sm animate-pulse">Fetching Berkeley events...</p>
             </div>
           </div>
         )}
@@ -1261,30 +1656,55 @@ export default function App() {
         {loading === LoadingState.ERROR && (
           <div className="text-center py-10 bg-red-50 rounded-xl border border-red-200 max-w-lg mx-auto">
             <h3 className="text-xl text-red-800 font-bold mb-2">Failed to Load Events</h3>
-            <p className="text-red-600 mb-4">We couldn't load today's events.</p>
+            <p className="text-red-600 mb-4">We couldn't load the latest Berkeley event feed.</p>
             <button onClick={() => loadEvents()} className="px-6 py-2 bg-berkeley-blue text-white rounded-lg font-bold hover:bg-berkeley-medblue transition shadow-md">Retry</button>
           </div>
         )}
 
         {loading === LoadingState.SUCCESS && (
           <>
-            <div className="flex justify-between items-end mb-4">
-              <h2 className="text-xl font-bold text-berkeley-blue">
-                {filters.category !== 'All' ? `${filters.category} · ` : ''}
-                {filters.dateRange === 'today' ? 'Today' : filters.dateRange === 'week' ? 'This Week' : 'All Upcoming'}
-                <span className="ml-2 text-sm font-normal text-gray-400">({filteredEvents.length})</span>
-              </h2>
+            {showingTodayFallback && (
+              <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-sm">
+                <strong>Nothing today</strong> — showing this week instead.
+              </div>
+            )}
+
+            <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">Campus feed</p>
+                <h2 className="mt-1 text-2xl font-semibold text-berkeley-blue md:text-[2rem] md:font-serif">
+                  {filters.category !== 'All' ? `${filters.category} · ` : ''}
+                  {effectiveDateRange === 'today' ? 'Today' : effectiveDateRange === 'week' ? 'This Week' : 'Upcoming'}
+                  <span className="ml-2 text-sm font-normal text-slate-400">({filteredEvents.length})</span>
+                </h2>
+                {lastUpdated && (
+                  <p className="mt-1 text-sm text-slate-500">Updated {formatPacificDateTime(lastUpdated)}</p>
+                )}
+              </div>
             </div>
 
             {filteredEvents.length === 0 ? (
-              <div className="text-center py-24 bg-white rounded-2xl border-2 border-dashed border-gray-200">
-                <p className="text-xl text-gray-400 font-medium">No events match these filters.</p>
-                <button
-                  onClick={() => setFilters({dateRange: 'today', category: 'All', searchQuery: '', source: 'All'})}
-                  className="mt-4 text-berkeley-medblue font-bold hover:underline"
-                >
-                  Clear all filters
-                </button>
+              <div className="rounded-3xl border border-slate-200 bg-white px-6 py-14 text-center shadow-sm">
+                <p className="text-2xl font-semibold text-berkeley-blue md:font-serif">{emptyState.title}</p>
+                <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-500">{emptyState.description}</p>
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={emptyState.primaryAction}
+                    className="rounded-full bg-berkeley-blue px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-berkeley-medblue"
+                  >
+                    {emptyState.primaryLabel}
+                  </button>
+                  {emptyState.secondaryLabel && emptyState.secondaryAction && (
+                    <button
+                      type="button"
+                      onClick={emptyState.secondaryAction}
+                      className="rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                    >
+                      {emptyState.secondaryLabel}
+                    </button>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1293,73 +1713,67 @@ export default function App() {
                   return eventGroups.map(group => (
                     <React.Fragment key={group.dateKey}>
                       <div className="col-span-full pt-4 pb-1 flex items-center gap-3">
-                        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">{group.label}</h3>
+                        <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 md:font-serif">{group.label}</h3>
                         <div className="flex-1 h-px bg-gray-200" />
                         <span className="text-xs text-gray-400">{group.events.length} event{group.events.length !== 1 ? 's' : ''}</span>
                       </div>
                       {group.events.map((event) => {
                         const idx = globalIdx++;
+                        const categoryStyle = getCategoryStyle(event.tags?.[0]);
                         return (
-                  <div
-                    key={event.id || idx}
-                    onClick={() => handleEventClick(event)}
-                    className="bg-white rounded-xl shadow-sm hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ease-out border border-gray-100 overflow-hidden flex flex-col group cursor-pointer animate-card-in opacity-0"
-                    style={{ animationDelay: `${Math.min(idx * 50, 500)}ms`, animationFillMode: 'forwards' }}
-                  >
-                    <div className="p-5 flex-grow">
-                      <div className="mb-3">
-                        <span className="inline-block bg-berkeley-blue text-berkeley-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest">
-                          {event.tags?.[0] || 'Event'}
-                        </span>
-                      </div>
-                      
-                      <h3 className="text-lg font-bold text-berkeley-blue mb-3 leading-tight group-hover:text-berkeley-medblue transition-colors">{event.title}</h3>
-                      
-                      <div className="space-y-2.5 text-xs text-gray-600 mb-4">
-                        <div className="flex items-center gap-2">
-                          <div className="p-1.5 bg-berkeley-gold/10 rounded">
-                            <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                          </div>
-                          <span className="font-bold text-gray-800">{formatEventDate(event.date)}</span>
-                          <span className="text-gray-300">•</span>
-                          <span className="font-medium">{event.time}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="p-1.5 bg-berkeley-gold/10 rounded">
-                            <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            </svg>
-                          </div>
-                          <span className="truncate">{event.location}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                           <div className="p-1.5 bg-berkeley-gold/10 rounded">
-                            <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
-                          </div>
-                          <span className="italic font-medium">{event.organizer}</span>
-                        </div>
-                      </div>
+                          <div
+                            key={event.id || idx}
+                            onClick={() => handleEventClick(event)}
+                            className={`bg-white rounded-2xl shadow-sm hover:shadow-xl hover:scale-[1.015] active:scale-[0.99] transition-all duration-300 ease-out border border-gray-100 border-l-4 ${categoryStyle.border} overflow-hidden flex flex-col group cursor-pointer ${shouldAnimateCards ? 'animate-card-in opacity-0' : ''}`}
+                            style={shouldAnimateCards ? { animationDelay: `${Math.min(idx * 50, 500)}ms`, animationFillMode: 'forwards' } : undefined}
+                          >
+                            <div className="p-5 flex-grow">
+                              <div className="mb-3">
+                                <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${categoryStyle.badge}`}>
+                                  {categoryStyle.label}
+                                </span>
+                              </div>
 
-                    </div>
-                    
-                    <div className="px-5 py-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
-                       <a
-                        href={event.url || '#'}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-berkeley-blue text-sm font-bold hover:underline flex items-center gap-1"
-                      >
-                        Official Page
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
-                      </a>
-                      <SourceBadge source={event.source} />
-                    </div>
-                  </div>
+                              <h3 className="mb-3 text-lg font-semibold text-berkeley-blue leading-tight transition-colors group-hover:text-berkeley-medblue md:font-serif">{event.title}</h3>
+
+                              <div className="space-y-2.5 text-xs text-gray-600 mb-4">
+                                <div className="flex items-center gap-2">
+                                  <div className={`rounded p-1.5 ${categoryStyle.accent}`}>
+                                    <svg className="h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                  </div>
+                                  <span className="font-bold text-gray-800">{formatEventDate(event.date)}</span>
+                                  <span className="text-gray-300">•</span>
+                                  <span className="font-medium">{event.time}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className={`rounded p-1.5 ${categoryStyle.accent}`}>
+                                    <svg className="h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    </svg>
+                                  </div>
+                                  <span className="truncate">{event.location}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className={`rounded p-1.5 ${categoryStyle.accent}`}>
+                                    <svg className="h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                  </div>
+                                  <span className="italic font-medium">{event.organizer}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="px-5 py-4 bg-gray-50/60 border-t border-gray-100 flex items-center justify-between">
+                              <span className="text-berkeley-blue text-sm font-semibold flex items-center gap-1">
+                                View details
+                                <svg className="w-3 h-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
+                              </span>
+                              <SourceBadge source={event.source} />
+                            </div>
+                          </div>
                         );
                       })}
                     </React.Fragment>
@@ -1382,11 +1796,6 @@ export default function App() {
             Feedback? Reach out at{' '}
             <a href="mailto:akhil_neelam@berkeley.edu" className="text-berkeley-gold hover:underline">
               akhil_neelam@berkeley.edu
-            </a>
-          </p>
-          <p className="mt-2">
-            <a href="/architecture.png" target="_blank" rel="noopener noreferrer" className="text-white/40 hover:text-white/70 text-xs transition-colors">
-              How this works →
             </a>
           </p>
         </div>
