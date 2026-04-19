@@ -35,6 +35,7 @@ import { fetchCalPerformances } from './sources/cal_performances.js';
 import { fetchCalBears } from './sources/calbears.js';
 import { fetchBampfa } from './sources/bampfa.js';
 import { fetchHaas, fetchBerkeleyLaw } from './sources/tribe.js';
+import { fetchSimons } from './sources/simons.js';
 import { fetchEHub } from './sources/ehub.js';
 import { fetchGeminiLongTail } from './sources/gemini.js';
 
@@ -140,6 +141,7 @@ async function main(): Promise<void> {
     runAdapter('bampfa', fetchBampfa),
     runAdapter('haas', fetchHaas),
     runAdapter('berkeley_law', fetchBerkeleyLaw),
+    runAdapter('simons', fetchSimons),
     runAdapter('ehub', fetchEHub),
   ];
   if (apiKey) {
@@ -210,6 +212,7 @@ async function main(): Promise<void> {
     { title: 'BAMPFA Events', uri: 'https://bampfa.org/visit/calendar' },
     { title: 'Berkeley Haas Events', uri: 'https://haas.berkeley.edu/events/' },
     { title: 'Berkeley Law Events', uri: 'https://www.law.berkeley.edu/events/' },
+    { title: 'Simons Institute Events', uri: 'https://simons.berkeley.edu/programs-events' },
     { title: 'Berkeley E-Hub Events', uri: 'https://ehub.berkeley.edu/events/' },
     ...groundingSources,
   ];
