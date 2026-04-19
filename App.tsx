@@ -2142,93 +2142,103 @@ export default function App() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {(() => {
-                  let globalIdx = 0;
-                  return eventGroups.map(group => (
-                    <React.Fragment key={group.dateKey}>
-                      {eventGroups.length > 1 && (
-                        <div className="col-span-full pt-4 pb-1 flex items-center gap-3">
-                          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{group.label}</h3>
-                          <div className="flex-1 h-px bg-gray-200" />
-                          <span className="text-xs text-gray-400">{group.events.length} event{group.events.length !== 1 ? 's' : ''}</span>
-                        </div>
-                      )}
-                      {group.events.map((event) => {
-                        const idx = globalIdx++;
-                        const categoryStyle = getCategoryStyle(event.tags?.[0]);
-                        return (
-                          <div
-                            key={event.id || idx}
-                            onClick={() => handleEventClick(event)}
-                            tabIndex={0}
-                            role="button"
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                handleEventClick(event);
-                              }
-                            }}
-                            className={`bg-white rounded-2xl shadow-sm hover:shadow-xl hover:scale-[1.015] active:scale-[0.99] transition-all duration-300 ease-out border border-gray-100 overflow-hidden flex flex-col group cursor-pointer ${shouldAnimateCards ? 'animate-card-in opacity-0' : ''}`}
-                            style={shouldAnimateCards ? { animationDelay: `${Math.min(idx * 50, 500)}ms`, animationFillMode: 'forwards' } : undefined}
-                          >
-                            <div className="p-5 flex-grow">
-                              <div className="mb-3">
-                                <span className="inline-block bg-berkeley-blue text-berkeley-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest">
-                                  {event.tags?.[0] || 'Event'}
-                                </span>
-                              </div>
-
-                              <h3 className="mb-3 text-lg font-semibold text-berkeley-blue leading-tight transition-colors group-hover:text-berkeley-medblue md:font-serif">{event.title}</h3>
-
-                              <div className="space-y-2.5 text-xs text-gray-600 mb-4">
-                                <div className="flex items-center gap-2">
-                                  <div className="p-1.5 bg-berkeley-gold/10 rounded">
-                                    <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                  </div>
-                                  {effectiveDateRange !== 'today' && (
-                                    <>
-                                      <span className="font-bold text-gray-800">{formatEventDate(event.date)}</span>
-                                      <span className="text-gray-300">•</span>
-                                    </>
-                                  )}
-                                  <span className="font-medium">{event.time || '—'}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <div className="p-1.5 bg-berkeley-gold/10 rounded">
-                                    <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    </svg>
-                                  </div>
-                                  <span className="truncate">{event.location}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <div className="p-1.5 bg-berkeley-gold/10 rounded">
-                                    <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                    </svg>
-                                  </div>
-                                  <span className="italic font-medium truncate" title={event.organizer}>{event.organizer}</span>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="px-5 py-4 bg-gray-50/60 border-t border-gray-100 flex items-center justify-between">
-                              <span className="text-berkeley-blue text-sm font-semibold flex items-center gap-1">
-                                View details
-                                <svg className="w-3 h-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
-                              </span>
-                              <SourceBadge source={event.source} />
-                            </div>
+              <>
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {(() => {
+                    let globalIdx = 0;
+                    return eventGroups.map(group => (
+                      <React.Fragment key={group.dateKey}>
+                        {eventGroups.length > 1 && (
+                          <div className="col-span-full flex items-center gap-3 pt-4 pb-1">
+                            <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{group.label}</h3>
+                            <div className="flex-1 h-px bg-gray-200" />
+                            <span className="text-xs text-gray-400">{group.events.length} event{group.events.length !== 1 ? 's' : ''}</span>
                           </div>
-                        );
-                      })}
-                    </React.Fragment>
-                  ));
-                })()}
-              </div>
+                        )}
+                        {group.events.map((event) => {
+                          const idx = globalIdx++;
+                          const categoryStyle = getCategoryStyle(event.tags?.[0]);
+                          return (
+                            <article
+                              key={event.id || idx}
+                              className={`group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-[box-shadow,transform] duration-300 ease-out hover:shadow-xl hover:scale-[1.015] ${shouldAnimateCards ? 'animate-card-in opacity-0' : ''}`}
+                              style={shouldAnimateCards ? { animationDelay: `${Math.min(idx * 50, 500)}ms`, animationFillMode: 'forwards' } : undefined}
+                            >
+                              <div className="flex-grow p-5">
+                                <div className="mb-3">
+                                  <span className={`inline-flex rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${categoryStyle.accent}`}>
+                                    {event.tags?.[0] || 'Event'}
+                                  </span>
+                                </div>
+
+                                <h3 className="mb-3 text-lg font-semibold leading-tight text-berkeley-blue transition-colors group-hover:text-berkeley-medblue md:font-serif">{event.title}</h3>
+
+                                <div className="mb-4 space-y-2.5 text-xs text-gray-600">
+                                  <div className="flex items-center gap-2">
+                                    <div className="rounded bg-berkeley-gold/10 p-1.5">
+                                      <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                      </svg>
+                                    </div>
+                                    {effectiveDateRange !== 'today' && (
+                                      <>
+                                        <span className="font-bold text-gray-800">{formatEventDate(event.date)}</span>
+                                        <span className="text-gray-300">•</span>
+                                      </>
+                                    )}
+                                    <span className="font-medium">{event.time || '—'}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="rounded bg-berkeley-gold/10 p-1.5">
+                                      <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                      </svg>
+                                    </div>
+                                    <span className="truncate">{event.location}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="rounded bg-berkeley-gold/10 p-1.5">
+                                      <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                      </svg>
+                                    </div>
+                                    <span className="truncate font-medium italic" title={event.organizer}>{event.organizer}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-between border-t border-gray-100 bg-gray-50/60 px-5 py-4">
+                                <SourceBadge source={event.source} linked={false} />
+                                <button
+                                  type="button"
+                                  onClick={() => handleEventClick(event)}
+                                  className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-berkeley-blue transition-colors duration-200 hover:border-berkeley-medblue hover:text-berkeley-medblue focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
+                                >
+                                  View details
+                                  <svg className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </article>
+                          );
+                        })}
+                      </React.Fragment>
+                    ));
+                  })()}
+                </div>
+                {hiddenEventCount > 0 && (
+                  <div className="mt-8 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => setVisibleEventCount(count => count + VISIBLE_EVENT_BATCH_SIZE)}
+                      className="rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-200 hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
+                    >
+                      Load more events ({hiddenEventCount} remaining)
+                    </button>
+                  </div>
+                )}
+              </>
             )}
 
           </>
