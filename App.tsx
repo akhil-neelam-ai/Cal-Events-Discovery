@@ -540,11 +540,15 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
     setTimeout(onClose, 300);
   }, [onClose]);
 
-  const handleTouchStart = () => setIsDragging(true);
+  const [touchStartY, setTouchStartY] = useState(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    setTouchStartY(e.touches[0].clientY);
+  };
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging) return;
-    const touch = e.touches[0];
-    const deltaY = touch.clientY - (e.target as HTMLElement).getBoundingClientRect().top;
+    const deltaY = e.touches[0].clientY - touchStartY;
     if (deltaY > 0) setDragY(deltaY);
   };
   const handleTouchEnd = () => {
@@ -1250,7 +1254,7 @@ export default function App() {
     setSelectedEvent(null);
   }, []);
 
-  const loadEvents = async () => {
+  const loadEvents = useCallback(async () => {
     setLoading(LoadingState.LOADING);
     setStatusReport(null);
     try {
@@ -1263,7 +1267,7 @@ export default function App() {
       console.error(error);
       setLoading(LoadingState.ERROR);
     }
-  };
+  }, []);
 
   useEffect(() => {
     // Initialize GA4 and track page view
@@ -1348,8 +1352,10 @@ export default function App() {
     return null;
   }, [statusReport]);
 
-  const todayKey = getCurrentPacificDateKey();
-  const nextWeekKey = addDaysToDateKey(todayKey, 7);
+  const { todayKey, nextWeekKey } = useMemo(() => {
+    const today = getCurrentPacificDateKey();
+    return { todayKey: today, nextWeekKey: addDaysToDateKey(today, 7) };
+  }, []);
 
   // Instant local filtering for everything except date windows.
   const baseFilteredEvents = useMemo(() => {
@@ -1491,7 +1497,7 @@ export default function App() {
 
   useEffect(() => {
     if (loading === LoadingState.SUCCESS && filteredEvents.length > 0 && shouldAnimateCards) {
-      const timeout = window.setTimeout(() => setShouldAnimateCards(false), 800);
+      const timeout = window.setTimeout(() => setShouldAnimateCards(false), 1100);
       return () => window.clearTimeout(timeout);
     }
   }, [loading, filteredEvents.length, shouldAnimateCards]);
@@ -1712,11 +1718,13 @@ export default function App() {
                   let globalIdx = 0;
                   return eventGroups.map(group => (
                     <React.Fragment key={group.dateKey}>
-                      <div className="col-span-full pt-4 pb-1 flex items-center gap-3">
-                        <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 md:font-serif">{group.label}</h3>
-                        <div className="flex-1 h-px bg-gray-200" />
-                        <span className="text-xs text-gray-400">{group.events.length} event{group.events.length !== 1 ? 's' : ''}</span>
-                      </div>
+                      {eventGroups.length > 1 && (
+                        <div className="col-span-full pt-4 pb-1 flex items-center gap-3">
+                          <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{group.label}</h3>
+                          <div className="flex-1 h-px bg-gray-200" />
+                          <span className="text-xs text-gray-400">{group.events.length} event{group.events.length !== 1 ? 's' : ''}</span>
+                        </div>
+                      )}
                       {group.events.map((event) => {
                         const idx = globalIdx++;
                         const categoryStyle = getCategoryStyle(event.tags?.[0]);
@@ -1724,6 +1732,14 @@ export default function App() {
                           <div
                             key={event.id || idx}
                             onClick={() => handleEventClick(event)}
+                            tabIndex={0}
+                            role="button"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                handleEventClick(event);
+                              }
+                            }}
                             className={`bg-white rounded-2xl shadow-sm hover:shadow-xl hover:scale-[1.015] active:scale-[0.99] transition-all duration-300 ease-out border border-gray-100 border-l-4 ${categoryStyle.border} overflow-hidden flex flex-col group cursor-pointer ${shouldAnimateCards ? 'animate-card-in opacity-0' : ''}`}
                             style={shouldAnimateCards ? { animationDelay: `${Math.min(idx * 50, 500)}ms`, animationFillMode: 'forwards' } : undefined}
                           >
@@ -1743,9 +1759,13 @@ export default function App() {
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                   </div>
-                                  <span className="font-bold text-gray-800">{formatEventDate(event.date)}</span>
-                                  <span className="text-gray-300">•</span>
-                                  <span className="font-medium">{event.time}</span>
+                                  {effectiveDateRange !== 'today' && (
+                                    <>
+                                      <span className="font-bold text-gray-800">{formatEventDate(event.date)}</span>
+                                      <span className="text-gray-300">•</span>
+                                    </>
+                                  )}
+                                  <span className="font-medium">{event.time || '—'}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <div className={`rounded p-1.5 ${categoryStyle.accent}`}>
@@ -1761,7 +1781,7 @@ export default function App() {
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                     </svg>
                                   </div>
-                                  <span className="italic font-medium">{event.organizer}</span>
+                                  <span className="italic font-medium truncate" title={event.organizer}>{event.organizer}</span>
                                 </div>
                               </div>
                             </div>
