@@ -12,7 +12,6 @@ async function fetchJson<T>(path: string, timeoutMs = 8000): Promise<T> {
 
   try {
     const response = await fetch(path, {
-      cache: 'no-cache',
       signal: controller.signal,
     });
 

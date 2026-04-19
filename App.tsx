@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, useId } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { fetchEventsFromGemini } from './services/geminiService';
 import { CalEvent, IngestionStatus, SearchFilters, LoadingState } from './types';
@@ -13,9 +13,10 @@ import {
   trackExternalLink,
   trackFilter,
 } from './utils/analytics';
-import { searchEvents, parseQuery } from './utils/searchEngine';
+import { searchEvents } from './utils/searchEngine';
 import type { SearchIndex } from './utils/textUtils';
 import { getRecentSearches, addRecentSearch, clearRecentSearches } from './utils/recentSearches';
+import { buildUrlStateSearch, parseUrlState } from './utils/urlState';
 
 // Source provenance helpers
 const SOURCE_LABELS: Record<string, string> = {
@@ -255,7 +256,7 @@ function SourceDropdown({
   );
 }
 
-function SourceBadge({ source }: { source?: string }) {
+function SourceBadge({ source, linked = true }: { source?: string; linked?: boolean }) {
   if (!source || !SOURCE_LABELS[source]) return null;
   const label = SOURCE_LABELS[source];
   const url = SOURCE_URLS[source];
@@ -267,7 +268,7 @@ function SourceBadge({ source }: { source?: string }) {
       {label}
     </span>
   );
-  if (url) {
+  if (url && linked) {
     return (
       <a href={url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-gray-600 transition-colors">
         {inner}
@@ -279,7 +280,7 @@ function SourceBadge({ source }: { source?: string }) {
 
 // Hook to detect mobile vs desktop
 function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false));
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -544,13 +545,38 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
   const [isClosing, setIsClosing] = useState(false);
   const categoryStyle = getCategoryStyle(event.tags?.[0]);
   const directionsUrl = getDirectionsUrl(event.location);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const closeTimeoutRef = useRef<number | null>(null);
+  const titleId = useId();
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   const handleClose = useCallback(() => {
-    setIsClosing(true);
-    setTimeout(onClose, 300);
-  }, [onClose]);
+    setIsClosing((previous) => {
+      if (previous) {
+        return previous;
+      }
+
+      closeTimeoutRef.current = window.setTimeout(onClose, prefersReducedMotion ? 0 : 300);
+      return true;
+    });
+  }, [onClose, prefersReducedMotion]);
 
   const [touchStartY, setTouchStartY] = useState(0);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current !== null) {
+        window.clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useDialogAccessibility({
+    dialogRef,
+    initialFocusRef: closeButtonRef,
+    onClose: handleClose,
+  });
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);
@@ -573,15 +599,21 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
     <div className="fixed inset-0 z-50 md:hidden">
       {/* Backdrop */}
       <div
-        className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'animate-fade-in'}`}
+        aria-hidden="true"
+        className={`absolute inset-0 bg-black/50 ${prefersReducedMotion ? '' : `transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'animate-fade-in'}`}`}
         onClick={handleClose}
       />
       {/* Sheet */}
       <div
-        className={`absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[85vh] overflow-hidden shadow-2xl ${isClosing ? '' : 'animate-slide-up'}`}
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        className={`absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-hidden rounded-t-3xl bg-white shadow-2xl overscroll-contain ${prefersReducedMotion || isClosing ? '' : 'animate-slide-up'}`}
         style={{
           transform: isClosing ? 'translateY(100%)' : `translateY(${dragY}px)`,
-          transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease-out'
+          transition: isDragging || prefersReducedMotion ? 'none' : 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease-out',
         }}
       >
         {/* Drag Handle */}
@@ -595,15 +627,28 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
         </div>
 
         {/* Content */}
-        <div className="px-5 pb-8 overflow-y-auto max-h-[calc(85vh-40px)]">
+        <div className="max-h-[calc(85vh-40px)] overflow-y-auto overscroll-contain px-5 pb-8">
           <div className="flex items-center justify-between mb-3">
             <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${categoryStyle.badge}`}>
               {categoryStyle.label}
             </span>
-            <SourceBadge source={event.source} />
+            <div className="flex items-center gap-3">
+              <SourceBadge source={event.source} />
+              <button
+                ref={closeButtonRef}
+                type="button"
+                onClick={handleClose}
+                aria-label="Close event details"
+                className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
 
-          <h2 className="text-xl font-semibold text-berkeley-blue mb-4 md:font-serif">{event.title}</h2>
+          <h2 id={titleId} className="mb-4 text-xl font-semibold text-berkeley-blue md:font-serif">{event.title}</h2>
 
           <div className="space-y-3 text-sm text-gray-600 mb-6">
             <div className="flex items-center gap-3">
@@ -688,41 +733,65 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
   const [isClosing, setIsClosing] = useState(false);
   const categoryStyle = getCategoryStyle(event.tags?.[0]);
   const directionsUrl = getDirectionsUrl(event.location);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const closeTimeoutRef = useRef<number | null>(null);
+  const titleId = useId();
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   const handleClose = useCallback(() => {
-    setIsClosing(true);
-    setTimeout(onClose, 350);
-  }, [onClose]);
+    setIsClosing((previous) => {
+      if (previous) {
+        return previous;
+      }
 
-  // Close on escape key
+      closeTimeoutRef.current = window.setTimeout(onClose, prefersReducedMotion ? 0 : 350);
+      return true;
+    });
+  }, [onClose, prefersReducedMotion]);
+
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClose();
+    return () => {
+      if (closeTimeoutRef.current !== null) {
+        window.clearTimeout(closeTimeoutRef.current);
+      }
     };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [handleClose]);
+  }, []);
+
+  useDialogAccessibility({
+    dialogRef,
+    initialFocusRef: closeButtonRef,
+    onClose: handleClose,
+  });
 
   return (
     <div className="fixed inset-0 z-50 hidden md:block">
       {/* Backdrop */}
       <div
-        className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'animate-fade-in'}`}
+        aria-hidden="true"
+        className={`absolute inset-0 bg-black/40 backdrop-blur-sm ${prefersReducedMotion ? '' : `transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'animate-fade-in'}`}`}
         onClick={handleClose}
       />
       {/* Panel */}
       <div
-        className={`absolute top-0 right-0 h-full w-[450px] bg-white shadow-2xl overflow-hidden ${isClosing ? '' : 'animate-slide-in'}`}
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        className={`absolute top-0 right-0 h-full w-[450px] overflow-hidden bg-white shadow-2xl overscroll-contain ${prefersReducedMotion || isClosing ? '' : 'animate-slide-in'}`}
         style={{
           boxShadow: '-10px 0 40px rgba(0,0,0,0.15)',
           transform: isClosing ? 'translateX(100%)' : 'translateX(0)',
-          transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)'
+          transition: prefersReducedMotion ? 'none' : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-berkeley-blue text-white">
           <span className="font-bold">Event Details</span>
           <button
+            ref={closeButtonRef}
+            type="button"
             onClick={handleClose}
             aria-label="Close event details"
             className="p-1 hover:bg-white/20 rounded transition"
@@ -734,7 +803,7 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto h-[calc(100%-60px)]">
+        <div className="h-[calc(100%-60px)] overflow-y-auto overscroll-contain p-6">
           <div className="flex items-center justify-between mb-3">
             <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${categoryStyle.badge}`}>
               {categoryStyle.label}
@@ -742,7 +811,7 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
             <SourceBadge source={event.source} />
           </div>
 
-          <h2 className="text-2xl font-semibold text-berkeley-blue mb-6 md:font-serif">{event.title}</h2>
+          <h2 id={titleId} className="mb-6 text-2xl font-semibold text-berkeley-blue md:font-serif">{event.title}</h2>
 
           <div className="space-y-4 text-sm text-gray-600 mb-8">
             <div className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg">
@@ -822,62 +891,6 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
   );
 }
 
-// Synonym mapping for natural language search
-const SEARCH_SYNONYMS: Record<string, string[]> = {
-  'ai': ['artificial intelligence', 'machine learning', 'ml', 'deep learning', 'neural network'],
-  'artificial intelligence': ['ai', 'machine learning', 'ml', 'deep learning'],
-  'machine learning': ['ml', 'ai', 'artificial intelligence', 'deep learning'],
-  'ml': ['machine learning', 'ai', 'artificial intelligence'],
-  'tech': ['technology', 'computer', 'software', 'engineering', 'science & tech'],
-  'technology': ['tech', 'computer', 'software', 'engineering'],
-  'music': ['concert', 'performance', 'jazz', 'classical', 'orchestra', 'recital'],
-  'concert': ['music', 'performance', 'show', 'live'],
-  'sports': ['athletics', 'game', 'match', 'basketball', 'football', 'volleyball'],
-  'basketball': ['sports', 'game', 'hoops', 'cal bears'],
-  'football': ['sports', 'game', 'cal bears'],
-  'lecture': ['talk', 'presentation', 'seminar', 'speaker', 'academic'],
-  'talk': ['lecture', 'presentation', 'seminar', 'speaker'],
-  'workshop': ['class', 'training', 'hands-on', 'session'],
-  'art': ['arts', 'exhibition', 'gallery', 'museum', 'visual'],
-  'arts': ['art', 'exhibition', 'gallery', 'performance', 'theater', 'theatre'],
-  'theater': ['theatre', 'play', 'drama', 'performance', 'arts'],
-  'theatre': ['theater', 'play', 'drama', 'performance', 'arts'],
-  'film': ['movie', 'cinema', 'screening'],
-  'movie': ['film', 'cinema', 'screening'],
-  'health': ['wellness', 'medical', 'healthcare', 'public health'],
-  'wellness': ['health', 'mental health', 'self-care'],
-  'career': ['job', 'employment', 'professional', 'networking', 'recruiting'],
-  'job': ['career', 'employment', 'hiring', 'internship'],
-  'diversity': ['dei', 'inclusion', 'equity', 'multicultural'],
-  'dei': ['diversity', 'equity', 'inclusion'],
-};
-
-// Expand search query with synonyms
-function expandSearchQuery(query: string): string[] {
-  const normalized = query.toLowerCase().trim();
-  const terms = [normalized];
-
-  // Check for exact matches in synonym map
-  if (SEARCH_SYNONYMS[normalized]) {
-    terms.push(...SEARCH_SYNONYMS[normalized]);
-  }
-
-  // Check if query words match synonym keys (whole word matching only)
-  const queryWords = normalized.split(/\s+/);
-  Object.entries(SEARCH_SYNONYMS).forEach(([key, synonyms]) => {
-    // Only match if the key is exactly one of the query words
-    // or if the query exactly matches a multi-word key
-    if (queryWords.includes(key) || key === normalized) {
-      terms.push(...synonyms);
-    }
-  });
-
-  return [...new Set(terms)]; // Remove duplicates
-}
-
-// Short terms that should only match as whole words (not inside other words)
-const WHOLE_WORD_ONLY = new Set(['ai', 'ml', 'ar', 'vr', 'it', 'cs']);
-
 // Berkeley/campus locations for filtering home games
 const BERKELEY_LOCATIONS = [
   'berkeley', 'uc berkeley', 'cal ', 'memorial stadium', 'haas pavilion',
@@ -900,27 +913,6 @@ function isHomeGame(event: CalEvent): boolean {
   return BERKELEY_LOCATIONS.some(loc => location.includes(loc));
 }
 
-// Check if event matches any of the search terms
-function eventMatchesSearch(event: CalEvent, searchTerms: string[]): boolean {
-  const searchableText = [
-    event.title,
-    event.description,
-    event.organizer,
-    ...(event.tags || [])
-  ].join(' ').toLowerCase();
-
-  return searchTerms.some(term => {
-    // For short terms, use word boundary matching to avoid false positives
-    // e.g., "ai" should match "AI event" but not "against" or "training"
-    if (WHOLE_WORD_ONLY.has(term)) {
-      const wordBoundaryRegex = new RegExp(`\\b${term}\\b`, 'i');
-      return wordBoundaryRegex.test(searchableText);
-    }
-    // For longer terms, substring matching is fine
-    return searchableText.includes(term);
-  });
-}
-
 const Categories = ['All', 'Academic', 'Arts', 'Sports', 'Science & Tech', 'Student Life', 'Entrepreneurship'];
 const ALL_SOURCES = ['All', 'livewhale', 'ehub', 'gemini', 'cal_performances', 'bampfa', 'calbears', 'callink', 'haas', 'berkeley_law', 'simons'];
 const DateRanges = [
@@ -928,6 +920,160 @@ const DateRanges = [
   { label: 'This Week', value: 'week' },
   { label: 'Upcoming', value: 'upcoming' },
 ];
+
+const DEFAULT_FILTERS: SearchFilters = {
+  dateRange: 'today',
+  category: 'All',
+  searchQuery: '',
+  source: 'All',
+};
+
+const VISIBLE_EVENT_BATCH_SIZE = 72;
+
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'textarea:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(', ');
+
+function usePrefersReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => (
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ));
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handleChange = (event: MediaQueryListEvent) => {
+      setPrefersReducedMotion(event.matches);
+    };
+
+    setPrefersReducedMotion(mediaQuery.matches);
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+
+    mediaQuery.addListener(handleChange);
+    return () => mediaQuery.removeListener(handleChange);
+  }, []);
+
+  return prefersReducedMotion;
+}
+
+function readAppUrlState() {
+  return parseUrlState(typeof window !== 'undefined' ? window.location.search : '', {
+    defaultFilters: DEFAULT_FILTERS,
+    allowedCategories: Categories,
+    allowedSources: ALL_SOURCES,
+  });
+}
+
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(element => {
+    if (element.hasAttribute('disabled')) return false;
+    if (element.getAttribute('aria-hidden') === 'true') return false;
+    return true;
+  });
+}
+
+function useDialogAccessibility({
+  dialogRef,
+  initialFocusRef,
+  onClose,
+}: {
+  dialogRef: React.RefObject<HTMLElement | null>;
+  initialFocusRef?: React.RefObject<HTMLElement | null>;
+  onClose: () => void;
+}) {
+  const previousActiveElementRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    previousActiveElementRef.current = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+
+    const { body, documentElement } = document;
+    const previousOverflow = body.style.overflow;
+    const previousPaddingRight = body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - documentElement.clientWidth;
+
+    body.style.overflow = 'hidden';
+    if (scrollbarWidth > 0) {
+      body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    const focusInitialTarget = () => {
+      const focusable = getFocusableElements(dialog);
+      const fallbackTarget = initialFocusRef?.current ?? focusable[0] ?? dialog;
+      fallbackTarget.focus();
+    };
+
+    const frameId = window.requestAnimationFrame(focusInitialTarget);
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const focusable = getFocusableElements(dialog);
+      if (focusable.length === 0) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const activeElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+      if (event.shiftKey) {
+        if (!activeElement || activeElement === first || activeElement === dialog) {
+          event.preventDefault();
+          last.focus();
+        }
+        return;
+      }
+
+      if (activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    const handleFocusIn = (event: FocusEvent) => {
+      if (!dialog.contains(event.target as Node)) {
+        const focusable = getFocusableElements(dialog);
+        (focusable[0] ?? dialog).focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('focusin', handleFocusIn);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('focusin', handleFocusIn);
+      body.style.overflow = previousOverflow;
+      body.style.paddingRight = previousPaddingRight;
+      previousActiveElementRef.current?.focus();
+    };
+  }, [dialogRef, initialFocusRef, onClose]);
+}
 
 interface QuickFilterPreset {
   label: string;
@@ -957,6 +1103,10 @@ function SearchSuggestionsDropdown({
   onSelect: (q: string) => void;
   onClear: () => void;
 }) {
+  const handleSuggestionSelect = (query: string) => {
+    onSelect(query);
+  };
+
   return (
     <div className="absolute top-full left-0 right-0 z-50 mt-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
       {recents.length > 0 && (
@@ -964,7 +1114,8 @@ function SearchSuggestionsDropdown({
           <div className="mb-2 flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Recent</span>
             <button
-              onMouseDown={(e) => { e.preventDefault(); onClear(); }}
+              type="button"
+              onClick={onClear}
               className="text-[11px] text-slate-400 transition hover:text-slate-600"
             >
               Clear
@@ -973,7 +1124,8 @@ function SearchSuggestionsDropdown({
           {recents.map(s => (
             <button
               key={s}
-              onMouseDown={(e) => { e.preventDefault(); onSelect(s); }}
+              type="button"
+              onClick={() => handleSuggestionSelect(s)}
               className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-50"
             >
               <svg className="h-3.5 w-3.5 flex-shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -990,7 +1142,8 @@ function SearchSuggestionsDropdown({
           {POPULAR_SEARCHES.map(s => (
             <button
               key={s}
-              onMouseDown={(e) => { e.preventDefault(); onSelect(s); }}
+              type="button"
+              onClick={() => handleSuggestionSelect(s)}
               className="rounded-full border border-berkeley-gold/30 bg-berkeley-gold/10 px-3 py-1 text-xs text-berkeley-blue transition hover:bg-berkeley-gold/20"
             >
               {s}
@@ -1010,6 +1163,7 @@ function DesktopHero({
   searchQuery,
   onSearchChange,
   onPresetSelect,
+  inputId,
 }: {
   lastUpdated: number | null;
   totalEvents: number;
@@ -1018,6 +1172,7 @@ function DesktopHero({
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onPresetSelect: (preset: QuickFilterPreset) => void;
+  inputId: string;
 }) {
   const [searchFocused, setSearchFocused] = useState(false);
   const [recents, setRecents] = useState<string[]>([]);
@@ -1073,6 +1228,9 @@ function DesktopHero({
 
           <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-white p-4 shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
             <div className="relative">
+              <label htmlFor={inputId} className="sr-only">
+                Search campus events
+              </label>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
@@ -1083,7 +1241,11 @@ function DesktopHero({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
+                id={inputId}
                 type="text"
+                name="event-search"
+                aria-label="Search campus events"
+                autoComplete="off"
                 placeholder="Search events, speakers, topics, or venues…"
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-5 text-base text-slate-900 outline-none transition focus:border-berkeley-medblue focus:bg-white focus:ring-2 focus:ring-berkeley-gold/50"
                 value={searchQuery}
@@ -1330,25 +1492,28 @@ interface EmptyStateConfig {
 }
 
 export default function App() {
+  const initialUrlState = readAppUrlState();
   const [allEvents, setAllEvents] = useState<CalEvent[]>([]);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [loading, setLoading] = useState<LoadingState>(LoadingState.IDLE);
   const [statusReport, setStatusReport] = useState<IngestionStatus | null>(null);
   const [searchIndex, setSearchIndex] = useState<SearchIndex | null>(null);
-  const [filters, setFilters] = useState<SearchFilters>({
-    dateRange: 'today',
-    category: 'All',
-    searchQuery: '',
-    source: 'All',
-  });
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [filters, setFilters] = useState<SearchFilters>(initialUrlState.filters);
   const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
-  const [shouldAnimateCards, setShouldAnimateCards] = useState(true);
+  const [shouldAnimateCards, setShouldAnimateCards] = useState(!prefersReducedMotion);
   // Mobile search suggestions
   const [mobileSearchFocused, setMobileSearchFocused] = useState(false);
   const [mobileRecents, setMobileRecents] = useState<string[]>([]);
   const mobileBlurRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const desktopSearchInputId = useId();
+  const mobileSearchInputId = useId();
   const isMobile = useIsMobile();
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [pendingSelectedEventId, setPendingSelectedEventId] = useState<string | null>(initialUrlState.selectedEventId);
+  const historyModeRef = useRef<'push' | 'replace'>('replace');
+  const isApplyingHistoryRef = useRef(false);
+  const [visibleEventCount, setVisibleEventCount] = useState(VISIBLE_EVENT_BATCH_SIZE);
 
   const handleEventClick = useCallback((event: CalEvent) => {
     setSelectedEvent(event);
@@ -1375,7 +1540,7 @@ export default function App() {
     try {
       const [data] = await Promise.all([
         fetchEventsFromGemini(),
-        fetch('/search-index.json', { cache: 'no-cache' })
+        fetch('/search-index.json')
           .then(r => r.ok ? r.json() : null)
           .then((idx: SearchIndex | null) => { if (idx) setSearchIndex(idx); })
           .catch(() => { /* index not yet generated — fall back to Fuse-only */ }),
@@ -1543,9 +1708,9 @@ export default function App() {
     const hasSearch = !!q;
     const hasCategory = filters.category !== 'All';
 
-    const resetAll = () => setFilters({ dateRange: 'today', category: 'All', searchQuery: '', source: 'All' });
+    const resetAll = () => setFilters(DEFAULT_FILTERS);
     const clearSearch = () => setFilters(prev => ({ ...prev, searchQuery: '' }));
-    const clearCategory = () => setFilters(prev => ({ ...prev, category: 'All' }));
+    const clearCategory = () => setFilters(prev => ({ ...prev, category: DEFAULT_FILTERS.category }));
     const showWeek = () => setFilters(prev => ({ ...prev, dateRange: 'week' }));
     const showUpcoming = () => setFilters(prev => ({ ...prev, dateRange: 'upcoming' }));
 
@@ -1626,9 +1791,16 @@ export default function App() {
   }, [filters, upcomingEvents.length, weekEvents.length, effectiveDateRange]);
 
   // Group sorted filtered events by Pacific date key
+  const visibleEvents = useMemo(
+    () => filteredEvents.slice(0, visibleEventCount),
+    [filteredEvents, visibleEventCount],
+  );
+
+  const hiddenEventCount = Math.max(filteredEvents.length - visibleEvents.length, 0);
+
   const eventGroups = useMemo(() => {
     const groups: { dateKey: string; label: string; events: CalEvent[] }[] = [];
-    for (const event of filteredEvents) {
+    for (const event of visibleEvents) {
       const dateKey = getPacificDateKey(event.date);
       const last = groups[groups.length - 1];
       if (last && last.dateKey === dateKey) {
@@ -1638,7 +1810,7 @@ export default function App() {
       }
     }
     return groups;
-  }, [filteredEvents]);
+  }, [visibleEvents]);
 
   useEffect(() => {
     if (loading === LoadingState.SUCCESS && filteredEvents.length > 0 && shouldAnimateCards) {
@@ -1647,17 +1819,85 @@ export default function App() {
     }
   }, [loading, filteredEvents.length, shouldAnimateCards]);
 
-  const handleSearchChange = useCallback((query: string) => {
-    setFilters(prev => {
-      const next = { ...prev, searchQuery: query };
-      // Apply intent hints when user types intent-bearing phrases
-      if (query.trim()) {
-        const { intents } = parseQuery(query);
-        if (intents.dateRange) next.dateRange = intents.dateRange;
-        if (intents.category) next.category = intents.category;
-      }
-      return next;
+  useEffect(() => {
+    setVisibleEventCount(VISIBLE_EVENT_BATCH_SIZE);
+    setShouldAnimateCards(!prefersReducedMotion);
+  }, [filters, effectiveDateRange, prefersReducedMotion]);
+
+  const selectedEventId = selectedEvent?.id ?? null;
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const nextSearch = buildUrlStateSearch(filters, selectedEventId, {
+      defaultFilters: DEFAULT_FILTERS,
     });
+    const nextUrl = `${window.location.pathname}${nextSearch}${window.location.hash}`;
+    const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+
+    if (nextUrl !== currentUrl) {
+      const historyMethod = isApplyingHistoryRef.current
+        ? 'replaceState'
+        : historyModeRef.current === 'push'
+          ? 'pushState'
+          : 'replaceState';
+      window.history[historyMethod](null, '', nextUrl);
+    }
+
+    historyModeRef.current = 'replace';
+    isApplyingHistoryRef.current = false;
+  }, [filters, selectedEventId]);
+
+  useEffect(() => {
+    if (!pendingSelectedEventId) return;
+
+    const matchedEvent = allEvents.find(event => event.id === pendingSelectedEventId);
+    if (matchedEvent) {
+      setSelectedEvent(matchedEvent);
+    }
+  }, [allEvents, pendingSelectedEventId]);
+
+  useEffect(() => {
+    if (!selectedEventId) return;
+
+    const stillExists = allEvents.some(event => event.id === selectedEventId);
+    if (!stillExists) {
+      setSelectedEvent(null);
+    }
+  }, [allEvents, selectedEventId]);
+
+  useEffect(() => {
+    if (selectedEventId && !filteredEvents.some(event => event.id === selectedEventId)) {
+      setSelectedEvent(null);
+    }
+  }, [filteredEvents, selectedEventId]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handlePopState = () => {
+      isApplyingHistoryRef.current = true;
+      const nextState = parseUrlState(window.location.search, {
+        defaultFilters: DEFAULT_FILTERS,
+        allowedCategories: Categories,
+        allowedSources: ALL_SOURCES,
+      });
+
+      setFilters(nextState.filters);
+      setPendingSelectedEventId(nextState.selectedEventId);
+
+      if (!nextState.selectedEventId) {
+        setSelectedEvent(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const handleSearchChange = useCallback((query: string) => {
+    historyModeRef.current = 'replace';
+    setFilters(prev => ({ ...prev, searchQuery: query }));
 
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     if (query.trim().length >= 2) {
@@ -1668,16 +1908,19 @@ export default function App() {
   }, [filteredEvents.length]);
 
   const handleDateRangeChange = useCallback((dateRange: SearchFilters['dateRange']) => {
+    historyModeRef.current = 'push';
     setFilters(prev => ({ ...prev, dateRange }));
     trackDateFilter(dateRange);
   }, []);
 
   const handleCategoryChange = useCallback((category: string) => {
+    historyModeRef.current = 'push';
     setFilters(prev => ({ ...prev, category }));
     trackCategoryFilter(category);
   }, []);
 
   const handleSourceChange = useCallback((source: string) => {
+    historyModeRef.current = 'push';
     setFilters(prev => ({ ...prev, source }));
     trackFilter({ filter_type: 'source', filter_value: source });
   }, []);
@@ -1687,6 +1930,7 @@ export default function App() {
       clearTimeout(searchTimeoutRef.current);
     }
 
+    historyModeRef.current = 'push';
     setFilters(prev => ({
       ...prev,
       dateRange: preset.dateRange,
@@ -1721,11 +1965,18 @@ export default function App() {
               </div>
 
               <div className="relative">
+                <label htmlFor={mobileSearchInputId} className="sr-only">
+                  Search campus events
+                </label>
                 <svg xmlns="http://www.w3.org/2000/svg" className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
+                  id={mobileSearchInputId}
                   type="text"
+                  name="event-search-mobile"
+                  aria-label="Search campus events"
+                  autoComplete="off"
                   placeholder="Search events, speakers, topics, or venues…"
                   className="w-full rounded-2xl border border-white/10 bg-white py-3 pl-11 pr-11 text-sm text-slate-900 outline-none transition focus:border-berkeley-gold focus:ring-2 focus:ring-berkeley-gold/40"
                   value={filters.searchQuery}
@@ -1793,6 +2044,7 @@ export default function App() {
             searchQuery={filters.searchQuery}
             onSearchChange={handleSearchChange}
             onPresetSelect={handleQuickPreset}
+            inputId={desktopSearchInputId}
           />
           <div className="sticky top-0 z-50 shadow-sm">
             <DesktopFiltersBar
