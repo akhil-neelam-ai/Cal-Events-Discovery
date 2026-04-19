@@ -21,6 +21,7 @@ const SOURCE_PRIORITY: Record<SourceName, number> = {
   // superset for any events that happen to be cross-published.
   haas: 3,
   berkeley_law: 3,
+  simons: 3,
   ehub: 2,
   gemini: 1,
 };
