@@ -743,6 +743,170 @@ const DateRanges = [
   { label: 'This Week', value: 'week' },
 ];
 
+interface QuickFilterPreset {
+  label: string;
+  dateRange: SearchFilters['dateRange'];
+  category: string;
+  searchQuery: string;
+}
+
+const DESKTOP_HERO_PRESETS: QuickFilterPreset[] = [
+  { label: 'Tonight', dateRange: 'today', category: 'All', searchQuery: '' },
+  { label: 'Free food', dateRange: 'week', category: 'Student Life', searchQuery: 'free' },
+  { label: 'AI talks', dateRange: 'week', category: 'Science & Tech', searchQuery: 'ai' },
+  { label: 'Cal games', dateRange: 'week', category: 'Sports', searchQuery: '' },
+];
+
+function DesktopHero({
+  lastUpdated,
+  totalEvents,
+  sourceCount,
+  loading,
+  searchQuery,
+  onSearchChange,
+  onPresetSelect,
+}: {
+  lastUpdated: number | null;
+  totalEvents: number;
+  sourceCount: number;
+  loading: LoadingState;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  onPresetSelect: (preset: QuickFilterPreset) => void;
+}) {
+  const statusCopy = lastUpdated
+    ? `Synced ${formatPacificDateTime(lastUpdated)}`
+    : loading === LoadingState.ERROR
+      ? 'Latest batch unavailable'
+      : 'Loading latest batch';
+
+  const summaryCopy = loading === LoadingState.SUCCESS && totalEvents > 0
+    ? `${totalEvents.toLocaleString()} events across ${sourceCount} campus feeds. Search by topic, speaker, venue, or organizer.`
+    : 'Search Berkeley events by topic, speaker, venue, or organizer, then refine with filters below.';
+
+  return (
+    <header className="hidden md:block bg-gradient-to-br from-berkeley-blue via-[#002949] to-[#001b30] text-white border-b-4 border-berkeley-gold shadow-md">
+      <div className="container mx-auto px-6 py-12 lg:py-14">
+        <div className="flex items-center justify-between gap-6 mb-10">
+          <div className="flex items-baseline gap-2">
+            <span className="text-berkeley-gold text-2xl font-bold tracking-tight">Cal</span>
+            <span className="text-2xl font-light tracking-wide">Events</span>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs text-berkeley-gold/90">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_0_4px_rgba(52,211,153,0.18)]" />
+            {statusCopy}
+          </div>
+        </div>
+
+        <div className="max-w-4xl">
+          <h1 className="max-w-3xl text-5xl font-semibold leading-tight tracking-tight font-serif" style={{ textWrap: 'balance' }}>
+            Find what&apos;s happening
+            <span className="ml-3 text-berkeley-gold italic font-medium">across Berkeley.</span>
+          </h1>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-white/72">
+            {summaryCopy}
+          </p>
+
+          <div className="mt-8 max-w-3xl rounded-[1.5rem] border border-white/10 bg-white p-5 shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
+            <div className="relative">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search events, speakers, topics, or venues…"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-5 text-base text-slate-900 outline-none transition focus:border-berkeley-medblue focus:bg-white focus:ring-2 focus:ring-berkeley-gold/50"
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+              />
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-4">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
+                Quick Start
+              </span>
+              {DESKTOP_HERO_PRESETS.map((preset) => (
+                <button
+                  key={preset.label}
+                  type="button"
+                  onClick={() => onPresetSelect(preset)}
+                  className="rounded-full border border-berkeley-gold/30 bg-berkeley-gold/10 px-4 py-2 text-sm font-medium text-berkeley-blue transition hover:border-berkeley-gold hover:bg-berkeley-gold/20"
+                >
+                  {preset.label}
+                </button>
+              ))}
+              <span className="ml-auto text-sm text-slate-500">
+                Use the filters below to narrow by time, topic, and source.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function FiltersBar({
+  filters,
+  sourceOptions,
+  onDateChange,
+  onCategoryChange,
+  onSourceChange,
+}: {
+  filters: SearchFilters;
+  sourceOptions: SourceOption[];
+  onDateChange: (next: SearchFilters['dateRange']) => void;
+  onCategoryChange: (next: string) => void;
+  onSourceChange: (next: string) => void;
+}) {
+  return (
+    <div className="bg-berkeley-medblue text-white text-xs overflow-x-auto border-t border-white/10">
+      <div className="container mx-auto px-4 py-2 flex items-center gap-4 whitespace-nowrap">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-berkeley-gold uppercase text-[10px]">Time</span>
+          {DateRanges.map(range => (
+            <button
+              key={range.value}
+              onClick={() => onDateChange(range.value as SearchFilters['dateRange'])}
+              className={`px-3 py-1 rounded-full transition ${filters.dateRange === range.value ? 'bg-white text-berkeley-blue font-bold shadow-inner' : 'hover:bg-white/20'}`}
+            >
+              {range.label}
+            </button>
+          ))}
+        </div>
+        <div className="w-px h-4 bg-white/30 mx-1" />
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-berkeley-gold uppercase text-[10px]">Topic</span>
+          {Categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => onCategoryChange(cat)}
+              className={`px-3 py-1 rounded-full transition ${filters.category === cat ? 'bg-white text-berkeley-blue font-bold shadow-inner' : 'hover:bg-white/20'}`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+        <div className="w-px h-4 bg-white/30 mx-1" />
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-berkeley-gold uppercase text-[10px]">Source</span>
+          <SourceDropdown
+            value={filters.source}
+            options={sourceOptions}
+            onChange={onSourceChange}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [allEvents, setAllEvents] = useState<CalEvent[]>([]);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
@@ -795,6 +959,14 @@ export default function App() {
     loadEvents();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Per-source counts from the full event set, used to populate the Source dropdown.
   // Preserves the original ALL_SOURCES ordering and filters to sources that have
   // at least one event in the current dataset.
@@ -817,6 +989,7 @@ export default function App() {
     }
     return opts;
   }, [allEvents]);
+  const sourceCount = Math.max(sourceOptions.length - 1, 0);
 
   const statusBanner = useMemo(() => {
     if (!statusReport) {
@@ -913,98 +1086,117 @@ export default function App() {
     });
   }, [allEvents, filters]);
 
+  const handleSearchChange = useCallback((query: string) => {
+    setFilters(prev => ({ ...prev, searchQuery: query }));
+
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (query.trim().length >= 2) {
+      searchTimeoutRef.current = setTimeout(() => {
+        trackSearch({ search_term: query.trim(), results_count: filteredEvents.length });
+      }, 500);
+    }
+  }, [filteredEvents.length]);
+
+  const handleDateRangeChange = useCallback((dateRange: SearchFilters['dateRange']) => {
+    setFilters(prev => ({ ...prev, dateRange }));
+    trackDateFilter(dateRange);
+  }, []);
+
+  const handleCategoryChange = useCallback((category: string) => {
+    setFilters(prev => ({ ...prev, category }));
+    trackCategoryFilter(category);
+  }, []);
+
+  const handleSourceChange = useCallback((source: string) => {
+    setFilters(prev => ({ ...prev, source }));
+    trackFilter({ filter_type: 'source', filter_value: source });
+  }, []);
+
+  const handleQuickPreset = useCallback((preset: QuickFilterPreset) => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    setFilters(prev => ({
+      ...prev,
+      dateRange: preset.dateRange,
+      category: preset.category,
+      searchQuery: preset.searchQuery,
+    }));
+
+    trackDateFilter(preset.dateRange);
+    if (preset.category !== 'All') {
+      trackCategoryFilter(preset.category);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-berkeley-lightgray text-gray-800 font-sans">
       <Analytics />
-      {/* Header */}
-      <header className="bg-berkeley-blue text-white shadow-md sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="text-berkeley-gold text-2xl font-bold">Cal</span>
-              <span className="text-2xl font-light tracking-wide">Events</span>
-            </div>
-            {lastUpdated && (
-              <span className="text-[10px] text-berkeley-gold/70 uppercase tracking-tighter -mt-1 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                Last Synced: {formatPacificDateTime(lastUpdated)}
-              </span>
-            )}
-          </div>
-          
-          <div className="w-full md:w-1/2 relative">
-            <input
-              type="text"
-              placeholder="Search for events, concerts and seminars"
-              className="w-full px-4 py-2 rounded-full text-gray-900 focus:outline-none focus:ring-2 focus:ring-berkeley-gold text-sm"
-              value={filters.searchQuery}
-              onChange={(e) => {
-                const query = e.target.value;
-                setFilters(prev => ({...prev, searchQuery: query}));
-                // Debounced search tracking (500ms after typing stops)
-                if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-                if (query.trim().length >= 2) {
-                  searchTimeoutRef.current = setTimeout(() => {
-                    trackSearch({ search_term: query.trim(), results_count: filteredEvents.length });
-                  }, 500);
-                }
-              }}
-            />
-            <svg xmlns="http://www.w3.org/2000/svg" className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-        </div>
+      {isMobile ? (
+        <div className="sticky top-0 z-50 shadow-md">
+          <header className="bg-berkeley-blue text-white">
+            <div className="container mx-auto px-4 py-4 flex flex-col justify-between items-center gap-4">
+              <div className="flex flex-col items-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-berkeley-gold text-2xl font-bold">Cal</span>
+                  <span className="text-2xl font-light tracking-wide">Events</span>
+                </div>
+                {lastUpdated && (
+                  <span className="text-[10px] text-berkeley-gold/70 uppercase tracking-tighter -mt-1 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                    Last Synced: {formatPacificDateTime(lastUpdated)}
+                  </span>
+                )}
+              </div>
 
-        {/* Filters Bar */}
-        <div className="bg-berkeley-medblue text-white text-xs overflow-x-auto border-t border-white/10">
-          <div className="container mx-auto px-4 py-2 flex items-center gap-4 whitespace-nowrap">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-berkeley-gold uppercase text-[10px]">Time</span>
-              {DateRanges.map(range => (
-                <button
-                  key={range.value}
-                  onClick={() => {
-                    setFilters(prev => ({ ...prev, dateRange: range.value as any }));
-                    trackDateFilter(range.value);
-                  }}
-                  className={`px-3 py-1 rounded-full transition ${filters.dateRange === range.value ? 'bg-white text-berkeley-blue font-bold shadow-inner' : 'hover:bg-white/20'}`}
-                >
-                  {range.label}
-                </button>
-              ))}
+              <div className="w-full relative">
+                <input
+                  type="text"
+                  placeholder="Search events, speakers, topics, or venues…"
+                  className="w-full px-4 py-2 rounded-full text-gray-900 focus:outline-none focus:ring-2 focus:ring-berkeley-gold text-sm"
+                  value={filters.searchQuery}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                />
+                <svg xmlns="http://www.w3.org/2000/svg" className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
             </div>
-            <div className="w-px h-4 bg-white/30 mx-1"></div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-berkeley-gold uppercase text-[10px]">Topic</span>
-              {Categories.map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => {
-                    setFilters(prev => ({ ...prev, category: cat }));
-                    trackCategoryFilter(cat);
-                  }}
-                  className={`px-3 py-1 rounded-full transition ${filters.category === cat ? 'bg-white text-berkeley-blue font-bold shadow-inner' : 'hover:bg-white/20'}`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-            <div className="w-px h-4 bg-white/30 mx-1"></div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-berkeley-gold uppercase text-[10px]">Source</span>
-              <SourceDropdown
-                value={filters.source}
-                options={sourceOptions}
-                onChange={(next) => {
-                  setFilters(prev => ({ ...prev, source: next }));
-                  trackFilter({ filter_type: 'source', filter_value: next });
-                }}
-              />
-            </div>
-          </div>
+          </header>
+          <FiltersBar
+            filters={filters}
+            sourceOptions={sourceOptions}
+            onDateChange={handleDateRangeChange}
+            onCategoryChange={handleCategoryChange}
+            onSourceChange={handleSourceChange}
+          />
         </div>
-      </header>
+      ) : (
+        <>
+          <DesktopHero
+            lastUpdated={lastUpdated}
+            totalEvents={allEvents.length}
+            sourceCount={sourceCount}
+            loading={loading}
+            searchQuery={filters.searchQuery}
+            onSearchChange={handleSearchChange}
+            onPresetSelect={handleQuickPreset}
+          />
+          <div className="sticky top-0 z-50 shadow-md">
+            <FiltersBar
+              filters={filters}
+              sourceOptions={sourceOptions}
+              onDateChange={handleDateRangeChange}
+              onCategoryChange={handleCategoryChange}
+              onSourceChange={handleSourceChange}
+            />
+          </div>
+        </>
+      )}
 
       {statusBanner && (
         <div className={statusBanner.tone === 'warning' ? 'bg-yellow-50 border-b border-yellow-200 text-yellow-900 text-xs' : 'bg-blue-50 border-b border-blue-200 text-blue-900 text-xs'}>
