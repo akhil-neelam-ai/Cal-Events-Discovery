@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const eventsPath = path.join(rootDir, 'public', 'events.json');
 const statusPath = path.join(rootDir, 'public', 'status.json');
+const searchIndexPath = path.join(rootDir, 'public', 'search-index.json');
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -22,6 +23,7 @@ function isUpcoming(date, today) {
 
 const published = readJson(eventsPath);
 const status = readJson(statusPath);
+const searchIndex = readJson(searchIndexPath);
 
 test('upcoming filtering uses date strings, not UTC parsing', () => {
   const today = '2026-04-18';
@@ -79,5 +81,31 @@ test('status report matches the published artifact', () => {
     assert.ok(Number.isInteger(source.count) && source.count >= 0);
     assert.ok(Number.isInteger(source.duration_ms) && source.duration_ms >= 0);
     assert.equal(typeof source.fetched_at, 'string');
+  }
+});
+
+test('search index aligns with published events', () => {
+  assert.ok(Array.isArray(searchIndex.ids), 'search index ids must be an array');
+  assert.equal(searchIndex.eventCount, published.events.length, 'eventCount should match published events');
+  assert.equal(searchIndex.ids.length, published.events.length, 'ids length should match published events');
+  assert.ok(typeof searchIndex.buildAt === 'string', 'buildAt should be present');
+
+  const publishedIds = published.events.map(event => event.id);
+  assert.deepEqual(searchIndex.ids, publishedIds, 'search index ids should preserve published event ordering');
+
+  for (const field of ['t', 'g', 'o', 'd']) {
+    assert.ok(searchIndex[field] && typeof searchIndex[field] === 'object', `${field} index must be an object`);
+
+    for (const [token, positions] of Object.entries(searchIndex[field])) {
+      assert.ok(Array.isArray(positions), `${field}.${token} must be an array`);
+      let previous = -1;
+
+      for (const position of positions) {
+        assert.ok(Number.isInteger(position), `${field}.${token} positions must be integers`);
+        assert.ok(position >= 0 && position < searchIndex.ids.length, `${field}.${token} position out of range`);
+        assert.ok(position > previous, `${field}.${token} positions must be sorted and unique`);
+        previous = position;
+      }
+    }
   }
 });
