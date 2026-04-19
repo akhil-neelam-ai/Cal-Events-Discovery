@@ -38,6 +38,212 @@ const SOURCE_URLS: Record<string, string> = {
   berkeley_law: 'https://www.law.berkeley.edu/events/',
 };
 
+// Source dropdown used in the header filters bar. Replaces the old chip row
+// now that we have ~10 sources that were wrapping awkwardly.
+interface SourceOption {
+  value: string;
+  label: string;
+  count: number;
+}
+
+function SourceDropdown({
+  options,
+  value,
+  onChange,
+}: {
+  options: SourceOption[];
+  value: string;
+  onChange: (next: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [focusIndex, setFocusIndex] = useState<number>(-1);
+  const [panelPos, setPanelPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  const selected = options.find(o => o.value === value) ?? options[0];
+
+  // Close on outside click (panel is portal-free but position-fixed, so check both refs)
+  useEffect(() => {
+    if (!open) return;
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      const insideTrigger = containerRef.current?.contains(target);
+      const insidePanel = panelRef.current?.contains(target);
+      if (!insideTrigger && !insidePanel) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [open]);
+
+  // Position the fixed panel under the trigger. Recompute on open, resize, scroll.
+  useEffect(() => {
+    if (!open) {
+      setPanelPos(null);
+      return;
+    }
+    const update = () => {
+      const rect = triggerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const minWidth = 220;
+      const width = Math.max(rect.width, minWidth);
+      // Keep the panel on-screen horizontally
+      const maxLeft = window.innerWidth - width - 8;
+      const left = Math.max(8, Math.min(rect.left, maxLeft));
+      setPanelPos({ top: rect.bottom + 6, left, width });
+    };
+    update();
+    window.addEventListener('resize', update);
+    window.addEventListener('scroll', update, true);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.removeEventListener('scroll', update, true);
+    };
+  }, [open]);
+
+  // Close on Escape regardless of focus target within the dropdown
+  useEffect(() => {
+    if (!open) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [open]);
+
+  // When opening, focus the currently-selected option
+  useEffect(() => {
+    if (open) {
+      const current = options.findIndex(o => o.value === value);
+      const idx = current >= 0 ? current : 0;
+      setFocusIndex(idx);
+      // defer so refs exist after render
+      requestAnimationFrame(() => {
+        itemRefs.current[idx]?.focus();
+      });
+    } else {
+      setFocusIndex(-1);
+    }
+  }, [open, options, value]);
+
+  const handleTriggerKey = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      setOpen(true);
+    }
+  };
+
+  const handleItemKey = (e: React.KeyboardEvent<HTMLButtonElement>, idx: number) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = (idx + 1) % options.length;
+      setFocusIndex(next);
+      itemRefs.current[next]?.focus();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = (idx - 1 + options.length) % options.length;
+      setFocusIndex(prev);
+      itemRefs.current[prev]?.focus();
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      setFocusIndex(0);
+      itemRefs.current[0]?.focus();
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      const last = options.length - 1;
+      setFocusIndex(last);
+      itemRefs.current[last]?.focus();
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      pick(options[idx].value);
+    } else if (e.key === 'Tab') {
+      setOpen(false);
+    }
+  };
+
+  const pick = (next: string) => {
+    onChange(next);
+    setOpen(false);
+    triggerRef.current?.focus();
+  };
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen(o => !o)}
+        onKeyDown={handleTriggerKey}
+        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition text-white"
+      >
+        <span className="font-medium">
+          {selected.label} <span className="opacity-70">({selected.count})</span>
+        </span>
+        <svg
+          className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {open && panelPos && (
+        <div
+          ref={panelRef}
+          role="listbox"
+          aria-label="Filter by source"
+          style={{
+            position: 'fixed',
+            top: panelPos.top,
+            left: panelPos.left,
+            width: panelPos.width,
+          }}
+          className="max-h-[60vh] overflow-y-auto bg-white text-gray-800 rounded-lg shadow-xl border border-gray-200 z-[70] py-1"
+        >
+          {options.map((opt, idx) => {
+            const isSelected = opt.value === value;
+            return (
+              <button
+                key={opt.value}
+                ref={el => { itemRefs.current[idx] = el; }}
+                type="button"
+                role="option"
+                aria-selected={isSelected}
+                onClick={() => pick(opt.value)}
+                onKeyDown={e => handleItemKey(e, idx)}
+                onMouseEnter={() => setFocusIndex(idx)}
+                className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between gap-3 transition ${
+                  isSelected
+                    ? 'bg-berkeley-blue text-white'
+                    : focusIndex === idx
+                      ? 'bg-berkeley-gold/20 text-berkeley-blue'
+                      : 'hover:bg-berkeley-gold/10 text-gray-800'
+                }`}
+              >
+                <span className="font-medium truncate">{opt.label}</span>
+                <span className={`flex-shrink-0 tabular-nums ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>
+                  {opt.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SourceBadge({ source }: { source?: string }) {
   if (!source || !SOURCE_LABELS[source]) return null;
   const label = SOURCE_LABELS[source];
@@ -502,6 +708,29 @@ export default function App() {
       .catch(() => { /* status.json is best-effort */ });
   }, []);
 
+  // Per-source counts from the full event set, used to populate the Source dropdown.
+  // Preserves the original ALL_SOURCES ordering and filters to sources that have
+  // at least one event in the current dataset.
+  const sourceOptions = useMemo<SourceOption[]>(() => {
+    const counts = new Map<string, number>();
+    for (const ev of allEvents) {
+      if (!ev.source) continue;
+      counts.set(ev.source, (counts.get(ev.source) ?? 0) + 1);
+    }
+    const opts: SourceOption[] = [{ value: 'All', label: 'All', count: allEvents.length }];
+    for (const src of ALL_SOURCES) {
+      if (src === 'All') continue;
+      const count = counts.get(src) ?? 0;
+      if (count === 0) continue;
+      opts.push({
+        value: src,
+        label: SOURCE_LABELS[src] || src,
+        count,
+      });
+    }
+    return opts;
+  }, [allEvents]);
+
   // Instant Local Filtering with natural language search
   const filteredEvents = useMemo(() => {
     return allEvents.filter(event => {
@@ -630,18 +859,14 @@ export default function App() {
             <div className="w-px h-4 bg-white/30 mx-1"></div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-berkeley-gold uppercase text-[10px]">Source</span>
-              {ALL_SOURCES.filter(s => s === 'All' || allEvents.some(e => e.source === s)).map(src => (
-                <button
-                  key={src}
-                  onClick={() => {
-                    setFilters(prev => ({ ...prev, source: src }));
-                    trackFilter({ filter_type: 'source', filter_value: src });
-                  }}
-                  className={`px-3 py-1 rounded-full transition ${filters.source === src ? 'bg-white text-berkeley-blue font-bold shadow-inner' : 'hover:bg-white/20'}`}
-                >
-                  {src === 'All' ? 'All' : (SOURCE_LABELS[src] || src)}
-                </button>
-              ))}
+              <SourceDropdown
+                value={filters.source}
+                options={sourceOptions}
+                onChange={(next) => {
+                  setFilters(prev => ({ ...prev, source: next }));
+                  trackFilter({ filter_type: 'source', filter_value: next });
+                }}
+              />
             </div>
           </div>
         </div>
