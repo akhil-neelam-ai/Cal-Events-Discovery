@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "validate": "node --test scripts/tests/stability.test.mjs",
+    "test": "npm run validate",
     "update-events": "tsx scripts/updateEvents.ts"
   },
   "dependencies": {
