@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { fetchEventsFromGemini } from './services/geminiService';
-import { CalEvent, SearchFilters, LoadingState } from './types';
+import { CalEvent, IngestionStatus, SearchFilters, LoadingState } from './types';
 import {
   initGA,
   trackPageView,
@@ -281,11 +281,95 @@ function useIsMobile() {
   return isMobile;
 }
 
+const PACIFIC_TIME_ZONE = 'America/Los_Angeles';
+const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const PACIFIC_DATE_PARTS_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  timeZone: PACIFIC_TIME_ZONE,
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+const PACIFIC_SYNC_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  timeZone: PACIFIC_TIME_ZONE,
+  month: 'short',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+  timeZoneName: 'short',
+});
+
+function formatDateKeyInTimeZone(date: Date): string {
+  const parts = PACIFIC_DATE_PARTS_FORMATTER.formatToParts(date);
+
+  const year = parts.find(part => part.type === 'year')?.value;
+  const month = parts.find(part => part.type === 'month')?.value;
+  const day = parts.find(part => part.type === 'day')?.value;
+
+  if (!year || !month || !day) {
+    return '';
+  }
+
+  return `${year}-${month}-${day}`;
+}
+
+function getPacificDateKey(dateString: string): string {
+  if (DATE_ONLY_RE.test(dateString)) {
+    return dateString;
+  }
+
+  const parsed = new Date(dateString);
+  if (Number.isNaN(parsed.getTime())) {
+    return '';
+  }
+
+  return formatDateKeyInTimeZone(parsed);
+}
+
+function getCurrentPacificDateKey(now = new Date()): string {
+  return formatDateKeyInTimeZone(now);
+}
+
+function addDaysToDateKey(dateKey: string, days: number): string {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  if (!year || !month || !day) {
+    return dateKey;
+  }
+
+  const shifted = new Date(Date.UTC(year, month - 1, day));
+  shifted.setUTCDate(shifted.getUTCDate() + days);
+  return shifted.toISOString().slice(0, 10);
+}
+
+function formatPacificDateTime(timestamp: number): string {
+  return PACIFIC_SYNC_FORMATTER.format(new Date(timestamp));
+}
+
+function formatStatusSources(status: IngestionStatus): string {
+  const failed = status.sources.filter(source => !source.ok).map(source => SOURCE_LABELS[source.name] || source.name);
+  if (failed.length === 0) {
+    return '';
+  }
+
+  if (failed.length === 1) {
+    return failed[0];
+  }
+
+  if (failed.length === 2) {
+    return `${failed[0]} and ${failed[1]}`;
+  }
+
+  return `${failed.slice(0, 2).join(', ')} and ${failed.length - 2} more`;
+}
+
 // Format date from YYYY-MM-DD to "10th Feb"
 function formatEventDate(dateString: string): string {
-  const date = new Date(dateString + 'T00:00:00');
-  const day = date.getDate();
-  const month = date.toLocaleString('en-US', { month: 'short' });
+  const key = getPacificDateKey(dateString) || dateString.slice(0, 10);
+  const [, month, day] = key.split('-').map(Number);
+
+  if (!month || !day) {
+    return dateString;
+  }
 
   // Add ordinal suffix (st, nd, rd, th)
   const ordinal = (n: number) => {
@@ -298,7 +382,7 @@ function formatEventDate(dateString: string): string {
     }
   };
 
-  return `${day}${ordinal(day)} ${month}`;
+  return `${day}${ordinal(day)} ${MONTHS[month - 1]}`;
 }
 
 // Bottom Sheet Component (Mobile)
@@ -644,16 +728,11 @@ const DateRanges = [
   { label: 'This Week', value: 'week' },
 ];
 
-interface DegradedStatus {
-  degraded: boolean;
-  reason?: string;
-}
-
 export default function App() {
   const [allEvents, setAllEvents] = useState<CalEvent[]>([]);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [loading, setLoading] = useState<LoadingState>(LoadingState.IDLE);
-  const [degradedStatus, setDegradedStatus] = useState<DegradedStatus | null>(null);
+  const [statusReport, setStatusReport] = useState<IngestionStatus | null>(null);
   const [filters, setFilters] = useState<SearchFilters>({
     dateRange: 'upcoming',
     category: 'All',
@@ -680,10 +759,12 @@ export default function App() {
 
   const loadEvents = async () => {
     setLoading(LoadingState.LOADING);
+    setStatusReport(null);
     try {
       const data = await fetchEventsFromGemini();
       setAllEvents(data.events);
       setLastUpdated(data.lastUpdated);
+      setStatusReport(data.status || null);
       setLoading(LoadingState.SUCCESS);
     } catch (error) {
       console.error(error);
@@ -697,17 +778,6 @@ export default function App() {
     initGA();
     trackPageView({ page_path: '/', page_title: 'CalEvents - UC Berkeley Events' });
     loadEvents();
-
-    // Fetch the orchestrator's status report so we can surface a banner when
-    // a tier-1 source flaked and we're serving spliced last-good data.
-    fetch('/status.json', { cache: 'no-store' })
-      .then(r => (r.ok ? r.json() : null))
-      .then(data => {
-        if (data && data.degraded) {
-          setDegradedStatus({ degraded: true, reason: data.degraded_reason });
-        }
-      })
-      .catch(() => { /* status.json is best-effort */ });
   }, []);
 
   // Per-source counts from the full event set, used to populate the Source dropdown.
@@ -733,8 +803,42 @@ export default function App() {
     return opts;
   }, [allEvents]);
 
+  const statusBanner = useMemo(() => {
+    if (!statusReport) {
+      return null;
+    }
+
+    const failedSources = statusReport.sources.filter(source => !source.ok);
+    const failedLabel = formatStatusSources(statusReport);
+
+    if (statusReport.degraded || statusReport.fallback_used || statusReport.last_good_used > 0) {
+      return {
+        tone: 'warning' as const,
+        title: 'Showing partial data.',
+        message: failedLabel
+          ? `The latest update had source issues (${failedLabel}) and fell back to cached data for part of the feed.`
+          : 'The latest update used cached data for part of the feed.',
+      };
+    }
+
+    if (failedSources.length > 0) {
+      return {
+        tone: 'info' as const,
+        title: 'Some sources were unavailable.',
+        message: failedLabel
+          ? `The current dataset loaded successfully, but ${failedLabel} did not return data in the latest run.`
+          : 'The current dataset loaded successfully, but one or more sources did not return data in the latest run.',
+      };
+    }
+
+    return null;
+  }, [statusReport]);
+
   // Instant Local Filtering with natural language search
   const filteredEvents = useMemo(() => {
+    const todayKey = getCurrentPacificDateKey();
+    const nextWeekKey = addDaysToDateKey(todayKey, 7);
+
     return allEvents.filter(event => {
       // Category filter
       const matchesCategory = filters.category === 'All' ||
@@ -742,19 +846,18 @@ export default function App() {
         event.tags?.includes(filters.category);
 
       // Date filter
-      const eventDate = new Date(event.date);
-      const today = new Date();
-      today.setHours(0,0,0,0);
+      const eventDateKey = getPacificDateKey(event.date);
+      if (!eventDateKey) {
+        return false;
+      }
 
       let matchesDate = true;
       if (filters.dateRange === 'today') {
-        matchesDate = eventDate.toDateString() === today.toDateString();
+        matchesDate = eventDateKey === todayKey;
       } else if (filters.dateRange === 'week') {
-        const nextWeek = new Date();
-        nextWeek.setDate(today.getDate() + 7);
-        matchesDate = eventDate >= today && eventDate <= nextWeek;
+        matchesDate = eventDateKey >= todayKey && eventDateKey <= nextWeekKey;
       } else if (filters.dateRange === 'upcoming') {
-        matchesDate = eventDate >= today;
+        matchesDate = eventDateKey >= todayKey;
       }
 
       // Search filter with synonym expansion
@@ -775,9 +878,11 @@ export default function App() {
     })
     .sort((a, b) => {
       // Sort by date ascending (earliest first)
-      const dateA = new Date(a.date).getTime();
-      const dateB = new Date(b.date).getTime();
-      return dateA - dateB;
+      const dateA = getPacificDateKey(a.date);
+      const dateB = getPacificDateKey(b.date);
+      const dateCompare = dateA.localeCompare(dateB);
+      if (dateCompare !== 0) return dateCompare;
+      return (a.time || '').localeCompare(b.time || '') || a.title.localeCompare(b.title);
     });
   }, [allEvents, filters]);
 
@@ -795,7 +900,7 @@ export default function App() {
             {lastUpdated && (
               <span className="text-[10px] text-berkeley-gold/70 uppercase tracking-tighter -mt-1 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                Last Synced: {new Date(lastUpdated).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                Last Synced: {formatPacificDateTime(lastUpdated)}
               </span>
             )}
           </div>
@@ -874,14 +979,14 @@ export default function App() {
         </div>
       </header>
 
-      {degradedStatus?.degraded && (
-        <div className="bg-yellow-50 border-b border-yellow-200 text-yellow-900 text-xs">
+      {statusBanner && (
+        <div className={statusBanner.tone === 'warning' ? 'bg-yellow-50 border-b border-yellow-200 text-yellow-900 text-xs' : 'bg-blue-50 border-b border-blue-200 text-blue-900 text-xs'}>
           <div className="container mx-auto px-4 py-2 flex items-start gap-2">
-            <svg className="w-4 h-4 flex-shrink-0 mt-px text-yellow-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className={statusBanner.tone === 'warning' ? 'w-4 h-4 flex-shrink-0 mt-px text-yellow-700' : 'w-4 h-4 flex-shrink-0 mt-px text-blue-700'} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M5.07 19h13.86a2 2 0 001.74-2.99l-6.93-12a2 2 0 00-3.48 0l-6.93 12A2 2 0 005.07 19z" />
             </svg>
             <span>
-              <strong>Showing partial data.</strong> One of our event sources is having trouble{degradedStatus.reason ? ` (${degradedStatus.reason})` : ''}. We've filled in with the most recent cached events.
+              <strong>{statusBanner.title}</strong> {statusBanner.message}
             </span>
           </div>
         </div>

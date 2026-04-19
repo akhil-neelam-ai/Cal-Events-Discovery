@@ -21,6 +21,27 @@ export interface SearchResponse {
   sources: GroundingSource[];
 }
 
+export interface SourceStatus {
+  name: string;
+  ok: boolean;
+  count: number;
+  duration_ms: number;
+  fetched_at: string;
+  error?: string;
+}
+
+export interface IngestionStatus {
+  generated_at: string;
+  total_events: number;
+  duplicates_removed: number;
+  past_events_filtered: number;
+  invalid_events_filtered: number;
+  sources: SourceStatus[];
+  fallback_used: boolean;
+  degraded: boolean;
+  last_good_used: number;
+}
+
 export interface SearchFilters {
   dateRange: 'upcoming' | 'today' | 'week' | 'month' | 'weekend';
   category: string;
