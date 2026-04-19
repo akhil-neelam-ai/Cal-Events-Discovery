@@ -1740,13 +1740,13 @@ export default function App() {
                                 handleEventClick(event);
                               }
                             }}
-                            className={`bg-white rounded-2xl shadow-sm hover:shadow-xl hover:scale-[1.015] active:scale-[0.99] transition-all duration-300 ease-out border border-gray-100 border-l-4 ${categoryStyle.border} overflow-hidden flex flex-col group cursor-pointer ${shouldAnimateCards ? 'animate-card-in opacity-0' : ''}`}
+                            className={`bg-white rounded-2xl shadow-sm hover:shadow-xl hover:scale-[1.015] active:scale-[0.99] transition-all duration-300 ease-out border border-gray-100 overflow-hidden flex flex-col group cursor-pointer ${shouldAnimateCards ? 'animate-card-in opacity-0' : ''}`}
                             style={shouldAnimateCards ? { animationDelay: `${Math.min(idx * 50, 500)}ms`, animationFillMode: 'forwards' } : undefined}
                           >
                             <div className="p-5 flex-grow">
                               <div className="mb-3">
-                                <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${categoryStyle.badge}`}>
-                                  {categoryStyle.label}
+                                <span className="inline-block bg-berkeley-blue text-berkeley-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-widest">
+                                  {event.tags?.[0] || 'Event'}
                                 </span>
                               </div>
 
@@ -1754,8 +1754,8 @@ export default function App() {
 
                               <div className="space-y-2.5 text-xs text-gray-600 mb-4">
                                 <div className="flex items-center gap-2">
-                                  <div className={`rounded p-1.5 ${categoryStyle.accent}`}>
-                                    <svg className="h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <div className="p-1.5 bg-berkeley-gold/10 rounded">
+                                    <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                   </div>
@@ -1768,16 +1768,16 @@ export default function App() {
                                   <span className="font-medium">{event.time || '—'}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className={`rounded p-1.5 ${categoryStyle.accent}`}>
-                                    <svg className="h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <div className="p-1.5 bg-berkeley-gold/10 rounded">
+                                    <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     </svg>
                                   </div>
                                   <span className="truncate">{event.location}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className={`rounded p-1.5 ${categoryStyle.accent}`}>
-                                    <svg className="h-3.5 w-3.5 text-current" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <div className="p-1.5 bg-berkeley-gold/10 rounded">
+                                    <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                     </svg>
                                   </div>
