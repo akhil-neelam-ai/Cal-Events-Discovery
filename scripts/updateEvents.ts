@@ -23,12 +23,18 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 
-import type { CanonicalEvent, LegacyCalEvent, PublishedSource, SourceStatus, StatusReport } from './lib/schema.js';
+import type {
+  CanonicalEvent,
+  LegacyCalEvent,
+  PublishedSource,
+  SourceName,
+  SourceStatus,
+  StatusReport,
+} from './lib/schema.js';
 import { dedupeEvents } from './lib/dedupe.js';
 import { projectToLegacy } from './lib/normalize.js';
 import { fetchLiveWhale } from './sources/livewhale.js';
 
-/** Below this many LiveWhale events we treat the run as degraded and fall back to last-good. */
 const LIVEWHALE_HEALTHY_THRESHOLD = 100;
 import { fetchCallink } from './sources/callink.js';
 import { fetchCalPerformances } from './sources/cal_performances.js';
@@ -52,6 +58,26 @@ interface AdapterRun {
   filteredPast: number;
   invalid: number;
 }
+
+interface RecoveryState {
+  fallbackSources: Set<SourceName>;
+  degradedSources: Set<SourceName>;
+  degradedReasons: Set<string>;
+  lastGoodUsed: number;
+}
+
+const FALLBACK_POLICIES: Partial<Record<SourceName, { allowLastGood: boolean; minHealthyCount?: number }>> = {
+  livewhale: { allowLastGood: true, minHealthyCount: LIVEWHALE_HEALTHY_THRESHOLD },
+  callink: { allowLastGood: true },
+  cal_performances: { allowLastGood: true },
+  calbears: { allowLastGood: true },
+  bampfa: { allowLastGood: true },
+  haas: { allowLastGood: true },
+  berkeley_law: { allowLastGood: true },
+  simons: { allowLastGood: true },
+  ehub: { allowLastGood: true },
+  gemini: { allowLastGood: false },
+};
 
 async function runAdapter<T extends {
   events: CanonicalEvent[];
@@ -119,18 +145,65 @@ function todayPT(): string {
 
 /**
  * Pull last-good events for a given source from the previously-published
- * events.json, filtered to today-or-future PT dates. Used when a tier-1
- * source flakes (returns 0 or below the healthy threshold) so we don't
- * silently ship a partial corpus.
+ * events.json, filtered to today-or-future PT dates.
  */
-function loadLastGoodForSource(source: string): LegacyCalEvent[] {
+function loadLastGoodForSource(existing: LegacyCalEvent[], source: SourceName): LegacyCalEvent[] {
   const today = todayPT();
-  const { events } = loadExistingEvents();
-  return events.filter(e => e.source === source && e.date && e.date >= today);
+  return existing.filter(e => e.source === source && e.date && e.date >= today);
+}
+
+function appendLastGoodEvents(
+  legacy: LegacyCalEvent[],
+  existing: LegacyCalEvent[],
+  source: SourceName
+): number {
+  const lastGood = loadLastGoodForSource(existing, source);
+  if (lastGood.length === 0) return 0;
+  const seenIds = new Set(legacy.map(e => e.id));
+  const merged = lastGood.filter(e => !seenIds.has(e.id));
+  if (merged.length === 0) return 0;
+  legacy.push(...merged);
+  legacy.sort((a, b) => a.date.localeCompare(b.date));
+  return merged.length;
+}
+
+function markRecovery(
+  run: AdapterRun,
+  legacy: LegacyCalEvent[],
+  existing: LegacyCalEvent[],
+  recovery: RecoveryState
+): void {
+  const policy = FALLBACK_POLICIES[run.status.name];
+  const belowHealthyThreshold =
+    typeof policy?.minHealthyCount === 'number' && run.status.ok && run.status.count < policy.minHealthyCount;
+  const degraded = !run.status.ok || belowHealthyThreshold;
+  if (!degraded) return;
+
+  run.status.degraded = true;
+
+  const reason = !run.status.ok
+    ? `${run.status.name} failed: ${run.status.error ?? 'unknown error'}`
+    : `${run.status.name} returned ${run.status.count} events (below healthy threshold ${policy?.minHealthyCount})`;
+  run.status.degraded_reason = reason;
+  recovery.degradedSources.add(run.status.name);
+  recovery.degradedReasons.add(reason);
+
+  if (!policy?.allowLastGood) return;
+  const restored = appendLastGoodEvents(legacy, existing, run.status.name);
+  if (restored > 0) {
+    run.status.fallback_used = true;
+    run.status.fallback_count = restored;
+    recovery.fallbackSources.add(run.status.name);
+    recovery.lastGoodUsed += restored;
+    console.warn(
+      `[orchestrator] Fallback restored ${restored} last-good ${run.status.name} events.`
+    );
+  }
 }
 
 async function main(): Promise<void> {
   const apiKey = process.env.API_KEY;
+  const existing = loadExistingEvents();
 
   // All non-Gemini adapters run regardless. Gemini only if we have a key.
   const adapterPromises: Array<Promise<AdapterRun>> = [
@@ -166,41 +239,15 @@ async function main(): Promise<void> {
   // Project to legacy shape
   const legacy: LegacyCalEvent[] = deduped.map(projectToLegacy);
 
-  // Tier-1 health check: LiveWhale is the spine of the corpus. If it failed
-  // outright OR returned an implausibly low count (the 200-OK-empty-feed
-  // flake), splice in the last-good LiveWhale slice from events.json so a
-  // single upstream wobble doesn't drop ~75% of the catalog.
-  const livewhaleRun = runs.find(r => r.status.name === 'livewhale');
-  const livewhaleCount = livewhaleRun?.status.count ?? 0;
-  const livewhaleDegraded =
-    !livewhaleRun ||
-    !livewhaleRun.status.ok ||
-    livewhaleCount < LIVEWHALE_HEALTHY_THRESHOLD;
+  const recovery: RecoveryState = {
+    fallbackSources: new Set<SourceName>(),
+    degradedSources: new Set<SourceName>(),
+    degradedReasons: new Set<string>(),
+    lastGoodUsed: 0,
+  };
 
-  let degraded = false;
-  let degradedReason: string | undefined;
-  let lastGoodUsed = 0;
-
-  if (livewhaleDegraded) {
-    const lastGood = loadLastGoodForSource('livewhale');
-    if (lastGood.length > 0) {
-      const seenIds = new Set(legacy.map(e => e.id));
-      const merged = lastGood.filter(e => !seenIds.has(e.id));
-      legacy.push(...merged);
-      legacy.sort((a, b) => a.date.localeCompare(b.date));
-      lastGoodUsed = merged.length;
-      degraded = true;
-      degradedReason = livewhaleRun?.status.ok
-        ? `LiveWhale returned ${livewhaleCount} events (below healthy threshold ${LIVEWHALE_HEALTHY_THRESHOLD})`
-        : `LiveWhale failed: ${livewhaleRun?.status.error ?? 'unknown error'}`;
-      console.warn(
-        `[orchestrator] DEGRADED — ${degradedReason}. Spliced ${merged.length} last-good LiveWhale events.`
-      );
-    } else {
-      degraded = true;
-      degradedReason = 'LiveWhale unhealthy and no last-good cache available';
-      console.warn(`[orchestrator] DEGRADED — ${degradedReason}.`);
-    }
+  for (const run of runs) {
+    markRecovery(run, legacy, existing.events, recovery);
   }
 
   // Build the source list shown in the UI
@@ -222,14 +269,13 @@ async function main(): Promise<void> {
   const allFailed = runs.every(r => !r.status.ok);
   if (legacy.length === 0) {
     if (allFailed) {
-      const existing = loadExistingEvents();
       console.error('[orchestrator] every source failed and produced 0 events. Keeping existing events.json.');
-      writeStatus(runs, deduped.length, duplicatesRemoved, true, true, 'all sources failed', 0);
+      writeStatus(runs, existing.events.length, duplicatesRemoved, recovery, true, 'all sources failed');
       console.error(`[orchestrator] existing file preserved (${existing.events.length} events)`);
       process.exit(1);
     } else {
       console.error('[orchestrator] sources ran but produced 0 events. Refusing to overwrite events.json.');
-      writeStatus(runs, 0, duplicatesRemoved, true, true, 'sources produced 0 events', 0);
+      writeStatus(runs, existing.events.length, duplicatesRemoved, recovery, true, 'sources produced 0 events');
       process.exit(1);
     }
   }
@@ -242,18 +288,22 @@ async function main(): Promise<void> {
   fs.writeFileSync(eventsOutPath, JSON.stringify(outputData, null, 2));
   console.log(`[orchestrator] wrote ${legacy.length} events → ${eventsOutPath}`);
 
-  writeStatus(runs, legacy.length, duplicatesRemoved, false, degraded, degradedReason, lastGoodUsed);
+  writeStatus(runs, legacy.length, duplicatesRemoved, recovery);
 }
 
 function writeStatus(
   runs: AdapterRun[],
   totalEvents: number,
   duplicatesRemoved: number,
-  fallback_used: boolean,
-  degraded: boolean,
-  degraded_reason: string | undefined,
-  last_good_used: number
+  recovery: RecoveryState,
+  publishFallbackUsed = false,
+  publishFallbackReason?: string
 ): void {
+  const fallbackSources = Array.from(recovery.fallbackSources);
+  const degradedSources = Array.from(recovery.degradedSources);
+  const degradedReasons = Array.from(recovery.degradedReasons);
+  if (publishFallbackReason) degradedReasons.push(publishFallbackReason);
+
   const report: StatusReport = {
     generated_at: new Date().toISOString(),
     total_events: totalEvents,
@@ -261,10 +311,12 @@ function writeStatus(
     past_events_filtered: runs.reduce((s, r) => s + r.filteredPast, 0),
     invalid_events_filtered: runs.reduce((s, r) => s + r.invalid, 0),
     sources: runs.map(r => r.status),
-    fallback_used,
-    degraded,
-    degraded_reason,
-    last_good_used,
+    fallback_used: publishFallbackUsed || fallbackSources.length > 0,
+    degraded: degradedSources.length > 0 || publishFallbackUsed || degradedReasons.length > 0,
+    degraded_reason: degradedReasons.length > 0 ? Array.from(new Set(degradedReasons)).join('; ') : undefined,
+    last_good_used: recovery.lastGoodUsed,
+    fallback_sources: fallbackSources,
+    degraded_sources: degradedSources,
   };
   fs.writeFileSync(statusOutPath, JSON.stringify(report, null, 2));
   console.log(`[orchestrator] wrote status report → ${statusOutPath}`);

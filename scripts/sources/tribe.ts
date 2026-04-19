@@ -20,6 +20,7 @@
 
 import type { CanonicalEvent, SourceName } from '../lib/schema.js';
 import { CanonicalEventSchema } from '../lib/schema.js';
+import { deriveFrontendTags } from '../lib/normalize.js';
 
 const FETCH_TIMEOUT_MS = 30_000;
 const MAX_FETCH_ATTEMPTS = 3;
@@ -267,6 +268,13 @@ export async function fetchTribe(config: TribeSourceConfig): Promise<FetchResult
         const categoryNames = (raw.categories ?? [])
           .map(c => (c.name ? stripHtml(c.name) : ''))
           .filter(Boolean);
+        const organizerName = organizer?.organizer ? stripHtml(organizer.organizer) : config.defaultOrganizer;
+        const tags = deriveFrontendTags({
+          title,
+          description,
+          categories: categoryNames,
+          organizer: organizerName,
+        });
 
         const candidate: CanonicalEvent = {
           source_name: config.sourceName,
@@ -283,16 +291,14 @@ export async function fetchTribe(config: TribeSourceConfig): Promise<FetchResult
           building: '',
           address: venueAddress || config.defaultAddress,
           modality: raw.is_virtual ? 'virtual' : 'in_person',
-          organizer: organizer?.organizer
-            ? stripHtml(organizer.organizer)
-            : config.defaultOrganizer,
+          organizer: organizerName,
           organizer_unit: config.defaultOrganizerUnit,
           audience: '',
           cost: raw.cost ? stripHtml(raw.cost) : '',
           registration_url: undefined,
           canonical_url: raw.url,
           categories: categoryNames.length ? categoryNames : [config.defaultCategory],
-          tags: [config.defaultCategory],
+          tags,
           last_seen_at: fetched_at,
           confidence: 0.95,
           quality_flags: [],

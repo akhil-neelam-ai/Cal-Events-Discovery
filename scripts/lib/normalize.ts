@@ -17,21 +17,64 @@ const FRONTEND_CATEGORIES = [
 ] as const;
 export type FrontendCategory = (typeof FRONTEND_CATEGORIES)[number];
 
-const KEYWORD_TO_CATEGORY: Array<[RegExp, FrontendCategory]> = [
-  [/\b(seminar|colloquium|lecture|symposium|talk|panel|guest speaker|defense|dissertation)\b/i, 'Academic'],
-  [/\b(concert|recital|performance|exhibit|gallery|film|screening|theatre|theater|dance|opera|bampfa|cal performances)\b/i, 'Arts'],
-  [/\b(basketball|football|baseball|softball|soccer|volleyball|swim|track|tennis|gymnastics|water polo|rugby|lacrosse|game vs|cal bears|intramural|rec sports)\b/i, 'Sports'],
-  [/\b(ai|machine learning|data science|computer science|engineering|robotics|biotech|genomics|physics|chemistry|biology|stem|hackathon|cs |eecs)\b/i, 'Science & Tech'],
-  [/\b(startup|entrepreneur|founder|venture|pitch|demo day|skydeck|berkeley haas|e-?hub|product management|innovation)\b/i, 'Entrepreneurship'],
-  [/\b(club|social|mixer|orientation|workshop|career|networking|student org|grad student|undergrad)\b/i, 'Student Life'],
+const CATEGORY_PATTERNS: Array<[FrontendCategory, RegExp]> = [
+  [
+    'Academic',
+    /\b(seminar|colloquium|lecture|symposium|talk|panel|guest speaker|defense|dissertation|research|department|school|college|institute|center|library|office|program|advising|office hours|lab|laboratory)\b/i,
+  ],
+  [
+    'Arts',
+    /\b(concert|recital|performance|exhibit|exhibition|gallery|film|screening|theatre|theater|dance|opera|museum|bampfa|cal performances)\b/i,
+  ],
+  [
+    'Sports',
+    /\b(basketball|football|baseball|softball|soccer|volleyball|swim|track|tennis|gymnastics|water polo|rugby|lacrosse|game vs|cal bears|intramural|rec sports)\b/i,
+  ],
+  [
+    'Science & Tech',
+    /\b(ai|machine learning|data science|computer science|engineering|robotics|biotech|genomics|physics|chemistry|biology|stem|hackathon|cs\b|eecs|computing)\b/i,
+  ],
+  [
+    'Entrepreneurship',
+    /\b(startup|entrepreneur|founder|venture|pitch|demo day|skydeck|berkeley haas|e-?hub|product management|innovation)\b/i,
+  ],
+  [
+    'Student Life',
+    /\b(club|social|mixer|orientation|workshop|career|networking|student org|grad student|undergrad|outing|trip|tour|reception|meetup|tabling|info session|open house|coffee chat|lunch|dinner|brunch|retreat)\b/i,
+  ],
 ];
 
-export function inferCategory(event: { title: string; description: string; categories: string[]; organizer: string }): FrontendCategory {
-  const haystack = [event.title, event.description, ...event.categories, event.organizer].join(' ');
-  for (const [pattern, category] of KEYWORD_TO_CATEGORY) {
-    if (pattern.test(haystack)) return category;
+function classifyText(text: string): FrontendCategory | undefined {
+  const normalized = text.trim().toLowerCase();
+  if (normalized === 'academic') return 'Academic';
+  if (normalized === 'arts' || normalized === 'art') return 'Arts';
+  if (normalized === 'sports' || normalized === 'sport') return 'Sports';
+  if (normalized === 'science & tech' || normalized === 'science and tech' || normalized === 'science' || normalized === 'tech') {
+    return 'Science & Tech';
   }
-  return 'Academic';
+  if (normalized === 'student life' || normalized === 'student') return 'Student Life';
+  if (normalized === 'entrepreneurship' || normalized === 'entrepreneur') return 'Entrepreneurship';
+  for (const [category, pattern] of CATEGORY_PATTERNS) {
+    if (pattern.test(text)) return category;
+  }
+  return undefined;
+}
+
+function dedupeOrderedTags(tags: FrontendCategory[]): FrontendCategory[] {
+  return FRONTEND_CATEGORIES.filter(category => tags.includes(category));
+}
+
+export function deriveFrontendTags(event: { title: string; description: string; categories: string[]; organizer: string }): FrontendCategory[] {
+  const matches = new Set<FrontendCategory>();
+  for (const text of [event.title, event.description, event.organizer, ...event.categories]) {
+    const category = classifyText(text);
+    if (category) matches.add(category);
+  }
+  return dedupeOrderedTags(Array.from(matches));
+}
+
+export function inferCategory(event: { title: string; description: string; categories: string[]; organizer: string }): FrontendCategory {
+  return deriveFrontendTags(event)[0] ?? 'Student Life';
 }
 
 export function cleanTitle(raw: string): string {
@@ -75,7 +118,7 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
   const date = isoDateInPT(event.start_at);
   const time = displayTime(event.start_at, event.all_day);
   const location = [event.venue, event.building].filter(Boolean).join(' — ') || event.address || 'Berkeley, CA';
-  const tags = event.tags.length > 0 ? event.tags : [inferCategory(event)];
+  const tags = event.tags.length > 0 ? dedupeOrderedTags(event.tags as FrontendCategory[]) : deriveFrontendTags(event);
   const id = `${event.source_name}_${event.source_id}`;
   return {
     id,
@@ -85,7 +128,7 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
     time,
     location,
     description: event.description || event.title,
-    tags,
+    tags: tags.length > 0 ? tags : [inferCategory(event)],
     url: event.canonical_url || event.source_url,
     source: event.source_name,
   };

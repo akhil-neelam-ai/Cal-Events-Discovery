@@ -11,6 +11,7 @@
 import ical, { type VEvent } from 'node-ical';
 import type { CanonicalEvent } from '../lib/schema.js';
 import { CanonicalEventSchema } from '../lib/schema.js';
+import { deriveFrontendTags } from '../lib/normalize.js';
 
 const FEED_URL = 'https://events.berkeley.edu/live/ical/events';
 const FETCH_TIMEOUT_MS = 30_000;
@@ -129,9 +130,17 @@ function prettifySlug(slug: string): string {
   return slug.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
+function isAcronymLikeSlug(slug: string): boolean {
+  const compact = slug.replace(/[^a-zA-Z]/g, '');
+  return compact.length > 0 && compact.length <= 4;
+}
+
 function unitFromSlug(slug: string): string {
   if (!slug) return '';
-  return ORG_UNIT_MAP[slug.toLowerCase()] || prettifySlug(slug);
+  const mapped = ORG_UNIT_MAP[slug.toLowerCase()];
+  if (mapped) return mapped;
+  if (isAcronymLikeSlug(slug)) return 'UC Berkeley';
+  return prettifySlug(slug);
 }
 
 /**
@@ -373,7 +382,12 @@ export async function fetchLiveWhale(): Promise<FetchResult> {
         registration_url: undefined,
         canonical_url: url,
         categories,
-        tags: [],
+        tags: deriveFrontendTags({
+          title: summary,
+          description,
+          categories,
+          organizer: unit,
+        }),
         last_seen_at: fetched_at,
         confidence: 1,
         quality_flags: !slug

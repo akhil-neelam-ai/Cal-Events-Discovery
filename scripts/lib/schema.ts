@@ -88,6 +88,10 @@ export interface SourceStatus {
   duration_ms: number;
   error?: string;
   fetched_at: string;
+  degraded?: boolean;
+  fallback_used?: boolean;
+  fallback_count?: number;
+  degraded_reason?: string;
 }
 
 export interface StatusReport {
@@ -101,4 +105,6 @@ export interface StatusReport {
   degraded: boolean;
   degraded_reason?: string;
   last_good_used?: number;
+  fallback_sources?: SourceName[];
+  degraded_sources?: SourceName[];
 }
