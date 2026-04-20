@@ -1,4 +1,4 @@
-export const FRONTEND_CATEGORIES = [
+export const APP_CATEGORIES = [
   'Academic',
   'Arts',
   'Sports',
@@ -7,6 +7,8 @@ export const FRONTEND_CATEGORIES = [
   'Entrepreneurship',
 ] as const;
 
-export type FrontendCategory = (typeof FRONTEND_CATEGORIES)[number];
+export const FRONTEND_CATEGORIES = APP_CATEGORIES;
 
-export const CATEGORY_FILTER_OPTIONS = ['All', ...FRONTEND_CATEGORIES] as const;
+export type FrontendCategory = (typeof APP_CATEGORIES)[number];
+
+export const CATEGORY_FILTER_OPTIONS = ['All', ...APP_CATEGORIES] as const;
