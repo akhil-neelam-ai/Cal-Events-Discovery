@@ -1155,6 +1155,13 @@ function SearchSuggestionsDropdown({
   );
 }
 
+const CAL_PHRASES: Array<{ plain: string; gold: string }> = [
+  { plain: 'Go Bears.', gold: "What's the move?" },
+  { plain: 'Oski says', gold: "something's happening." },
+  { plain: 'Bear territory.', gold: 'What are you into?' },
+  { plain: "It's a good day", gold: 'to be a Bear.' },
+];
+
 function DesktopHero({
   lastUpdated,
   totalEvents,
@@ -1174,6 +1181,8 @@ function DesktopHero({
   onPresetSelect: (preset: QuickFilterPreset) => void;
   inputId: string;
 }) {
+  const [phraseIdx] = useState(() => Math.floor(Math.random() * CAL_PHRASES.length));
+  const phrase = CAL_PHRASES[phraseIdx];
   const [searchFocused, setSearchFocused] = useState(false);
   const [recents, setRecents] = useState<string[]>([]);
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1234,8 +1243,8 @@ function DesktopHero({
 
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-4xl lg:text-[3.35rem] font-semibold leading-tight font-serif" style={{ textWrap: 'balance', letterSpacing: '-0.02em' }}>
-            {getGreeting()},&nbsp;
-            <span className="text-berkeley-gold italic font-medium" style={{ textShadow: '0 0 40px rgba(253,181,21,0.35)' }}>what&apos;s the move?</span>
+            {phrase.plain}&nbsp;
+            <span className="text-berkeley-gold italic font-medium" style={{ textShadow: '0 0 40px rgba(253,181,21,0.35)' }}>{phrase.gold}</span>
           </h1>
           <p className="mt-3 text-[15px] leading-7 text-white/72">
             {summaryCopy}
