@@ -1,4 +1,5 @@
 import { IngestionStatus, SearchResponse } from "../types";
+import { resolvePublishedLastUpdated } from '../utils/snapshotValidation';
 
 /**
  * Fetches pre-generated events and the latest status metadata from static JSON.
@@ -41,7 +42,7 @@ export const fetchEventsFromGemini = async (_forceRefresh: boolean = false): Pro
     return {
       events: data.events || [],
       sources: data.sources || [],
-      lastUpdated: data.lastUpdated || Date.now(),
+      lastUpdated: resolvePublishedLastUpdated(data.lastUpdated, statusResult.status === 'fulfilled' ? statusResult.value : undefined),
       status: statusResult.status === 'fulfilled' ? statusResult.value : undefined,
     };
   } catch (error) {

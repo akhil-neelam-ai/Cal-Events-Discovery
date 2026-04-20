@@ -18,6 +18,7 @@ import { searchEvents } from './utils/searchEngine';
 import type { SearchIndex } from './utils/textUtils';
 import { getRecentSearches, addRecentSearch, clearRecentSearches } from './utils/recentSearches';
 import { buildUrlStateSearch, parseUrlState } from './utils/urlState';
+import { getSnapshotTimestamp, isSearchIndexUsable } from './utils/snapshotValidation';
 
 // Source provenance helpers
 const SOURCE_LABELS: Record<string, string> = {
@@ -1517,6 +1518,7 @@ export default function App() {
   const historyModeRef = useRef<'push' | 'replace'>('replace');
   const isApplyingHistoryRef = useRef(false);
   const [visibleEventCount, setVisibleEventCount] = useState(VISIBLE_EVENT_BATCH_SIZE);
+  const [dateWindowAnchor, setDateWindowAnchor] = useState(() => getCurrentPacificDateKey());
 
   const handleEventClick = useCallback((event: CalEvent) => {
     setSelectedEvent(event);
@@ -1541,13 +1543,12 @@ export default function App() {
     setLoading(LoadingState.LOADING);
     setStatusReport(null);
     try {
-      const [data] = await Promise.all([
-        fetchEventsFromGemini(),
-        fetch('/search-index.json')
-          .then(r => r.ok ? r.json() : null)
-          .then((idx: SearchIndex | null) => { if (idx) setSearchIndex(idx); })
-          .catch(() => { /* index not yet generated — fall back to Fuse-only */ }),
-      ]);
+      const data = await fetchEventsFromGemini();
+      const idx = await fetch('/search-index.json')
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null);
+
+      setSearchIndex(isSearchIndexUsable(idx as SearchIndex | null, data.events, data.lastUpdated) ? (idx as SearchIndex) : null);
       setAllEvents(data.events);
       setLastUpdated(data.lastUpdated);
       setStatusReport(data.status || null);
@@ -1641,10 +1642,23 @@ export default function App() {
     return null;
   }, [statusReport]);
 
-  const { todayKey, nextWeekKey } = useMemo(() => {
-    const today = getCurrentPacificDateKey();
-    return { todayKey: today, nextWeekKey: addDaysToDateKey(today, 7) };
+  useEffect(() => {
+    const syncDateWindow = () => {
+      const nextKey = getCurrentPacificDateKey();
+      setDateWindowAnchor(current => (current === nextKey ? current : nextKey));
+    };
+
+    syncDateWindow();
+    const intervalId = window.setInterval(syncDateWindow, 60_000);
+    return () => window.clearInterval(intervalId);
   }, []);
+
+  const { todayKey, nextWeekKey } = useMemo(() => {
+    return {
+      todayKey: dateWindowAnchor,
+      nextWeekKey: addDaysToDateKey(dateWindowAnchor, 7),
+    };
+  }, [dateWindowAnchor]);
 
   // Instant local filtering — category + source + home-game, then ranked search.
   const baseFilteredEvents = useMemo(() => {

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { getSnapshotTimestamp, isSearchIndexUsable } from '../../utils/snapshotValidation.ts';
 import { buildUrlStateSearch, parseUrlState } from '../../utils/urlState.ts';
 
 const DEFAULT_FILTERS = {
@@ -53,4 +54,51 @@ test('buildUrlStateSearch omits defaults and trims search text', () => {
 test('buildUrlStateSearch clears empty shareable state', () => {
   const serialized = buildUrlStateSearch(DEFAULT_FILTERS, null, { defaultFilters: DEFAULT_FILTERS });
   assert.equal(serialized, '');
+});
+
+test('isSearchIndexUsable accepts matching metadata', () => {
+  const events = [{ id: 'evt-1' }, { id: 'evt-2' }];
+  const index = {
+    ids: ['evt-1', 'evt-2'],
+    t: {},
+    g: {},
+    o: {},
+    d: {},
+    buildAt: '2026-04-19T21:26:56.393Z',
+    eventCount: 2,
+  };
+
+  assert.equal(
+    isSearchIndexUsable(index, events, Date.parse('2026-04-19T21:26:56.393Z')),
+    true,
+  );
+});
+
+test('isSearchIndexUsable rejects mismatched metadata', () => {
+  const events = [{ id: 'evt-1' }, { id: 'evt-2' }];
+  const index = {
+    ids: ['evt-1', 'evt-2'],
+    t: {},
+    g: {},
+    o: {},
+    d: {},
+    buildAt: '2026-04-18T21:26:56.393Z',
+    eventCount: 3,
+  };
+
+  assert.equal(
+    isSearchIndexUsable(index, events, Date.parse('2026-04-19T21:26:56.393Z')),
+    false,
+  );
+});
+
+test('getSnapshotTimestamp prefers snapshot metadata', () => {
+  assert.equal(
+    getSnapshotTimestamp(1_234),
+    1_234,
+  );
+  assert.equal(
+    getSnapshotTimestamp(undefined, undefined),
+    null,
+  );
 });

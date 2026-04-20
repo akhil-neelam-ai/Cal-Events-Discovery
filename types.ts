@@ -32,6 +32,7 @@ export interface SourceStatus {
   fallback_used?: boolean;
   fallback_count?: number;
   degraded_reason?: string;
+  skipped?: boolean;
 }
 
 export interface IngestionStatus {

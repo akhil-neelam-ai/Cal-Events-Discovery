@@ -74,6 +74,11 @@ interface RecoveryPolicy {
   minHealthyCount?: number;
 }
 
+interface RunAdapterOptions {
+  skipped?: boolean;
+  skippedReason?: string;
+}
+
 const FALLBACK_POLICIES: Partial<Record<SourceName, RecoveryPolicy>> = {
   livewhale: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: LIVEWHALE_HEALTHY_THRESHOLD },
   callink: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
@@ -94,10 +99,28 @@ async function runAdapter<T extends {
   invalid?: number;
 }>(
   name: SourceStatus['name'],
-  fn: () => Promise<T>
+  fn: () => Promise<T>,
+  options: RunAdapterOptions = {},
 ): Promise<AdapterRun> {
   const started = Date.now();
   const fetched_at = new Date().toISOString();
+
+  if (options.skipped) {
+    return {
+      status: {
+        name,
+        ok: false,
+        count: 0,
+        duration_ms: 0,
+        error: options.skippedReason ?? 'adapter skipped',
+        fetched_at,
+      },
+      events: [],
+      filteredPast: 0,
+      invalid: 0,
+    };
+  }
+
   try {
     const result = await fn();
     return {
@@ -233,6 +256,14 @@ async function main(): Promise<void> {
     adapterPromises.push(runAdapter('gemini', () => fetchGeminiLongTail(apiKey)));
   } else {
     console.warn('[orchestrator] API_KEY not set — skipping Gemini long-tail adapter');
+    adapterPromises.push(runAdapter('gemini', async () => ({
+      events: [],
+      filteredPast: 0,
+      invalid: 0,
+    }), {
+      skipped: true,
+      skippedReason: 'API_KEY not set; Gemini long-tail adapter skipped',
+    }));
   }
 
   const runs = await Promise.all(adapterPromises);
