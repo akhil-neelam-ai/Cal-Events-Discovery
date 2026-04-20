@@ -475,50 +475,66 @@ type CategoryStyle = {
   badge: string;
   border: string;
   accent: string;
+  stripColor: string;  // CSS color for the left accent bar
+  tintBg: string;      // Tailwind class for the subtle content-area wash
 };
 
 const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   Academic: {
     label: 'Academic',
-    badge: 'border-sky-200 bg-sky-50 text-sky-800',
+    badge: 'bg-sky-50 text-sky-700',
     border: 'border-l-sky-400',
     accent: 'bg-sky-100 text-sky-800',
+    stripColor: '#38bdf8',
+    tintBg: 'bg-sky-50/30',
   },
   Arts: {
     label: 'Arts',
-    badge: 'border-amber-200 bg-amber-50 text-amber-800',
+    badge: 'bg-amber-50 text-amber-700',
     border: 'border-l-amber-400',
     accent: 'bg-amber-100 text-amber-900',
+    stripColor: '#fbbf24',
+    tintBg: 'bg-amber-50/30',
   },
   Sports: {
     label: 'Sports',
-    badge: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+    badge: 'bg-emerald-50 text-emerald-700',
     border: 'border-l-emerald-400',
     accent: 'bg-emerald-100 text-emerald-900',
+    stripColor: '#34d399',
+    tintBg: 'bg-emerald-50/30',
   },
   'Science & Tech': {
     label: 'Science & Tech',
-    badge: 'border-indigo-200 bg-indigo-50 text-indigo-800',
+    badge: 'bg-indigo-50 text-indigo-700',
     border: 'border-l-indigo-400',
     accent: 'bg-indigo-100 text-indigo-900',
+    stripColor: '#818cf8',
+    tintBg: 'bg-indigo-50/30',
   },
   'Student Life': {
     label: 'Student Life',
-    badge: 'border-rose-200 bg-rose-50 text-rose-800',
+    badge: 'bg-rose-50 text-rose-700',
     border: 'border-l-rose-400',
     accent: 'bg-rose-100 text-rose-900',
+    stripColor: '#fb7185',
+    tintBg: 'bg-rose-50/30',
   },
   Entrepreneurship: {
     label: 'Entrepreneurship',
-    badge: 'border-violet-200 bg-violet-50 text-violet-800',
+    badge: 'bg-violet-50 text-violet-700',
     border: 'border-l-violet-400',
     accent: 'bg-violet-100 text-violet-900',
+    stripColor: '#a78bfa',
+    tintBg: 'bg-violet-50/30',
   },
   Event: {
     label: 'Event',
-    badge: 'border-slate-200 bg-slate-50 text-slate-700',
+    badge: 'bg-slate-50 text-slate-600',
     border: 'border-l-slate-300',
     accent: 'bg-slate-100 text-slate-800',
+    stripColor: '#94a3b8',
+    tintBg: 'bg-slate-50/20',
   },
 };
 
@@ -2185,17 +2201,24 @@ export default function App() {
                           return (
                             <article
                               key={event.id || idx}
-                              className={`group flex h-full flex-col overflow-hidden rounded-2xl bg-white transition-[box-shadow,transform] duration-300 ease-out ${shouldAnimateCards ? 'animate-card-in opacity-0' : ''}`}
+                              className={`group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white will-change-transform ${shouldAnimateCards ? 'animate-card-in opacity-0' : ''}`}
                               style={{
-                                boxShadow: '0 1px 3px rgba(0,50,98,0.06), 0 4px 12px rgba(0,50,98,0.04)',
+                                boxShadow: '0 1px 3px rgba(0,50,98,0.06), 0 4px 16px rgba(0,50,98,0.05)',
                                 ...(shouldAnimateCards ? { animationDelay: `${Math.min(idx * 50, 500)}ms`, animationFillMode: 'forwards' } : {}),
                               }}
-                              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 24px rgba(0,50,98,0.12), 0 1px 3px rgba(0,50,98,0.06)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
-                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 3px rgba(0,50,98,0.06), 0 4px 12px rgba(0,50,98,0.04)'; (e.currentTarget as HTMLElement).style.transform = ''; }}
+                              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(0,50,98,0.13), 0 1px 4px rgba(0,50,98,0.06)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'; }}
+                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 3px rgba(0,50,98,0.06), 0 4px 16px rgba(0,50,98,0.05)'; (e.currentTarget as HTMLElement).style.transform = ''; }}
                             >
-                              <div className="flex-grow p-5">
+                              {/* Left accent strip — gradient top to transparent */}
+                              <div
+                                className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl"
+                                style={{ background: `linear-gradient(to bottom, ${categoryStyle.stripColor} 0%, transparent 100%)` }}
+                              />
+
+                              {/* Content area with subtle category tint */}
+                              <div className={`flex-grow p-5 pl-6 ${categoryStyle.tintBg}`}>
                                 <div className="mb-3 flex items-start justify-between gap-2">
-                                  <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest ${categoryStyle.badge}`}>
+                                  <span className={`inline-flex rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${categoryStyle.badge}`}>
                                     {event.tags?.[0] || 'Event'}
                                   </span>
                                   {event.url && (
@@ -2205,7 +2228,7 @@ export default function App() {
                                       rel="noopener noreferrer"
                                       onClick={e => { e.stopPropagation(); trackExternalLink({ event_id: event.id, event_title: event.title, destination_url: event.url }); }}
                                       aria-label={`Open source page for ${event.title}`}
-                                      className="flex-shrink-0 rounded-full p-1.5 text-slate-300 transition hover:bg-slate-100 hover:text-berkeley-blue"
+                                      className="flex-shrink-0 rounded-full p-1.5 text-slate-300 transition hover:bg-white/80 hover:text-berkeley-blue"
                                     >
                                       <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -2214,52 +2237,44 @@ export default function App() {
                                   )}
                                 </div>
 
-                                <h3 className="mb-3 text-lg font-semibold leading-tight text-berkeley-blue transition-colors group-hover:text-berkeley-medblue md:font-serif">{event.title}</h3>
+                                <h3 className="mb-4 text-[1.05rem] font-semibold leading-snug text-berkeley-blue transition-colors group-hover:text-berkeley-medblue md:font-serif" style={{ letterSpacing: '-0.01em' }}>{event.title}</h3>
 
-                                <div className="mb-4 space-y-2.5 text-xs text-gray-600">
-                                  <div className="flex items-center gap-2">
-                                    <div className="rounded bg-berkeley-gold/10 p-1.5">
-                                      <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                      </svg>
-                                    </div>
-                                    {effectiveDateRange !== 'today' && (
+                                {/* Compact metadata — no icon boxes */}
+                                <div className="space-y-1.5 text-xs text-slate-500">
+                                  <div className="flex items-center gap-1.5">
+                                    <svg className="h-3.5 w-3.5 flex-shrink-0 text-[#FDB515]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span className="font-medium text-slate-700">
+                                      {effectiveDateRange !== 'today' && `${formatEventDate(event.date)} · `}{event.time || '—'}
+                                    </span>
+                                    {event.location && (
                                       <>
-                                        <span className="font-bold text-gray-800">{formatEventDate(event.date)}</span>
-                                        <span className="text-gray-300">•</span>
+                                        <span className="text-slate-300">·</span>
+                                        <span className="truncate">{event.location}</span>
                                       </>
                                     )}
-                                    <span className="font-medium">{event.time || '—'}</span>
                                   </div>
-                                  <div className="flex items-center gap-2">
-                                    <div className="rounded bg-berkeley-gold/10 p-1.5">
-                                      <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                      </svg>
-                                    </div>
-                                    <span className="truncate">{event.location}</span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <div className="rounded bg-berkeley-gold/10 p-1.5">
-                                      <svg className="h-3.5 w-3.5 text-berkeley-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                      </svg>
-                                    </div>
-                                    <span className="truncate font-medium italic" title={event.organizer}>{event.organizer}</span>
+                                  <div className="flex items-center gap-1.5">
+                                    <svg className="h-3.5 w-3.5 flex-shrink-0 text-[#FDB515]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    <span className="truncate italic text-slate-500" title={event.organizer}>{event.organizer}</span>
                                   </div>
                                 </div>
                               </div>
 
-                              <div className="flex items-center justify-between border-t border-gray-100/80 px-5 py-3.5">
+                              {/* Footer — no background, minimal divider */}
+                              <div className="flex items-center justify-between px-6 py-3" style={{ borderTop: '1px solid rgba(0,50,98,0.06)' }}>
                                 <SourceBadge source={event.source} linked={false} />
                                 <button
                                   type="button"
                                   onClick={() => handleEventClick(event)}
-                                  className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-berkeley-blue transition-colors duration-200 hover:border-berkeley-medblue hover:text-berkeley-medblue focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
+                                  className="inline-flex items-center gap-1 text-sm font-semibold text-berkeley-blue transition-colors hover:text-berkeley-medblue focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60"
                                 >
                                   View details
-                                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                  <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                                   </svg>
                                 </button>
                               </div>
