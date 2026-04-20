@@ -41,7 +41,7 @@ export const fetchEventsFromGemini = async (_forceRefresh: boolean = false): Pro
     return {
       events: data.events || [],
       sources: data.sources || [],
-      lastUpdated: data.lastUpdated || Date.now(),
+      lastUpdated: data.lastUpdated ?? 0,
       status: statusResult.status === 'fulfilled' ? statusResult.value : undefined,
     };
   } catch (error) {

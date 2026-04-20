@@ -213,20 +213,27 @@ function markRecovery(
   }
 }
 
-/**
- * Wrap a promise with a hard timeout. If the promise does not resolve within
- * `ms` milliseconds the returned promise rejects with a descriptive error.
- */
-function withTimeout<T>(promise: Promise<T>, ms: number, name: string): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) =>
-      setTimeout(() => reject(new Error(`${name} timed out after ${ms}ms`)), ms)
-    ),
-  ]);
-}
-
 const ADAPTER_TIMEOUT_MS = 60_000;
+
+/**
+ * Run an adapter with a hard timeout, returning a failed AdapterRun (never
+ * rejecting) so Promise.all can be used and the source name is always preserved.
+ */
+function runAdapterWithTimeout(name: SourceName, fn: () => Promise<{ events: CanonicalEvent[] }>): Promise<AdapterRun> {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error(`${name} timed out after ${ADAPTER_TIMEOUT_MS}ms`)), ADAPTER_TIMEOUT_MS)
+  );
+  return Promise.race([runAdapter(name, fn), timeout]).catch((err): AdapterRun => {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`[orchestrator] ${name} failed: ${message}`);
+    return {
+      status: { name, ok: false, count: 0, duration_ms: ADAPTER_TIMEOUT_MS, error: message, fetched_at: new Date().toISOString() },
+      events: [],
+      filteredPast: 0,
+      invalid: 0,
+    };
+  });
+}
 
 async function main(): Promise<void> {
   const apiKey = process.env.API_KEY;
@@ -237,45 +244,23 @@ async function main(): Promise<void> {
   // block the entire pipeline. Promise.allSettled ensures one timeout does
   // not cancel the others.
   const adapterPromises: Array<Promise<AdapterRun>> = [
-    withTimeout(runAdapter('livewhale', fetchLiveWhale), ADAPTER_TIMEOUT_MS, 'livewhale'),
-    withTimeout(runAdapter('callink', fetchCallink), ADAPTER_TIMEOUT_MS, 'callink'),
-    withTimeout(runAdapter('cal_performances', fetchCalPerformances), ADAPTER_TIMEOUT_MS, 'cal_performances'),
-    withTimeout(runAdapter('calbears', fetchCalBears), ADAPTER_TIMEOUT_MS, 'calbears'),
-    withTimeout(runAdapter('bampfa', fetchBampfa), ADAPTER_TIMEOUT_MS, 'bampfa'),
-    withTimeout(runAdapter('haas', fetchHaas), ADAPTER_TIMEOUT_MS, 'haas'),
-    withTimeout(runAdapter('berkeley_law', fetchBerkeleyLaw), ADAPTER_TIMEOUT_MS, 'berkeley_law'),
-    withTimeout(runAdapter('simons', fetchSimons), ADAPTER_TIMEOUT_MS, 'simons'),
-    withTimeout(runAdapter('ehub', fetchEHub), ADAPTER_TIMEOUT_MS, 'ehub'),
+    runAdapterWithTimeout('livewhale', fetchLiveWhale),
+    runAdapterWithTimeout('callink', fetchCallink),
+    runAdapterWithTimeout('cal_performances', fetchCalPerformances),
+    runAdapterWithTimeout('calbears', fetchCalBears),
+    runAdapterWithTimeout('bampfa', fetchBampfa),
+    runAdapterWithTimeout('haas', fetchHaas),
+    runAdapterWithTimeout('berkeley_law', fetchBerkeleyLaw),
+    runAdapterWithTimeout('simons', fetchSimons),
+    runAdapterWithTimeout('ehub', fetchEHub),
   ];
   if (apiKey) {
-    adapterPromises.push(
-      withTimeout(runAdapter('gemini', () => fetchGeminiLongTail(apiKey)), ADAPTER_TIMEOUT_MS, 'gemini')
-    );
+    adapterPromises.push(runAdapterWithTimeout('gemini', () => fetchGeminiLongTail(apiKey)));
   } else {
     console.warn('[orchestrator] API_KEY not set — skipping Gemini long-tail adapter');
   }
 
-  const settled = await Promise.allSettled(adapterPromises);
-  const runs: AdapterRun[] = settled.map((result) => {
-    if (result.status === 'fulfilled') return result.value;
-    // A timeout (or other unexpected rejection) outside runAdapter — treat as
-    // a failed adapter run so the rest of the pipeline continues normally.
-    const message = result.reason instanceof Error ? result.reason.message : String(result.reason);
-    console.error(`[orchestrator] adapter promise rejected: ${message}`);
-    return {
-      status: {
-        name: 'unknown' as SourceName,
-        ok: false,
-        count: 0,
-        duration_ms: ADAPTER_TIMEOUT_MS,
-        error: message,
-        fetched_at: new Date().toISOString(),
-      },
-      events: [],
-      filteredPast: 0,
-      invalid: 0,
-    } satisfies AdapterRun;
-  });
+  const runs = await Promise.all(adapterPromises);
 
   const allCanonical: CanonicalEvent[] = runs.flatMap(r => r.events);
   const groundingSources: PublishedSource[] = runs.flatMap(r => r.groundingSources ?? []);
