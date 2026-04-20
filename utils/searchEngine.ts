@@ -229,8 +229,6 @@ export function searchEvents(
   };
 }
 
-// ─── Synonym expansion (kept for backwards-compat with old search paths) ──────
-
 const SYNONYMS: Record<string, string> = {
   ai: 'artificial intelligence machine learning',
   ml: 'machine learning artificial intelligence',
@@ -240,17 +238,6 @@ const SYNONYMS: Record<string, string> = {
   workshop: 'class training hands-on session',
   career: 'job employment networking recruiting',
 };
-
-/** Expand a raw query with synonyms, return unique stems. */
-export function expandTokens(query: string): string[] {
-  const base = tokenize(query);
-  const extra: string[] = [];
-  for (const word of query.toLowerCase().split(/\s+/)) {
-    const expanded = SYNONYMS[word];
-    if (expanded) extra.push(...tokenize(expanded));
-  }
-  return [...new Set([...base, ...extra])];
-}
 
 function expandQueryTokens(tokens: string[]): string[] {
   const expanded = new Set(tokens);

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo, useCallback, useRef, useId, memo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, useId, memo, useDeferredValue } from 'react';
 import { createPortal } from 'react-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { fetchEventsFromGemini } from './services/geminiService';
@@ -19,7 +19,7 @@ import type { SearchIndex } from './utils/textUtils';
 import { getRecentSearches, addRecentSearch, clearRecentSearches } from './utils/recentSearches';
 import { buildUrlStateSearch, parseUrlState } from './utils/urlState';
 import { getSnapshotTimestamp, isSearchIndexUsable } from './utils/snapshotValidation';
-import { APP_CATEGORIES } from './utils/categories';
+import { CATEGORY_FILTER_OPTIONS } from './utils/categories';
 
 // Source provenance helpers
 const SOURCE_LABELS: Record<string, string> = {
@@ -72,7 +72,7 @@ function SourceDropdown({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
-  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const itemRefs = useRef(new Map<string, HTMLButtonElement>());
 
   const selected = options.find(o => o.value === value) ?? options[0];
 
@@ -137,7 +137,10 @@ function SourceDropdown({
       setFocusIndex(idx);
       // defer so refs exist after render
       requestAnimationFrame(() => {
-        itemRefs.current[idx]?.focus();
+        const option = options[idx];
+        if (option) {
+          itemRefs.current.get(option.value)?.focus();
+        }
       });
     } else {
       setFocusIndex(-1);
@@ -156,21 +159,21 @@ function SourceDropdown({
       e.preventDefault();
       const next = (idx + 1) % options.length;
       setFocusIndex(next);
-      itemRefs.current[next]?.focus();
+      itemRefs.current.get(options[next]?.value ?? '')?.focus();
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       const prev = (idx - 1 + options.length) % options.length;
       setFocusIndex(prev);
-      itemRefs.current[prev]?.focus();
+      itemRefs.current.get(options[prev]?.value ?? '')?.focus();
     } else if (e.key === 'Home') {
       e.preventDefault();
       setFocusIndex(0);
-      itemRefs.current[0]?.focus();
+      itemRefs.current.get(options[0]?.value ?? '')?.focus();
     } else if (e.key === 'End') {
       e.preventDefault();
       const last = options.length - 1;
       setFocusIndex(last);
-      itemRefs.current[last]?.focus();
+      itemRefs.current.get(options[last]?.value ?? '')?.focus();
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       pick(options[idx].value);
@@ -231,14 +234,20 @@ function SourceDropdown({
             return (
               <button
                 key={opt.value}
-                ref={el => { itemRefs.current[idx] = el; }}
+                ref={el => {
+                  if (el) {
+                    itemRefs.current.set(opt.value, el);
+                  } else {
+                    itemRefs.current.delete(opt.value);
+                  }
+                }}
                 type="button"
                 role="option"
                 aria-selected={isSelected}
                 onClick={() => pick(opt.value)}
                 onKeyDown={e => handleItemKey(e, idx)}
                 onMouseEnter={() => setFocusIndex(idx)}
-                className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between gap-3 transition ${
+                className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between gap-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-berkeley-gold/70 ${
                   isSelected
                     ? 'bg-berkeley-blue text-white'
                     : focusIndex === idx
@@ -904,9 +913,8 @@ const BERKELEY_LOCATIONS = [
   'california memorial', 'greek theatre', 'hearst greek'
 ];
 
-// Check if a sports event is a home game (in Berkeley)
-function isHomeGame(event: CalEvent): boolean {
-  // Only apply this filter to sports events
+// Only sports events are venue-gated; everything else passes through untouched.
+function passesSportsVenueFilter(event: CalEvent): boolean {
   const isSportsEvent = event.tags?.some(tag =>
     tag.toLowerCase().includes('sport')
   );
@@ -917,7 +925,7 @@ function isHomeGame(event: CalEvent): boolean {
   return BERKELEY_LOCATIONS.some(loc => location.includes(loc));
 }
 
-const Categories = ['All', 'Academic', 'Arts', 'Sports', 'Science & Tech', 'Student Life', 'Entrepreneurship'];
+const Categories = CATEGORY_FILTER_OPTIONS;
 const ALL_SOURCES = ['All', 'livewhale', 'ehub', 'gemini', 'cal_performances', 'bampfa', 'calbears', 'callink', 'haas', 'berkeley_law', 'simons'];
 const DateRanges = [
   { label: 'Today', value: 'today' },
@@ -933,6 +941,7 @@ const DEFAULT_FILTERS: SearchFilters = {
 };
 
 const VISIBLE_EVENT_BATCH_SIZE = 72;
+const LOADING_SKELETON_COUNT = 6;
 
 const FOCUSABLE_SELECTOR = [
   'a[href]',
@@ -1098,7 +1107,7 @@ const POPULAR_SEARCHES = [
   'Hackathon', 'Speaker', 'Workshop', 'Wellness',
 ];
 
-function SearchSuggestionsDropdown({
+const SearchSuggestionsDropdown = memo(function SearchSuggestionsDropdown({
   recents,
   onSelect,
   onClear,
@@ -1117,7 +1126,11 @@ function SearchSuggestionsDropdown({
   };
 
   return (
-    <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-lg">
+    <div
+      className="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-lg"
+      aria-live="polite"
+      aria-label="Search suggestions"
+    >
       {recentItems.length > 0 && (
         <div className="p-3">
           <div className="mb-2 flex items-center justify-between">
@@ -1162,7 +1175,7 @@ function SearchSuggestionsDropdown({
       </div>
     </div>
   );
-}
+});
 
 function DesktopHero({
   lastUpdated,
@@ -1510,8 +1523,10 @@ export default function App() {
   const [loading, setLoading] = useState<LoadingState>(LoadingState.IDLE);
   const [statusReport, setStatusReport] = useState<IngestionStatus | null>(null);
   const [searchIndex, setSearchIndex] = useState<SearchIndex | null>(null);
+  const [searchIndexAttempted, setSearchIndexAttempted] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
   const [filters, setFilters] = useState<SearchFilters>(initialUrlState.filters);
+  const deferredSearchQuery = useDeferredValue(filters.searchQuery);
   const [selectedEvent, setSelectedEvent] = useState<CalEvent | null>(null);
   const [shouldAnimateCards, setShouldAnimateCards] = useState(!prefersReducedMotion);
   // Mobile search suggestions
@@ -1552,11 +1567,6 @@ export default function App() {
     setStatusReport(null);
     try {
       const data = await fetchEventsFromGemini();
-      const idx = await fetch('/search-index.json')
-        .then(r => r.ok ? r.json() : null)
-        .catch(() => null);
-
-      setSearchIndex(isSearchIndexUsable(idx as SearchIndex | null, data.events, data.lastUpdated) ? (idx as SearchIndex) : null);
       setAllEvents(data.events);
       setLastUpdated(data.lastUpdated);
       setStatusReport(data.status || null);
@@ -1582,6 +1592,52 @@ export default function App() {
       }
     };
   }, []);
+
+  const ensureSearchIndexLoaded = useCallback(async (eventsOverride?: CalEvent[], lastUpdatedOverride?: number | null) => {
+    if (searchIndexAttempted) {
+      return searchIndex;
+    }
+
+    const candidateEvents = eventsOverride ?? allEvents;
+    if (candidateEvents.length === 0) {
+      return null;
+    }
+
+    setSearchIndexAttempted(true);
+
+    try {
+      const idx = await fetch('/search-index.json')
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null);
+
+      const usableIndex = isSearchIndexUsable(
+        idx as SearchIndex | null,
+        candidateEvents,
+        lastUpdatedOverride ?? lastUpdated,
+      )
+        ? (idx as SearchIndex)
+        : null;
+
+      setSearchIndex(usableIndex);
+      return usableIndex;
+    } catch {
+      setSearchIndex(null);
+      return null;
+    }
+  }, [allEvents, lastUpdated, searchIndex, searchIndexAttempted]);
+
+  useEffect(() => {
+    if (deferredSearchQuery.trim().length >= 2 && !searchIndexAttempted && allEvents.length > 0) {
+      void ensureSearchIndexLoaded();
+    }
+  }, [allEvents.length, deferredSearchQuery, ensureSearchIndexLoaded, searchIndexAttempted]);
+
+  useEffect(() => {
+    if (!filters.searchQuery.trim()) {
+      setSearchIndexAttempted(false);
+      setSearchIndex(null);
+    }
+  }, [filters.searchQuery]);
 
   // Per-source counts from the full event set, used to populate the Source dropdown.
   // Preserves the original ALL_SOURCES ordering and filters to sources that have
@@ -1670,7 +1726,7 @@ export default function App() {
 
   // Instant local filtering — category + source + home-game, then ranked search.
   const baseFilteredEvents = useMemo(() => {
-    const q = filters.searchQuery.trim();
+    const q = deferredSearchQuery.trim();
 
     // Non-search filters applied to the full event pool
     const pool = allEvents.filter(event => {
@@ -1682,7 +1738,7 @@ export default function App() {
         event.tags?.includes(filters.category);
 
       const matchesSource = filters.source === 'All' || event.source === filters.source;
-      return matchesCategory && matchesSource && isHomeGame(event);
+      return matchesCategory && matchesSource && passesSportsVenueFilter(event);
     });
 
     if (!q) {
@@ -1696,7 +1752,7 @@ export default function App() {
     // With a query: relevance-ranked results (date sort handled within scorer via recency bonus)
     const { results } = searchEvents(pool, q, searchIndex);
     return results;
-  }, [allEvents, filters.category, filters.searchQuery, filters.source, searchIndex]);
+  }, [allEvents, deferredSearchQuery, filters.category, filters.source, searchIndex]);
 
   const todayEvents = useMemo(
     () => filterEventsByDateRange(baseFilteredEvents, 'today', todayKey, nextWeekKey),
