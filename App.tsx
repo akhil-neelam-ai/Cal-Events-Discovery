@@ -2194,10 +2194,24 @@ export default function App() {
                               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 3px rgba(0,50,98,0.06), 0 4px 12px rgba(0,50,98,0.04)'; (e.currentTarget as HTMLElement).style.transform = ''; }}
                             >
                               <div className="flex-grow p-5">
-                                <div className="mb-3">
+                                <div className="mb-3 flex items-start justify-between gap-2">
                                   <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest ${categoryStyle.badge}`}>
                                     {event.tags?.[0] || 'Event'}
                                   </span>
+                                  {event.url && (
+                                    <a
+                                      href={event.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={e => { e.stopPropagation(); trackExternalLink({ event_id: event.id, event_title: event.title, destination_url: event.url }); }}
+                                      aria-label={`Open source page for ${event.title}`}
+                                      className="flex-shrink-0 rounded-full p-1.5 text-slate-300 transition hover:bg-slate-100 hover:text-berkeley-blue"
+                                    >
+                                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                      </svg>
+                                    </a>
+                                  )}
                                 </div>
 
                                 <h3 className="mb-3 text-lg font-semibold leading-tight text-berkeley-blue transition-colors group-hover:text-berkeley-medblue md:font-serif">{event.title}</h3>
@@ -2238,32 +2252,16 @@ export default function App() {
 
                               <div className="flex items-center justify-between border-t border-gray-100/80 px-5 py-3.5">
                                 <SourceBadge source={event.source} linked={false} />
-                                <div className="flex items-center gap-2">
-                                  {event.url && (
-                                    <a
-                                      href={event.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      onClick={e => { e.stopPropagation(); trackExternalLink({ event_id: event.id, event_title: event.title, destination_url: event.url }); }}
-                                      aria-label={`Open ${event.title} source page`}
-                                      className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white p-2 text-slate-400 transition hover:border-berkeley-gold hover:text-berkeley-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60"
-                                    >
-                                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                      </svg>
-                                    </a>
-                                  )}
-                                  <button
-                                    type="button"
-                                    onClick={() => handleEventClick(event)}
-                                    className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-berkeley-blue transition-colors duration-200 hover:border-berkeley-medblue hover:text-berkeley-medblue focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
-                                  >
-                                    View details
-                                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                    </svg>
-                                  </button>
-                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleEventClick(event)}
+                                  className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-berkeley-blue transition-colors duration-200 hover:border-berkeley-medblue hover:text-berkeley-medblue focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
+                                >
+                                  View details
+                                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                  </svg>
+                                </button>
                               </div>
                             </article>
                           );
