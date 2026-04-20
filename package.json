@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "validate": "node --test scripts/tests/*.test.mjs",
+    "validate": "node --import tsx/esm --test scripts/tests/*.test.mjs",
     "test": "npm run validate",
     "update-events": "tsx scripts/updateEvents.ts"
   },
