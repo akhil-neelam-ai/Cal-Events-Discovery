@@ -5,16 +5,16 @@
 
 /**
  * Compact field-differentiated inverted index.
- * Uses numeric positions into `ids` instead of string event IDs to reduce JSON size ~5x.
- *
- * t = title (weight 60)  g = tags (weight 45)  o = organizer (weight 30)  d = desc (weight 10)
+ * t = title (weight 60)  g = tags (weight 45)  o = organizer (weight 30)
+ * d = desc (weight 10)   l = location (weight 20)
  */
 export interface SearchIndex {
-  ids: string[];                    // position → eventId lookup table
-  t:   Record<string, number[]>;   // title stem → [pos, ...]
-  g:   Record<string, number[]>;   // tag stem   → [pos, ...]
-  o:   Record<string, number[]>;   // org stem   → [pos, ...]
-  d:   Record<string, number[]>;   // desc stem  → [pos, ...]
+  ids: string[];
+  t:   Record<string, number[]>;
+  g:   Record<string, number[]>;
+  o:   Record<string, number[]>;
+  d:   Record<string, number[]>;
+  l:   Record<string, number[]>;
   buildAt: string;
   eventCount: number;
 }
@@ -31,7 +31,7 @@ const STOP_WORDS = new Set([
 ]);
 
 /**
- * Porter-lite stemmer: strips the most common English suffixes.
+ * Porter-lite stemmer.
  * Consistent output is more important than perfection — both the index and
  * query must be stemmed the same way.
  */
@@ -39,21 +39,18 @@ export function stem(word: string): string {
   let w = word;
   if (w.length <= 3) return w;
 
-  // Step 1a — plurals
   if (w.endsWith('sses') && w.length > 6) {
-    w = w.slice(0, -2);                              // classes → class
+    w = w.slice(0, -2);
   } else if (w.endsWith('ies') && w.length > 4) {
-    w = w.slice(0, -3) + 'i';                       // parties → parti
+    w = w.slice(0, -3) + 'i';
   } else if (!w.endsWith('ss') && !w.endsWith('us') && w.endsWith('s') && w.length > 4) {
-    w = w.slice(0, -1);                             // talks → talk
+    w = w.slice(0, -1);
   }
   if (w.length <= 3) return w;
 
-  // Step 1b — -ing / -ed
   if (w.endsWith('ing') && w.length > 6) {
     const base = w.slice(0, -3);
     if (base.length >= 3) {
-      // running → runn → run (double consonant collapse)
       if (base.length >= 4 && /([bcdfghjklmnpqrstvwxyz])\1$/.test(base)) {
         w = base.slice(0, -1);
       } else {
@@ -88,3 +85,58 @@ export function tokenize(text: string): string[] {
   }
   return out;
 }
+
+// ─── Domain synonym map ───────────────────────────────────────────────────────
+// Keys may be multi-word phrases (checked via substring) or single words (checked via tokens).
+
+export const DOMAIN_SYNONYMS: Record<string, string[]> = {
+  // Entrepreneurship
+  startup:        ['entrepreneurship', 'founder', 'venture', 'pitch', 'skydeck'],
+  founder:        ['startup', 'entrepreneur', 'venture', 'pitch'],
+  venture:        ['startup', 'founder', 'entrepreneur'],
+  // Arts / Media
+  film:           ['movie', 'screening', 'cinema', 'documentary'],
+  movie:          ['film', 'screening', 'cinema'],
+  concert:        ['music', 'recital', 'performance', 'band', 'orchestra'],
+  music:          ['concert', 'recital', 'performance'],
+  // Academic
+  talk:           ['lecture', 'seminar', 'speaker', 'panel', 'discussion', 'colloquium'],
+  lecture:        ['talk', 'seminar', 'speaker', 'panel'],
+  seminar:        ['talk', 'lecture', 'speaker', 'panel'],
+  workshop:       ['class', 'training', 'hands-on', 'session'],
+  // Career / Student life
+  career:         ['job', 'recruiting', 'internship', 'networking', 'professional'],
+  networking:     ['career', 'job', 'professional', 'mixer', 'reception'],
+  // Food
+  'free food':    ['pizza', 'snacks', 'refreshments', 'reception', 'lunch', 'dinner'],
+  // Generic vague
+  fun:            ['social', 'performance', 'game', 'festival', 'party', 'arts'],
+  interesting:    ['talk', 'lecture', 'workshop', 'exhibition', 'seminar'],
+  code:           ['programming', 'hackathon', 'engineering', 'software', 'cs'],
+  // Sports
+  game:           ['basketball', 'football', 'baseball', 'volleyball', 'soccer', 'athletics'],
+  sports:         ['athletics', 'basketball', 'football', 'baseball', 'volleyball'],
+};
+
+// ─── Berkeley venue / building aliases ───────────────────────────────────────
+// Used in buildIndex.ts to add alias tokens alongside real location text,
+// and in searchEngine.ts to expand queries mentioning these venues.
+
+export const BERKELEY_VENUE_ALIASES: Record<string, string> = {
+  bampfa:            'arts film museum cinema gallery',
+  moffitt:           'library study moffitt',
+  'doe library':     'library research doe',
+  mlk:               'student union meeting',
+  rsf:               'gym fitness recreation sports wellness',
+  haas:              'business school management haas',
+  sproul:            'plaza outdoor student',
+  'memorial glade':  'outdoor event lawn',
+  soda:              'computer science engineering cs',
+  'cory hall':       'electrical engineering eecs',
+  'stanley hall':    'biology bioengineering health',
+  'mulford hall':    'environmental science biology',
+  'dwinelle':        'humanities languages',
+  'wheeler':         'english history humanities',
+  'northside':       'north campus residential',
+  'southside':       'south campus telegraph',
+};

@@ -93,7 +93,7 @@ test('search index aligns with published events', () => {
   const publishedIds = published.events.map(event => event.id);
   assert.deepEqual(searchIndex.ids, publishedIds, 'search index ids should preserve published event ordering');
 
-  for (const field of ['t', 'g', 'o', 'd']) {
+  for (const field of ['t', 'g', 'o', 'd', 'l']) {
     assert.ok(searchIndex[field] && typeof searchIndex[field] === 'object', `${field} index must be an object`);
 
     for (const [token, positions] of Object.entries(searchIndex[field])) {

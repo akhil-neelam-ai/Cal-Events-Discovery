@@ -1,72 +1,72 @@
 {
-  "generated_at": "2026-04-20T03:25:12.549Z",
-  "total_events": 1044,
-  "duplicates_removed": 253,
-  "past_events_filtered": 3138,
+  "generated_at": "2026-04-20T04:53:17.602Z",
+  "total_events": 1055,
+  "duplicates_removed": 260,
+  "past_events_filtered": 3119,
   "invalid_events_filtered": 3,
   "sources": [
     {
       "name": "livewhale",
       "ok": true,
-      "count": 960,
-      "duration_ms": 2908,
-      "fetched_at": "2026-04-20T03:24:18.419Z"
+      "count": 978,
+      "duration_ms": 2507,
+      "fetched_at": "2026-04-20T04:53:06.418Z"
     },
     {
       "name": "callink",
       "ok": true,
       "count": 10,
-      "duration_ms": 960,
-      "fetched_at": "2026-04-20T03:24:18.449Z"
+      "duration_ms": 775,
+      "fetched_at": "2026-04-20T04:53:06.437Z"
     },
     {
       "name": "cal_performances",
       "ok": true,
       "count": 7,
-      "duration_ms": 11803,
-      "fetched_at": "2026-04-20T03:24:18.452Z"
+      "duration_ms": 10932,
+      "fetched_at": "2026-04-20T04:53:06.439Z"
     },
     {
       "name": "calbears",
       "ok": true,
       "count": 89,
-      "duration_ms": 396,
-      "fetched_at": "2026-04-20T03:24:18.455Z"
+      "duration_ms": 452,
+      "fetched_at": "2026-04-20T04:53:06.441Z"
     },
     {
       "name": "bampfa",
       "ok": true,
       "count": 72,
-      "duration_ms": 53928,
-      "fetched_at": "2026-04-20T03:24:18.457Z"
+      "duration_ms": 529,
+      "fetched_at": "2026-04-20T04:53:06.442Z"
     },
     {
       "name": "haas",
       "ok": true,
       "count": 25,
-      "duration_ms": 18718,
-      "fetched_at": "2026-04-20T03:24:18.459Z"
+      "duration_ms": 3318,
+      "fetched_at": "2026-04-20T04:53:06.443Z"
     },
     {
       "name": "berkeley_law",
       "ok": true,
       "count": 53,
-      "duration_ms": 2314,
-      "fetched_at": "2026-04-20T03:24:18.461Z"
+      "duration_ms": 1890,
+      "fetched_at": "2026-04-20T04:53:06.444Z"
     },
     {
       "name": "simons",
       "ok": true,
       "count": 44,
-      "duration_ms": 15417,
-      "fetched_at": "2026-04-20T03:24:18.463Z"
+      "duration_ms": 392,
+      "fetched_at": "2026-04-20T04:53:06.445Z"
     },
     {
       "name": "ehub",
       "ok": true,
       "count": 37,
-      "duration_ms": 318,
-      "fetched_at": "2026-04-20T03:24:18.466Z"
+      "duration_ms": 264,
+      "fetched_at": "2026-04-20T04:53:06.445Z"
     }
   ],
   "fallback_used": false,

@@ -13,8 +13,9 @@ import {
   trackExternalLink,
   trackFilter,
 } from './utils/analytics';
-import { searchEvents } from './utils/searchEngine';
+import { searchEvents, buildSearchPlan } from './utils/searchEngine';
 import type { SearchIndex } from './utils/textUtils';
+import type { InterpretedChip } from './utils/searchEngine';
 import { getRecentSearches, addRecentSearch, clearRecentSearches } from './utils/recentSearches';
 import { buildUrlStateSearch, parseUrlState } from './utils/urlState';
 
@@ -1546,6 +1547,7 @@ export default function App() {
   const [mobileSearchFocused, setMobileSearchFocused] = useState(false);
   const [mobileRecents, setMobileRecents] = useState<string[]>([]);
   const mobileBlurRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [dismissedInterpretationKeys, setDismissedInterpretationKeys] = useState<Set<string>>(new Set());
   const desktopSearchInputId = useId();
   const mobileSearchInputId = useId();
   const isMobile = useIsMobile();
@@ -1683,11 +1685,23 @@ export default function App() {
     return { todayKey: today, nextWeekKey: addDaysToDateKey(today, 7) };
   }, []);
 
+  // Active search plan — derived from query, used for chips + scoring.
+  const activePlan = useMemo(() => {
+    const q = filters.searchQuery.trim();
+    if (q.length < 2) return null;
+    return buildSearchPlan(q);
+  }, [filters.searchQuery]);
+
+  // Chips to display: interpretations minus dismissed ones.
+  const activeChips = useMemo<InterpretedChip[]>(() => {
+    if (!activePlan) return [];
+    return activePlan.interpretations.filter(i => !dismissedInterpretationKeys.has(i.key));
+  }, [activePlan, dismissedInterpretationKeys]);
+
   // Instant local filtering — category + source + home-game, then ranked search.
   const baseFilteredEvents = useMemo(() => {
     const q = filters.searchQuery.trim();
 
-    // Non-search filters applied to the full event pool
     const pool = allEvents.filter(event => {
       const eventDateKey = getPacificDateKey(event.date);
       if (!eventDateKey) return false;
@@ -1708,10 +1722,13 @@ export default function App() {
       });
     }
 
-    // With a query: relevance-ranked results (date sort handled within scorer via recency bonus)
-    const { results } = searchEvents(pool, q, searchIndex);
+    const { results, fallbackUsed, fallbackMessage } = searchEvents(pool, q, searchIndex, dismissedInterpretationKeys);
+    // Stash fallback message on the array so downstream can read it without a second memo
+    (results as any).__fallbackMessage = fallbackUsed ? fallbackMessage : undefined;
     return results;
-  }, [allEvents, filters.category, filters.searchQuery, filters.source, searchIndex]);
+  }, [allEvents, filters.category, filters.searchQuery, filters.source, searchIndex, dismissedInterpretationKeys]);
+
+  const searchFallbackMessage: string | undefined = (baseFilteredEvents as any).__fallbackMessage;
 
   const todayEvents = useMemo(
     () => filterEventsByDateRange(baseFilteredEvents, 'today', todayKey, nextWeekKey),
@@ -1938,6 +1955,8 @@ export default function App() {
   const handleSearchChange = useCallback((query: string) => {
     historyModeRef.current = 'replace';
     setFilters(prev => ({ ...prev, searchQuery: query }));
+    // Reset dismissed chips whenever the query changes
+    setDismissedInterpretationKeys(new Set());
 
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     if (query.trim().length >= 2) {
@@ -1946,6 +1965,10 @@ export default function App() {
       }, 500);
     }
   }, [filteredEvents.length]);
+
+  const handleDismissChip = useCallback((key: string) => {
+    setDismissedInterpretationKeys(prev => new Set([...prev, key]));
+  }, []);
 
   const handleDateRangeChange = useCallback((dateRange: SearchFilters['dateRange']) => {
     historyModeRef.current = 'push';
@@ -2144,6 +2167,31 @@ export default function App() {
               </div>
             )}
 
+            {/* Search interpretation chips */}
+            {activeChips.length > 0 && (
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Interpreted as</span>
+                {activeChips.map(chip => (
+                  <span
+                    key={chip.key}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(253,181,21,0.4)] bg-[rgba(253,181,21,0.08)] px-3 py-1 text-xs font-semibold text-berkeley-blue"
+                  >
+                    {chip.label}
+                    <button
+                      type="button"
+                      aria-label={`Remove ${chip.label} filter`}
+                      onClick={() => handleDismissChip(chip.key)}
+                      className="ml-0.5 rounded-full p-0.5 text-slate-400 hover:bg-berkeley-gold/20 hover:text-berkeley-blue"
+                    >
+                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
             <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">Campus feed</p>
@@ -2157,6 +2205,12 @@ export default function App() {
                 )}
               </div>
             </div>
+
+            {searchFallbackMessage && (
+              <div className="mb-4 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 shadow-sm">
+                {searchFallbackMessage}
+              </div>
+            )}
 
             {filteredEvents.length === 0 ? (
               <div className="rounded-3xl border border-slate-200 bg-white px-6 py-14 text-center shadow-sm">
