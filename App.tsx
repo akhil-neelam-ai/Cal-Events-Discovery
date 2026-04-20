@@ -221,34 +221,44 @@ function SourceDropdown({
             top: panelPos.top,
             left: panelPos.left,
             width: panelPos.width,
+            zIndex: 9999,
           }}
-          className="max-h-[60vh] overflow-y-auto bg-white text-gray-800 rounded-lg shadow-xl border border-gray-200 z-[70] py-1"
+          className="max-h-[60vh] overflow-y-auto bg-white text-gray-800 rounded-xl shadow-2xl border border-slate-200 py-1.5"
         >
           {options.map((opt, idx) => {
             const isSelected = opt.value === value;
+            const isAllOption = opt.value === 'All';
             return (
-              <button
-                key={opt.value}
-                ref={el => { itemRefs.current[idx] = el; }}
-                type="button"
-                role="option"
-                aria-selected={isSelected}
-                onClick={() => pick(opt.value)}
-                onKeyDown={e => handleItemKey(e, idx)}
-                onMouseEnter={() => setFocusIndex(idx)}
-                className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between gap-3 transition ${
-                  isSelected
-                    ? 'bg-berkeley-blue text-white'
-                    : focusIndex === idx
-                      ? 'bg-berkeley-gold/20 text-berkeley-blue'
-                      : 'hover:bg-berkeley-gold/10 text-gray-800'
-                }`}
-              >
-                <span className="font-medium truncate">{opt.label}</span>
-                <span className={`flex-shrink-0 tabular-nums ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>
-                  {opt.count}
-                </span>
-              </button>
+              <React.Fragment key={opt.value}>
+                {/* Divider between All and individual sources */}
+                {idx === 1 && (
+                  <div className="mx-3 my-1.5 border-t border-slate-100" />
+                )}
+                <button
+                  ref={el => { itemRefs.current[idx] = el; }}
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  onClick={() => pick(opt.value)}
+                  onKeyDown={e => handleItemKey(e, idx)}
+                  onMouseEnter={() => setFocusIndex(idx)}
+                  className={`w-full text-left mx-1 px-3 py-2 rounded-lg text-xs flex items-center justify-between gap-3 transition-colors ${
+                    isSelected
+                      ? 'bg-berkeley-blue text-white'
+                      : focusIndex === idx
+                        ? 'bg-slate-100 text-berkeley-blue'
+                        : 'text-slate-700 hover:bg-slate-50'
+                  } ${isAllOption ? 'font-semibold' : ''}`}
+                  style={{ width: 'calc(100% - 8px)' }}
+                >
+                  <span className="truncate">{opt.label}</span>
+                  <span className={`flex-shrink-0 tabular-nums text-[11px] rounded-full px-1.5 py-0.5 ${
+                    isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+                  }`}>
+                    {opt.count}
+                  </span>
+                </button>
+              </React.Fragment>
             );
           })}
         </div>
@@ -1101,13 +1111,13 @@ interface QuickFilterPreset {
 
 const DESKTOP_HERO_PRESETS: QuickFilterPreset[] = [
   { label: 'Tonight', dateRange: 'today', category: 'All', searchQuery: '' },
-  { label: 'Free food', dateRange: 'week', category: 'Student Life', searchQuery: 'free' },
   { label: 'AI talks', dateRange: 'week', category: 'Science & Tech', searchQuery: 'ai' },
   { label: 'Cal games', dateRange: 'week', category: 'Sports', searchQuery: '' },
+  { label: 'This week', dateRange: 'week', category: 'All', searchQuery: '' },
 ];
 
 const POPULAR_SEARCHES = [
-  'Free food', 'AI', 'Film screening', 'Career fair',
+  'AI', 'Film screening', 'Career fair',
   'Hackathon', 'Speaker', 'Workshop', 'Wellness',
 ];
 
