@@ -26,6 +26,19 @@ function extractJsonArray(text: string): unknown[] | null {
     .replace(/^```(?:json)?\s*/i, '')
     .replace(/\s*```\s*$/i, '')
     .trim();
+
+  // Try parsing the stripped text directly first — handles bare arrays and
+  // wrapped objects like {"events": [...]} that Gemini sometimes emits.
+  try {
+    const parsed = JSON.parse(stripped);
+    if (Array.isArray(parsed)) return parsed;
+    if (parsed && typeof parsed === 'object') {
+      const arr = Object.values(parsed).find(v => Array.isArray(v));
+      if (arr) return arr as unknown[];
+    }
+  } catch { /* fall through to bracket search */ }
+
+  // Bracket-search fallback for responses with leading/trailing prose.
   const first = stripped.indexOf('[');
   const last = stripped.lastIndexOf(']');
   if (first === -1 || last <= first) return null;
@@ -120,9 +133,8 @@ If you cannot find ${MAX_EVENTS} events that satisfy ALL requirements, return fe
       lastError = msg;
       const is503 = /503|UNAVAILABLE|high demand/i.test(msg);
       console.warn(`[gemini] attempt ${attempt}/${MAX_ATTEMPTS} failed${is503 ? ' (503 congestion)' : ''}: ${msg}`);
-      if (/API_KEY_INVALID|API key not valid/i.test(msg)) {
-        break;
-      }
+      if (/API_KEY_INVALID|API key not valid/i.test(msg)) break;
+      if (/429|quota|rate.?limit|403|forbidden/i.test(msg)) break;
       if (attempt < MAX_ATTEMPTS) await sleep(BACKOFF_MS[attempt - 1]);
     }
   }

@@ -136,6 +136,12 @@ const HOST_EVENTS_BERKELEY = 'events.berkeley.edu';
 /** Cache: /live/events/<slug> URL → resolved unit slug (after 302 redirect). */
 const redirectSlugCache = new Map<string, string>();
 
+/** Write to redirectSlugCache, clearing it when it exceeds 500 entries. */
+function cacheSet(key: string, value: string): void {
+  if (redirectSlugCache.size >= 500) redirectSlugCache.clear();
+  redirectSlugCache.set(key, value);
+}
+
 /**
  * For events.berkeley.edu/live/events/<id> URLs, the LiveWhale server
  * 302-redirects to the unit-specific URL, e.g. /Library/event/<id>.
@@ -163,7 +169,7 @@ async function resolveUnitSlugViaRedirect(url: string): Promise<string> {
       const target = new URL(loc, current);
       const firstSeg = target.pathname.split('/').filter(Boolean)[0] || '';
       if (firstSeg && !GENERIC_URL_SLUGS.has(firstSeg.toLowerCase())) {
-        redirectSlugCache.set(url, firstSeg);
+        cacheSet(url, firstSeg);
         return firstSeg;
       }
       // Still on a generic namespace — keep following.
@@ -173,7 +179,7 @@ async function resolveUnitSlugViaRedirect(url: string): Promise<string> {
   } catch {
     // Network error, timeout, etc — fall through.
   }
-  redirectSlugCache.set(url, '');
+  cacheSet(url, '');
   return '';
 }
 

@@ -213,29 +213,69 @@ function markRecovery(
   }
 }
 
+/**
+ * Wrap a promise with a hard timeout. If the promise does not resolve within
+ * `ms` milliseconds the returned promise rejects with a descriptive error.
+ */
+function withTimeout<T>(promise: Promise<T>, ms: number, name: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`${name} timed out after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
+const ADAPTER_TIMEOUT_MS = 60_000;
+
 async function main(): Promise<void> {
   const apiKey = process.env.API_KEY;
   const existing = loadExistingEvents();
 
   // All non-Gemini adapters run regardless. Gemini only if we have a key.
+  // Each adapter is wrapped in a 60 s timeout so a hanging source cannot
+  // block the entire pipeline. Promise.allSettled ensures one timeout does
+  // not cancel the others.
   const adapterPromises: Array<Promise<AdapterRun>> = [
-    runAdapter('livewhale', fetchLiveWhale),
-    runAdapter('callink', fetchCallink),
-    runAdapter('cal_performances', fetchCalPerformances),
-    runAdapter('calbears', fetchCalBears),
-    runAdapter('bampfa', fetchBampfa),
-    runAdapter('haas', fetchHaas),
-    runAdapter('berkeley_law', fetchBerkeleyLaw),
-    runAdapter('simons', fetchSimons),
-    runAdapter('ehub', fetchEHub),
+    withTimeout(runAdapter('livewhale', fetchLiveWhale), ADAPTER_TIMEOUT_MS, 'livewhale'),
+    withTimeout(runAdapter('callink', fetchCallink), ADAPTER_TIMEOUT_MS, 'callink'),
+    withTimeout(runAdapter('cal_performances', fetchCalPerformances), ADAPTER_TIMEOUT_MS, 'cal_performances'),
+    withTimeout(runAdapter('calbears', fetchCalBears), ADAPTER_TIMEOUT_MS, 'calbears'),
+    withTimeout(runAdapter('bampfa', fetchBampfa), ADAPTER_TIMEOUT_MS, 'bampfa'),
+    withTimeout(runAdapter('haas', fetchHaas), ADAPTER_TIMEOUT_MS, 'haas'),
+    withTimeout(runAdapter('berkeley_law', fetchBerkeleyLaw), ADAPTER_TIMEOUT_MS, 'berkeley_law'),
+    withTimeout(runAdapter('simons', fetchSimons), ADAPTER_TIMEOUT_MS, 'simons'),
+    withTimeout(runAdapter('ehub', fetchEHub), ADAPTER_TIMEOUT_MS, 'ehub'),
   ];
   if (apiKey) {
-    adapterPromises.push(runAdapter('gemini', () => fetchGeminiLongTail(apiKey)));
+    adapterPromises.push(
+      withTimeout(runAdapter('gemini', () => fetchGeminiLongTail(apiKey)), ADAPTER_TIMEOUT_MS, 'gemini')
+    );
   } else {
     console.warn('[orchestrator] API_KEY not set — skipping Gemini long-tail adapter');
   }
 
-  const runs = await Promise.all(adapterPromises);
+  const settled = await Promise.allSettled(adapterPromises);
+  const runs: AdapterRun[] = settled.map((result) => {
+    if (result.status === 'fulfilled') return result.value;
+    // A timeout (or other unexpected rejection) outside runAdapter — treat as
+    // a failed adapter run so the rest of the pipeline continues normally.
+    const message = result.reason instanceof Error ? result.reason.message : String(result.reason);
+    console.error(`[orchestrator] adapter promise rejected: ${message}`);
+    return {
+      status: {
+        name: 'unknown' as SourceName,
+        ok: false,
+        count: 0,
+        duration_ms: ADAPTER_TIMEOUT_MS,
+        error: message,
+        fetched_at: new Date().toISOString(),
+      },
+      events: [],
+      filteredPast: 0,
+      invalid: 0,
+    } satisfies AdapterRun;
+  });
 
   const allCanonical: CanonicalEvent[] = runs.flatMap(r => r.events);
   const groundingSources: PublishedSource[] = runs.flatMap(r => r.groundingSources ?? []);
