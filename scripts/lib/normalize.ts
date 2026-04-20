@@ -17,76 +17,179 @@ const FRONTEND_CATEGORIES = [
 ] as const;
 export type FrontendCategory = (typeof FRONTEND_CATEGORIES)[number];
 
-const TAG_PRIORITY: readonly FrontendCategory[] = [
-  'Entrepreneurship',
-  'Science & Tech',
-  'Arts',
-  'Sports',
-  'Academic',
-  'Student Life', // catch-all — only wins if nothing more specific matches
+// ─── Scoring weights ────────────────────────────────────────────────────────
+// Higher weight = stronger signal. Organizer mapping is most reliable because
+// it comes from a known entity, not free text that can contain red herrings.
+const W_ORGANIZER_MAP  = 100; // known department/org → category (highest confidence)
+const W_SOURCE_TAG     =  40; // source's own category label (trusted but sometimes broad)
+const W_TITLE_KEYWORD  =  10; // keyword found in event title
+const W_ORGANIZER_KW   =   8; // keyword found in organizer name (text, not mapping)
+const W_DESC_KEYWORD   =   3; // keyword found in description (weakest — lots of noise)
+
+// ─── Organizer / source identity mapping ────────────────────────────────────
+// Regex matched against organizer name and source identifier. First match wins
+// per field — these are high-confidence mappings so they override keywords.
+const ORGANIZER_MAP: Array<[RegExp, FrontendCategory]> = [
+  [/\b(eecs|electrical engineering|computer science|simons institute|data science|statistics|bioengineering|computational|informatics)\b/i, 'Science & Tech'],
+  [/\b(mathematics|math\b|physics|chemistry|biochemistry|molecular biology|neuroscience|astronomy|astrophysics|materials science|chemical engineering|civil engineering|mechanical engineering|nuclear engineering|industrial engineering)\b/i, 'Science & Tech'],
+  [/\b(law school|berkeley law|school of law|jurisprudence)\b/i, 'Academic'],
+  [/\b(haas|school of business|business school|mba program)\b/i, 'Entrepreneurship'],
+  [/\b(bampfa|cal performances|department of music|music department|art (history|practice)|theater|drama|dance|film)\b/i, 'Arts'],
+  [/\b(athletics|cal bears|intercollegiate sports|recreational sports|intramural)\b/i, 'Sports'],
+  [/\b(e-?hub|skydeck|lester center|entrepreneurship)\b/i, 'Entrepreneurship'],
+  [/\b(public health|epidemiology|social welfare|education|public policy|goldman school)\b/i, 'Academic'],
 ];
 
-const CATEGORY_PATTERNS: Array<[FrontendCategory, RegExp]> = [
-  [
-    'Academic',
-    /\b(seminar|colloquium|lecture|symposium|talk|panel|guest speaker|defense|dissertation|research|department|school|college|institute|center|library|office|program|advising|office hours|lab|laboratory)\b/i,
-  ],
-  [
-    'Arts',
-    /\b(concert|recital|performance|exhibit|exhibition|gallery|film|screening|theatre|theater|dance|opera|museum|bampfa|cal performances)\b/i,
-  ],
-  [
-    'Sports',
-    /\b(basketball|football|baseball|softball|soccer|volleyball|swim meet|swim team|swimming pool|track and field|track meet|track team|track athlete|tennis|gymnastics|water polo|rugby|lacrosse|game vs|cal bears|intramural|rec sports|rowing|crew team)\b/i,
-  ],
-  [
-    'Science & Tech',
-    /\b(ai|machine learning|data science|computer science|engineering|robotics|biotech|genomics|physics|chemistry|biology|stem|hackathon|cs\b|eecs|computing)\b/i,
-  ],
-  [
-    'Entrepreneurship',
-    /\b(startup|entrepreneur|founder|venture|pitch|demo day|skydeck|berkeley haas|e-?hub|product management|innovation)\b/i,
-  ],
-  [
-    'Student Life',
-    /\b(club|social|mixer|orientation|workshop|career|networking|student org|grad student|undergrad|outing|trip|tour|reception|meetup|tabling|info session|open house|coffee chat|lunch|dinner|brunch|retreat|celebration|commencement|graduation|wellness|housing|welcome|student association)\b/i,
-  ],
+// ─── Keyword lists per category ─────────────────────────────────────────────
+// Each matched keyword adds its field weight to that category's score.
+// Keywords are matched as whole words (word boundaries) in the lowercased text.
+const KEYWORDS: Array<[FrontendCategory, string[]]> = [
+  ['Science & Tech', [
+    'ai', 'machine learning', 'deep learning', 'data science', 'computer science',
+    'engineering', 'robotics', 'biotech', 'genomics', 'physics', 'chemistry',
+    'biology', 'stem', 'hackathon', 'eecs', 'computing', 'nanotechnology',
+    'neuroscience', 'quantum', 'semiconductor', 'algorithm', 'software',
+    'hardware', 'cybersecurity', 'bioinformatics', 'solid state', 'photonics',
+    'materials', 'nanosystem', 'convergent',
+  ]],
+  ['Academic', [
+    'seminar', 'colloquium', 'lecture', 'symposium', 'panel', 'guest speaker',
+    'dissertation', 'defense', 'research', 'department', 'institute', 'center',
+    'program', 'advising', 'lab', 'laboratory', 'office hours', 'conference',
+    'workshop', 'talk', 'forum', 'roundtable', 'thesis',
+  ]],
+  ['Arts', [
+    'concert', 'recital', 'performance', 'exhibit', 'exhibition', 'gallery',
+    'film', 'screening', 'theatre', 'theater', 'dance', 'opera', 'museum',
+    'bampfa', 'cal performances', 'poetry', 'art show', 'installation',
+    'documentary', 'composer', 'choreography',
+  ]],
+  ['Sports', [
+    'basketball', 'football', 'baseball', 'softball', 'soccer', 'volleyball',
+    'swim meet', 'swim team', 'track and field', 'track meet', 'track team',
+    'tennis', 'gymnastics', 'water polo', 'rugby', 'lacrosse', 'game vs',
+    'cal bears', 'intramural', 'rec sports', 'rowing', 'crew team', 'wrestling',
+    'golf', 'cross country', 'field hockey',
+  ]],
+  ['Entrepreneurship', [
+    'startup', 'entrepreneur', 'founder', 'venture', 'pitch', 'demo day',
+    'skydeck', 'e-hub', 'product management', 'innovation', 'investment',
+    'vc', 'accelerator', 'incubator', 'angel investor', 'seed funding',
+    'go-to-market', 'product launch', 'market fit',
+  ]],
+  ['Student Life', [
+    'club', 'social', 'mixer', 'orientation', 'career fair', 'networking',
+    'student org', 'grad student', 'undergrad', 'reception', 'meetup',
+    'tabling', 'info session', 'open house', 'coffee chat', 'retreat',
+    'celebration', 'commencement', 'graduation', 'wellness', 'welcome week',
+    'student association', 'gsa', 'asa', 'dsp',
+  ]],
 ];
 
-function classifyText(text: string): FrontendCategory[] {
-  const normalized = text.trim().toLowerCase();
-  const matches = new Set<FrontendCategory>();
+// Pre-build word-boundary regexes once at module load
+const KEYWORD_PATTERNS: Array<[FrontendCategory, RegExp]> = KEYWORDS.map(
+  ([cat, words]) => [
+    cat,
+    new RegExp(`\\b(${words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'i'),
+  ]
+);
 
-  if (normalized === 'academic') matches.add('Academic');
-  if (normalized === 'arts' || normalized === 'art') matches.add('Arts');
-  if (normalized === 'sports' || normalized === 'sport') matches.add('Sports');
-  if (normalized === 'science & tech' || normalized === 'science and tech' || normalized === 'science' || normalized === 'tech') {
-    matches.add('Science & Tech');
-  }
-  if (normalized === 'student life' || normalized === 'student') matches.add('Student Life');
-  if (normalized === 'entrepreneurship' || normalized === 'entrepreneur') matches.add('Entrepreneurship');
-  for (const [category, pattern] of CATEGORY_PATTERNS) {
-    if (pattern.test(text)) matches.add(category);
-  }
-  return Array.from(matches);
+// Pre-build per-keyword regexes for counting multiple hits
+const KEYWORD_INDIVIDUAL: Array<[FrontendCategory, RegExp[]]> = KEYWORDS.map(
+  ([cat, words]) => [
+    cat,
+    words.map(w => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi')),
+  ]
+);
+
+function countMatches(text: string, patterns: RegExp[]): number {
+  return patterns.reduce((sum, re) => {
+    re.lastIndex = 0;
+    const m = text.match(re);
+    return sum + (m ? m.length : 0);
+  }, 0);
 }
 
-function dedupeOrderedTags(tags: FrontendCategory[]): FrontendCategory[] {
-  return TAG_PRIORITY.filter(category => tags.includes(category));
-}
+// ─── Exact source-tag normalisation ─────────────────────────────────────────
+const SOURCE_TAG_MAP: Record<string, FrontendCategory> = {
+  'academic': 'Academic', 'academics': 'Academic',
+  'arts': 'Arts', 'art': 'Arts',
+  'sports': 'Sports', 'sport': 'Sports', 'athletics': 'Sports',
+  'science & tech': 'Science & Tech', 'science and tech': 'Science & Tech',
+  'science': 'Science & Tech', 'tech': 'Science & Tech', 'technology': 'Science & Tech',
+  'entrepreneurship': 'Entrepreneurship', 'entrepreneur': 'Entrepreneurship', 'business': 'Entrepreneurship',
+  'student life': 'Student Life', 'student': 'Student Life',
+};
 
-export function deriveFrontendTags(event: { title: string; description: string; categories: string[]; organizer: string }): FrontendCategory[] {
-  const matches = new Set<FrontendCategory>();
-  for (const text of [event.title, event.description, event.organizer, ...event.categories]) {
-    for (const category of classifyText(text)) {
-      matches.add(category);
+function scoreEvent(event: {
+  title: string;
+  description: string;
+  categories: string[];
+  organizer: string;
+}): Map<FrontendCategory, number> {
+  const scores = new Map<FrontendCategory, number>(
+    FRONTEND_CATEGORIES.map(c => [c, 0])
+  );
+
+  const add = (cat: FrontendCategory, weight: number) =>
+    scores.set(cat, (scores.get(cat) ?? 0) + weight);
+
+  // 1. Organizer identity mapping (highest confidence)
+  for (const [pattern, cat] of ORGANIZER_MAP) {
+    if (pattern.test(event.organizer)) {
+      add(cat, W_ORGANIZER_MAP);
+      break; // one organizer map match is enough
     }
   }
-  return dedupeOrderedTags(Array.from(matches));
+
+  // 2. Source tag exact match
+  for (const tag of event.categories) {
+    const mapped = SOURCE_TAG_MAP[tag.trim().toLowerCase()];
+    if (mapped) add(mapped, W_SOURCE_TAG);
+  }
+
+  // 3. Keyword scoring: title (high), organizer text (medium), description (low)
+  for (const [cat, patterns] of KEYWORD_INDIVIDUAL) {
+    const titleHits = countMatches(event.title, patterns);
+    const orgHits   = countMatches(event.organizer, patterns);
+    const descHits  = countMatches(event.description, patterns);
+    if (titleHits) add(cat, titleHits * W_TITLE_KEYWORD);
+    if (orgHits)   add(cat, orgHits   * W_ORGANIZER_KW);
+    if (descHits)  add(cat, descHits  * W_DESC_KEYWORD);
+  }
+
+  return scores;
 }
 
-export function inferCategory(event: { title: string; description: string; categories: string[]; organizer: string }): FrontendCategory {
+export function deriveFrontendTags(event: {
+  title: string;
+  description: string;
+  categories: string[];
+  organizer: string;
+}): FrontendCategory[] {
+  const scores = scoreEvent(event);
+  // Sort by score descending; only include categories with score > 0
+  return ([...scores.entries()] as [FrontendCategory, number][])
+    .filter(([, s]) => s > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([cat]) => cat);
+}
+
+export function inferCategory(event: {
+  title: string;
+  description: string;
+  categories: string[];
+  organizer: string;
+}): FrontendCategory {
   return deriveFrontendTags(event)[0] ?? 'Student Life';
+}
+
+// Keep for legacy call sites that pass a pre-built tag array
+function dedupeOrderedTags(tags: FrontendCategory[]): FrontendCategory[] {
+  // Preserve original order but deduplicate
+  return [...new Set(tags.filter((t): t is FrontendCategory =>
+    FRONTEND_CATEGORIES.includes(t as FrontendCategory)
+  ))];
 }
 
 export function cleanTitle(raw: string): string {
