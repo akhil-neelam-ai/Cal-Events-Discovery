@@ -1204,8 +1204,23 @@ function DesktopHero({
     : 'Search Berkeley events by topic, speaker, venue, or organizer, then refine with filters below.';
 
   return (
-    <header className="hidden md:block bg-gradient-to-br from-berkeley-blue via-[#002949] to-[#001b30] text-white border-b-4 border-berkeley-gold shadow-md">
-      <div className="container mx-auto px-6 py-8 lg:py-9">
+    <header
+      className="hidden md:block text-white border-b-4 border-[#FDB515] shadow-md relative overflow-hidden"
+      style={{ background: 'linear-gradient(165deg, #003262 0%, #00233F 100%)' }}
+    >
+      {/* Gold radial glow — top right */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-24 -right-24 w-[520px] h-[520px] rounded-full"
+        style={{ background: 'radial-gradient(circle, rgba(253,181,21,0.28) 0%, transparent 65%)' }}
+      />
+      {/* Subtle gold glow — bottom left */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-20 -left-20 w-[360px] h-[360px] rounded-full"
+        style={{ background: 'radial-gradient(circle, rgba(253,181,21,0.15) 0%, transparent 65%)' }}
+      />
+      <div className="container mx-auto px-6 py-8 lg:py-9 relative z-10">
         <div className="flex items-center justify-between gap-6 mb-6">
           <div className="flex items-baseline gap-2">
             <span className="text-berkeley-gold text-2xl font-bold tracking-tight">Cal</span>
@@ -1277,7 +1292,7 @@ function DesktopHero({
                   key={preset.label}
                   type="button"
                   onClick={() => onPresetSelect(preset)}
-                  className="rounded-full border border-berkeley-gold/30 bg-berkeley-gold/10 px-4 py-2 text-sm font-medium text-berkeley-blue transition hover:border-berkeley-gold hover:bg-berkeley-gold/20"
+                  className="rounded-full border border-[rgba(253,181,21,0.5)] bg-[rgba(253,181,21,0.08)] px-4 py-2 text-sm font-medium text-[#003262] transition hover:border-[#FDB515] hover:bg-[rgba(253,181,21,0.18)]"
                 >
                   {preset.label}
                 </button>
