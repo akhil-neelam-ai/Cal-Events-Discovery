@@ -111,19 +111,21 @@ export function searchEvents(
   const { tokens, intents, raw } = parseQuery(query);
   if (tokens.length === 0 && !raw) return { results: events, intents, matchedTokens: [] };
 
-  // Build a position-based lookup for the current event pool
-  const eventMap = new Map(events.map(e => [e.id, e]));
+  // Build a position-based lookup for the current filtered pool.
+  // The published index stores positions against the full snapshot, so we
+  // cannot assume index position === events[] position once category/source
+  // filters have narrowed the pool.
+  const eventPosById = new Map<string, number>();
+  if (index) {
+    index.ids.forEach((id, pos) => {
+      eventPosById.set(id, pos);
+    });
+  }
   const scored: SearchResult[] = [];
   const scoredIds = new Set<string>();
 
   // Phase 1: inverted index lookup + field-weight scoring
   if (index && tokens.length > 0) {
-    // pos → eventId lookup helper (only valid if event is in our filtered pool)
-    const eventByPos = (pos: number) => {
-      const id = index.ids[pos];
-      return id ? eventMap.get(id) : undefined;
-    };
-
     const candidatePos = new Set<number>();
     for (const token of tokens) {
       for (const pos of index.t[token] ?? []) candidatePos.add(pos);
@@ -132,8 +134,17 @@ export function searchEvents(
       for (const pos of index.d[token] ?? []) candidatePos.add(pos);
     }
 
-    for (const pos of candidatePos) {
-      const ev = eventByPos(pos);
+    const posToEvent = new Map<number, CalEvent>();
+    for (const event of events) {
+      const pos = eventPosById.get(event.id);
+      if (typeof pos === 'number' && candidatePos.has(pos)) {
+        posToEvent.set(pos, event);
+      }
+    }
+
+    const eventByPos = (pos: number) => posToEvent.get(pos);
+
+    for (const [pos, ev] of posToEvent.entries()) {
       if (!ev) continue;
       const score = scoreByPos(pos, tokens, raw, index, eventByPos);
       if (score > 0) {

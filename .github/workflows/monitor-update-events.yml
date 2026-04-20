@@ -1,0 +1,110 @@
+name: Monitor Update Events Health
+
+on:
+  workflow_run:
+    workflows: ["Update Events Daily"]
+    types:
+      - completed
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+jobs:
+  report-failure:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or update failure issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const marker = '[update-events-health]';
+            const title = `${marker} Daily events update failed`;
+            const run = context.payload.workflow_run;
+            const body = [
+              `${marker}`,
+              '',
+              'The scheduled **Update Events Daily** workflow failed.',
+              '',
+              `- Run: ${run.html_url}`,
+              `- Branch: ${run.head_branch}`,
+              `- SHA: ${run.head_sha}`,
+              `- Triggered at: ${run.created_at}`,
+              '',
+              'Please investigate the failing workflow and close or update this issue when the snapshot pipeline is healthy again.',
+            ].join('\n');
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100,
+            });
+
+            const existing = issues.find(issue => issue.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: existing.number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner,
+                repo,
+                title,
+                body,
+                labels: ['bug'],
+              });
+            }
+
+  clear-failure:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close open failure issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const marker = '[update-events-health]';
+            const title = `${marker} Daily events update failed`;
+            const run = context.payload.workflow_run;
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100,
+            });
+
+            const existing = issues.find(issue => issue.title === title);
+            if (!existing) {
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: existing.number,
+              body: [
+                `${marker}`,
+                '',
+                `A subsequent **Update Events Daily** run succeeded: ${run.html_url}`,
+                '',
+                'Closing this health alert.',
+              ].join('\n'),
+            });
+
+            await github.rest.issues.update({
+              owner,
+              repo,
+              issue_number: existing.number,
+              state: 'closed',
+            });

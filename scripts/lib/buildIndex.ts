@@ -28,7 +28,10 @@ function finalise(map: FieldMap): Record<string, number[]> {
   return out;
 }
 
-export function buildSearchIndex(events: LegacyCalEvent[]): SearchIndex {
+export function buildSearchIndex(
+  events: LegacyCalEvent[],
+  buildAt = new Date().toISOString(),
+): SearchIndex {
   const ids: string[] = events.map(e => e.id);
   const t: FieldMap = {};
   const g: FieldMap = {};
@@ -49,7 +52,7 @@ export function buildSearchIndex(events: LegacyCalEvent[]): SearchIndex {
     g: finalise(g),
     o: finalise(o),
     d: finalise(d),
-    buildAt: new Date().toISOString(),
+    buildAt,
     eventCount: events.length,
   };
 }
