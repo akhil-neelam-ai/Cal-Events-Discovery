@@ -8,7 +8,7 @@ export type { SearchIndex };
 // ─── SearchPlan ───────────────────────────────────────────────────────────────
 
 export interface SearchFilter {
-  dateRange?:  'today' | 'week' | 'upcoming';
+  dateRange?:  'today' | 'tomorrow' | 'week' | 'upcoming';
   timeOfDay?:  'morning' | 'afternoon' | 'evening';
   category?:   string;
   campusArea?: 'northside' | 'southside' | 'downtown';
@@ -91,7 +91,7 @@ export function buildSearchPlan(query: string): SearchPlan {
     interpretations.push({ key: 'dateRange:today', label: 'Today' });
     cleaned = cleaned.replace(RE_TODAY, '').trim();
   } else if (RE_TOMORROW.test(raw)) {
-    filters.dateRange = 'week';
+    filters.dateRange = 'tomorrow';
     interpretations.push({ key: 'dateRange:tomorrow', label: 'Tomorrow' });
     cleaned = cleaned.replace(RE_TOMORROW, '').trim();
   } else if (RE_WEEK.test(raw)) {
@@ -143,10 +143,11 @@ export function buildSearchPlan(query: string): SearchPlan {
   }
 
   // ── Campus area ───────────────────────────────────────────────────────────
-  for (const [area, pattern, label] of AREA_PATTERNS) {
+  // (detection kept for future use, but chip intentionally not shown — filter
+  //  is not yet applied in applyPoolFilters, so showing a chip would be misleading)
+  for (const [area, pattern] of AREA_PATTERNS) {
     if (pattern.test(raw)) {
       filters.campusArea = area;
-      interpretations.push({ key: `campusArea:${area}`, label });
       break;
     }
   }
@@ -400,7 +401,6 @@ export function searchEvents(
     if (field === 'timeOfDay')  delete plan.filters.timeOfDay;
     if (field === 'free')       delete plan.filters.free;
     if (field === 'modality')   delete plan.filters.modality;
-    if (field === 'campusArea') delete plan.filters.campusArea;
   }
   plan.interpretations = plan.interpretations.filter(i => !dismissedKeys.has(i.key));
 
