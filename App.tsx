@@ -1274,7 +1274,7 @@ function DesktopHero({
                   }
                 }}
               />
-              {searchFocused && !searchQuery && (
+              {searchFocused && (
                 <SearchSuggestionsDropdown
                   recents={recents}
                   onSelect={handleSelectSuggestion}
@@ -2023,7 +2023,7 @@ export default function App() {
                     </svg>
                   </button>
                 )}
-                {mobileSearchFocused && !filters.searchQuery && (
+                {mobileSearchFocused && (
                   <SearchSuggestionsDropdown
                     recents={mobileRecents}
                     onSelect={(q) => {

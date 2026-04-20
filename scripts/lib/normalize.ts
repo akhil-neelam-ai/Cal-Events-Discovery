@@ -37,7 +37,7 @@ const CATEGORY_PATTERNS: Array<[FrontendCategory, RegExp]> = [
   ],
   [
     'Sports',
-    /\b(basketball|football|baseball|softball|soccer|volleyball|swim|track|tennis|gymnastics|water polo|rugby|lacrosse|game vs|cal bears|intramural|rec sports)\b/i,
+    /\b(basketball|football|baseball|softball|soccer|volleyball|swim meet|swim team|swimming pool|track and field|track meet|track team|track athlete|tennis|gymnastics|water polo|rugby|lacrosse|game vs|cal bears|intramural|rec sports|rowing|crew team)\b/i,
   ],
   [
     'Science & Tech',
