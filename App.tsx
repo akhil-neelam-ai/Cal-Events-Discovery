@@ -359,6 +359,13 @@ function formatPacificDateTime(timestamp: number): string {
   return PACIFIC_SYNC_FORMATTER.format(new Date(timestamp));
 }
 
+function getTimeOfDay(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'morning';
+  if (hour < 17) return 'afternoon';
+  return 'evening';
+}
+
 function formatStatusSources(status: IngestionStatus): string {
   const failed = status.sources.filter(source => !source.ok).map(source => SOURCE_LABELS[source.name] || source.name);
   if (failed.length === 0) {
@@ -1221,8 +1228,8 @@ function DesktopHero({
 
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-4xl lg:text-[3.35rem] font-semibold leading-tight tracking-tight font-serif" style={{ textWrap: 'balance' }}>
-            Discover your next&nbsp;
-            <span className="text-berkeley-gold italic font-medium">Berkeley event.</span>
+            Good {getTimeOfDay()}, Bear.&nbsp;
+            <span className="text-berkeley-gold italic font-medium">Let&apos;s find something interesting.</span>
           </h1>
           <p className="mt-3 text-[15px] leading-7 text-white/72">
             {summaryCopy}
