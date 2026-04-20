@@ -1211,14 +1211,14 @@ function DesktopHero({
       {/* Gold radial glow — top right */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-24 -right-24 w-[520px] h-[520px] rounded-full"
-        style={{ background: 'radial-gradient(circle, rgba(253,181,21,0.28) 0%, transparent 65%)' }}
+        className="pointer-events-none absolute -top-16 -right-16 w-[440px] h-[440px] rounded-full"
+        style={{ background: 'radial-gradient(circle, rgba(253,181,21,0.38) 0%, transparent 60%)', mixBlendMode: 'screen' }}
       />
       {/* Subtle gold glow — bottom left */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-20 -left-20 w-[360px] h-[360px] rounded-full"
-        style={{ background: 'radial-gradient(circle, rgba(253,181,21,0.15) 0%, transparent 65%)' }}
+        className="pointer-events-none absolute -bottom-16 -left-16 w-[320px] h-[320px] rounded-full"
+        style={{ background: 'radial-gradient(circle, rgba(253,181,21,0.18) 0%, transparent 60%)', mixBlendMode: 'screen' }}
       />
       <div className="container mx-auto px-6 py-8 lg:py-9 relative z-10">
         <div className="flex items-center justify-between gap-6 mb-6">
@@ -1233,15 +1233,15 @@ function DesktopHero({
         </div>
 
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-4xl lg:text-[3.35rem] font-semibold leading-tight tracking-tight font-serif" style={{ textWrap: 'balance' }}>
+          <h1 className="text-4xl lg:text-[3.35rem] font-semibold leading-tight font-serif" style={{ textWrap: 'balance', letterSpacing: '-0.02em' }}>
             {getGreeting()},&nbsp;
-            <span className="text-berkeley-gold italic font-medium">what&apos;s the move?</span>
+            <span className="text-berkeley-gold italic font-medium" style={{ textShadow: '0 0 40px rgba(253,181,21,0.35)' }}>what&apos;s the move?</span>
           </h1>
           <p className="mt-3 text-[15px] leading-7 text-white/72">
             {summaryCopy}
           </p>
 
-          <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-white p-4 shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
+          <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-white p-4" style={{ boxShadow: '0 2px 4px rgba(0,50,98,0.08), 0 12px 40px rgba(0,50,98,0.18), 0 0 0 1px rgba(253,181,21,0.12)' }}>
             <div className="relative">
               <label htmlFor={inputId} className="sr-only">
                 Search campus events
@@ -1321,7 +1321,7 @@ function DesktopFiltersBar({
   onSourceChange: (next: string) => void;
 }) {
   return (
-    <div className="bg-white/95 backdrop-blur border-b border-slate-200">
+    <div className="bg-white/90 backdrop-blur-md" style={{ boxShadow: '0 1px 0 rgba(253,181,21,0.22)' }}>
       <div className="container mx-auto px-4 py-3 flex items-center gap-3 overflow-x-auto no-scrollbar whitespace-nowrap">
         <div className="flex flex-shrink-0 items-center gap-1 rounded-full bg-slate-100 p-1 shadow-inner">
           {DateRanges.map(range => {
@@ -1330,10 +1330,10 @@ function DesktopFiltersBar({
               <button
                 key={range.value}
                 onClick={() => onDateChange(range.value as SearchFilters['dateRange'])}
-                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                className={`px-4 py-2 text-sm font-semibold transition ${
                   active
-                    ? 'bg-berkeley-blue text-white shadow-sm'
-                    : 'text-slate-600 hover:bg-white hover:text-berkeley-blue'
+                    ? 'text-berkeley-blue border-b-2 border-[#FDB515] rounded-none bg-transparent'
+                    : 'rounded-full text-slate-600 hover:bg-white hover:text-berkeley-blue'
                 }`}
               >
                 {range.label}
@@ -2176,12 +2176,17 @@ export default function App() {
                           return (
                             <article
                               key={event.id || idx}
-                              className={`group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-[box-shadow,transform] duration-300 ease-out hover:shadow-xl hover:scale-[1.015] ${shouldAnimateCards ? 'animate-card-in opacity-0' : ''}`}
-                              style={shouldAnimateCards ? { animationDelay: `${Math.min(idx * 50, 500)}ms`, animationFillMode: 'forwards' } : undefined}
+                              className={`group flex h-full flex-col overflow-hidden rounded-2xl bg-white transition-[box-shadow,transform] duration-300 ease-out ${shouldAnimateCards ? 'animate-card-in opacity-0' : ''}`}
+                              style={{
+                                boxShadow: '0 1px 3px rgba(0,50,98,0.06), 0 4px 12px rgba(0,50,98,0.04)',
+                                ...(shouldAnimateCards ? { animationDelay: `${Math.min(idx * 50, 500)}ms`, animationFillMode: 'forwards' } : {}),
+                              }}
+                              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 24px rgba(0,50,98,0.12), 0 1px 3px rgba(0,50,98,0.06)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
+                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 3px rgba(0,50,98,0.06), 0 4px 12px rgba(0,50,98,0.04)'; (e.currentTarget as HTMLElement).style.transform = ''; }}
                             >
                               <div className="flex-grow p-5">
                                 <div className="mb-3">
-                                  <span className={`inline-flex rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${categoryStyle.accent}`}>
+                                  <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest ${categoryStyle.badge}`}>
                                     {event.tags?.[0] || 'Event'}
                                   </span>
                                 </div>
@@ -2222,18 +2227,34 @@ export default function App() {
                                 </div>
                               </div>
 
-                              <div className="flex items-center justify-between border-t border-gray-100 bg-gray-50/60 px-5 py-4">
+                              <div className="flex items-center justify-between border-t border-gray-100/80 px-5 py-3.5">
                                 <SourceBadge source={event.source} linked={false} />
-                                <button
-                                  type="button"
-                                  onClick={() => handleEventClick(event)}
-                                  className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-berkeley-blue transition-colors duration-200 hover:border-berkeley-medblue hover:text-berkeley-medblue focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
-                                >
-                                  View details
-                                  <svg className="h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                  </svg>
-                                </button>
+                                <div className="flex items-center gap-2">
+                                  {event.url && (
+                                    <a
+                                      href={event.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={e => { e.stopPropagation(); trackExternalLink({ event_id: event.id, event_title: event.title, destination_url: event.url }); }}
+                                      aria-label={`Open ${event.title} source page`}
+                                      className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white p-2 text-slate-400 transition hover:border-berkeley-gold hover:text-berkeley-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60"
+                                    >
+                                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                      </svg>
+                                    </a>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => handleEventClick(event)}
+                                    className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-berkeley-blue transition-colors duration-200 hover:border-berkeley-medblue hover:text-berkeley-medblue focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
+                                  >
+                                    View details
+                                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                  </button>
+                                </div>
                               </div>
                             </article>
                           );
