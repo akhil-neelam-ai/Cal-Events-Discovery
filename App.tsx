@@ -1098,13 +1098,18 @@ function SearchSuggestionsDropdown({
   onSelect: (q: string) => void;
   onClear: () => void;
 }) {
+  const recentItems = recents.slice(0, 3);
+  const popularItems = POPULAR_SEARCHES.filter(
+    suggestion => !recentItems.some(recent => recent.toLowerCase() === suggestion.toLowerCase()),
+  );
+
   const handleSuggestionSelect = (query: string) => {
     onSelect(query);
   };
 
   return (
-    <div className="absolute top-full left-0 right-0 z-50 mt-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
-      {recents.length > 0 && (
+    <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-lg">
+      {recentItems.length > 0 && (
         <div className="p-3">
           <div className="mb-2 flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Recent</span>
@@ -1116,7 +1121,7 @@ function SearchSuggestionsDropdown({
               Clear
             </button>
           </div>
-          {recents.map(s => (
+          {recentItems.map(s => (
             <button
               key={s}
               type="button"
@@ -1131,10 +1136,10 @@ function SearchSuggestionsDropdown({
           ))}
         </div>
       )}
-      <div className={`p-3 ${recents.length > 0 ? 'border-t border-slate-100' : ''}`}>
+      <div className={`p-3 ${recentItems.length > 0 ? 'border-t border-slate-100' : ''}`}>
         <span className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-slate-400">Popular</span>
         <div className="flex flex-wrap gap-1.5">
-          {POPULAR_SEARCHES.map(s => (
+          {popularItems.map(s => (
             <button
               key={s}
               type="button"
@@ -1172,6 +1177,7 @@ function DesktopHero({
   const [searchFocused, setSearchFocused] = useState(false);
   const [recents, setRecents] = useState<string[]>([]);
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showSuggestions = searchFocused && !searchQuery;
 
   const handleFocus = () => {
     if (blurTimerRef.current) clearTimeout(blurTimerRef.current);
@@ -1254,7 +1260,7 @@ function DesktopHero({
                   }
                 }}
               />
-              {searchFocused && !searchQuery && (
+              {showSuggestions && (
                 <SearchSuggestionsDropdown
                   recents={recents}
                   onSelect={handleSelectSuggestion}
@@ -1263,21 +1269,23 @@ function DesktopHero({
               )}
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center justify-center gap-3 border-t border-slate-100 pt-3">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
-                Quick Start
-              </span>
-              {DESKTOP_HERO_PRESETS.map((preset) => (
-                <button
-                  key={preset.label}
-                  type="button"
-                  onClick={() => onPresetSelect(preset)}
-                  className="rounded-full border border-berkeley-gold/30 bg-berkeley-gold/10 px-4 py-2 text-sm font-medium text-berkeley-blue transition hover:border-berkeley-gold hover:bg-berkeley-gold/20"
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
+            {!showSuggestions && (
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-3 border-t border-slate-100 pt-3">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
+                  Quick Start
+                </span>
+                {DESKTOP_HERO_PRESETS.map((preset) => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => onPresetSelect(preset)}
+                    className="rounded-full border border-berkeley-gold/30 bg-berkeley-gold/10 px-4 py-2 text-sm font-medium text-berkeley-blue transition hover:border-berkeley-gold hover:bg-berkeley-gold/20"
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
