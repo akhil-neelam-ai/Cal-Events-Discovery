@@ -1572,6 +1572,7 @@ export default function App() {
   const [pendingSelectedEventId, setPendingSelectedEventId] = useState<string | null>(initialUrlState.selectedEventId);
   const historyModeRef = useRef<'push' | 'replace'>('replace');
   const isApplyingHistoryRef = useRef(false);
+  const userSetDateRangeRef = useRef<boolean>(false);
   const [visibleEventCount, setVisibleEventCount] = useState(VISIBLE_EVENT_BATCH_SIZE);
 
   const handleEventClick = useCallback((event: CalEvent) => {
@@ -1703,9 +1704,18 @@ export default function App() {
     return null;
   }, [statusReport]);
 
-  const { todayKey, tomorrowKey, nextWeekKey } = useMemo(() => {
+  const [dateKeys, setDateKeys] = useState(() => {
     const today = getCurrentPacificDateKey();
     return { todayKey: today, tomorrowKey: addDaysToDateKey(today, 1), nextWeekKey: addDaysToDateKey(today, 7) };
+  });
+  const { todayKey, tomorrowKey, nextWeekKey } = dateKeys;
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      const today = getCurrentPacificDateKey();
+      setDateKeys({ todayKey: today, tomorrowKey: addDaysToDateKey(today, 1), nextWeekKey: addDaysToDateKey(today, 7) });
+    }, 60_000);
+    return () => clearInterval(id);
   }, []);
 
   // Active search plan — derived from query, used for chips + scoring.
@@ -1775,9 +1785,9 @@ export default function App() {
   );
 
   const derivedDateRange = useMemo<SearchFilters['dateRange']>(() => {
-    // #region agent log
-    fetch('http://127.0.0.1:7516/ingest/15c4e6cb-b1cc-4626-8508-34daea567dce',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'eb25fa'},body:JSON.stringify({sessionId:'eb25fa',runId:'pre-fix',hypothesisId:'H1',location:'App.tsx:derivedDateRange',message:'Computing derived date range',data:{searchQuery:filters.searchQuery,activePlanDateRange:activePlan?.filters.dateRange ?? null,dismissedKeys:Array.from(dismissedInterpretationKeys),activeChipKeys:activeChips.map(chip => chip.key),uiDateRange:filters.dateRange},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
+    // User's explicit filter-bar click always wins
+    if (userSetDateRangeRef.current) return filters.dateRange;
+    // Otherwise let query interpretation guide the date
     if (activePlan?.filters.dateRange && !dismissedInterpretationKeys.has(`dateRange:${activePlan.filters.dateRange}`)) {
       return activePlan.filters.dateRange;
     }
@@ -1999,15 +2009,17 @@ export default function App() {
   const prevSearchQueryRef = useRef<string>(filters.searchQuery);
 
   const handleSearchChange = useCallback((query: string) => {
-    // #region agent log
-    fetch('http://127.0.0.1:7516/ingest/15c4e6cb-b1cc-4626-8508-34daea567dce',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'eb25fa'},body:JSON.stringify({sessionId:'eb25fa',runId:'pre-fix',hypothesisId:'H2',location:'App.tsx:handleSearchChange',message:'Search query changed',data:{prevQuery:prevSearchQueryRef.current,nextQuery:query,nextQueryTrimmed:query.trim(),dismissedKeysBefore:Array.from(dismissedInterpretationKeys)},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     historyModeRef.current = 'replace';
     setFilters(prev => ({ ...prev, searchQuery: query }));
-    // Only reset dismissed chips when the query is cleared to empty,
-    // not on every keystroke (which caused chips to flicker mid-type).
-    if (query.length === 0 && prevSearchQueryRef.current.length > 0) {
+    // Reset dismissed chips when the first word changes (different search intent),
+    // and also reset the explicit date-range flag when the query is cleared.
+    const prevFirstWord = prevSearchQueryRef.current.trim().split(/\s+/)[0]?.toLowerCase() ?? '';
+    const nextFirstWord = query.trim().split(/\s+/)[0]?.toLowerCase() ?? '';
+    if (prevFirstWord !== nextFirstWord) {
       setDismissedInterpretationKeys(new Set());
+    }
+    if (query.length === 0) {
+      userSetDateRangeRef.current = false;
     }
     prevSearchQueryRef.current = query;
 
@@ -2020,14 +2032,12 @@ export default function App() {
   }, [filteredEvents.length]);
 
   const handleDismissChip = useCallback((key: string) => {
-    // #region agent log
-    fetch('http://127.0.0.1:7516/ingest/15c4e6cb-b1cc-4626-8508-34daea567dce',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'eb25fa'},body:JSON.stringify({sessionId:'eb25fa',runId:'pre-fix',hypothesisId:'H1',location:'App.tsx:handleDismissChip',message:'Interpretation chip dismissed',data:{dismissedKey:key,activeChipKeys:activeChips.map(chip => chip.key),activePlanDateRange:activePlan?.filters.dateRange ?? null},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     setDismissedInterpretationKeys(prev => new Set([...prev, key]));
   }, [activeChips, activePlan]);
 
   const handleDateRangeChange = useCallback((dateRange: SearchFilters['dateRange']) => {
     historyModeRef.current = 'push';
+    userSetDateRangeRef.current = true;
     setFilters(prev => ({ ...prev, dateRange }));
     trackDateFilter(dateRange);
   }, []);
