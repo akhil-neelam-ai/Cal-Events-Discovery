@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import { searchEvents } from '../../utils/searchEngine.ts';
 import { tokenize } from '../../utils/textUtils.ts';
+import { dedupeEvents } from '../lib/dedupe.ts';
 
 const EVENTS = [
   {
@@ -89,4 +90,71 @@ test('buildSearchIndex uses provided build timestamp', () => {
 
   assert.equal(index.buildAt, buildAt);
   assert.equal(index.eventCount, EVENTS.length);
+});
+
+test('searchEvents expands acronym queries into indexed long-form matches', () => {
+  const events = [
+    {
+      id: 'long-form-ai',
+      title: 'Machine Learning Colloquium',
+      organizer: 'AI Research Lab',
+      date: '2099-04-23',
+      time: '4:00 PM',
+      location: 'Soda Hall',
+      description: 'A colloquium on artificial intelligence and ethics.',
+      tags: ['Science & Tech'],
+      url: 'https://example.com/long-form-ai',
+      source: 'livewhale',
+    },
+  ];
+  const index = buildInlineIndex(events);
+
+  const { results } = searchEvents(events, 'AI', index);
+
+  assert.equal(results.length, 1);
+  assert.equal(results[0].id, 'long-form-ai');
+});
+
+test('dedupeEvents normalizes Unicode accents and case', () => {
+  const baseEvent = {
+    description: 'Campus concert',
+    start_at: '2099-04-20T19:00:00-07:00',
+    end_at: '2099-04-20T21:00:00-07:00',
+    timezone: 'America/Los_Angeles',
+    all_day: false,
+    venue: 'Zellerbach Hall',
+    building: '',
+    address: 'Berkeley, CA',
+    modality: 'in_person',
+    organizer: 'Music Dept',
+    organizer_unit: 'Music Dept',
+    audience: 'Public',
+    cost: 'Free',
+    canonical_url: 'https://example.com/cafe-concert',
+    source_url: 'https://example.com/cafe-concert',
+    categories: ['Arts'],
+    tags: ['Arts'],
+    last_seen_at: '2099-04-19T10:00:00Z',
+    confidence: 1,
+    quality_flags: [],
+  };
+
+  const { events, duplicatesRemoved } = dedupeEvents([
+    {
+      ...baseEvent,
+      source_name: 'ehub',
+      source_id: 'cafe-1',
+      title: 'Cafe Concert',
+    },
+    {
+      ...baseEvent,
+      source_name: 'livewhale',
+      source_id: 'cafe-2',
+      title: 'Café Concert',
+    },
+  ]);
+
+  assert.equal(duplicatesRemoved, 1);
+  assert.equal(events.length, 1);
+  assert.equal(events[0].source_name, 'livewhale');
 });

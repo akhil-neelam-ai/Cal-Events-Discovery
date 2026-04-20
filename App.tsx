@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo, useCallback, useRef, useId } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, useId, memo } from 'react';
 import { createPortal } from 'react-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { fetchEventsFromGemini } from './services/geminiService';
@@ -19,6 +19,7 @@ import type { SearchIndex } from './utils/textUtils';
 import { getRecentSearches, addRecentSearch, clearRecentSearches } from './utils/recentSearches';
 import { buildUrlStateSearch, parseUrlState } from './utils/urlState';
 import { getSnapshotTimestamp, isSearchIndexUsable } from './utils/snapshotValidation';
+import { APP_CATEGORIES } from './utils/categories';
 
 // Source provenance helpers
 const SOURCE_LABELS: Record<string, string> = {

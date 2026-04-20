@@ -6,16 +6,10 @@
  */
 
 import type { CanonicalEvent, LegacyCalEvent } from './schema.js';
-
-const FRONTEND_CATEGORIES = [
-  'Academic',
-  'Arts',
-  'Sports',
-  'Science & Tech',
-  'Student Life',
-  'Entrepreneurship',
-] as const;
-export type FrontendCategory = (typeof FRONTEND_CATEGORIES)[number];
+import {
+  FRONTEND_CATEGORIES,
+  type FrontendCategory,
+} from '../../utils/categories.js';
 
 const TAG_PRIORITY: readonly FrontendCategory[] = [
   'Entrepreneurship',
@@ -153,6 +147,8 @@ const STOPWORDS = new Set([
 
 export function normalizeForDedupe(title: string): string {
   return title
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^\p{L}\p{N}\s]+/gu, ' ')
     .split(/\s+/)

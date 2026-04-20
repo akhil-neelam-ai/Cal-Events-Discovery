@@ -52,10 +52,39 @@ export function parseQuery(query: string): ParsedQuery {
 // ─── Scoring ──────────────────────────────────────────────────────────────────
 
 const W = { title: 60, titlePhrase: 100, tag: 45, org: 30, desc: 10, recency: 15 } as const;
+const ALL_DAY_TIME_ZONE = 'America/Los_Angeles';
+const ALL_DAY_START_HOUR_PT = 8;
+
+function getRecencyReference(dateStr: string): number {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    if (!year || !month || !day) {
+      return Number.NaN;
+    }
+
+    // All-day dates are published in PT calendar days. Anchor them to 8 AM PT so
+    // the recency window does not shift backward when the browser parses them as UTC.
+    const utcHour = new Intl.DateTimeFormat('en-US', {
+      timeZone: ALL_DAY_TIME_ZONE,
+      hour: 'numeric',
+      hour12: false,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(new Date(Date.UTC(year, month - 1, day, ALL_DAY_START_HOUR_PT))).find(part => part.type === 'hour')?.value;
+
+    const ptOffsetHours = utcHour ? ALL_DAY_START_HOUR_PT - Number(utcHour) : 7;
+    return Date.UTC(year, month - 1, day, ALL_DAY_START_HOUR_PT - ptOffsetHours);
+  }
+
+  return new Date(dateStr).getTime();
+}
 
 function recencyBonus(dateStr: string): number {
   try {
-    const ms = new Date(dateStr).getTime() - Date.now();
+    const referenceMs = getRecencyReference(dateStr);
+    if (!Number.isFinite(referenceMs)) return 0;
+    const ms = referenceMs - Date.now();
     const days = ms / 86_400_000;
     if (days < 0 || days > 30) return 0;
     return Math.round(W.recency * (1 - days / 30));
@@ -221,6 +250,18 @@ export function expandTokens(query: string): string[] {
     if (expanded) extra.push(...tokenize(expanded));
   }
   return [...new Set([...base, ...extra])];
+}
+
+function expandQueryTokens(tokens: string[]): string[] {
+  const expanded = new Set(tokens);
+  for (const token of tokens) {
+    const synonymText = SYNONYMS[token];
+    if (!synonymText) continue;
+    for (const synonymToken of tokenize(synonymText)) {
+      expanded.add(synonymToken);
+    }
+  }
+  return Array.from(expanded);
 }
 
 // Re-export stem for consumers that need it
