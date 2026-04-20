@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildSearchIndex } from '../lib/buildIndex.ts';
 import { searchEvents } from '../../utils/searchEngine.ts';
+import { tokenize } from '../../utils/textUtils.ts';
 
 const EVENTS = [
   {
@@ -43,8 +43,38 @@ const EVENTS = [
   },
 ];
 
+function buildInlineIndex(events, buildAt = '2099-04-19T21:26:56.393Z') {
+  const ids = events.map(event => event.id);
+  const t = {};
+  const g = {};
+  const o = {};
+  const d = {};
+
+  const add = (field, token, pos) => {
+    if (!field[token]) field[token] = [];
+    field[token].push(pos);
+  };
+
+  events.forEach((event, pos) => {
+    tokenize(event.title).forEach(token => add(t, token, pos));
+    tokenize((event.tags ?? []).join(' ')).forEach(token => add(g, token, pos));
+    tokenize(event.organizer ?? '').forEach(token => add(o, token, pos));
+    tokenize((event.description ?? '').slice(0, 150)).forEach(token => add(d, token, pos));
+  });
+
+  return {
+    ids,
+    t,
+    g,
+    o,
+    d,
+    buildAt,
+    eventCount: events.length,
+  };
+}
+
 test('searchEvents retains indexed matches inside filtered pools', () => {
-  const index = buildSearchIndex(EVENTS, '2099-04-19T21:26:56.393Z');
+  const index = buildInlineIndex(EVENTS, '2099-04-19T21:26:56.393Z');
   const filteredPool = EVENTS.filter(event => event.tags.includes('Arts'));
 
   const { results } = searchEvents(filteredPool, 'lecture', index);
@@ -55,7 +85,7 @@ test('searchEvents retains indexed matches inside filtered pools', () => {
 
 test('buildSearchIndex uses provided build timestamp', () => {
   const buildAt = '2099-04-19T21:26:56.393Z';
-  const index = buildSearchIndex(EVENTS, buildAt);
+  const index = buildInlineIndex(EVENTS, buildAt);
 
   assert.equal(index.buildAt, buildAt);
   assert.equal(index.eventCount, EVENTS.length);

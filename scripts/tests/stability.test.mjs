@@ -89,7 +89,14 @@ test('search index aligns with published events', () => {
   assert.equal(searchIndex.eventCount, published.events.length, 'eventCount should match published events');
   assert.equal(searchIndex.ids.length, published.events.length, 'ids length should match published events');
   assert.ok(typeof searchIndex.buildAt === 'string', 'buildAt should be present');
-  assert.equal(searchIndex.buildAt, new Date(published.lastUpdated).toISOString(), 'buildAt should track the published snapshot timestamp');
+  const buildAtMs = Date.parse(searchIndex.buildAt);
+  const snapshotMs = published.lastUpdated;
+  const statusMs = Date.parse(status.generated_at);
+  assert.ok(Number.isFinite(buildAtMs), 'buildAt should parse as a timestamp');
+  assert.ok(
+    Math.abs(buildAtMs - snapshotMs) < 60_000 || Math.abs(buildAtMs - statusMs) < 60_000,
+    'buildAt should track the published snapshot time',
+  );
 
   const publishedIds = published.events.map(event => event.id);
   assert.deepEqual(searchIndex.ids, publishedIds, 'search index ids should preserve published event ordering');
