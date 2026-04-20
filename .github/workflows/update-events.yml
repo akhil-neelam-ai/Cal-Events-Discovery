@@ -2,8 +2,8 @@ name: Update Events Daily
 
 on:
   schedule:
-    # Runs daily at 14:00 UTC (6 AM PT during standard time, 7 AM PT during daylight time)
-    - cron: '0 14 * * *'
+    # Runs daily at 11:25 UTC (4:25 AM PDT / 3:25 AM PST) — off-peak to avoid Gemini 503s
+    - cron: '25 11 * * *'
   workflow_dispatch: # Allow manual trigger
 
 permissions:
