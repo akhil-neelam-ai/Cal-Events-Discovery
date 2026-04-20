@@ -19,11 +19,11 @@ export type FrontendCategory = (typeof FRONTEND_CATEGORIES)[number];
 
 const TAG_PRIORITY: readonly FrontendCategory[] = [
   'Entrepreneurship',
-  'Student Life',
   'Science & Tech',
   'Arts',
   'Sports',
   'Academic',
+  'Student Life', // catch-all — only wins if nothing more specific matches
 ];
 
 const CATEGORY_PATTERNS: Array<[FrontendCategory, RegExp]> = [
