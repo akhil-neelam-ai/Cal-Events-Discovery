@@ -13,8 +13,8 @@ import { GoogleGenAI } from '@google/genai';
 import type { CanonicalEvent } from '../lib/schema.js';
 import { CanonicalEventSchema } from '../lib/schema.js';
 
-const MAX_ATTEMPTS = 3;
-const BACKOFF_MS = [2_000, 8_000, 30_000];
+const MAX_ATTEMPTS = 4;
+const BACKOFF_MS = [15_000, 45_000, 90_000]; // longer waits for 503 congestion
 const MAX_EVENTS = 12;
 
 function sleep(ms: number): Promise<void> {
@@ -118,7 +118,8 @@ If you cannot find ${MAX_EVENTS} events that satisfy ALL requirements, return fe
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
       lastError = msg;
-      console.warn(`[gemini] attempt ${attempt}/${MAX_ATTEMPTS} failed: ${msg}`);
+      const is503 = /503|UNAVAILABLE|high demand/i.test(msg);
+      console.warn(`[gemini] attempt ${attempt}/${MAX_ATTEMPTS} failed${is503 ? ' (503 congestion)' : ''}: ${msg}`);
       if (/API_KEY_INVALID|API key not valid/i.test(msg)) {
         break;
       }
