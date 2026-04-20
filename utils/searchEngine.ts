@@ -91,8 +91,8 @@ export function buildSearchPlan(query: string): SearchPlan {
     interpretations.push({ key: 'dateRange:today', label: 'Today' });
     cleaned = cleaned.replace(RE_TODAY, '').trim();
   } else if (RE_TOMORROW.test(raw)) {
-    filters.dateRange = 'today';
-    interpretations.push({ key: 'dateRange:today', label: 'Tomorrow' });
+    filters.dateRange = 'week';
+    interpretations.push({ key: 'dateRange:tomorrow', label: 'Tomorrow' });
     cleaned = cleaned.replace(RE_TOMORROW, '').trim();
   } else if (RE_WEEK.test(raw)) {
     filters.dateRange = 'week';
@@ -359,7 +359,7 @@ function runScoring(pool: CalEvent[], plan: SearchPlan, index: SearchIndex | nul
       minMatchCharLength: 2,
     });
     const fuseQuery = fuzzyTokens.length > 0 ? fuzzyTokens.join(' ') : plan.raw;
-    for (const { item, score: fs } of fuse.search(fuseQuery)) {
+    for (const { item, score: fs } of fuse.search(fuseQuery, { limit: 100 })) {
       const relevance = Math.round((1 - (fs ?? 1)) * 40) + recencyBonus(item.date);
       const existing = scored.find(r => r.event.id === item.id);
       if (existing) { existing.score += relevance; }
@@ -427,7 +427,7 @@ export function searchEvents(
         const rangeLabel = plan.filters.dateRange === 'today' ? 'today' : 'this week';
         return {
           results: fallbackResults,
-          plan,
+          plan: relaxedPlan,
           fallbackUsed: true,
           fallbackMessage: `No matches for "${plan.keywords.join(' ')}" ${rangeLabel}. Showing upcoming results instead.`,
         };
