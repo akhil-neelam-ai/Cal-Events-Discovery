@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef, useId } from 'react';
+import { createPortal } from 'react-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { fetchEventsFromGemini } from './services/geminiService';
 import { CalEvent, IngestionStatus, SearchFilters, LoadingState } from './types';
@@ -210,7 +211,7 @@ function SourceDropdown({
         </svg>
       </button>
 
-      {open && panelPos && (
+      {open && panelPos && typeof document !== 'undefined' && createPortal(
         <div
           ref={panelRef}
           role="listbox"
@@ -250,7 +251,8 @@ function SourceDropdown({
               </button>
             );
           })}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
