@@ -654,7 +654,7 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
         </div>
 
         {/* Content */}
-        <div className="max-h-[calc(85vh-40px)] overflow-y-auto overscroll-contain px-5 pb-8">
+        <div className="max-h-[calc(85vh-40px)] overflow-y-auto overscroll-contain px-5 pb-[max(2rem,env(safe-area-inset-bottom))]">
           <div className="flex items-center justify-between mb-3">
             <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${categoryStyle.badge}`}>
               {categoryStyle.label}
@@ -1305,7 +1305,9 @@ function DesktopHero({
                 onBlur={handleBlur}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && searchQuery.trim()) {
-                    addRecentSearch(searchQuery.trim());
+                    const trimmed = searchQuery.trim();
+                    onSearchChange(trimmed);
+                    addRecentSearch(trimmed);
                     setSearchFocused(false);
                   }
                 }}
@@ -1561,7 +1563,7 @@ export default function App() {
   const desktopSearchInputId = useId();
   const mobileSearchInputId = useId();
   const isMobile = useIsMobile();
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [pendingSelectedEventId, setPendingSelectedEventId] = useState<string | null>(initialUrlState.selectedEventId);
   const historyModeRef = useRef<'push' | 'replace'>('replace');
   const isApplyingHistoryRef = useRef(false);
@@ -1590,13 +1592,19 @@ export default function App() {
     setLoading(LoadingState.LOADING);
     setStatusReport(null);
     try {
-      const [data] = await Promise.all([
+      const results = await Promise.all([
         fetchEventsFromGemini(),
         fetch('/search-index.json')
           .then(r => r.ok ? r.json() : null)
           .then((idx: SearchIndex | null) => { if (idx) setSearchIndex(idx); })
           .catch(() => { /* index not yet generated — fall back to Fuse-only */ }),
-      ]);
+      ]).catch((err: unknown) => {
+        console.error(err);
+        setLoading(LoadingState.ERROR);
+        return null;
+      });
+      if (!results) return;
+      const [data] = results;
       setAllEvents(data.events);
       setLastUpdated(data.lastUpdated);
       setStatusReport(data.status || null);
@@ -1709,7 +1717,8 @@ export default function App() {
   }, [activePlan, dismissedInterpretationKeys]);
 
   // Instant local filtering — category + source + home-game, then ranked search.
-  const baseFilteredEvents = useMemo(() => {
+  // Returns the full SearchOutput so fallbackMessage is strongly typed.
+  const searchOutput = useMemo(() => {
     const q = filters.searchQuery.trim();
 
     const pool = allEvents.filter(event => {
@@ -1725,20 +1734,20 @@ export default function App() {
     });
 
     if (!q) {
-      return [...pool].sort((a, b) => {
+      const sorted = [...pool].sort((a, b) => {
         const dateCompare = (getPacificDateKey(a.date) || '').localeCompare(getPacificDateKey(b.date) || '');
         if (dateCompare !== 0) return dateCompare;
         return (a.time || '').localeCompare(b.time || '') || a.title.localeCompare(b.title);
       });
+      return { results: sorted, fallbackUsed: false, fallbackMessage: undefined };
     }
 
     const { results, fallbackUsed, fallbackMessage } = searchEvents(pool, q, searchIndex, dismissedInterpretationKeys);
-    // Stash fallback message on the array so downstream can read it without a second memo
-    (results as any).__fallbackMessage = fallbackUsed ? fallbackMessage : undefined;
-    return results;
+    return { results, fallbackUsed, fallbackMessage: fallbackUsed ? fallbackMessage : undefined };
   }, [allEvents, filters.category, filters.searchQuery, filters.source, searchIndex, dismissedInterpretationKeys]);
 
-  const searchFallbackMessage: string | undefined = (baseFilteredEvents as any).__fallbackMessage;
+  const baseFilteredEvents = searchOutput.results;
+  const searchFallbackMessage: string | undefined = searchOutput.fallbackMessage;
 
   const todayEvents = useMemo(
     () => filterEventsByDateRange(baseFilteredEvents, 'today', todayKey, nextWeekKey),
@@ -1755,12 +1764,19 @@ export default function App() {
     [baseFilteredEvents, todayKey, nextWeekKey],
   );
 
-  const effectiveDateRange = useMemo<SearchFilters['dateRange']>(() => {
-    if (filters.dateRange === 'today' && todayEvents.length === 0 && weekEvents.length > 0) {
-      return 'week';
+  const derivedDateRange = useMemo<SearchFilters['dateRange']>(() => {
+    if (activePlan?.filters.dateRange && !dismissedInterpretationKeys.has(`dateRange:${activePlan.filters.dateRange}`)) {
+      return activePlan.filters.dateRange;
     }
     return filters.dateRange;
-  }, [filters.dateRange, todayEvents.length, weekEvents.length]);
+  }, [filters.dateRange, activePlan, dismissedInterpretationKeys]);
+
+  const effectiveDateRange = useMemo<SearchFilters['dateRange']>(() => {
+    if (derivedDateRange === 'today' && todayEvents.length === 0 && weekEvents.length > 0) {
+      return 'week';
+    }
+    return derivedDateRange;
+  }, [derivedDateRange, todayEvents.length, weekEvents.length]);
 
   const filteredEvents = useMemo(() => {
     if (effectiveDateRange === 'today') return todayEvents;
@@ -1768,7 +1784,7 @@ export default function App() {
     return upcomingEvents;
   }, [effectiveDateRange, todayEvents, weekEvents, upcomingEvents]);
 
-  const showingTodayFallback = filters.dateRange === 'today' && effectiveDateRange === 'week' && weekEvents.length > 0;
+  const showingTodayFallback = derivedDateRange === 'today' && effectiveDateRange === 'week' && weekEvents.length > 0;
 
   const emptyState = useMemo<EmptyStateConfig>(() => {
     const q = filters.searchQuery.trim();
@@ -1815,7 +1831,7 @@ export default function App() {
       };
     }
 
-    if (filters.dateRange === 'today' && weekEvents.length > 0) {
+    if (derivedDateRange === 'today' && weekEvents.length > 0) {
       return {
         title: 'Nothing on today.',
         description: `${weekEvents.length} event${weekEvents.length !== 1 ? 's' : ''} coming up this week though.`,
@@ -1826,7 +1842,7 @@ export default function App() {
       };
     }
 
-    if (filters.dateRange === 'week' && upcomingEvents.length > weekEvents.length) {
+    if (derivedDateRange === 'week' && upcomingEvents.length > weekEvents.length) {
       const upcomingBeyondWeek = upcomingEvents.length - weekEvents.length;
       return {
         title: 'Nothing is scheduled this week.',
@@ -1852,10 +1868,10 @@ export default function App() {
       description: 'Try broadening the date range or clearing the active search.',
       primaryLabel: 'Clear all filters',
       primaryAction: resetAll,
-      secondaryLabel: filters.dateRange !== 'upcoming' ? 'Show Upcoming' : undefined,
-      secondaryAction: filters.dateRange !== 'upcoming' ? showUpcoming : undefined,
+      secondaryLabel: derivedDateRange !== 'upcoming' ? 'Show Upcoming' : undefined,
+      secondaryAction: derivedDateRange !== 'upcoming' ? showUpcoming : undefined,
     };
-  }, [filters, upcomingEvents.length, weekEvents.length, effectiveDateRange]);
+  }, [filters, upcomingEvents.length, weekEvents.length, effectiveDateRange, derivedDateRange]);
 
   // Group sorted filtered events by Pacific date key
   const visibleEvents = useMemo(
@@ -1889,6 +1905,7 @@ export default function App() {
   useEffect(() => {
     setVisibleEventCount(VISIBLE_EVENT_BATCH_SIZE);
     setShouldAnimateCards(!prefersReducedMotion);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [filters, effectiveDateRange, prefersReducedMotion]);
 
   const selectedEventId = selectedEvent?.id ?? null;
@@ -1962,11 +1979,17 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
+  const prevSearchQueryRef = useRef<string>(filters.searchQuery);
+
   const handleSearchChange = useCallback((query: string) => {
     historyModeRef.current = 'replace';
     setFilters(prev => ({ ...prev, searchQuery: query }));
-    // Reset dismissed chips whenever the query changes
-    setDismissedInterpretationKeys(new Set());
+    // Only reset dismissed chips when the query is cleared to empty,
+    // not on every keystroke (which caused chips to flicker mid-type).
+    if (query.length === 0 && prevSearchQueryRef.current.length > 0) {
+      setDismissedInterpretationKeys(new Set());
+    }
+    prevSearchQueryRef.current = query;
 
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     if (query.trim().length >= 2) {
@@ -2064,7 +2087,9 @@ export default function App() {
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && filters.searchQuery.trim()) {
-                      addRecentSearch(filters.searchQuery.trim());
+                      const trimmed = filters.searchQuery.trim();
+                      handleSearchChange(trimmed);
+                      addRecentSearch(trimmed);
                       setMobileSearchFocused(false);
                     }
                   }}
