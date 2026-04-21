@@ -1140,7 +1140,7 @@ function SearchSuggestionsDropdown({
   };
 
   return (
-    <div className="absolute top-full left-0 right-0 z-50 mt-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+    <div className="absolute top-full left-0 right-0 z-[60] mt-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
       {recents.length > 0 && (
         <div className="p-3">
           <div className="mb-2 flex items-center justify-between">
