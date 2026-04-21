@@ -281,7 +281,7 @@ function SourceBadge({ source, linked = true }: { source?: string; linked?: bool
   );
   if (url && linked) {
     return (
-      <a href={url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-gray-600 transition-colors">
+      <a href={url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="inline-flex px-2 py-1 -mx-2 -my-1 rounded hover:text-gray-600 transition-colors">
         {inner}
       </a>
     );
@@ -367,12 +367,6 @@ function formatPacificDateTime(timestamp: number): string {
   return PACIFIC_SYNC_FORMATTER.format(new Date(timestamp));
 }
 
-function getGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 17) return 'Good afternoon';
-  return 'Good evening';
-}
 
 function formatStatusSources(status: IngestionStatus): string {
   const failed = status.sources.filter(source => !source.ok).map(source => SOURCE_LABELS[source.name] || source.name);
@@ -575,6 +569,7 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
   const [dragY, setDragY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [copied, setCopied] = useState(false);
   const categoryStyle = getCategoryStyle(event.tags?.[0]);
   const directionsUrl = getDirectionsUrl(event.location);
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -716,26 +711,47 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
 
           <div className="mb-6">
             <h3 className="font-bold text-gray-800 mb-2">About this event</h3>
-            <p className="text-gray-600 leading-relaxed">{event.description}</p>
+            <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{event.description}</p>
           </div>
 
           <div className="space-y-3">
-            {event.url && (
-              <a
-                href={event.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full py-3.5 bg-berkeley-blue text-white text-center font-bold rounded-xl tap-highlight select-none"
-                style={{ transition: 'transform 150ms cubic-bezier(0.32,0.72,0,1), opacity 150ms ease' }}
-                onClick={() => trackExternalLink({
-                  event_id: event.id,
-                  event_title: event.title,
-                  destination_url: event.url,
-                })}
+            <div className="flex gap-2">
+              {event.url && (
+                <a
+                  href={event.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 block py-3.5 bg-berkeley-blue text-white text-center font-bold rounded-xl tap-highlight select-none"
+                  style={{ transition: 'transform 150ms cubic-bezier(0.32,0.72,0,1), opacity 150ms ease' }}
+                  onClick={() => trackExternalLink({
+                    event_id: event.id,
+                    event_title: event.title,
+                    destination_url: event.url,
+                  })}
+                >
+                  View Official Page
+                </a>
+              )}
+              <button
+                type="button"
+                className="flex items-center gap-1.5 px-4 py-3.5 border border-slate-200 text-slate-700 font-semibold rounded-xl tap-highlight active:bg-slate-50 select-none"
+                style={{ transition: 'background-color 150ms ease' }}
+                onClick={() => {
+                  try {
+                    navigator.clipboard.writeText(window.location.href);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  } catch { /* clipboard not available */ }
+                }}
               >
-                View Official Page
-              </a>
-            )}
+                {copied ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-600" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                )}
+                <span>{copied ? 'Copied!' : 'Copy link'}</span>
+              </button>
+            </div>
             {directionsUrl && (
               <a
                 href={directionsUrl}
@@ -765,6 +781,7 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
 // Slide-out Panel Component (Desktop)
 function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => void }) {
   const [isClosing, setIsClosing] = useState(false);
+  const [copied, setCopied] = useState(false);
   const categoryStyle = getCategoryStyle(event.tags?.[0]);
   const directionsUrl = getDirectionsUrl(event.location);
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -813,7 +830,7 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className={`absolute top-0 right-0 h-full w-[450px] overflow-hidden bg-white shadow-2xl overscroll-contain ${prefersReducedMotion || isClosing ? '' : 'animate-slide-in'}`}
+        className={`absolute top-0 right-0 h-full w-[min(450px,90vw)] overflow-hidden bg-white shadow-2xl overscroll-contain ${prefersReducedMotion || isClosing ? '' : 'animate-slide-in'}`}
         style={{
           boxShadow: '-10px 0 40px rgba(0,0,0,0.15)',
           transform: isClosing ? 'translateX(100%)' : 'translateX(0)',
@@ -881,7 +898,7 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
 
           <div className="mb-8">
             <h3 className="font-bold text-gray-800 mb-3 text-lg">About this event</h3>
-            <p className="text-gray-600 leading-relaxed">{event.description}</p>
+            <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{event.description}</p>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -901,6 +918,25 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
                 View Official Page
               </a>
             )}
+            <button
+              type="button"
+              className="flex items-center justify-center gap-1.5 w-full py-3.5 border border-slate-200 text-slate-700 font-semibold rounded-xl tap-highlight active:bg-slate-50 select-none"
+              style={{ transition: 'background-color 150ms ease' }}
+              onClick={() => {
+                try {
+                  navigator.clipboard.writeText(window.location.href);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                } catch { /* clipboard not available */ }
+              }}
+            >
+              {copied ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-600" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+              )}
+              <span>{copied ? 'Copied!' : 'Copy link'}</span>
+            </button>
             {directionsUrl && (
               <a
                 href={directionsUrl}
@@ -954,7 +990,7 @@ const ALL_SOURCES = ['All', 'livewhale', 'ehub', 'gemini', 'cal_performances', '
 const DateRanges = [
   { label: 'Today', value: 'today' },
   { label: 'This Week', value: 'week' },
-  { label: 'Upcoming', value: 'upcoming' },
+  { label: 'All Events', value: 'upcoming' },
 ];
 
 const DEFAULT_FILTERS: SearchFilters = {
@@ -1370,7 +1406,7 @@ function DesktopFiltersBar({
 }) {
   return (
     <div className="bg-white/90 backdrop-blur-md" style={{ boxShadow: '0 1px 0 rgba(253,181,21,0.22)' }}>
-      <div className="container mx-auto px-4 py-3 flex items-center gap-3 overflow-x-auto no-scrollbar whitespace-nowrap">
+      <div className="container mx-auto px-4 py-3 flex items-center gap-3 overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent whitespace-nowrap">
         <div className="flex flex-shrink-0 items-center gap-1 rounded-full bg-slate-100 p-1 shadow-inner">
           {DateRanges.map(range => {
             const active = activeDateRange === range.value;
@@ -1579,6 +1615,15 @@ export default function App() {
   const isApplyingHistoryRef = useRef(false);
   const userSetDateRangeRef = useRef<boolean>(false);
   const [visibleEventCount, setVisibleEventCount] = useState(VISIBLE_EVENT_BATCH_SIZE);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 800);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleEventClick = useCallback((event: CalEvent) => {
     setSelectedEvent(event);
@@ -1666,6 +1711,14 @@ export default function App() {
   }, [allEvents]);
   const sourceCount = Math.max(sourceOptions.length - 1, 0);
 
+  const [bannerDismissed, setBannerDismissed] = useState(() =>
+    typeof sessionStorage !== 'undefined' && sessionStorage.getItem('statusBannerDismissed') === '1'
+  );
+  const dismissBanner = () => {
+    setBannerDismissed(true);
+    sessionStorage.setItem('statusBannerDismissed', '1');
+  };
+
   const statusBanner = useMemo(() => {
     if (!statusReport) {
       return null;
@@ -1750,7 +1803,7 @@ export default function App() {
         event.tags?.includes(filters.category);
 
       const matchesSource = filters.source === 'All' || event.source === filters.source;
-      return matchesCategory && matchesSource && isHomeGame(event);
+      return matchesCategory && matchesSource;
     });
 
     if (!q) {
@@ -2080,6 +2133,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-berkeley-lightgray text-gray-800 font-sans">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-berkeley-blue focus:text-white focus:rounded-md focus:text-sm focus:font-medium"
+      >
+        Skip to events
+      </a>
       <Analytics />
       {isMobile ? (
         <>
@@ -2216,21 +2275,29 @@ export default function App() {
         </>
       )}
 
-      {statusBanner && (
+      {statusBanner && !bannerDismissed && (
         <div className={statusBanner.tone === 'warning' ? 'bg-yellow-50 border-b border-yellow-200 text-yellow-900 text-xs' : 'bg-blue-50 border-b border-blue-200 text-blue-900 text-xs'}>
           <div className="container mx-auto px-4 py-2 flex items-start gap-2">
             <svg className={statusBanner.tone === 'warning' ? 'w-4 h-4 flex-shrink-0 mt-px text-yellow-700' : 'w-4 h-4 flex-shrink-0 mt-px text-blue-700'} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M5.07 19h13.86a2 2 0 001.74-2.99l-6.93-12a2 2 0 00-3.48 0l-6.93 12A2 2 0 005.07 19z" />
             </svg>
-            <span>
+            <span className="flex-1">
               <strong>{statusBanner.title}</strong> {statusBanner.message}
             </span>
+            <button
+              type="button"
+              onClick={dismissBanner}
+              aria-label="Dismiss"
+              className="flex-shrink-0 ml-2 text-current opacity-60 hover:opacity-100 transition-opacity"
+            >
+              ×
+            </button>
           </div>
         </div>
       )}
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 md:py-7">
+      <main id="main-content" className="container mx-auto px-4 py-6 md:py-7">
         
         {loading === LoadingState.LOADING && (
           <div className="flex flex-col items-center justify-center py-20 space-y-4">
@@ -2248,8 +2315,9 @@ export default function App() {
         {loading === LoadingState.ERROR && (
           <div className="text-center py-10 bg-red-50 rounded-xl border border-red-200 max-w-lg mx-auto">
             <h3 className="text-xl text-red-800 font-bold mb-2">Failed to Load Events</h3>
-            <p className="text-red-600 mb-4">We couldn't load the latest Berkeley event feed.</p>
-            <button onClick={() => loadEvents()} className="px-6 py-2 bg-berkeley-blue text-white rounded-lg font-bold hover:bg-berkeley-medblue transition shadow-md">Retry</button>
+            <p className="text-red-600 mb-2">We couldn't load the latest Berkeley event feed.</p>
+            <p className="text-red-600 text-sm mb-4">Check your connection and try again.</p>
+            <button onClick={() => loadEvents()} className="px-6 py-2 bg-red-700 hover:bg-red-800 text-white rounded-lg font-bold transition shadow-md">Retry</button>
           </div>
         )}
 
@@ -2275,7 +2343,7 @@ export default function App() {
                       type="button"
                       aria-label={`Remove ${chip.label} filter`}
                       onClick={() => handleDismissChip(chip.key)}
-                      className="ml-0.5 rounded-full p-0.5 text-slate-400 hover:bg-berkeley-gold/20 hover:text-berkeley-blue"
+                      className="ml-0.5 rounded-full p-2 -m-1 text-slate-400 hover:bg-berkeley-gold/20 hover:text-berkeley-blue transition-colors"
                     >
                       <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -2349,6 +2417,7 @@ export default function App() {
                           return (
                             <article
                               key={event.id || idx}
+                              aria-label={event.title}
                               className={`group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white will-change-transform cursor-pointer select-none ${shouldAnimateCards ? 'animate-card-in opacity-0' : ''}`}
                               style={{
                                 boxShadow: '0 1px 3px rgba(0,50,98,0.06), 0 4px 16px rgba(0,50,98,0.05)',
@@ -2374,6 +2443,9 @@ export default function App() {
                                   <span className={`inline-flex rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${categoryStyle.badge}`}>
                                     {event.tags?.[0] || 'Event'}
                                   </span>
+                                  {event.source === 'calbears' && !isHomeGame(event) && (
+                                    <span className="inline-flex items-center bg-gray-100 text-gray-600 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-widest">Away</span>
+                                  )}
                                   {event.url && (
                                     <a
                                       href={event.url}
@@ -2399,7 +2471,7 @@ export default function App() {
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                     <span className="font-medium text-slate-700">
-                                      {effectiveDateRange !== 'today' && `${formatEventDate(event.date)} · `}{event.time || '—'}
+                                      {effectiveDateRange !== 'today' && `${formatEventDate(event.date)} · `}{event.time || 'All day'}
                                     </span>
                                     {event.location && (
                                       <>
@@ -2438,8 +2510,11 @@ export default function App() {
                     ));
                   })()}
                 </div>
-                {hiddenEventCount > 0 && (
-                  <div className="mt-8 flex justify-center">
+                <div className="mt-6 flex flex-col items-center gap-3">
+                  <p className="text-sm text-gray-400 text-center">
+                    Showing {visibleEvents.length} of {filteredEvents.length} events
+                  </p>
+                  {hiddenEventCount > 0 ? (
                     <button
                       type="button"
                       onClick={() => setVisibleEventCount(count => count + VISIBLE_EVENT_BATCH_SIZE)}
@@ -2447,8 +2522,12 @@ export default function App() {
                     >
                       Load more events ({hiddenEventCount} remaining)
                     </button>
-                  </div>
-                )}
+                  ) : (
+                    <p className="text-sm text-gray-400 text-center">
+                      All {filteredEvents.length} events loaded
+                    </p>
+                  )}
+                </div>
               </>
             )}
 
@@ -2460,7 +2539,7 @@ export default function App() {
       <footer className="bg-berkeley-blue text-white/70 py-6 mt-10">
         <div className="container mx-auto px-4 text-center text-sm">
           <p className="mb-1">
-            I'm <a href="https://akhilneelam.com/" target="_blank" rel="noopener noreferrer" className="text-berkeley-gold hover:underline font-medium">Akhil</a>, MBA student at <span className="text-berkeley-gold font-medium">Haas School of Business</span>, and I built this to help Berkeley students discover campus events across different schools.
+            Built for Berkeley students to discover campus events across all schools and organizations. By <a href="https://akhilneelam.com/" target="_blank" rel="noopener noreferrer" className="text-berkeley-gold hover:underline font-medium">Akhil Neelam</a>, <span className="text-berkeley-gold font-medium">Haas MBA</span>.
           </p>
           <p>
             Feedback? Reach out at{' '}
@@ -2478,6 +2557,18 @@ export default function App() {
         ) : (
           <SlideOutPanel event={selectedEvent} onClose={handleCloseDetail} />
         )
+      )}
+
+      {/* Back to top */}
+      {showBackToTop && (
+        <button
+          type="button"
+          aria-label="Back to top"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-berkeley-blue text-white shadow-md transition-opacity duration-200 hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
+        >
+          ↑
+        </button>
       )}
     </div>
   );
