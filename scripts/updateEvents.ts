@@ -270,11 +270,19 @@ async function main(): Promise<void> {
   const { events: deduped, duplicatesRemoved } = dedupeEvents(allCanonical);
   console.log(`[orchestrator] dedupe removed ${duplicatesRemoved}, ${deduped.length} unique`);
 
+  // Strip canceled/postponed/rescheduled events from all sources
+  const canceledPattern = /^(canceled|cancelled|postponed|rescheduled)[:\s]/i;
+  const beforeCancel = deduped.length;
+  const active = deduped.filter(e => !canceledPattern.test(e.title));
+  if (beforeCancel !== active.length) {
+    console.log(`[orchestrator] removed ${beforeCancel - active.length} canceled/postponed events`);
+  }
+
   // Sort by date ascending
-  deduped.sort((a, b) => a.start_at.localeCompare(b.start_at));
+  active.sort((a, b) => a.start_at.localeCompare(b.start_at));
 
   // Project to legacy shape
-  const legacy: LegacyCalEvent[] = deduped.map(projectToLegacy);
+  const legacy: LegacyCalEvent[] = active.map(projectToLegacy);
 
   const recovery: RecoveryState = {
     fallbackSources: new Set<SourceName>(),

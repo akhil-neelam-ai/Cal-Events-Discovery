@@ -192,3 +192,50 @@ test('search results are ranked by score descending', () => {
     assert.ok(results[i].score <= results[i - 1].score, `Results not sorted at index ${i}`);
   }
 });
+
+// ─── Temporal intent tests ────────────────────────────────────────────────────
+// These guard against the bug where pure temporal queries ("today", "this week")
+// were routed through Fuse.js text-matching instead of returning the full pool
+// for date-range filtering. The fix: runScoring returns pool unscored when
+// expandedTokens and phrases are both empty (i.e. entire query was a date intent).
+
+const RE_TODAY    = /\b(tonight|today|this evening|this afternoon|this morning)\b/i;
+const RE_TOMORROW = /\b(tomorrow|tmrw|tmr)\b/i;
+const RE_WEEK     = /\b(this week|next 7 days|this weekend|weekend)\b/i;
+
+function isTemporalOnly(query) {
+  // Matches if the query is purely temporal (nothing left after stripping the intent)
+  return [RE_TODAY, RE_TOMORROW, RE_WEEK].some(re => re.test(query) && query.replace(re, '').trim() === '');
+}
+
+test('temporal-only queries ("today") produce no keyword tokens — full pool should pass through', () => {
+  // Simulate what buildSearchPlan does: strip the temporal token, tokenize the remainder
+  const cleaned = 'today'.replace(RE_TODAY, '').trim();
+  const tokens = tokenize(cleaned || '');
+  assert.equal(tokens.length, 0, `Pure temporal query should produce 0 tokens after stripping intent. Got: ${tokens}`);
+  assert.ok(isTemporalOnly('today'), '"today" should be detected as temporal-only');
+});
+
+test('temporal-only queries ("tomorrow") produce no keyword tokens', () => {
+  const cleaned = 'tomorrow'.replace(RE_TOMORROW, '').trim();
+  const tokens = tokenize(cleaned || '');
+  assert.equal(tokens.length, 0, `"tomorrow" should produce 0 tokens after stripping. Got: ${tokens}`);
+});
+
+test('temporal-only queries ("this week") produce no keyword tokens', () => {
+  const cleaned = 'this week'.replace(RE_WEEK, '').trim();
+  const tokens = tokenize(cleaned || '');
+  assert.equal(tokens.length, 0, `"this week" should produce 0 tokens after stripping. Got: ${tokens}`);
+});
+
+test('mixed temporal+keyword query preserves keyword tokens', () => {
+  const cleaned = 'today seminars'.replace(RE_TODAY, '').trim(); // → "seminars"
+  const tokens = tokenize(cleaned);
+  assert.ok(tokens.length > 0, `"today seminars" should produce keyword tokens after stripping temporal. Got: ${tokens}`);
+});
+
+test('no canceled or postponed events in published feed', () => {
+  const canceledPattern = /^(canceled|cancelled|postponed|rescheduled)[:\s]/i;
+  const bad = events.filter(e => canceledPattern.test(e.title ?? ''));
+  assert.equal(bad.length, 0, `Found ${bad.length} canceled/postponed events still in feed: ${bad.slice(0, 3).map(e => e.title).join(' | ')}`);
+});

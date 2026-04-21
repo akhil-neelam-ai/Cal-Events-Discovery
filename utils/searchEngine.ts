@@ -306,7 +306,9 @@ function applyPoolFilters(events: CalEvent[], plan: SearchPlan, dismissedKeys: S
 // ─── Core scorer ──────────────────────────────────────────────────────────────
 
 function runScoring(pool: CalEvent[], plan: SearchPlan, index: SearchIndex | null): CalEvent[] {
-  if (plan.expandedTokens.length === 0 && plan.phrases.length === 0 && !plan.raw) return pool;
+  // When the query is purely a temporal/intent signal (e.g. "today", "this week"),
+  // cleaned produces no keywords. Return pool unscored — date filtering happens in App.
+  if (plan.expandedTokens.length === 0 && plan.phrases.length === 0) return pool;
 
   const eventMap = new Map(pool.map(e => [e.id, e]));
   const scored: Array<{ event: CalEvent; score: number }> = [];

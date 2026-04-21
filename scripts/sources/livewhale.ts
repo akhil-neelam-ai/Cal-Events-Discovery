@@ -471,10 +471,16 @@ export async function fetchLiveWhale(): Promise<FetchResult> {
         continue;
       }
 
+      // Skip canceled/postponed events — check iCal STATUS field and title prefix.
+      const icalStatus = asString((ve as unknown as { status?: unknown }).status).toUpperCase();
+      if (icalStatus === 'CANCELLED' || icalStatus === 'CANCELED') { invalid++; continue; }
+
+      const summary = decodeIcalText(asString(ve.summary));
+      if (/^(canceled|cancelled|postponed|rescheduled)[:\s]/i.test(summary)) { invalid++; continue; }
+
       const url = asString(ve.url) || `https://events.berkeley.edu/live/events/${(ve as unknown as { uid?: string }).uid}`;
       const { slug, unit } = await unitFromUrl(url);
 
-      const summary = decodeIcalText(asString(ve.summary));
       const description = decodeIcalText(asString(ve.description));
       const location = decodeIcalText(asString(ve.location));
       const categoriesRaw = (ve as unknown as { categories?: string[] | string }).categories;

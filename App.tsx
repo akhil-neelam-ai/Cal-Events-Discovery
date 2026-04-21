@@ -2291,7 +2291,7 @@ export default function App() {
                 <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">Campus feed</p>
                 <h2 className="mt-1 text-2xl font-semibold text-berkeley-blue md:text-[2rem] md:font-serif">
                   {filters.category !== 'All' ? `${filters.category} · ` : ''}
-                  {effectiveDateRange === 'today' ? 'Today' : effectiveDateRange === 'week' ? 'This Week' : 'Upcoming'}
+                  {effectiveDateRange === 'today' ? 'Today' : effectiveDateRange === 'tomorrow' ? 'Tomorrow' : effectiveDateRange === 'week' ? 'This Week' : 'Upcoming'}
                   <span className="ml-2 text-sm font-normal text-slate-400">({filteredEvents.length})</span>
                 </h2>
                 {lastUpdated && (
@@ -2422,7 +2422,7 @@ export default function App() {
                                 <SourceBadge source={event.source} linked={false} />
                                 <button
                                   type="button"
-                                  onClick={() => handleEventClick(event)}
+                                  onClick={(e) => { e.stopPropagation(); handleEventClick(event); }}
                                   className="inline-flex items-center gap-1 text-sm font-semibold text-berkeley-blue transition-colors hover:text-berkeley-medblue focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60"
                                 >
                                   View details
