@@ -14,3 +14,20 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Remove grey iOS tap flash — all interactive elements */
+button, a, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth press feedback for touch targets */
+.tap-highlight {
+  transition: transform 150ms cubic-bezier(0.32, 0.72, 0, 1),
+              box-shadow 150ms cubic-bezier(0.32, 0.72, 0, 1),
+              background-color 150ms ease,
+              color 150ms ease,
+              border-color 150ms ease;
+}
+.tap-highlight:active {
+  transform: scale(0.95);
+}

@@ -632,7 +632,7 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
       {/* Backdrop */}
       <div
         aria-hidden="true"
-        className={`absolute inset-0 bg-black/50 ${prefersReducedMotion ? '' : `transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'animate-fade-in'}`}`}
+        className={`absolute inset-0 bg-black/40 backdrop-blur-[3px] ${prefersReducedMotion ? '' : `transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'animate-fade-in'}`}`}
         onClick={handleClose}
       />
       {/* Sheet */}
@@ -655,7 +655,7 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+          <div className="w-10 h-1 bg-slate-300 rounded-full" />
         </div>
 
         {/* Content */}
@@ -725,7 +725,8 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
                 href={event.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full py-3 bg-berkeley-blue text-white text-center font-bold rounded-lg hover:bg-berkeley-medblue transition"
+                className="block w-full py-3.5 bg-berkeley-blue text-white text-center font-bold rounded-xl tap-highlight select-none"
+                style={{ transition: 'transform 150ms cubic-bezier(0.32,0.72,0,1), opacity 150ms ease' }}
                 onClick={() => trackExternalLink({
                   event_id: event.id,
                   event_title: event.title,
@@ -740,7 +741,8 @@ function BottomSheet({ event, onClose }: { event: CalEvent; onClose: () => void 
                 href={directionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full py-3 border border-slate-200 text-slate-700 text-center font-semibold rounded-lg hover:bg-slate-50 transition"
+                className="block w-full py-3.5 border border-slate-200 text-slate-700 text-center font-semibold rounded-xl tap-highlight active:bg-slate-50 select-none"
+                style={{ transition: 'transform 150ms cubic-bezier(0.32,0.72,0,1), background-color 150ms ease' }}
                 onClick={(e) => {
                   e.stopPropagation();
                   trackExternalLink({
@@ -888,7 +890,8 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
                 href={event.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full py-3 bg-berkeley-blue text-white text-center font-bold rounded-lg hover:bg-berkeley-medblue transition"
+                className="block w-full py-3.5 bg-berkeley-blue text-white text-center font-bold rounded-xl tap-highlight select-none"
+                style={{ transition: 'transform 150ms cubic-bezier(0.32,0.72,0,1), opacity 150ms ease' }}
                 onClick={() => trackExternalLink({
                   event_id: event.id,
                   event_title: event.title,
@@ -903,7 +906,8 @@ function SlideOutPanel({ event, onClose }: { event: CalEvent; onClose: () => voi
                 href={directionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full py-3 border border-slate-200 text-slate-700 text-center font-semibold rounded-lg hover:bg-slate-50 transition"
+                className="block w-full py-3.5 border border-slate-200 text-slate-700 text-center font-semibold rounded-xl tap-highlight active:bg-slate-50 select-none"
+                style={{ transition: 'transform 150ms cubic-bezier(0.32,0.72,0,1), background-color 150ms ease' }}
                 onClick={(e) => {
                   e.stopPropagation();
                   trackExternalLink({
@@ -1140,7 +1144,7 @@ function SearchSuggestionsDropdown({
   };
 
   return (
-    <div className="absolute top-full left-0 right-0 z-[60] mt-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+    <div className="absolute top-full left-0 right-0 z-[60] mt-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl animate-dropdown-in" style={{ transformOrigin: 'top center' }}>
       {recents.length > 0 && (
         <div className="p-3">
           <div className="mb-2 flex items-center justify-between">
@@ -1158,7 +1162,7 @@ function SearchSuggestionsDropdown({
               key={s}
               type="button"
               onClick={() => handleSuggestionSelect(s)}
-              className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-50"
+              className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm text-slate-700 tap-highlight hover:bg-slate-50 active:bg-slate-100"
             >
               <svg className="h-3.5 w-3.5 flex-shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1176,7 +1180,7 @@ function SearchSuggestionsDropdown({
               key={s}
               type="button"
               onClick={() => handleSuggestionSelect(s)}
-              className="rounded-full border border-berkeley-gold/30 bg-berkeley-gold/10 px-3 py-1 text-xs text-berkeley-blue transition hover:bg-berkeley-gold/20"
+              className="rounded-full border border-berkeley-gold/30 bg-berkeley-gold/10 px-3 py-1 text-xs text-berkeley-blue tap-highlight hover:bg-berkeley-gold/20 active:bg-berkeley-gold/30 select-none"
             >
               {s}
             </button>
@@ -1444,7 +1448,7 @@ function MobileFiltersBar({
   const selectedSource = sourceOptions.find(option => option.value === filters.source)?.label || 'All sources';
 
   return (
-    <div className="bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <div className="bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
       <div className="container mx-auto px-4 py-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar whitespace-nowrap">
         {DateRanges.map(range => {
           const active = activeDateRange === range.value;
@@ -1452,10 +1456,10 @@ function MobileFiltersBar({
             <button
               key={range.value}
               onClick={() => onDateChange(range.value as SearchFilters['dateRange'])}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+              className={`rounded-full px-4 py-2 text-sm font-semibold tap-highlight select-none ${
                 active
-                  ? 'bg-berkeley-blue text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'bg-berkeley-blue text-white shadow-[0_2px_10px_rgba(0,50,98,0.25)]'
+                  : 'bg-slate-100 text-slate-600 active:bg-slate-200'
               }`}
             >
               {range.label}
@@ -1466,10 +1470,10 @@ function MobileFiltersBar({
         <button
           type="button"
           onClick={() => setAdvancedOpen(open => !open)}
-          className={`ml-auto inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+          className={`ml-auto inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold tap-highlight select-none ${
             advancedOpen || activeFilterCount > 0
-              ? 'border-berkeley-blue bg-berkeley-blue text-white shadow-sm'
-              : 'border-slate-200 bg-white text-slate-700'
+              ? 'border-berkeley-blue bg-berkeley-blue text-white shadow-[0_2px_10px_rgba(0,50,98,0.25)]'
+              : 'border-slate-200 bg-white text-slate-700 active:bg-slate-50'
           }`}
         >
           Filters
@@ -1482,7 +1486,7 @@ function MobileFiltersBar({
       </div>
 
       {advancedOpen && (
-        <div className="border-t border-slate-200 bg-white">
+        <div className="border-t border-slate-200/80 bg-white animate-panel-in">
           <div className="container mx-auto px-4 py-4 space-y-4">
             <div className="flex items-center justify-between">
               <div>
@@ -1496,7 +1500,7 @@ function MobileFiltersBar({
               <button
                 type="button"
                 onClick={() => setAdvancedOpen(false)}
-                className="text-sm font-medium text-slate-500"
+                className="text-sm font-semibold text-berkeley-blue tap-highlight px-3 py-1.5 rounded-full active:bg-slate-100 select-none"
               >
                 Done
               </button>
@@ -1510,10 +1514,10 @@ function MobileFiltersBar({
                     key={cat}
                     type="button"
                     onClick={() => onCategoryChange(cat)}
-                    className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                    className={`rounded-full border px-3 py-1.5 text-sm tap-highlight select-none ${
                       filters.category === cat
-                        ? 'border-berkeley-blue bg-berkeley-blue text-white shadow-sm'
-                        : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                        ? 'border-berkeley-blue bg-berkeley-blue text-white shadow-[0_2px_8px_rgba(0,50,98,0.2)]'
+                        : 'border-slate-200 bg-white text-slate-600 active:bg-slate-50'
                     }`}
                   >
                     {cat}
@@ -2078,26 +2082,42 @@ export default function App() {
       <Analytics />
       {isMobile ? (
         <>
-          <header className="bg-berkeley-blue text-white shadow-md">
-            <div className="container mx-auto px-4 py-4 flex flex-col gap-3">
+          <header className="bg-berkeley-blue text-white" style={{ boxShadow: '0 4px 24px rgba(0,50,98,0.18)' }}>
+            <div className="container mx-auto px-4 pt-4 pb-3 flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-berkeley-gold text-2xl font-bold">Cal</span>
+                  <span className="text-berkeley-gold text-2xl font-bold tracking-tight">Cal</span>
                   <span className="text-2xl font-light tracking-wide">Events</span>
                 </div>
                 {lastUpdated && (
-                  <span className="text-[10px] text-berkeley-gold/70 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                  <span className="text-[10px] text-berkeley-gold/70 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
                     {formatPacificDateTime(lastUpdated)}
                   </span>
                 )}
               </div>
 
-              <div className="relative">
+              <div
+                className="relative"
+                style={{
+                  transition: 'transform 200ms cubic-bezier(0.32, 0.72, 0, 1)',
+                  transform: mobileSearchFocused ? 'scale(1.012)' : 'scale(1)',
+                }}
+              >
                 <label htmlFor={mobileSearchInputId} className="sr-only">
                   Search campus events
                 </label>
-                <svg xmlns="http://www.w3.org/2000/svg" className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2"
+                  style={{
+                    color: mobileSearchFocused ? '#FDB515' : '#94a3b8',
+                    transition: 'color 200ms ease',
+                  }}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
@@ -2107,7 +2127,12 @@ export default function App() {
                   aria-label="Search campus events"
                   autoComplete="off"
                   placeholder="Search events, speakers, topics, or venues…"
-                  className="w-full rounded-2xl border border-white/10 bg-white py-3 pl-11 pr-11 text-base text-slate-900 outline-none transition focus:border-berkeley-gold focus:ring-2 focus:ring-berkeley-gold/40"
+                  className="w-full rounded-2xl bg-white py-3 pl-11 pr-11 text-base text-slate-900 outline-none"
+                  style={{
+                    border: mobileSearchFocused ? '2px solid #FDB515' : '2px solid rgba(255,255,255,0.12)',
+                    boxShadow: mobileSearchFocused ? '0 0 0 4px rgba(253,181,21,0.18)' : 'none',
+                    transition: 'border-color 200ms ease, box-shadow 200ms ease',
+                  }}
                   value={filters.searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   onFocus={() => {
@@ -2132,7 +2157,7 @@ export default function App() {
                     type="button"
                     onClick={() => handleSearchChange('')}
                     aria-label="Clear search"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-slate-400 tap-highlight active:bg-slate-100 active:text-slate-700"
                   >
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -2323,13 +2348,18 @@ export default function App() {
                           return (
                             <article
                               key={event.id || idx}
-                              className={`group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white will-change-transform ${shouldAnimateCards ? 'animate-card-in opacity-0' : ''}`}
+                              className={`group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white will-change-transform cursor-pointer select-none ${shouldAnimateCards ? 'animate-card-in opacity-0' : ''}`}
                               style={{
                                 boxShadow: '0 1px 3px rgba(0,50,98,0.06), 0 4px 16px rgba(0,50,98,0.05)',
+                                transition: 'transform 150ms cubic-bezier(0.32, 0.72, 0, 1), box-shadow 150ms cubic-bezier(0.32, 0.72, 0, 1)',
                                 ...(shouldAnimateCards ? { animationDelay: `${Math.min(idx * 50, 500)}ms`, animationFillMode: 'forwards' } : {}),
                               }}
+                              onClick={() => handleEventClick(event)}
                               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(0,50,98,0.13), 0 1px 4px rgba(0,50,98,0.06)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'; }}
                               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 3px rgba(0,50,98,0.06), 0 4px 16px rgba(0,50,98,0.05)'; (e.currentTarget as HTMLElement).style.transform = ''; }}
+                              onTouchStart={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(0.975)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 6px rgba(0,50,98,0.08)'; }}
+                              onTouchEnd={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 3px rgba(0,50,98,0.06), 0 4px 16px rgba(0,50,98,0.05)'; }}
+                              onTouchCancel={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '0 1px 3px rgba(0,50,98,0.06), 0 4px 16px rgba(0,50,98,0.05)'; }}
                             >
                               {/* Left accent strip — gradient top to transparent */}
                               <div

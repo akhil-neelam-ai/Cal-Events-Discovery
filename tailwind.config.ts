@@ -25,6 +25,8 @@ const config: Config = {
         'slide-up': 'slideUp 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards',
         'fade-in': 'fadeIn 0.3s ease-out forwards',
         'card-in': 'cardIn 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards',
+        'dropdown-in': 'dropdownIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'panel-in': 'panelIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards',
       },
       keyframes: {
         slideIn: {
@@ -41,6 +43,14 @@ const config: Config = {
         },
         cardIn: {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        dropdownIn: {
+          '0%': { opacity: '0', transform: 'translateY(-6px) scale(0.97)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+        },
+        panelIn: {
+          '0%': { opacity: '0', transform: 'translateY(-8px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
       },
