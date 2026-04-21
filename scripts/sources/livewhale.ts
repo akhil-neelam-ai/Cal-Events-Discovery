@@ -14,12 +14,39 @@ import { CanonicalEventSchema } from '../lib/schema.js';
 import { deriveFrontendTags } from '../lib/normalize.js';
 
 const FEED_URL = 'https://events.berkeley.edu/live/ical/events';
+const GROUP_BASE = 'https://events.berkeley.edu/live/ical/events/group';
 const FETCH_TIMEOUT_MS = 30_000;
 const MAX_FETCH_ATTEMPTS = 3;
 const EMPTY_FEED_RETRY_DELAY_MS = 1_500;
 // LiveWhale occasionally returns an empty calendar payload despite a 200 response.
 // Anything below this threshold is treated as a flake and retried.
 const MIN_HEALTHY_EVENT_COUNT = 50;
+
+/**
+ * Department-specific LiveWhale group feeds.
+ * URL: https://events.berkeley.edu/live/ical/events/group/[slug]
+ * These surface events that departments post only to their group calendar,
+ * not to the main campus feed. Fetched in parallel; deduped by UID.
+ */
+const LIVEWHALE_GROUPS: string[] = [
+  'physics',
+  'Mathematics',
+  'statistics',
+  'integrative biology',
+  'political science',
+  'history',
+  'economics',
+  'psychology',
+  'linguistics',
+  'music',
+  'German',
+  'classics',
+  'Buddhist studies',
+  'African American Studies',
+  'bioengineering',
+  'geography',
+  'law',
+];
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -288,12 +315,12 @@ export interface FetchResult {
   invalid: number;
 }
 
-async function fetchFeed(): Promise<Record<string, unknown>> {
+async function fetchFeed(url: string = FEED_URL, minEvents = MIN_HEALTHY_EVENT_COUNT): Promise<Record<string, unknown>> {
   let lastErr = '';
   for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
-    console.log(`[livewhale] fetching ${FEED_URL} (attempt ${attempt}/${MAX_FETCH_ATTEMPTS})`);
+    console.log(`[livewhale] fetching ${url} (attempt ${attempt}/${MAX_FETCH_ATTEMPTS})`);
     try {
-      const res = await fetch(FEED_URL, {
+      const res = await fetch(url, {
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
         headers: { 'User-Agent': 'Cal-Events-Discovery-Bot' },
       });
@@ -304,11 +331,13 @@ async function fetchFeed(): Promise<Record<string, unknown>> {
         const ics = await res.text();
         const parsed = ical.sync.parseICS(ics);
         const veventCount = Object.values(parsed).filter(c => (c as { type?: string }).type === 'VEVENT').length;
-        if (veventCount >= MIN_HEALTHY_EVENT_COUNT) {
+        if (veventCount >= minEvents) {
           return parsed;
         }
-        lastErr = `empty/short feed (${veventCount} VEVENTs, need ≥ ${MIN_HEALTHY_EVENT_COUNT})`;
+        lastErr = `empty/short feed (${veventCount} VEVENTs, need ≥ ${minEvents})`;
         console.warn(`[livewhale] ${lastErr}`);
+        // For group feeds a short response is often valid (small department) — don't retry
+        if (minEvents === 0) return parsed;
       }
     } catch (err) {
       lastErr = err instanceof Error ? err.message : String(err);
@@ -317,6 +346,17 @@ async function fetchFeed(): Promise<Record<string, unknown>> {
     if (attempt < MAX_FETCH_ATTEMPTS) await sleep(EMPTY_FEED_RETRY_DELAY_MS * attempt);
   }
   throw new Error(`LiveWhale fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr}`);
+}
+
+/** Fetch a single group feed, returning an empty object on any error (non-fatal). */
+async function fetchGroupFeed(group: string): Promise<Record<string, unknown>> {
+  const url = `${GROUP_BASE}/${encodeURIComponent(group)}`;
+  try {
+    return await fetchFeed(url, 0); // minEvents=0: any response is acceptable
+  } catch (err) {
+    console.warn(`[livewhale] group feed "${group}" failed: ${err instanceof Error ? err.message : err}`);
+    return {};
+  }
 }
 
 /**
@@ -350,7 +390,21 @@ async function prewarmRedirectCache(urls: string[]): Promise<void> {
 }
 
 export async function fetchLiveWhale(): Promise<FetchResult> {
-  const parsed = await fetchFeed();
+  // Fetch main feed + all group feeds in parallel
+  const [mainParsed, ...groupResults] = await Promise.all([
+    fetchFeed(),
+    ...LIVEWHALE_GROUPS.map(g => fetchGroupFeed(g)),
+  ]);
+
+  // Merge all iCal records; deduplicate by UID (group feeds overlap with main)
+  const merged: Record<string, unknown> = { ...mainParsed };
+  for (const groupParsed of groupResults) {
+    for (const [key, val] of Object.entries(groupParsed)) {
+      if (!(key in merged)) merged[key] = val;
+    }
+  }
+
+  const parsed = merged;
 
   const todayIso = todayPT();
   const fetched_at = new Date().toISOString();
