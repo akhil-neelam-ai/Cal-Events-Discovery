@@ -1,80 +1,79 @@
 {
-  "generated_at": "2026-04-20T17:59:14.708Z",
-  "total_events": 1033,
-  "duplicates_removed": 254,
-  "past_events_filtered": 3143,
+  "generated_at": "2026-04-21T12:13:32.506Z",
+  "total_events": 1040,
+  "duplicates_removed": 271,
+  "past_events_filtered": 3119,
   "invalid_events_filtered": 3,
   "sources": [
     {
       "name": "livewhale",
       "ok": true,
-      "count": 959,
-      "duration_ms": 3606,
-      "fetched_at": "2026-04-20T17:58:06.471Z"
+      "count": 979,
+      "duration_ms": 3411,
+      "fetched_at": "2026-04-21T12:12:40.346Z"
     },
     {
       "name": "callink",
       "ok": true,
       "count": 10,
-      "duration_ms": 690,
-      "fetched_at": "2026-04-20T17:58:06.508Z"
+      "duration_ms": 387,
+      "fetched_at": "2026-04-21T12:12:40.383Z"
     },
     {
       "name": "cal_performances",
       "ok": true,
       "count": 7,
-      "duration_ms": 15627,
-      "fetched_at": "2026-04-20T17:58:06.510Z"
+      "duration_ms": 11790,
+      "fetched_at": "2026-04-21T12:12:40.386Z"
     },
     {
       "name": "calbears",
       "ok": true,
-      "count": 88,
-      "duration_ms": 999,
-      "fetched_at": "2026-04-20T17:58:06.512Z"
+      "count": 89,
+      "duration_ms": 454,
+      "fetched_at": "2026-04-21T12:12:40.387Z"
     },
     {
       "name": "bampfa",
       "ok": true,
       "count": 67,
-      "duration_ms": 973,
-      "fetched_at": "2026-04-20T17:58:06.514Z"
+      "duration_ms": 51777,
+      "fetched_at": "2026-04-21T12:12:40.389Z"
     },
     {
       "name": "haas",
       "ok": true,
       "count": 23,
-      "duration_ms": 4021,
-      "fetched_at": "2026-04-20T17:58:06.516Z"
+      "duration_ms": 4894,
+      "fetched_at": "2026-04-21T12:12:40.391Z"
     },
     {
       "name": "berkeley_law",
       "ok": true,
-      "count": 52,
-      "duration_ms": 2464,
-      "fetched_at": "2026-04-20T17:58:06.518Z"
+      "count": 45,
+      "duration_ms": 1519,
+      "fetched_at": "2026-04-21T12:12:40.393Z"
     },
     {
       "name": "simons",
       "ok": true,
       "count": 44,
-      "duration_ms": 949,
-      "fetched_at": "2026-04-20T17:58:06.520Z"
+      "duration_ms": 17083,
+      "fetched_at": "2026-04-21T12:12:40.395Z"
     },
     {
       "name": "ehub",
       "ok": true,
-      "count": 37,
-      "duration_ms": 1030,
-      "fetched_at": "2026-04-20T17:58:06.522Z"
+      "count": 35,
+      "duration_ms": 722,
+      "fetched_at": "2026-04-21T12:12:40.397Z"
     },
     {
       "name": "gemini",
-      "ok": false,
-      "count": 0,
-      "duration_ms": 67806,
-      "error": "Gemini failed after 3 attempts: {\"error\":{\"code\":503,\"message\":\"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\"status\":\"UNAVAILABLE\"}}",
-      "fetched_at": "2026-04-20T17:58:06.524Z"
+      "ok": true,
+      "count": 12,
+      "duration_ms": 47391,
+      "fetched_at": "2026-04-21T12:12:40.399Z"
     }
   ],
   "fallback_used": false,
