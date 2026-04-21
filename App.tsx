@@ -1252,21 +1252,20 @@ function DesktopHero({
 
   return (
     <header
-      className="hidden md:block text-white border-b-4 border-[#FDB515] shadow-md relative overflow-hidden"
+      className="hidden md:block text-white border-b-4 border-[#FDB515] shadow-md relative"
       style={{ background: 'linear-gradient(165deg, #003262 0%, #00233F 100%)' }}
     >
-      {/* Gold radial glow — top right */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-16 -right-16 w-[440px] h-[440px] rounded-full"
-        style={{ background: 'radial-gradient(circle, rgba(253,181,21,0.38) 0%, transparent 60%)', mixBlendMode: 'screen' }}
-      />
-      {/* Subtle gold glow — bottom left */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-16 -left-16 w-[320px] h-[320px] rounded-full"
-        style={{ background: 'radial-gradient(circle, rgba(253,181,21,0.18) 0%, transparent 60%)', mixBlendMode: 'screen' }}
-      />
+      {/* Decorative glow blobs — clipped to header bounds via their own overflow-hidden wrapper */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          className="absolute -top-16 -right-16 w-[440px] h-[440px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(253,181,21,0.38) 0%, transparent 60%)', mixBlendMode: 'screen' }}
+        />
+        <div
+          className="absolute -bottom-16 -left-16 w-[320px] h-[320px] rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(253,181,21,0.18) 0%, transparent 60%)', mixBlendMode: 'screen' }}
+        />
+      </div>
       <div className="container mx-auto px-6 py-8 lg:py-9 relative z-10">
         <div className="flex items-center justify-between gap-6 mb-6">
           <div className="flex items-baseline gap-2">
