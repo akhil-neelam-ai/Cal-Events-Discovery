@@ -2107,7 +2107,7 @@ export default function App() {
                   aria-label="Search campus events"
                   autoComplete="off"
                   placeholder="Search events, speakers, topics, or venues…"
-                  className="w-full rounded-2xl border border-white/10 bg-white py-3 pl-11 pr-11 text-sm text-slate-900 outline-none transition focus:border-berkeley-gold focus:ring-2 focus:ring-berkeley-gold/40"
+                  className="w-full rounded-2xl border border-white/10 bg-white py-3 pl-11 pr-11 text-base text-slate-900 outline-none transition focus:border-berkeley-gold focus:ring-2 focus:ring-berkeley-gold/40"
                   value={filters.searchQuery}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   onFocus={() => {
