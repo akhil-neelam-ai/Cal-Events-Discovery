@@ -139,6 +139,14 @@ Added a first-class Playwright path to the repo and widened runtime search cover
   - `founder talks tomorrow`
 - Tightened tokenization by treating low-signal query words like `event/events` and `near` as stop words so natural-language retrieval is less noisy.
 
+### 11. Browser E2E promoted into CI
+
+Added a dedicated GitHub Actions workflow for browser E2E so real browser coverage runs automatically on code changes.
+
+- Workflow: `.github/workflows/e2e.yml`
+- Trigger model: push / pull request / manual dispatch, with generated artifact-only commits ignored so the daily `update-events` pipeline stays separate.
+- Runtime: installs Chromium with Playwright on GitHub-hosted Ubuntu and uploads Playwright artifacts on failure.
+
 ## Steps Followed
 
 The work so far followed this order:
@@ -155,6 +163,7 @@ The work so far followed this order:
 10. Harden workflow git operations against branch drift during long-running scheduled jobs.
 11. Fix interaction semantics before adding deeper browser-level coverage.
 12. Standardize deterministic browser automation before promoting E2E into the main validation path.
+13. Separate app-behavior CI from the daily data-refresh workflow.
 
 ## Verification Baseline
 
@@ -170,7 +179,7 @@ Current expected verification commands:
 
 The highest-value next work is:
 
-1. Decide whether to promote `npm run test:e2e` into CI or keep it as a manual/pre-push gate.
+1. Watch the first CI runs of `.github/workflows/e2e.yml` and adjust timeouts/artifact capture if GitHub runners behave differently from local.
 2. Continue improving search quality with more natural-language golden queries and Berkeley-specific venue language.
 3. Run a second live UX/browser audit now that deterministic E2E coverage exists.
 4. Tighten data-pipeline health thresholds for major sources in the GitHub Actions workflow.
