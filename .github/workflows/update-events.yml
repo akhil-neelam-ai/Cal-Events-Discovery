@@ -6,6 +6,10 @@ on:
     - cron: "25 11 * * *"
   workflow_dispatch: # Allow manual trigger
 
+concurrency:
+  group: update-events-main
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -18,6 +22,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -41,8 +47,15 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add public/events.json public/search-index.json public/status.json
-          git diff --staged --quiet || git commit -m "Update events - $(date +'%Y-%m-%d')"
-          git push
+          if git diff --staged --quiet; then
+            echo "No artifact changes to commit"
+            exit 0
+          fi
+
+          git commit -m "Update events - $(date +'%Y-%m-%d')"
+          git fetch origin "${GITHUB_REF_NAME}"
+          git rebase "origin/${GITHUB_REF_NAME}"
+          git push origin HEAD:"${GITHUB_REF_NAME}"
 
       - name: Deploy to Vercel
         env:

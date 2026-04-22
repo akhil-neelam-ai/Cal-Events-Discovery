@@ -112,6 +112,13 @@ Identified and patched a production workflow failure caused by an outdated pinne
 - Root cause: the workflow deploy step was still pinned to `vercel@47.0.5`, which rejected the Vercel project's `24.x` Node setting during `vercel pull`.
 - Fix: updated the workflow to use a current pinned Vercel CLI version that supports the project's Node runtime setting.
 
+### 8. CI artifact push race fix
+
+Identified and patched a second production workflow failure caused by the scheduled job trying to push from a stale checkout after `main` had advanced.
+
+- Root cause: the workflow generated and committed fresh artifacts successfully, but its final `git push` assumed the checked-out branch tip was still current.
+- Fix: switched to full-history checkout, added workflow concurrency control, and rebased the artifact commit onto the latest remote branch before pushing.
+
 ## Steps Followed
 
 The work so far followed this order:
@@ -125,6 +132,7 @@ The work so far followed this order:
 7. Commit only after lint, build, validation, and UI tests were green.
 8. Push to `main` after verification.
 9. Patch CI/deploy tooling when platform version drift breaks the workflow.
+10. Harden workflow git operations against branch drift during long-running scheduled jobs.
 
 ## Verification Baseline
 
