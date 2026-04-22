@@ -37,7 +37,7 @@ This project is built around static published artifacts and a client-side search
 - `@google/genai` is used only in `scripts/sources/gemini.ts` during Node-based ingestion.
 - The GA4 measurement ID in `utils/analytics.ts` is public and not secret.
 - Search terms are sent to analytics events, so retention and privacy policy should match that behavior.
-- The published JSON artifacts are intended to be committed and deployed together.
+- The published JSON artifacts are intended to be committed together through an automation PR so branch protection can remain enabled on `main`.
 
 ## Why This Holds Up
 

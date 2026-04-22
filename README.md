@@ -22,8 +22,9 @@ A web application that helps UC Berkeley students discover campus events. The si
 
 1. A GitHub Action runs the ingestion pipeline against multiple Berkeley event sources.
 2. The pipeline writes `public/events.json`, `public/status.json`, and `public/search-index.json`.
-3. Updated artifacts are committed to the repository and redeployed to Vercel.
-4. When users visit the site, the client loads the static snapshot and filters locally.
+3. Updated artifacts are committed to an automation branch and opened as a pull request against `main`.
+4. After that PR merges, the updated `main` branch is what Vercel deploys.
+5. When users visit the site, the client loads the static snapshot and filters locally.
 
 ## Operational Notes
 

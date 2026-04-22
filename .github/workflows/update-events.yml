@@ -12,12 +12,11 @@ concurrency:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   update-events:
     runs-on: ubuntu-latest
-    env:
-      VERCEL_CLI_VERSION: 51.7.0
 
     steps:
       - name: Checkout repository
@@ -42,27 +41,34 @@ jobs:
       - name: Validate published artifacts
         run: npm run validate
 
-      - name: Commit updated artifacts
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add public/events.json public/search-index.json public/status.json
-          if git diff --staged --quiet; then
-            echo "No artifact changes to commit"
-            exit 0
-          fi
+      - name: Create artifact update pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: automation/update-events
+          base: main
+          delete-branch: true
+          add-paths: |
+            public/events.json
+            public/search-index.json
+            public/status.json
+          commit-message: "Update events snapshot"
+          title: "Update events snapshot"
+          body: |
+            ## Summary
 
-          git commit -m "Update events - $(date +'%Y-%m-%d')"
-          git fetch origin "${GITHUB_REF_NAME}"
-          git rebase "origin/${GITHUB_REF_NAME}"
-          git push origin HEAD:"${GITHUB_REF_NAME}"
+            This PR was opened automatically by the daily events pipeline.
 
-      - name: Deploy to Vercel
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          npx --yes vercel@${VERCEL_CLI_VERSION} pull --yes --environment=production --token=$VERCEL_TOKEN
-          npx --yes vercel@${VERCEL_CLI_VERSION} build --prod --token=$VERCEL_TOKEN
-          npx --yes vercel@${VERCEL_CLI_VERSION} deploy --prebuilt --prod --token=$VERCEL_TOKEN
+            Updated artifacts:
+
+            - `public/events.json`
+            - `public/search-index.json`
+            - `public/status.json`
+
+            ## Validation
+
+            - `npm run update-events`
+            - `npm run validate`
+
+            Workflow run: `${{ github.run_id }}`
+          author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+          committer: github-actions[bot] <github-actions[bot]@users.noreply.github.com>

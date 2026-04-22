@@ -147,6 +147,14 @@ Added a dedicated GitHub Actions workflow for browser E2E so real browser covera
 - Trigger model: push / pull request / manual dispatch, with generated artifact-only commits ignored so the daily `update-events` pipeline stays separate.
 - Runtime: installs Chromium with Playwright on GitHub-hosted Ubuntu and uploads Playwright artifacts on failure.
 
+### 12. Update pipeline moved to PR-based artifact delivery
+
+Changed the scheduled `update-events` workflow so it no longer pushes directly to `main`.
+
+- Root cause: branch-protection enforcement and required checks are incompatible with a workflow that commits straight to the protected branch.
+- Fix: the updater now validates generated artifacts, opens or updates an automation PR branch, and relies on normal PR checks before merge.
+- Supporting change: the browser E2E workflow still ignores artifact-only pushes to `main`, but now runs on all pull requests so automation PRs can satisfy the required `browser-e2e` check.
+
 ## Steps Followed
 
 The work so far followed this order:
@@ -164,6 +172,7 @@ The work so far followed this order:
 11. Fix interaction semantics before adding deeper browser-level coverage.
 12. Standardize deterministic browser automation before promoting E2E into the main validation path.
 13. Separate app-behavior CI from the daily data-refresh workflow.
+14. Move artifact publication to PR-based automation so `main` can be protected without breaking the updater.
 
 ## Verification Baseline
 
@@ -183,6 +192,7 @@ The highest-value next work is:
 2. Continue improving search quality with more natural-language golden queries and Berkeley-specific venue language.
 3. Run a second live UX/browser audit now that deterministic E2E coverage exists.
 4. Tighten data-pipeline health thresholds for major sources in the GitHub Actions workflow.
+5. Decide whether the automation PR should auto-merge after `browser-e2e` passes or remain a manual approval step.
 
 ## Update Rule
 

@@ -9,10 +9,6 @@ on:
       - "public/search-index.json"
       - "public/status.json"
   pull_request:
-    paths-ignore:
-      - "public/events.json"
-      - "public/search-index.json"
-      - "public/status.json"
   workflow_dispatch:
 
 concurrency:
