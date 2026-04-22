@@ -53,63 +53,14 @@ export function EventGrid({
                   <article
                     key={event.id || idx}
                     aria-label={event.title}
-                    className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl bg-white select-none will-change-transform ${shouldAnimateCards ? "animate-card-in opacity-0" : ""}`}
+                    className={`group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,50,98,0.06),0_4px_16px_rgba(0,50,98,0.05)] transition-[transform,box-shadow] duration-150 ease-[cubic-bezier(0.32,0.72,0,1)] select-none will-change-transform motion-reduce:transition-none motion-safe:hover:-translate-y-[3px] motion-safe:hover:shadow-[0_8px_32px_rgba(0,50,98,0.13),0_1px_4px_rgba(0,50,98,0.06)] motion-safe:active:scale-[0.985] ${shouldAnimateCards ? "animate-card-in opacity-0" : ""}`}
                     style={{
-                      boxShadow:
-                        "0 1px 3px rgba(0,50,98,0.06), 0 4px 16px rgba(0,50,98,0.05)",
-                      transition:
-                        "transform 150ms cubic-bezier(0.32, 0.72, 0, 1), box-shadow 150ms cubic-bezier(0.32, 0.72, 0, 1)",
                       ...(shouldAnimateCards
                         ? {
                             animationDelay: `${Math.min(idx * 50, 500)}ms`,
                             animationFillMode: "forwards",
                           }
                         : {}),
-                    }}
-                    onClick={() => onEventClick(event)}
-                    onMouseEnter={(mouseEvent) => {
-                      (
-                        mouseEvent.currentTarget as HTMLElement
-                      ).style.boxShadow =
-                        "0 8px 32px rgba(0,50,98,0.13), 0 1px 4px rgba(0,50,98,0.06)";
-                      (
-                        mouseEvent.currentTarget as HTMLElement
-                      ).style.transform = "translateY(-3px)";
-                    }}
-                    onMouseLeave={(mouseEvent) => {
-                      (
-                        mouseEvent.currentTarget as HTMLElement
-                      ).style.boxShadow =
-                        "0 1px 3px rgba(0,50,98,0.06), 0 4px 16px rgba(0,50,98,0.05)";
-                      (
-                        mouseEvent.currentTarget as HTMLElement
-                      ).style.transform = "";
-                    }}
-                    onTouchStart={(touchEvent) => {
-                      (
-                        touchEvent.currentTarget as HTMLElement
-                      ).style.transform = "scale(0.975)";
-                      (
-                        touchEvent.currentTarget as HTMLElement
-                      ).style.boxShadow = "0 1px 6px rgba(0,50,98,0.08)";
-                    }}
-                    onTouchEnd={(touchEvent) => {
-                      (
-                        touchEvent.currentTarget as HTMLElement
-                      ).style.transform = "";
-                      (
-                        touchEvent.currentTarget as HTMLElement
-                      ).style.boxShadow =
-                        "0 1px 3px rgba(0,50,98,0.06), 0 4px 16px rgba(0,50,98,0.05)";
-                    }}
-                    onTouchCancel={(touchEvent) => {
-                      (
-                        touchEvent.currentTarget as HTMLElement
-                      ).style.transform = "";
-                      (
-                        touchEvent.currentTarget as HTMLElement
-                      ).style.boxShadow =
-                        "0 1px 3px rgba(0,50,98,0.06), 0 4px 16px rgba(0,50,98,0.05)";
                     }}
                   >
                     <div
@@ -166,62 +117,71 @@ export function EventGrid({
                         )}
                       </div>
 
-                      <h3
-                        className="mb-4 text-[1.05rem] font-semibold leading-snug text-berkeley-blue transition-colors group-hover:text-berkeley-medblue md:font-serif"
-                        style={{ letterSpacing: "-0.01em" }}
+                      <button
+                        type="button"
+                        onClick={() => onEventClick(event)}
+                        aria-label={`Open details for ${event.title}`}
+                        className="block w-full rounded-xl text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                       >
-                        {event.title}
-                      </h3>
+                        <h3
+                          className="mb-4 text-[1.05rem] font-semibold leading-snug text-berkeley-blue transition-colors group-hover:text-berkeley-medblue md:font-serif"
+                          style={{ letterSpacing: "-0.01em" }}
+                        >
+                          {event.title}
+                        </h3>
 
-                      <div className="space-y-1.5 text-xs text-slate-500">
-                        <div className="flex items-center gap-1.5">
-                          <svg
-                            className="h-3.5 w-3.5 flex-shrink-0 text-[#FDB515]"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                          </svg>
-                          <span className="font-medium text-slate-700">
-                            {effectiveDateRange !== "today" &&
-                              `${formatEventDate(event.date)} · `}
-                            {event.time || "All day"}
-                          </span>
-                          {event.location && (
-                            <>
-                              <span className="text-slate-300">·</span>
-                              <span className="truncate">{event.location}</span>
-                            </>
-                          )}
+                        <div className="space-y-1.5 text-xs text-slate-500">
+                          <div className="flex items-center gap-1.5">
+                            <svg
+                              className="h-3.5 w-3.5 flex-shrink-0 text-[#FDB515]"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                            <span className="font-medium text-slate-700">
+                              {effectiveDateRange !== "today" &&
+                                `${formatEventDate(event.date)} · `}
+                              {event.time || "All day"}
+                            </span>
+                            {event.location && (
+                              <>
+                                <span className="text-slate-300">·</span>
+                                <span className="truncate">
+                                  {event.location}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <svg
+                              className="h-3.5 w-3.5 flex-shrink-0 text-[#FDB515]"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                              />
+                            </svg>
+                            <span
+                              className="truncate italic text-slate-500"
+                              title={event.organizer}
+                            >
+                              {event.organizer}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                          <svg
-                            className="h-3.5 w-3.5 flex-shrink-0 text-[#FDB515]"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                            />
-                          </svg>
-                          <span
-                            className="truncate italic text-slate-500"
-                            title={event.organizer}
-                          >
-                            {event.organizer}
-                          </span>
-                        </div>
-                      </div>
+                      </button>
                     </div>
 
                     <div
@@ -231,10 +191,8 @@ export function EventGrid({
                       <SourceBadge source={event.source} linked={false} />
                       <button
                         type="button"
-                        onClick={(eventClick) => {
-                          eventClick.stopPropagation();
-                          onEventClick(event);
-                        }}
+                        onClick={() => onEventClick(event)}
+                        aria-label={`View details for ${event.title}`}
                         className="inline-flex items-center gap-1 text-sm font-semibold text-berkeley-blue transition-colors hover:text-berkeley-medblue focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60"
                       >
                         View details

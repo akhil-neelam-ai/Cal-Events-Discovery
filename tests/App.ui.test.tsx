@@ -212,6 +212,31 @@ describe("App UI regressions", () => {
     });
   });
 
+  it("opens event details from the primary card action", async () => {
+    const user = userEvent.setup();
+
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "detail-primary",
+        title: "Primary Card Action",
+        description: "An event opened from the main card button.",
+      }),
+    ]);
+
+    render(<App />);
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /open details for primary card action/i,
+      }),
+    );
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /close event details/i }),
+    ).toBeInTheDocument();
+  });
+
   it("opens event details and syncs the selected event into the URL", async () => {
     const user = userEvent.setup();
 

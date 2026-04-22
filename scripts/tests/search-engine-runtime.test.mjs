@@ -40,6 +40,42 @@ const SYNTHETIC_EVENTS = [
     url: 'https://example.com/downtown',
     source: 'ehub',
   },
+  {
+    id: 'evt-bampfa',
+    title: 'Dreams Are Colder Than Death',
+    organizer: 'BAMPFA',
+    date: '2026-04-22',
+    time: '7:00 PM',
+    location: 'BAMPFA, 2155 Center Street',
+    description: 'A film screening at BAMPFA.',
+    tags: ['Arts'],
+    url: 'https://example.com/bampfa',
+    source: 'bampfa',
+  },
+  {
+    id: 'evt-free',
+    title: 'Free Student Event on Northside',
+    organizer: 'Student Union',
+    date: '2026-04-22',
+    time: '6:00 PM',
+    location: 'Hearst Mining Circle, Northside Berkeley',
+    description: 'A free student event with food near Euclid.',
+    tags: ['Student Life'],
+    url: 'https://example.com/free',
+    source: 'callink',
+  },
+  {
+    id: 'evt-founder',
+    title: 'Founder Talk for Students',
+    organizer: 'SkyDeck',
+    date: '2026-04-23',
+    time: '4:00 PM',
+    location: 'Downtown Berkeley',
+    description: 'A startup founder talk for Berkeley students.',
+    tags: ['Entrepreneurship'],
+    url: 'https://example.com/founder',
+    source: 'ehub',
+  },
 ];
 
 test('structured-only temporal queries do not turn into text keywords', () => {
@@ -75,4 +111,27 @@ test('dismissing campus area removes the hard filter', () => {
 
   assert.equal(output.plan.filters.campusArea, undefined);
   assert.ok(output.results.some(event => event.id === 'evt-south'));
+});
+
+test('natural-language query "film screening at bampfa" finds the BAMPFA film first', () => {
+  const output = searchEvents(SYNTHETIC_EVENTS, 'film screening at bampfa', null);
+
+  assert.equal(output.plan.filters.category, 'Arts');
+  assert.equal(output.results[0]?.id, 'evt-bampfa');
+});
+
+test('natural-language query "free events near northside" applies free and campus-area filters', () => {
+  const output = searchEvents(SYNTHETIC_EVENTS, 'free events near northside', null);
+
+  assert.equal(output.plan.filters.free, true);
+  assert.equal(output.plan.filters.campusArea, 'northside');
+  assert.deepEqual(output.results.map(event => event.id), ['evt-free']);
+});
+
+test('natural-language query "founder talks tomorrow" preserves tomorrow intent and ranks entrepreneurship events', () => {
+  const output = searchEvents(SYNTHETIC_EVENTS, 'founder talks tomorrow', null);
+
+  assert.equal(output.plan.filters.dateRange, 'tomorrow');
+  assert.equal(output.plan.filters.category, 'Entrepreneurship');
+  assert.equal(output.results[0]?.id, 'evt-founder');
 });

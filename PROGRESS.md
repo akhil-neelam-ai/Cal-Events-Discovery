@@ -119,6 +119,26 @@ Identified and patched a second production workflow failure caused by the schedu
 - Root cause: the workflow generated and committed fresh artifacts successfully, but its final `git push` assumed the checked-out branch tip was still current.
 - Fix: switched to full-history checkout, added workflow concurrency control, and rebased the artifact commit onto the latest remote branch before pushing.
 
+### 9. Event card interaction fix
+
+Cleaned up the event card interaction model so cards no longer rely on an implicitly clickable article wrapper.
+
+- Root cause: the card container itself was handling clicks while also containing a source link and a nested detail button, which created ambiguous interaction semantics.
+- Fix: moved detail opening to explicit buttons, kept source navigation as a normal anchor, and replaced JS-driven hover/touch state mutations with CSS-based motion and shadow transitions.
+- Verification: lint, build, full validation, UI regression tests, and a live browser snapshot against the local app all confirmed the new card structure.
+
+### 10. Standardized browser automation and NL search coverage
+
+Added a first-class Playwright path to the repo and widened runtime search coverage with stable natural-language cases.
+
+- Added `@playwright/test`, `playwright.config.ts`, `install:browsers`, `test:e2e`, and `test:e2e:headed`.
+- Added a deterministic browser spec that mocks `events.json`, `status.json`, and `search-index.json` so the E2E flow does not depend on the live published corpus.
+- Added runtime natural-language search assertions for:
+  - `film screening at bampfa`
+  - `free events near northside`
+  - `founder talks tomorrow`
+- Tightened tokenization by treating low-signal query words like `event/events` and `near` as stop words so natural-language retrieval is less noisy.
+
 ## Steps Followed
 
 The work so far followed this order:
@@ -133,6 +153,8 @@ The work so far followed this order:
 8. Push to `main` after verification.
 9. Patch CI/deploy tooling when platform version drift breaks the workflow.
 10. Harden workflow git operations against branch drift during long-running scheduled jobs.
+11. Fix interaction semantics before adding deeper browser-level coverage.
+12. Standardize deterministic browser automation before promoting E2E into the main validation path.
 
 ## Verification Baseline
 
@@ -148,9 +170,9 @@ Current expected verification commands:
 
 The highest-value next work is:
 
-1. Add one real browser E2E flow with Playwright against the running app or deployed app.
-2. Fix the remaining event-card interaction semantics in `components/EventGrid.tsx`.
-3. Continue improving search quality with more natural-language golden queries.
+1. Decide whether to promote `npm run test:e2e` into CI or keep it as a manual/pre-push gate.
+2. Continue improving search quality with more natural-language golden queries and Berkeley-specific venue language.
+3. Run a second live UX/browser audit now that deterministic E2E coverage exists.
 4. Tighten data-pipeline health thresholds for major sources in the GitHub Actions workflow.
 
 ## Update Rule
