@@ -8,15 +8,15 @@
 
 import { z } from 'zod';
 
-export const SourceName = z.enum(['livewhale', 'callink', 'cal_performances', 'calbears', 'bampfa', 'haas', 'berkeley_law', 'simons', 'ehub', 'gemini']);
-export type SourceName = z.infer<typeof SourceName>;
+export const SourceNameSchema = z.enum(['livewhale', 'callink', 'cal_performances', 'calbears', 'bampfa', 'haas', 'berkeley_law', 'simons', 'ehub', 'gemini']);
+export type SourceName = z.infer<typeof SourceNameSchema>;
 
-export const Modality = z.enum(['in_person', 'virtual', 'hybrid', 'unknown']);
-export type Modality = z.infer<typeof Modality>;
+export const ModalitySchema = z.enum(['in_person', 'virtual', 'hybrid', 'unknown']);
+export type Modality = z.infer<typeof ModalitySchema>;
 
 export const CanonicalEventSchema = z.object({
   // Provenance
-  source_name: SourceName,
+  source_name: SourceNameSchema,
   source_id: z.string().min(1),
   source_url: z.string().url(),
   evidence_url: z.string().url().optional(),
@@ -35,7 +35,7 @@ export const CanonicalEventSchema = z.object({
   venue: z.string().default(''),
   building: z.string().default(''),
   address: z.string().default(''),
-  modality: Modality.default('in_person'),
+  modality: ModalitySchema.default('in_person'),
 
   // People / unit
   organizer: z.string().default(''),
@@ -81,6 +81,10 @@ export interface PublishedSource {
   uri: string;
 }
 
+/**
+ * Per-source health record written to `public/status.json`.
+ * The frontend consumes the same shape through `types.ts` to avoid drift.
+ */
 export interface SourceStatus {
   name: SourceName;
   ok: boolean;
@@ -94,6 +98,10 @@ export interface SourceStatus {
   degraded_reason?: string;
 }
 
+/**
+ * Top-level ingestion summary written to `public/status.json`.
+ * Keep this shape stable because the frontend reads it directly.
+ */
 export interface StatusReport {
   generated_at: string;
   total_events: number;
@@ -104,7 +112,7 @@ export interface StatusReport {
   fallback_used: boolean;
   degraded: boolean;
   degraded_reason?: string;
-  last_good_used?: number;
+  last_good_used: number;
   fallback_sources?: SourceName[];
   degraded_sources?: SourceName[];
 }

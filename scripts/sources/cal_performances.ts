@@ -87,22 +87,8 @@ function parseAddeventatcDate(raw: string): string | null {
   );
   if (isNaN(candidate.getTime())) return null;
 
-  // Determine UTC offset for America/Los_Angeles at this date
-  const fmt = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Los_Angeles',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  });
-  // Format the candidate as if it were already UTC, then compare to the PT
-  // representation — but the simplest correct approach is to create the date
-  // as UTC then adjust by the fixed offsets (-7 or -8).
-  // We use the timezone offset from the system by formatting a known UTC date
-  // and comparing: instead, just produce the ISO string with a PT offset tag.
+  // Determine UTC offset for America/Los_Angeles at this date and emit
+  // an ISO string tagged with the PT offset.
   const isDST = isDaylightSavingTime(candidate, 'America/Los_Angeles');
   const offsetMin = isDST ? -7 * 60 : -8 * 60;
   const offsetSign = offsetMin < 0 ? '-' : '+';
@@ -118,18 +104,9 @@ function parseAddeventatcDate(raw: string): string | null {
 }
 
 function isDaylightSavingTime(date: Date, tz: string): boolean {
-  // Compare two months: Jan (always standard) vs Jul (always DST in PT)
-  // If the UTC offset in Jan differs from the tested date, it's DST.
+  // Compare a known standard-time date in January against the tested date.
   const jan = new Date(date.getFullYear(), 0, 15);
-  const jul = new Date(date.getFullYear(), 6, 15);
   const getOffset = (d: Date): number => {
-    const utc = new Intl.DateTimeFormat('en-US', {
-      timeZone: tz,
-      hour: 'numeric',
-      hour12: false,
-    });
-    // Robust DST check: format a UTC hour and compare to PT hour
-    // Offset = UTC hours - PT hours (roughly)
     const utcHour = d.getUTCHours();
     const ptHour = parseInt(
       new Intl.DateTimeFormat('en-US', {
@@ -140,7 +117,6 @@ function isDaylightSavingTime(date: Date, tz: string): boolean {
       10
     );
     return utcHour - ptHour;
-    void utc;
   };
   const stdOffset = getOffset(jan); // should be 8
   const testOffset = getOffset(date);

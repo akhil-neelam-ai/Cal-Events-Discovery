@@ -14,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { searchEvents } from '../../utils/searchEngine.ts';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const eventsPath     = path.join(rootDir, 'public', 'events.json');
@@ -191,6 +192,16 @@ test('search results are ranked by score descending', () => {
   for (let i = 1; i < results.length; i++) {
     assert.ok(results[i].score <= results[i - 1].score, `Results not sorted at index ${i}`);
   }
+});
+
+test('intent-only temporal queries do not shrink the result pool when the real engine runs', () => {
+  const todayResults = searchEvents(events, 'today', searchIndex);
+  const tomorrowResults = searchEvents(events, 'tomorrow', searchIndex);
+  const weekResults = searchEvents(events, 'this week', searchIndex);
+
+  assert.equal(todayResults.results.length, events.length, '"today" should return the full pool for later date filtering');
+  assert.equal(tomorrowResults.results.length, events.length, '"tomorrow" should return the full pool for later date filtering');
+  assert.equal(weekResults.results.length, events.length, '"this week" should return the full pool for later date filtering');
 });
 
 // ─── Temporal intent tests ────────────────────────────────────────────────────

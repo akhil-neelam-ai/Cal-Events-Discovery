@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "validate": "node --import tsx/esm --test scripts/tests/*.test.mjs",
+    "lint": "eslint App.tsx appConfig.ts components hooks tests index.tsx types.ts utils services scripts vite.config.ts vitest.config.ts tailwind.config.ts eslint.config.js",
+    "lint:fix": "eslint App.tsx appConfig.ts components hooks tests index.tsx types.ts utils services scripts vite.config.ts vitest.config.ts tailwind.config.ts eslint.config.js --fix",
+    "format:check": "prettier --check appConfig.ts \"components/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\" \"utils/**/*.ts\" eslint.config.js package.json tsconfig.json vitest.config.ts .github/workflows/update-events.yml",
+    "format:fix": "prettier --write appConfig.ts \"components/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\" \"utils/**/*.ts\" eslint.config.js package.json tsconfig.json vitest.config.ts .github/workflows/update-events.yml",
+    "test:ui": "vitest run",
+    "validate": "npm run lint && npm run format:check && node --import tsx/esm --test scripts/tests/*.test.mjs && npm run test:ui",
     "test": "npm run validate",
     "update-events": "tsx scripts/updateEvents.ts"
   },
@@ -22,15 +27,28 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.0",
+    "@typescript-eslint/parser": "^8.59.0",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.5.0",
+    "eslint": "^10.2.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.5.0",
+    "jsdom": "^29.0.2",
     "postcss": "^8.5.10",
+    "prettier": "^3.8.3",
     "tailwindcss": "^3.4.19",
     "tsx": "^4.19.0",
     "typescript": "^5.7.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "vitest": "^4.1.5"
   }
 }

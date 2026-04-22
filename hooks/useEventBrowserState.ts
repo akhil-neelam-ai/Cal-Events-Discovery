@@ -1,0 +1,320 @@
+import { useMemo } from "react";
+
+import type { CalEvent, SearchFilters } from "../types";
+import {
+  buildEmptyStateConfig,
+  type EmptyStateActions,
+  type EmptyStateConfig,
+  getFallbackBannerCopy,
+} from "../utils/emptyState";
+import {
+  filterEventsByDateRange,
+  getPacificDateKey,
+  sortEventsChronologically,
+} from "../utils/eventDates";
+import {
+  buildSearchPlan,
+  searchEvents,
+  type InterpretedChip,
+} from "../utils/searchEngine";
+import type { SearchIndex } from "../utils/textUtils";
+
+interface UseEventBrowserStateParams {
+  allEvents: CalEvent[];
+  filters: SearchFilters;
+  searchIndex: SearchIndex | null;
+  dismissedInterpretationKeys: Set<string>;
+  selectedEventId: string | null;
+  todayKey: string;
+  tomorrowKey: string;
+  nextWeekKey: string;
+  userSetDateRange: boolean;
+  emptyStateActions: EmptyStateActions;
+}
+
+interface UseEventBrowserStateResult {
+  activeChips: InterpretedChip[];
+  searchFallbackMessage?: string;
+  todayEvents: CalEvent[];
+  tomorrowEvents: CalEvent[];
+  weekEvents: CalEvent[];
+  upcomingEvents: CalEvent[];
+  derivedDateRange: SearchFilters["dateRange"];
+  effectiveDateRange: SearchFilters["dateRange"];
+  filteredEvents: CalEvent[];
+  visibleSelectedEventId: string | null;
+  selectedEvent: CalEvent | null;
+  fallbackBannerCopy: string | null;
+  emptyState: EmptyStateConfig;
+}
+
+export function useEventBrowserState({
+  allEvents,
+  filters,
+  searchIndex,
+  dismissedInterpretationKeys,
+  selectedEventId,
+  todayKey,
+  tomorrowKey,
+  nextWeekKey,
+  userSetDateRange,
+  emptyStateActions,
+}: UseEventBrowserStateParams): UseEventBrowserStateResult {
+  const activePlan = useMemo(() => {
+    const query = filters.searchQuery.trim();
+    if (query.length < 2) {
+      return null;
+    }
+
+    return buildSearchPlan(query);
+  }, [filters.searchQuery]);
+
+  const activeChips = useMemo<InterpretedChip[]>(() => {
+    if (!activePlan) {
+      return [];
+    }
+
+    return activePlan.interpretations.filter(
+      (interpretation) => !dismissedInterpretationKeys.has(interpretation.key),
+    );
+  }, [activePlan, dismissedInterpretationKeys]);
+
+  const searchOutput = useMemo(() => {
+    const query = filters.searchQuery.trim();
+
+    const pool = allEvents.filter((event) => {
+      const eventDateKey = getPacificDateKey(event.date);
+      if (!eventDateKey) {
+        return false;
+      }
+
+      const matchesCategory =
+        filters.category === "All" ||
+        event.tags?.some((tag) =>
+          tag.toLowerCase().includes(filters.category.toLowerCase()),
+        ) ||
+        event.tags?.includes(filters.category);
+
+      const matchesSource =
+        filters.source === "All" || event.source === filters.source;
+
+      return matchesCategory && matchesSource;
+    });
+
+    if (!query) {
+      return {
+        results: sortEventsChronologically(pool),
+        fallbackUsed: false,
+        fallbackMessage: undefined,
+      };
+    }
+
+    const { results, fallbackUsed, fallbackMessage } = searchEvents(
+      pool,
+      query,
+      searchIndex,
+      dismissedInterpretationKeys,
+    );
+
+    return {
+      results,
+      fallbackUsed,
+      fallbackMessage: fallbackUsed ? fallbackMessage : undefined,
+    };
+  }, [
+    allEvents,
+    dismissedInterpretationKeys,
+    filters.category,
+    filters.searchQuery,
+    filters.source,
+    searchIndex,
+  ]);
+
+  const baseFilteredEvents = searchOutput.results;
+
+  const todayEvents = useMemo(
+    () =>
+      filterEventsByDateRange(
+        baseFilteredEvents,
+        "today",
+        todayKey,
+        nextWeekKey,
+      ),
+    [baseFilteredEvents, todayKey, nextWeekKey],
+  );
+
+  const tomorrowEvents = useMemo(
+    () =>
+      filterEventsByDateRange(
+        baseFilteredEvents,
+        "tomorrow",
+        todayKey,
+        nextWeekKey,
+        tomorrowKey,
+      ),
+    [baseFilteredEvents, todayKey, nextWeekKey, tomorrowKey],
+  );
+
+  const weekEvents = useMemo(
+    () =>
+      filterEventsByDateRange(
+        baseFilteredEvents,
+        "week",
+        todayKey,
+        nextWeekKey,
+      ),
+    [baseFilteredEvents, todayKey, nextWeekKey],
+  );
+
+  const upcomingEvents = useMemo(
+    () =>
+      filterEventsByDateRange(
+        baseFilteredEvents,
+        "upcoming",
+        todayKey,
+        nextWeekKey,
+      ),
+    [baseFilteredEvents, todayKey, nextWeekKey],
+  );
+
+  const derivedDateRange = useMemo<SearchFilters["dateRange"]>(() => {
+    if (userSetDateRange) {
+      return filters.dateRange;
+    }
+
+    if (
+      activePlan?.filters.dateRange &&
+      !dismissedInterpretationKeys.has(
+        `dateRange:${activePlan.filters.dateRange}`,
+      )
+    ) {
+      return activePlan.filters.dateRange;
+    }
+
+    return filters.dateRange;
+  }, [
+    activePlan,
+    dismissedInterpretationKeys,
+    filters.dateRange,
+    userSetDateRange,
+  ]);
+
+  const effectiveDateRange = useMemo<SearchFilters["dateRange"]>(() => {
+    if (
+      derivedDateRange === "today" &&
+      todayEvents.length === 0 &&
+      weekEvents.length > 0
+    ) {
+      return "week";
+    }
+
+    if (
+      derivedDateRange === "tomorrow" &&
+      tomorrowEvents.length === 0 &&
+      weekEvents.length > 0
+    ) {
+      return "week";
+    }
+
+    return derivedDateRange;
+  }, [
+    derivedDateRange,
+    todayEvents.length,
+    tomorrowEvents.length,
+    weekEvents.length,
+  ]);
+
+  const filteredEvents = useMemo(() => {
+    if (effectiveDateRange === "today") {
+      return todayEvents;
+    }
+
+    if (effectiveDateRange === "tomorrow") {
+      return tomorrowEvents;
+    }
+
+    if (effectiveDateRange === "week") {
+      return weekEvents;
+    }
+
+    return upcomingEvents;
+  }, [
+    effectiveDateRange,
+    todayEvents,
+    tomorrowEvents,
+    weekEvents,
+    upcomingEvents,
+  ]);
+
+  const visibleSelectedEventId = useMemo(() => {
+    if (!selectedEventId) {
+      return null;
+    }
+
+    const existsInDataset = allEvents.some(
+      (event) => event.id === selectedEventId,
+    );
+    if (!existsInDataset) {
+      return null;
+    }
+
+    return filteredEvents.some((event) => event.id === selectedEventId)
+      ? selectedEventId
+      : null;
+  }, [allEvents, filteredEvents, selectedEventId]);
+
+  const selectedEvent = useMemo(
+    () =>
+      visibleSelectedEventId
+        ? (allEvents.find((event) => event.id === visibleSelectedEventId) ??
+          null)
+        : null,
+    [allEvents, visibleSelectedEventId],
+  );
+
+  const fallbackBannerCopy = useMemo(
+    () =>
+      getFallbackBannerCopy({
+        derivedDateRange,
+        effectiveDateRange,
+        weekEventsCount: weekEvents.length,
+      }),
+    [derivedDateRange, effectiveDateRange, weekEvents.length],
+  );
+
+  const emptyState = useMemo(
+    () =>
+      buildEmptyStateConfig({
+        filters,
+        effectiveDateRange,
+        derivedDateRange,
+        upcomingEventsCount: upcomingEvents.length,
+        weekEventsCount: weekEvents.length,
+        actions: emptyStateActions,
+      }),
+    [
+      derivedDateRange,
+      effectiveDateRange,
+      emptyStateActions,
+      filters,
+      upcomingEvents.length,
+      weekEvents.length,
+    ],
+  );
+
+  return {
+    activeChips,
+    searchFallbackMessage: searchOutput.fallbackMessage,
+    todayEvents,
+    tomorrowEvents,
+    weekEvents,
+    upcomingEvents,
+    derivedDateRange,
+    effectiveDateRange,
+    filteredEvents,
+    visibleSelectedEventId,
+    selectedEvent,
+    fallbackBannerCopy,
+    emptyState,
+  };
+}

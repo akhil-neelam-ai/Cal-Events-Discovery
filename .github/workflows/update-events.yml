@@ -3,7 +3,7 @@ name: Update Events Daily
 on:
   schedule:
     # Runs daily at 11:25 UTC (4:25 AM PDT / 3:25 AM PST) — off-peak to avoid Gemini 503s
-    - cron: '25 11 * * *'
+    - cron: "25 11 * * *"
   workflow_dispatch: # Allow manual trigger
 
 permissions:
@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
           cache: npm
 
       - name: Install dependencies
@@ -48,7 +48,6 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          npm install -g vercel
-          vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-          vercel build --prod --token=$VERCEL_TOKEN
-          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+          npx --yes vercel@47.0.5 pull --yes --environment=production --token=$VERCEL_TOKEN
+          npx --yes vercel@47.0.5 build --prod --token=$VERCEL_TOKEN
+          npx --yes vercel@47.0.5 deploy --prebuilt --prod --token=$VERCEL_TOKEN

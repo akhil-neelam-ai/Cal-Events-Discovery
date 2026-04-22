@@ -1,8 +1,11 @@
 import { IngestionStatus, SearchResponse } from "../types";
 
 /**
- * Fetches pre-generated events and the latest status metadata from static JSON.
- * The data is updated separately by scripts/updateEvents.ts.
+ * Loads the pre-generated static artifacts published by scripts/updateEvents.ts.
+ *
+ * This module keeps the legacy `fetchEventsFromGemini` name for compatibility
+ * with App.tsx, but it does not call Gemini at runtime. The browser only reads
+ * `public/events.json` and `public/status.json`.
  */
 type EventsPayload = SearchResponse & { lastUpdated?: number };
 
@@ -25,7 +28,7 @@ async function fetchJson<T>(path: string, timeoutMs = 8000): Promise<T> {
   }
 }
 
-export const fetchEventsFromGemini = async (_forceRefresh: boolean = false): Promise<SearchResponse & { lastUpdated: number; status?: IngestionStatus }> => {
+export const fetchStaticArtifacts = async (_forceRefresh: boolean = false): Promise<SearchResponse & { lastUpdated: number; status?: IngestionStatus }> => {
   try {
     const [eventsResult, statusResult] = await Promise.allSettled([
       fetchJson<EventsPayload>('/events.json'),
@@ -49,3 +52,5 @@ export const fetchEventsFromGemini = async (_forceRefresh: boolean = false): Pro
     throw error;
   }
 };
+
+export const fetchEventsFromGemini = fetchStaticArtifacts;

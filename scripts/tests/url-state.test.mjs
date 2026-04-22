@@ -28,6 +28,16 @@ test('parseUrlState restores shareable filters and selected event', () => {
   assert.equal(parsed.selectedEventId, 'evt-42');
 });
 
+test('parseUrlState preserves tomorrow when shared explicitly', () => {
+  const parsed = parseUrlState('?date=tomorrow&category=Arts', OPTIONS);
+
+  assert.deepEqual(parsed.filters, {
+    ...DEFAULT_FILTERS,
+    dateRange: 'tomorrow',
+    category: 'Arts',
+  });
+});
+
 test('parseUrlState ignores unsupported values', () => {
   const parsed = parseUrlState('?date=month&category=Unknown&source=made-up&event=', OPTIONS);
 
@@ -53,4 +63,17 @@ test('buildUrlStateSearch omits defaults and trims search text', () => {
 test('buildUrlStateSearch clears empty shareable state', () => {
   const serialized = buildUrlStateSearch(DEFAULT_FILTERS, null, { defaultFilters: DEFAULT_FILTERS });
   assert.equal(serialized, '');
+});
+
+test('buildUrlStateSearch keeps tomorrow in shareable state', () => {
+  const serialized = buildUrlStateSearch(
+    {
+      ...DEFAULT_FILTERS,
+      dateRange: 'tomorrow',
+    },
+    null,
+    { defaultFilters: DEFAULT_FILTERS },
+  );
+
+  assert.equal(serialized, '?date=tomorrow');
 });

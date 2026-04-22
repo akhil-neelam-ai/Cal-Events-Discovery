@@ -86,14 +86,6 @@ const KEYWORDS: Array<[FrontendCategory, string[]]> = [
   ]],
 ];
 
-// Pre-build word-boundary regexes once at module load
-const KEYWORD_PATTERNS: Array<[FrontendCategory, RegExp]> = KEYWORDS.map(
-  ([cat, words]) => [
-    cat,
-    new RegExp(`\\b(${words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'i'),
-  ]
-);
-
 // Pre-build per-keyword regexes for counting multiple hits
 const KEYWORD_INDIVIDUAL: Array<[FrontendCategory, RegExp[]]> = KEYWORDS.map(
   ([cat, words]) => [

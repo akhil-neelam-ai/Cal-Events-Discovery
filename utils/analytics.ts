@@ -5,7 +5,7 @@
  */
 
 // GA4 Measurement ID
-const GA_MEASUREMENT_ID = 'G-E8MCW83PNG';
+const GA_MEASUREMENT_ID = "G-E8MCW83PNG";
 
 // Type definitions for analytics events
 interface EventParams {
@@ -23,7 +23,7 @@ interface SearchParams {
 }
 
 interface FilterParams {
-  filter_type: 'category' | 'date_range' | 'source';
+  filter_type: "category" | "date_range" | "source";
   filter_value: string;
 }
 
@@ -44,9 +44,9 @@ interface ExternalLinkParams {
 declare global {
   interface Window {
     gtag: (
-      command: 'config' | 'event' | 'js',
+      command: "config" | "event" | "js",
       targetId: string | Date,
-      params?: EventParams
+      params?: EventParams,
     ) => void;
     dataLayer: unknown[];
   }
@@ -58,19 +58,19 @@ declare global {
  * Waits for Google's gtag script to load before configuring
  */
 export function initGA(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   // Initialize dataLayer first
   window.dataLayer = window.dataLayer || [];
 
   // Wait for Google's gtag to be ready (from the script tag)
   const checkGtag = () => {
-    if (typeof window.gtag === 'function') {
+    if (typeof window.gtag === "function") {
       // Google's gtag is ready - configure it
-      window.gtag('config', GA_MEASUREMENT_ID, {
+      window.gtag("config", GA_MEASUREMENT_ID, {
         send_page_view: false, // We'll send manually for SPA
       });
-      if (import.meta.env.DEV) console.log('[Analytics] GA4 initialized');
+      if (import.meta.env.DEV) console.log("[Analytics] GA4 initialized");
       return true;
     }
     return false;
@@ -86,7 +86,10 @@ export function initGA(): void {
     if (checkGtag() || attempts >= 30) {
       clearInterval(interval);
       if (attempts >= 30) {
-        if (import.meta.env.DEV) console.warn('[Analytics] GA4 gtag not found - Google Analytics script may have failed to load');
+        if (import.meta.env.DEV)
+          console.warn(
+            "[Analytics] GA4 gtag not found - Google Analytics script may have failed to load",
+          );
       }
     }
   }, 100);
@@ -97,41 +100,48 @@ export function initGA(): void {
  * Call on initial load and route changes
  */
 export function trackPageView(params: PageViewParams): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   if (!window.gtag) {
-    if (import.meta.env.DEV) console.warn('[Analytics] gtag not available - page view not tracked');
+    if (import.meta.env.DEV)
+      console.warn("[Analytics] gtag not available - page view not tracked");
     return;
   }
 
-  window.gtag('event', 'page_view', {
+  window.gtag("event", "page_view", {
     page_path: params.page_path,
     page_title: params.page_title || document.title,
   });
 
-  if (import.meta.env.DEV) console.log('[Analytics] Page view tracked:', params.page_path);
+  if (import.meta.env.DEV)
+    console.log("[Analytics] Page view tracked:", params.page_path);
 }
 
 /**
  * Track generic events
  */
 export function trackEvent(eventName: string, params?: EventParams): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   if (!window.gtag) {
-    if (import.meta.env.DEV) console.warn('[Analytics] gtag not available - event not tracked:', eventName);
+    if (import.meta.env.DEV)
+      console.warn(
+        "[Analytics] gtag not available - event not tracked:",
+        eventName,
+      );
     return;
   }
 
-  window.gtag('event', eventName, params);
-  if (import.meta.env.DEV) console.log('[Analytics] Event tracked:', eventName, params);
+  window.gtag("event", eventName, params);
+  if (import.meta.env.DEV)
+    console.log("[Analytics] Event tracked:", eventName, params);
 }
 
 /**
  * Track search queries
  */
 export function trackSearch(params: SearchParams): void {
-  trackEvent('search', {
+  trackEvent("search", {
     search_term: params.search_term,
     results_count: params.results_count,
   });
@@ -141,7 +151,7 @@ export function trackSearch(params: SearchParams): void {
  * Track filter usage
  */
 export function trackFilter(params: FilterParams): void {
-  trackEvent('filter_applied', {
+  trackEvent("filter_applied", {
     filter_type: params.filter_type,
     filter_value: params.filter_value,
   });
@@ -151,7 +161,7 @@ export function trackFilter(params: FilterParams): void {
  * Track event card clicks (opening detail view)
  */
 export function trackEventClick(params: EventClickParams): void {
-  trackEvent('event_click', {
+  trackEvent("event_click", {
     event_id: params.event_id,
     event_title: params.event_title,
     event_category: params.event_category,
@@ -163,7 +173,7 @@ export function trackEventClick(params: EventClickParams): void {
  * Track clicks to external event pages
  */
 export function trackExternalLink(params: ExternalLinkParams): void {
-  trackEvent('external_link_click', {
+  trackEvent("external_link_click", {
     event_id: params.event_id,
     event_title: params.event_title,
     destination_url: params.destination_url,
@@ -175,7 +185,7 @@ export function trackExternalLink(params: ExternalLinkParams): void {
  */
 export function trackCategoryFilter(category: string): void {
   trackFilter({
-    filter_type: 'category',
+    filter_type: "category",
     filter_value: category,
   });
 }
@@ -185,7 +195,7 @@ export function trackCategoryFilter(category: string): void {
  */
 export function trackDateFilter(dateRange: string): void {
   trackFilter({
-    filter_type: 'date_range',
+    filter_type: "date_range",
     filter_value: dateRange,
   });
 }
