@@ -12,6 +12,8 @@ permissions:
 jobs:
   update-events:
     runs-on: ubuntu-latest
+    env:
+      VERCEL_CLI_VERSION: 51.7.0
 
     steps:
       - name: Checkout repository
@@ -48,6 +50,6 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          npx --yes vercel@47.0.5 pull --yes --environment=production --token=$VERCEL_TOKEN
-          npx --yes vercel@47.0.5 build --prod --token=$VERCEL_TOKEN
-          npx --yes vercel@47.0.5 deploy --prebuilt --prod --token=$VERCEL_TOKEN
+          npx --yes vercel@${VERCEL_CLI_VERSION} pull --yes --environment=production --token=$VERCEL_TOKEN
+          npx --yes vercel@${VERCEL_CLI_VERSION} build --prod --token=$VERCEL_TOKEN
+          npx --yes vercel@${VERCEL_CLI_VERSION} deploy --prebuilt --prod --token=$VERCEL_TOKEN
