@@ -6,7 +6,7 @@ This file tracks the implementation progress, the sequence of steps taken, and t
 
 As of `2026-04-22`, the latest pushed app commit is:
 
-- `0e81757` - `Refactor app shell and strengthen validation`
+- `d199ab1` - `Move artifact updates to PR workflow`
 
 Current state:
 
@@ -17,7 +17,10 @@ Current state:
   - format check
   - Node-based data/search tests
   - UI regression tests with `vitest + jsdom + testing-library`
-- The latest refactor was pushed to `origin/main`.
+- Browser E2E runs in GitHub Actions as a separate workflow.
+- The daily artifact updater now opens or updates an automation PR instead of pushing directly to `main`.
+- A branch ruleset on `main` was switched to active manually in GitHub.
+- The current blocker is a GitHub Actions repository/org setting: workflows are still not allowed to create pull requests, so `update-events` cannot yet open the automation PR.
 
 ## Progress Timeline
 
@@ -155,6 +158,16 @@ Changed the scheduled `update-events` workflow so it no longer pushes directly t
 - Fix: the updater now validates generated artifacts, opens or updates an automation PR branch, and relies on normal PR checks before merge.
 - Supporting change: the browser E2E workflow still ignores artifact-only pushes to `main`, but now runs on all pull requests so automation PRs can satisfy the required `browser-e2e` check.
 
+### 13. Branch protection activated and remaining GitHub setting identified
+
+Activated the `main` ruleset in GitHub after moving the artifact pipeline away from direct pushes.
+
+- Manual GitHub change: the branch ruleset now targets `main`, is active, and includes the `browser-e2e` required check.
+- Remaining blocker: the repository or organization still has GitHub Actions configured to disallow workflows from creating pull requests.
+- Required manual fix in GitHub: `Settings -> Actions -> General -> Workflow permissions`
+  - set `Read and write permissions`
+  - enable `Allow GitHub Actions to create and approve pull requests`
+
 ## Steps Followed
 
 The work so far followed this order:
@@ -173,6 +186,8 @@ The work so far followed this order:
 12. Standardize deterministic browser automation before promoting E2E into the main validation path.
 13. Separate app-behavior CI from the daily data-refresh workflow.
 14. Move artifact publication to PR-based automation so `main` can be protected without breaking the updater.
+15. Activate the `main` ruleset only after the updater moved to PR-based artifact delivery.
+16. Capture the remaining non-code GitHub Actions permission dependency explicitly in repo docs.
 
 ## Verification Baseline
 
@@ -193,6 +208,7 @@ The highest-value next work is:
 3. Run a second live UX/browser audit now that deterministic E2E coverage exists.
 4. Tighten data-pipeline health thresholds for major sources in the GitHub Actions workflow.
 5. Decide whether the automation PR should auto-merge after `browser-e2e` passes or remain a manual approval step.
+6. In GitHub settings, allow GitHub Actions to create pull requests, then rerun `update-events` and confirm the automation PR flow end to end.
 
 ## Update Rule
 
