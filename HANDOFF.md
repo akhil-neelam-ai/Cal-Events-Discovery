@@ -82,6 +82,10 @@ npm run install:browsers
 npm run validate
 ```
 
+Detailed environment restore checklist:
+
+- `NEW-LAPTOP-BOOTSTRAP.md`
+
 Useful commands:
 
 ```bash
