@@ -2,13 +2,18 @@ name: Update Events Daily
 
 on:
   schedule:
-    # Runs daily at 11:25 UTC (4:25 AM PDT / 3:25 AM PST) — off-peak to avoid Gemini 503s
-    - cron: "25 11 * * *"
+    # GitHub cron is UTC-only, so run at both 11:00 and 12:00 UTC and
+    # continue only when the current Pacific local time is 4:00 AM.
+    - cron: "0 11 * * *"
+    - cron: "0 12 * * *"
   workflow_dispatch: # Allow manual trigger
 
 concurrency:
   group: update-events-main
   cancel-in-progress: false
+
+env:
+  AUTOMATION_PR_TOKEN: ${{ secrets.AUTOMATION_PR_TOKEN }}
 
 permissions:
   contents: write
@@ -19,31 +24,53 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Gate scheduled runs to 4:00 AM Pacific
+        id: schedule_gate
+        if: ${{ github.event_name == 'schedule' }}
+        run: |
+          pt_hour="$(TZ=America/Los_Angeles date +%H)"
+          if [ "$pt_hour" = "04" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping scheduled run because current Pacific hour is $pt_hour, not 04."
+          fi
+
       - name: Checkout repository
-        uses: actions/checkout@v4
+        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
+        uses: actions/setup-node@v6
         with:
           node-version: "20"
           cache: npm
 
       - name: Install dependencies
+        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
         run: npm ci
 
       - name: Generate events snapshot
+        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
         env:
           API_KEY: ${{ secrets.API_KEY }}
         run: npm run update-events
 
       - name: Validate published artifacts
+        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
         run: npm run validate
 
       - name: Create artifact update pull request
-        uses: peter-evans/create-pull-request@v7
+        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
+        id: create_pr
+        uses: peter-evans/create-pull-request@v8
         with:
+          # A dedicated token lets the automation PR trigger downstream
+          # pull_request workflows like browser-e2e and be auto-merged later.
+          token: ${{ env.AUTOMATION_PR_TOKEN || github.token }}
           branch: automation/update-events
           base: main
           delete-branch: true
@@ -72,3 +99,15 @@ jobs:
             Workflow run: `${{ github.run_id }}`
           author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
           committer: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+
+      - name: Warn if updater PR cannot complete automatically
+        if: ${{ steps.create_pr.outputs.pull-request-number && env.AUTOMATION_PR_TOKEN == '' }}
+        run: |
+          echo "::warning::AUTOMATION_PR_TOKEN is not set."
+          echo "::warning::The updater PR was created with GITHUB_TOKEN, so downstream pull_request workflows like browser-e2e will not run and auto-merge is skipped."
+
+      - name: Enable auto-merge for artifact update PR
+        if: ${{ steps.create_pr.outputs.pull-request-number && env.AUTOMATION_PR_TOKEN != '' }}
+        run: gh pr merge --auto --merge "${{ steps.create_pr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ env.AUTOMATION_PR_TOKEN }}
