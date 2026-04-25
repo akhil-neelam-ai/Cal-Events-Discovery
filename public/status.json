@@ -1,37 +1,37 @@
 {
-  "generated_at": "2026-04-24T17:35:16.149Z",
-  "total_events": 1154,
-  "duplicates_removed": 443,
-  "past_events_filtered": 3256,
-  "invalid_events_filtered": 9,
+  "generated_at": "2026-04-25T11:41:45.602Z",
+  "total_events": 1157,
+  "duplicates_removed": 474,
+  "past_events_filtered": 3229,
+  "invalid_events_filtered": 7,
   "sources": [
     {
       "name": "livewhale",
       "ok": true,
-      "count": 1303,
-      "duration_ms": 3839,
-      "fetched_at": "2026-04-24T17:34:15.801Z"
+      "count": 1347,
+      "duration_ms": 6379,
+      "fetched_at": "2026-04-25T11:40:45.249Z"
     },
     {
       "name": "callink",
       "ok": true,
       "count": 10,
-      "duration_ms": 920,
-      "fetched_at": "2026-04-24T17:34:15.864Z"
+      "duration_ms": 579,
+      "fetched_at": "2026-04-25T11:40:45.316Z"
     },
     {
       "name": "cal_performances",
       "ok": true,
-      "count": 5,
-      "duration_ms": 11792,
-      "fetched_at": "2026-04-24T17:34:15.866Z"
+      "count": 4,
+      "duration_ms": 11463,
+      "fetched_at": "2026-04-25T11:40:45.317Z"
     },
     {
       "name": "calbears",
       "ok": true,
-      "count": 85,
-      "duration_ms": 402,
-      "fetched_at": "2026-04-24T17:34:15.868Z"
+      "count": 81,
+      "duration_ms": 717,
+      "fetched_at": "2026-04-25T11:40:45.318Z"
     },
     {
       "name": "bampfa",
@@ -39,39 +39,39 @@
       "count": 0,
       "duration_ms": 60000,
       "error": "bampfa timed out after 60000ms",
-      "fetched_at": "2026-04-24T17:35:15.869Z",
+      "fetched_at": "2026-04-25T11:41:45.320Z",
       "degraded": true,
       "degraded_reason": "bampfa failed: bampfa timed out after 60000ms",
       "fallback_used": true,
-      "fallback_count": 88
+      "fallback_count": 87
     },
     {
       "name": "haas",
       "ok": true,
-      "count": 18,
-      "duration_ms": 2286,
-      "fetched_at": "2026-04-24T17:34:15.870Z"
+      "count": 17,
+      "duration_ms": 2319,
+      "fetched_at": "2026-04-25T11:40:45.321Z"
     },
     {
       "name": "berkeley_law",
       "ok": true,
-      "count": 25,
-      "duration_ms": 1085,
-      "fetched_at": "2026-04-24T17:34:15.871Z"
+      "count": 24,
+      "duration_ms": 2160,
+      "fetched_at": "2026-04-25T11:40:45.322Z"
     },
     {
       "name": "simons",
       "ok": true,
       "count": 38,
-      "duration_ms": 17939,
-      "fetched_at": "2026-04-24T17:34:15.872Z"
+      "duration_ms": 18735,
+      "fetched_at": "2026-04-25T11:40:45.323Z"
     },
     {
       "name": "ehub",
       "ok": true,
-      "count": 25,
-      "duration_ms": 630,
-      "fetched_at": "2026-04-24T17:34:15.873Z"
+      "count": 23,
+      "duration_ms": 1744,
+      "fetched_at": "2026-04-25T11:40:45.324Z"
     },
     {
       "name": "gemini",
@@ -79,13 +79,13 @@
       "count": 0,
       "duration_ms": 60000,
       "error": "gemini timed out after 60000ms",
-      "fetched_at": "2026-04-24T17:35:15.873Z"
+      "fetched_at": "2026-04-25T11:41:45.324Z"
     }
   ],
   "fallback_used": true,
   "degraded": true,
   "degraded_reason": "bampfa failed: bampfa timed out after 60000ms",
-  "last_good_used": 88,
+  "last_good_used": 87,
   "fallback_sources": [
     "bampfa"
   ],
