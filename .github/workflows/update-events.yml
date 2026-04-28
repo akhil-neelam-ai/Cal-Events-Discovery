@@ -2,8 +2,9 @@ name: Update Events Daily
 
 on:
   schedule:
-    # GitHub cron is UTC-only, so run at both 11:00 and 12:00 UTC and
-    # continue only when the current Pacific local time is 4:00 AM.
+    # GitHub cron is UTC-only, so run at both 11:00 and 12:00 UTC.
+    # A gate step below maps the triggering cron to the active Pacific offset
+    # so delayed runs still execute on the intended local 4:00 AM schedule.
     - cron: "0 11 * * *"
     - cron: "0 12 * * *"
   workflow_dispatch: # Allow manual trigger
@@ -28,12 +29,23 @@ jobs:
         id: schedule_gate
         if: ${{ github.event_name == 'schedule' }}
         run: |
-          pt_hour="$(TZ=America/Los_Angeles date +%H)"
-          if [ "$pt_hour" = "04" ]; then
-            echo "should_run=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "should_run=false" >> "$GITHUB_OUTPUT"
-            echo "Skipping scheduled run because current Pacific hour is $pt_hour, not 04."
+          trigger_cron='${{ github.event.schedule }}'
+          pacific_offset="$(TZ=America/Los_Angeles date +%z)"
+          should_run=false
+
+          case "${pacific_offset}:${trigger_cron}" in
+            -0700:"0 11 * * *"|\
+            -0800:"0 12 * * *")
+              should_run=true
+              ;;
+          esac
+
+          echo "trigger_cron=${trigger_cron}" >> "$GITHUB_OUTPUT"
+          echo "pacific_offset=${pacific_offset}" >> "$GITHUB_OUTPUT"
+          echo "should_run=${should_run}" >> "$GITHUB_OUTPUT"
+
+          if [ "$should_run" != "true" ]; then
+            echo "Skipping scheduled run triggered by '${trigger_cron}' with Pacific offset ${pacific_offset}."
           fi
 
       - name: Checkout repository
