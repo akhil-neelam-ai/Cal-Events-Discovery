@@ -14,10 +14,10 @@
  * hit the right events even if the event text spells them differently.
  */
 
-import type { LegacyCalEvent } from './schema.js';
-import { tokenize } from '../../utils/textUtils.js';
-import { BERKELEY_VENUE_ALIASES } from '../../utils/textUtils.js';
-import type { SearchIndex } from '../../utils/textUtils.js';
+import type { LegacyCalEvent } from "./schema.js";
+import { tokenize } from "../../utils/textUtils.js";
+import { BERKELEY_VENUE_ALIASES } from "../../utils/textUtils.js";
+import type { SearchIndex } from "../../utils/textUtils.js";
 
 export type { SearchIndex };
 
@@ -50,7 +50,7 @@ function tokenizeWithAliases(text: string): string[] {
 }
 
 export function buildSearchIndex(events: LegacyCalEvent[]): SearchIndex {
-  const ids: string[] = events.map(e => e.id);
+  const ids: string[] = events.map((e) => e.id);
   const t: FieldMap = {};
   const g: FieldMap = {};
   const o: FieldMap = {};
@@ -60,11 +60,13 @@ export function buildSearchIndex(events: LegacyCalEvent[]): SearchIndex {
   for (let pos = 0; pos < events.length; pos++) {
     const ev = events[pos];
 
-    for (const token of tokenizeWithAliases(ev.title))               add(t, token, pos);
-    for (const token of tokenize((ev.tags ?? []).join(' ')))          add(g, token, pos);
-    for (const token of tokenizeWithAliases(ev.organizer ?? ''))      add(o, token, pos);
-    for (const token of tokenizeWithAliases(ev.location ?? ''))       add(l, token, pos);
-    for (const token of tokenize(ev.description ?? ''))               add(d, token, pos);
+    for (const token of tokenizeWithAliases(ev.title)) add(t, token, pos);
+    for (const token of tokenize((ev.tags ?? []).join(" "))) add(g, token, pos);
+    for (const token of tokenizeWithAliases(ev.organizer ?? ""))
+      add(o, token, pos);
+    for (const token of tokenizeWithAliases(ev.location ?? ""))
+      add(l, token, pos);
+    for (const token of tokenize(ev.description ?? "")) add(d, token, pos);
   }
 
   return {

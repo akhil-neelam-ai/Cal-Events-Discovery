@@ -154,6 +154,26 @@ describe("App UI regressions", () => {
     expect(screen.getByText("AI Research Forum")).toBeInTheDocument();
   });
 
+  it("treats explicit URL date filters as user-selected", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "tomorrow-planning",
+        title: "Tomorrow Planning Session",
+        date: TOMORROW_KEY,
+        description: "A session whose query implies tomorrow.",
+      }),
+    ]);
+
+    window.history.replaceState({}, "", "/?q=tomorrow&date=upcoming");
+
+    render(<App />);
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: /upcoming/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Tomorrow Planning Session")).toBeInTheDocument();
+  });
+
   it("falls back from today to this week when today has no events", () => {
     mockFeedState = makeFeedState([
       makeEvent({

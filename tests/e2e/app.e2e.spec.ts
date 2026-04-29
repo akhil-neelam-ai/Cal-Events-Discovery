@@ -48,6 +48,18 @@ function buildFixtureEvents() {
       source: "livewhale",
     },
     {
+      id: "evt-archive",
+      title: "Cricket Archive Lecture",
+      organizer: "Center for South Asia Studies",
+      date: today,
+      time: "4:00 PM",
+      location: "Doe Library",
+      description: "An academic lecture with arts context.",
+      tags: ["Academic", "Arts"],
+      url: "https://example.com/archive",
+      source: "livewhale",
+    },
+    {
       id: "evt-free-food",
       title: "Free Pizza Mixer",
       organizer: "Student Union",
@@ -188,4 +200,87 @@ test("preserves search and filter state across detail open and reload", async ({
   await expect(
     page.getByRole("link", { name: /view official page/i }),
   ).toHaveAttribute("href", "https://example.com/dreams");
+});
+
+test("filters by primary category only", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /all events/i }).click();
+  await page.getByRole("button", { name: /^arts$/i }).click();
+
+  await expect(
+    page.getByRole("heading", { level: 2, name: /arts · upcoming/i }),
+  ).toBeVisible();
+  await expect(page.getByText("Dreams Are Colder Than Death")).toBeVisible();
+  await expect(page.getByText("Cricket Archive Lecture")).toHaveCount(0);
+});
+
+test("filters by source dropdown", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /^All \(\d+\)$/ }).click();
+  await page.getByRole("option", { name: /CalLink/ }).click();
+
+  await expect(page.getByText("Free Pizza Mixer")).toBeVisible();
+  await expect(page.getByText("Dreams Are Colder Than Death")).toHaveCount(0);
+  await expect(page).toHaveURL(/source=callink/);
+});
+
+test("shows and dismisses degraded status banner", async ({ page }) => {
+  await page.route("**/status.json", async (route) => {
+    const now = new Date().toISOString();
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        generated_at: now,
+        total_events: 4,
+        duplicates_removed: 0,
+        past_events_filtered: 0,
+        invalid_events_filtered: 0,
+        sources: [
+          {
+            name: "bampfa",
+            ok: false,
+            count: 0,
+            duration_ms: 60000,
+            error: "bampfa timed out after 60000ms",
+            fetched_at: now,
+            degraded: true,
+            fallback_used: true,
+            fallback_count: 1,
+          },
+        ],
+        fallback_used: true,
+        degraded: true,
+        degraded_reason: "bampfa failed: bampfa timed out after 60000ms",
+        last_good_used: 1,
+        fallback_sources: ["bampfa"],
+        degraded_sources: ["bampfa"],
+      }),
+    });
+  });
+
+  await page.goto("/");
+
+  await expect(page.getByText("Showing mostly fresh data.")).toBeVisible();
+  await expect(
+    page.getByText(/reused cached events for BAMPFA/i),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Dismiss" }).click();
+  await expect(page.getByText("Showing mostly fresh data.")).toHaveCount(0);
+});
+
+test("supports mobile advanced filters", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /^Filters$/ }).click();
+  await page.getByRole("button", { name: "Student Life" }).click();
+  await page.getByRole("button", { name: "Done" }).click();
+
+  await expect(page.getByText("Free Pizza Mixer")).toBeVisible();
+  await expect(page.getByText("Dreams Are Colder Than Death")).toHaveCount(0);
+  await expect(page).toHaveURL(/category=Student\+Life/);
 });

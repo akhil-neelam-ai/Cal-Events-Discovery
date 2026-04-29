@@ -14,10 +14,11 @@
  * events.berkeley.edu — the Simons Institute does not cross-publish to it.
  */
 
-import type { CanonicalEvent } from '../lib/schema.js';
-import { CanonicalEventSchema } from '../lib/schema.js';
+import type { CanonicalEvent } from "../lib/schema.js";
+import { CanonicalEventSchema } from "../lib/schema.js";
+import { signalWithTimeout, type FetchOptions } from "../lib/abort.js";
 
-const BASE_URL = 'https://simons.berkeley.edu';
+const BASE_URL = "https://simons.berkeley.edu";
 const API_URL = `${BASE_URL}/api/events`;
 const FETCH_TIMEOUT_MS = 30_000;
 
@@ -41,44 +42,52 @@ interface RawSimonsEvent {
 }
 
 function todayPT(): string {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Los_Angeles',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).format(new Date());
 }
 
 function ptDateOf(utcIso: string): string {
   const d = new Date(utcIso);
-  if (isNaN(d.getTime())) return '';
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Los_Angeles',
-    year: 'numeric', month: '2-digit', day: '2-digit',
+  if (isNaN(d.getTime())) return "";
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).format(d);
 }
 
 /** Ensure an ISO timestamp has an explicit timezone suffix. */
 function withZ(s: string): string {
-  if (!s.includes('T')) return `${s}T00:00:00Z`;
-  if (s.endsWith('Z') || /[+-]\d{2}:?\d{2}$/.test(s)) return s;
+  if (!s.includes("T")) return `${s}T00:00:00Z`;
+  if (s.endsWith("Z") || /[+-]\d{2}:?\d{2}$/.test(s)) return s;
   return `${s}Z`;
 }
 
 function categorize(eventType: string, workshopType: string): string[] {
   const s = `${eventType} ${workshopType}`.toLowerCase();
-  if (/theoretically speaking|public lecture|karp/.test(s)) return ['Science & Tech', 'Academic'];
-  return ['Science & Tech'];
+  if (/theoretically speaking|public lecture|karp/.test(s))
+    return ["Science & Tech", "Academic"];
+  return ["Science & Tech"];
 }
 
-export async function fetchSimons(): Promise<FetchResult> {
+export async function fetchSimons(
+  options: FetchOptions = {},
+): Promise<FetchResult> {
   const todayIso = todayPT();
   const fetched_at = new Date().toISOString();
 
   console.log(`[simons] fetching ${API_URL}`);
   const res = await fetch(API_URL, {
-    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-    headers: { 'User-Agent': 'Cal-Events-Discovery-Bot', Accept: 'application/json' },
+    signal: signalWithTimeout(options.signal, FETCH_TIMEOUT_MS),
+    headers: {
+      "User-Agent": "Cal-Events-Discovery-Bot",
+      Accept: "application/json",
+    },
   });
   if (!res.ok) throw new Error(`Simons API: ${res.status} ${res.statusText}`);
 
@@ -92,30 +101,49 @@ export async function fetchSimons(): Promise<FetchResult> {
   for (const item of raw) {
     rawCount++;
     try {
-      if (!item.title?.trim() || !item.start || !item.url) { invalid++; continue; }
+      if (!item.title?.trim() || !item.start || !item.url) {
+        invalid++;
+        continue;
+      }
 
       // Skip cancelled events
-      if (/^cancelled[:\s]/i.test(item.title)) { invalid++; continue; }
+      if (/^cancelled[:\s]/i.test(item.title)) {
+        invalid++;
+        continue;
+      }
 
       const start_at = withZ(item.start);
       const ptDate = ptDateOf(start_at);
-      if (!ptDate) { invalid++; continue; }
-      if (ptDate < todayIso) { filteredPast++; continue; }
+      if (!ptDate) {
+        invalid++;
+        continue;
+      }
+      if (ptDate < todayIso) {
+        filteredPast++;
+        continue;
+      }
 
       const end_at = item.end ? withZ(item.end) : undefined;
-      const canonicalUrl = item.url.startsWith('http') ? item.url : `${BASE_URL}${item.url}`;
+      const canonicalUrl = item.url.startsWith("http")
+        ? item.url
+        : `${BASE_URL}${item.url}`;
 
       // Stable source_id: url slug + PT date (recurring events share slug)
-      const slug = item.url.replace(/^\//, '').replace(/\//g, '-');
+      const slug = item.url.replace(/^\//, "").replace(/\//g, "-");
       const source_id = `${slug}::${ptDate}`;
 
-      const description = [item.speakers?.trim(), item.program?.trim()]
-        .filter(Boolean).join(' — ') || item.title.trim();
+      const description =
+        [item.speakers?.trim(), item.program?.trim()]
+          .filter(Boolean)
+          .join(" — ") || item.title.trim();
 
-      const categories = categorize(item.event_type ?? '', item.workshop_type ?? '');
+      const categories = categorize(
+        item.event_type ?? "",
+        item.workshop_type ?? "",
+      );
 
       const candidate: CanonicalEvent = {
-        source_name: 'simons',
+        source_name: "simons",
         source_id,
         source_url: API_URL,
         evidence_url: canonicalUrl,
@@ -123,16 +151,16 @@ export async function fetchSimons(): Promise<FetchResult> {
         description,
         start_at,
         end_at,
-        timezone: 'America/Los_Angeles',
+        timezone: "America/Los_Angeles",
         all_day: false,
-        venue: item.location?.trim() || 'Calvin Lab',
-        building: 'Calvin Lab',
-        address: 'Simons Institute, 121 Calvin Lab, Berkeley, CA 94720',
-        modality: 'in_person',
-        organizer: 'Simons Institute',
-        organizer_unit: 'Simons Institute for the Theory of Computing',
-        audience: '',
-        cost: '',
+        venue: item.location?.trim() || "Calvin Lab",
+        building: "Calvin Lab",
+        address: "Simons Institute, 121 Calvin Lab, Berkeley, CA 94720",
+        modality: "in_person",
+        organizer: "Simons Institute",
+        organizer_unit: "Simons Institute for the Theory of Computing",
+        audience: "",
+        cost: "",
         registration_url: undefined,
         canonical_url: canonicalUrl,
         categories,
@@ -146,15 +174,22 @@ export async function fetchSimons(): Promise<FetchResult> {
       if (!validated.success) {
         invalid++;
         if (invalid <= 5) {
-          console.warn(`[simons] schema reject "${item.title}": ${
-            validated.error.issues.map(i => `${i.path.join('.')}:${i.message}`).join('; ')}`);
+          console.warn(
+            `[simons] schema reject "${item.title}": ${validated.error.issues
+              .map((i) => `${i.path.join(".")}:${i.message}`)
+              .join("; ")}`,
+          );
         }
         continue;
       }
       events.push(validated.data);
-    } catch { invalid++; }
+    } catch {
+      invalid++;
+    }
   }
 
-  console.log(`[simons] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`);
+  console.log(
+    `[simons] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`,
+  );
   return { events, rawCount, filteredPast, invalid };
 }

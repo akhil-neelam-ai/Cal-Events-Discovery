@@ -5,6 +5,7 @@ type DateRange = SearchFilters["dateRange"];
 export interface AppUrlState {
   filters: SearchFilters;
   selectedEventId: string | null;
+  hasExplicitDateRange: boolean;
 }
 
 interface ParseUrlStateOptions {
@@ -39,10 +40,14 @@ export function parseUrlState(
   { defaultFilters, allowedCategories, allowedSources }: ParseUrlStateOptions,
 ): AppUrlState {
   const params = new URLSearchParams(search);
+  const rawDateRange = params.get("date");
+  const hasExplicitDateRange = Boolean(
+    rawDateRange && VALID_DATE_RANGES.has(rawDateRange as DateRange),
+  );
 
   const nextFilters: SearchFilters = {
     ...defaultFilters,
-    dateRange: sanitizeDateRange(params.get("date"), defaultFilters.dateRange),
+    dateRange: sanitizeDateRange(rawDateRange, defaultFilters.dateRange),
     searchQuery: params.get("q")?.trim() ?? defaultFilters.searchQuery,
     category: allowedCategories.includes(params.get("category") ?? "")
       ? (params.get("category") ?? defaultFilters.category)
@@ -57,6 +62,7 @@ export function parseUrlState(
   return {
     filters: nextFilters,
     selectedEventId: rawEventId || null,
+    hasExplicitDateRange,
   };
 }
 

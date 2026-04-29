@@ -1,56 +1,73 @@
-
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { CalEvent, SearchFilters, LoadingState } from './types';
-import { DEFAULT_FILTERS } from './appConfig';
-import { AppFooter } from './components/AppFooter';
-import { BackToTopButton } from './components/BackToTopButton';
-import { AppHeaderShell } from './components/AppHeaderShell';
-import { EventDetailOverlay } from './components/EventDetailOverlay';
-import { ErrorStateView } from './components/ErrorStateView';
-import { EventsResultsSection } from './components/EventsResultsSection';
-import { LoadingStateView } from './components/LoadingStateView';
-import { useEventBrowserActions } from './hooks/useEventBrowserActions';
-import { useEventBrowserState } from './hooks/useEventBrowserState';
-import { useBackToTopVisibility } from './hooks/useBackToTopVisibility';
-import { useEventFeed } from './hooks/useEventFeed';
-import { useEventGridState } from './hooks/useEventGridState';
-import { useIsMobile } from './hooks/useIsMobile';
-import { usePacificDateKeys } from './hooks/usePacificDateKeys';
-import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion';
-import { readAppUrlState, useUrlStateSync } from './hooks/useUrlStateSync';
-import {
-  initGA,
-  trackPageView,
-  trackEventClick,
-} from './utils/analytics';
-import { buildStatusBanner } from './utils/statusUi';
-import { addRecentSearch } from './utils/recentSearches';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
+import { CalEvent, SearchFilters, LoadingState } from "./types";
+import { DEFAULT_FILTERS } from "./appConfig";
+import { AppFooter } from "./components/AppFooter";
+import { BackToTopButton } from "./components/BackToTopButton";
+import { AppHeaderShell } from "./components/AppHeaderShell";
+import { EventDetailOverlay } from "./components/EventDetailOverlay";
+import { ErrorStateView } from "./components/ErrorStateView";
+import { EventsResultsSection } from "./components/EventsResultsSection";
+import { LoadingStateView } from "./components/LoadingStateView";
+import { useEventBrowserActions } from "./hooks/useEventBrowserActions";
+import { useEventBrowserState } from "./hooks/useEventBrowserState";
+import { useBackToTopVisibility } from "./hooks/useBackToTopVisibility";
+import { useEventFeed } from "./hooks/useEventFeed";
+import { useEventGridState } from "./hooks/useEventGridState";
+import { useIsMobile } from "./hooks/useIsMobile";
+import { usePacificDateKeys } from "./hooks/usePacificDateKeys";
+import { usePrefersReducedMotion } from "./hooks/usePrefersReducedMotion";
+import { readAppUrlState, useUrlStateSync } from "./hooks/useUrlStateSync";
+import { initGA, trackPageView, trackEventClick } from "./utils/analytics";
+import { buildStatusBanner } from "./utils/statusUi";
+import { addRecentSearch } from "./utils/recentSearches";
 
 export default function App() {
   const initialUrlState = readAppUrlState();
-  const { allEvents, lastUpdated, loading, statusReport, searchIndex, sourceOptions, sourceCount, loadEvents } = useEventFeed();
+  const {
+    allEvents,
+    lastUpdated,
+    loading,
+    statusReport,
+    searchIndex,
+    sourceOptions,
+    sourceCount,
+    loadEvents,
+  } = useEventFeed();
   const prefersReducedMotion = usePrefersReducedMotion();
-  const [filters, setFilters] = useState<SearchFilters>(initialUrlState.filters);
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(initialUrlState.selectedEventId);
-  const [dismissedInterpretationKeys, setDismissedInterpretationKeys] = useState<Set<string>>(new Set());
+  const [filters, setFilters] = useState<SearchFilters>(
+    initialUrlState.filters,
+  );
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(
+    initialUrlState.selectedEventId,
+  );
+  const [dismissedInterpretationKeys, setDismissedInterpretationKeys] =
+    useState<Set<string>>(new Set());
   const isMobile = useIsMobile();
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyModeRef = useRef<'push' | 'replace'>('replace');
+  const historyModeRef = useRef<"push" | "replace">("replace");
   const isApplyingHistoryRef = useRef(false);
-  const [userSetDateRange, setUserSetDateRange] = useState(false);
+  const [userSetDateRange, setUserSetDateRange] = useState(
+    initialUrlState.hasExplicitDateRange,
+  );
   const showBackToTop = useBackToTopVisibility();
 
   const handleEventClick = useCallback((event: CalEvent) => {
     setSelectedEventId(event.id);
     // Persist the search term that led to this click
-    setFilters(prev => {
+    setFilters((prev) => {
       if (prev.searchQuery.trim()) addRecentSearch(prev.searchQuery.trim());
       return prev;
     });
     trackEventClick({
       event_id: event.id,
       event_title: event.title,
-      event_category: event.tags?.[0] || 'Unknown',
+      event_category: event.tags?.[0] || "Unknown",
       event_date: event.date,
     });
   }, []);
@@ -63,15 +80,20 @@ export default function App() {
     // Initialize GA4 and track page view
     // Vercel Analytics is initialized via the <Analytics /> component wrapper
     initGA();
-    trackPageView({ page_path: '/', page_title: 'CalEvents - UC Berkeley Events' });
+    trackPageView({
+      page_path: "/",
+      page_title: "CalEvents - UC Berkeley Events",
+    });
   }, []);
 
-  const [bannerDismissed, setBannerDismissed] = useState(() =>
-    typeof sessionStorage !== 'undefined' && sessionStorage.getItem('statusBannerDismissed') === '1'
+  const [bannerDismissed, setBannerDismissed] = useState(
+    () =>
+      typeof sessionStorage !== "undefined" &&
+      sessionStorage.getItem("statusBannerDismissed") === "1",
   );
   const dismissBanner = () => {
     setBannerDismissed(true);
-    sessionStorage.setItem('statusBannerDismissed', '1');
+    sessionStorage.setItem("statusBannerDismissed", "1");
   };
 
   const statusBanner = buildStatusBanner(statusReport);
@@ -84,24 +106,24 @@ export default function App() {
   }, []);
 
   const clearSearch = useCallback(() => {
-    setFilters(prev => ({ ...prev, searchQuery: '' }));
+    setFilters((prev) => ({ ...prev, searchQuery: "" }));
     setSelectedEventId(null);
     setUserSetDateRange(false);
   }, []);
 
   const clearCategory = useCallback(() => {
-    setFilters(prev => ({ ...prev, category: DEFAULT_FILTERS.category }));
+    setFilters((prev) => ({ ...prev, category: DEFAULT_FILTERS.category }));
     setSelectedEventId(null);
   }, []);
 
   const showWeek = useCallback(() => {
-    setFilters(prev => ({ ...prev, dateRange: 'week' }));
+    setFilters((prev) => ({ ...prev, dateRange: "week" }));
     setSelectedEventId(null);
     setUserSetDateRange(true);
   }, []);
 
   const showUpcoming = useCallback(() => {
-    setFilters(prev => ({ ...prev, dateRange: 'upcoming' }));
+    setFilters((prev) => ({ ...prev, dateRange: "upcoming" }));
     setSelectedEventId(null);
     setUserSetDateRange(true);
   }, []);
@@ -145,14 +167,13 @@ export default function App() {
     hiddenEventCount,
     eventGroups,
     showMoreEvents,
-  } =
-    useEventGridState({
-      loading,
-      filteredEvents,
-      filters,
-      effectiveDateRange,
-      prefersReducedMotion,
-    });
+  } = useEventGridState({
+    loading,
+    filteredEvents,
+    filters,
+    effectiveDateRange,
+    prefersReducedMotion,
+  });
 
   const {
     handleSearchChange,
@@ -181,7 +202,7 @@ export default function App() {
     historyModeRef,
     isApplyingHistoryRef,
   });
-  const mainContentId = 'main-content';
+  const mainContentId = "main-content";
 
   return (
     <div className="min-h-screen bg-berkeley-lightgray text-gray-800 font-sans">
@@ -209,7 +230,9 @@ export default function App() {
       <main id={mainContentId} className="container mx-auto px-4 py-6 md:py-7">
         {loading === LoadingState.LOADING && <LoadingStateView />}
 
-        {loading === LoadingState.ERROR && <ErrorStateView onRetry={loadEvents} />}
+        {loading === LoadingState.ERROR && (
+          <ErrorStateView onRetry={loadEvents} />
+        )}
 
         {loading === LoadingState.SUCCESS && (
           <EventsResultsSection
@@ -236,7 +259,11 @@ export default function App() {
 
       {/* Event Detail Panel/Sheet */}
       {selectedEvent && (
-        <EventDetailOverlay event={selectedEvent} isMobile={isMobile} onClose={handleCloseDetail} />
+        <EventDetailOverlay
+          event={selectedEvent}
+          isMobile={isMobile}
+          onClose={handleCloseDetail}
+        />
       )}
 
       {showBackToTop && <BackToTopButton />}

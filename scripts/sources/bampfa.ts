@@ -17,14 +17,20 @@
  * This adapter covers the gap.
  */
 
-import * as cheerio from 'cheerio';
-import type { CanonicalEvent } from '../lib/schema.js';
-import { CanonicalEventSchema } from '../lib/schema.js';
+import * as cheerio from "cheerio";
+import {
+  abortableDelay,
+  signalWithTimeout,
+  throwIfAborted,
+  type FetchOptions,
+} from "../lib/abort.js";
+import type { CanonicalEvent } from "../lib/schema.js";
+import { CanonicalEventSchema } from "../lib/schema.js";
 
-const BASE_URL = 'https://bampfa.org';
+const BASE_URL = "https://bampfa.org";
 const CALENDAR_URL = `${BASE_URL}/visit/calendar`;
-const FETCH_TIMEOUT_MS = 30_000;
-const MAX_FETCH_ATTEMPTS = 3;
+const FETCH_TIMEOUT_MS = 12_000;
+const MAX_FETCH_ATTEMPTS = 2;
 const RETRY_DELAY_MS = 1_500;
 /** Fetch the current month plus this many future months. */
 const MONTHS_AHEAD = 3;
@@ -36,16 +42,12 @@ export interface FetchResult {
   invalid: number;
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 function todayPT(): string {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Los_Angeles',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).format(new Date());
 }
 
@@ -56,13 +58,13 @@ function todayPT(): string {
  */
 function ptOffsetFor(year: number, month: number, day: number): string {
   const probe = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Los_Angeles',
-    timeZoneName: 'longOffset',
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Los_Angeles",
+    timeZoneName: "longOffset",
   }).formatToParts(probe);
-  const tz = parts.find(p => p.type === 'timeZoneName')?.value ?? '';
+  const tz = parts.find((p) => p.type === "timeZoneName")?.value ?? "";
   const match = tz.match(/GMT([+-])(\d{2}):(\d{2})/);
-  return match ? `${match[1]}${match[2]}:${match[3]}` : '-08:00';
+  return match ? `${match[1]}${match[2]}:${match[3]}` : "-08:00";
 }
 
 /**
@@ -73,9 +75,12 @@ function ptOffsetFor(year: number, month: number, day: number): string {
  * append an explicit PT offset so downstream consumers (and `new Date(...)`
  * on UTC CI runners) interpret the moment correctly.
  */
-function gcalTokenToIso(token: string): { iso: string; allDay: boolean } {
+export function gcalTokenToIso(token: string): {
+  iso: string;
+  allDay: boolean;
+} {
   // All-day: YYYYMMDD (8 chars, no T)
-  if (!token.includes('T')) {
+  if (!token.includes("T")) {
     const year = token.slice(0, 4);
     const month = token.slice(4, 6);
     const day = token.slice(6, 8);
@@ -87,9 +92,12 @@ function gcalTokenToIso(token: string): { iso: string; allDay: boolean } {
   const day = token.slice(6, 8);
   const hour = token.slice(9, 11);
   const min = token.slice(11, 13);
-  const sec = token.slice(13, 15) || '00';
+  const sec = token.slice(13, 15) || "00";
   const offset = ptOffsetFor(Number(year), Number(month), Number(day));
-  return { iso: `${year}-${month}-${day}T${hour}:${min}:${sec}${offset}`, allDay: false };
+  return {
+    iso: `${year}-${month}-${day}T${hour}:${min}:${sec}${offset}`,
+    allDay: false,
+  };
 }
 
 /**
@@ -101,7 +109,7 @@ function gcalTokenToIso(token: string): { iso: string; allDay: boolean } {
  *   https://calendar.google.com/calendar/r/eventedit?text=Film+Title&
  *   dates=20260422T190000/20260422T210000&details=...&location=BAMPFA
  */
-interface ParsedGCalLink {
+export interface ParsedGCalLink {
   title: string;
   startToken: string;
   endToken: string | undefined;
@@ -110,29 +118,33 @@ interface ParsedGCalLink {
   location: string;
 }
 
-function parseGCalLink(href: string): ParsedGCalLink | null {
+export function parseGCalLink(href: string): ParsedGCalLink | null {
   try {
     // The href may be HTML-entity-encoded (& → &amp;) — cheerio already
     // decodes .attr() values, but guard against raw strings.
-    const url = new URL(href.replace(/&amp;/g, '&'));
-    const text = url.searchParams.get('text') ?? '';
-    const dates = url.searchParams.get('dates') ?? '';
-    const details = url.searchParams.get('details') ?? '';
-    const location = url.searchParams.get('location') ?? 'BAMPFA';
+    const url = new URL(href.replace(/&amp;/g, "&"));
+    const text = url.searchParams.get("text") ?? "";
+    const dates = url.searchParams.get("dates") ?? "";
+    const details = url.searchParams.get("details") ?? "";
+    const location = url.searchParams.get("location") ?? "BAMPFA";
 
     if (!text || !dates) return null;
 
-    const [startToken, endToken] = dates.split('/');
+    const [startToken, endToken] = dates.split("/");
 
     // Extract canonical bampfa.org URL from the details string.
     // BAMPFA embeds it at the end: "... event details: https://bampfa.org/event/slug"
     const urlMatch = details.match(/https:\/\/bampfa\.org\/event\/\S+/);
-    const canonicalUrl = urlMatch ? urlMatch[0].trimEnd() : '';
+    const canonicalUrl = urlMatch ? urlMatch[0].trimEnd() : "";
     if (!canonicalUrl) return null;
 
     // Strip the boilerplate preamble from the description.
-    const descPreamble = /Please note that event details are subject to change[^:]*:\s*/i;
-    const cleanDesc = details.replace(descPreamble, '').replace(urlMatch?.[0] ?? '', '').trim();
+    const descPreamble =
+      /Please note that event details are subject to change[^:]*:\s*/i;
+    const cleanDesc = details
+      .replace(descPreamble, "")
+      .replace(urlMatch?.[0] ?? "", "")
+      .trim();
 
     return {
       title: text.trim(),
@@ -147,15 +159,21 @@ function parseGCalLink(href: string): ParsedGCalLink | null {
   }
 }
 
-async function fetchCalendarPage(url: string): Promise<string> {
-  let lastErr = '';
+async function fetchCalendarPage(
+  url: string,
+  options: FetchOptions,
+): Promise<string> {
+  let lastErr = "";
   for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
-    console.log(`[bampfa] fetching ${url} (attempt ${attempt}/${MAX_FETCH_ATTEMPTS})`);
+    throwIfAborted(options.signal);
+    console.log(
+      `[bampfa] fetching ${url} (attempt ${attempt}/${MAX_FETCH_ATTEMPTS})`,
+    );
     try {
       const res = await fetch(url, {
-        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-        headers: { 'User-Agent': 'Cal-Events-Discovery-Bot' },
-        redirect: 'follow',
+        signal: signalWithTimeout(options.signal, FETCH_TIMEOUT_MS),
+        headers: { "User-Agent": "Cal-Events-Discovery-Bot" },
+        redirect: "follow",
       });
       if (!res.ok) {
         lastErr = `${res.status} ${res.statusText}`;
@@ -167,25 +185,33 @@ async function fetchCalendarPage(url: string): Promise<string> {
       lastErr = err instanceof Error ? err.message : String(err);
       console.warn(`[bampfa] fetch error: ${lastErr}`);
     }
-    if (attempt < MAX_FETCH_ATTEMPTS) await sleep(RETRY_DELAY_MS * attempt);
+    if (attempt < MAX_FETCH_ATTEMPTS)
+      await abortableDelay(RETRY_DELAY_MS * attempt, options.signal);
   }
-  throw new Error(`BAMPFA fetch failed for ${url} after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr}`);
+  throw new Error(
+    `BAMPFA fetch failed for ${url} after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr}`,
+  );
 }
 
 /** Return YYYY-MM strings for the current month and the next MONTHS_AHEAD months. */
-function targetMonths(): string[] {
+export function targetMonths(now = new Date()): string[] {
   const months: string[] = [];
-  const now = new Date();
   for (let i = 0; i <= MONTHS_AHEAD; i++) {
     const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
     const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const m = String(d.getMonth() + 1).padStart(2, "0");
     months.push(`${y}-${m}`);
   }
   return months;
 }
 
-export async function fetchBampfa(): Promise<FetchResult> {
+export function calendarUrlForMonth(ym: string): string {
+  return `${CALENDAR_URL}/${ym}`;
+}
+
+export async function fetchBampfa(
+  options: FetchOptions = {},
+): Promise<FetchResult> {
   const todayIso = todayPT();
   const fetched_at = new Date().toISOString();
   const events: CanonicalEvent[] = [];
@@ -198,20 +224,23 @@ export async function fetchBampfa(): Promise<FetchResult> {
   const seenKeys = new Set<string>();
 
   const months = targetMonths();
+  const pages = await Promise.all(
+    months.map(async (ym) => {
+      const pageUrl = calendarUrlForMonth(ym);
+      try {
+        return { ym, html: await fetchCalendarPage(pageUrl, options) };
+      } catch (err) {
+        console.warn(
+          `[bampfa] skipping month ${ym}: ${err instanceof Error ? err.message : err}`,
+        );
+        return null;
+      }
+    }),
+  );
 
-  for (const ym of months) {
-    // The first month uses the base URL (BAMPFA defaults to current month).
-    // Subsequent months use /visit/calendar/YYYY-MM.
-    const [, firstYm] = months;
-    void firstYm; // suppress unused-var lint; we always use explicit URLs
-    const pageUrl = `${CALENDAR_URL}/${ym}`;
-    let html: string;
-    try {
-      html = await fetchCalendarPage(pageUrl);
-    } catch (err) {
-      console.warn(`[bampfa] skipping month ${ym}: ${err instanceof Error ? err.message : err}`);
-      continue;
-    }
+  for (const page of pages) {
+    if (!page) continue;
+    const { html, ym } = page;
 
     const $ = cheerio.load(html);
 
@@ -220,14 +249,21 @@ export async function fetchBampfa(): Promise<FetchResult> {
     $('a[href*="calendar.google.com/calendar/r/eventedit"]').each((_i, el) => {
       rawCount++;
       try {
-        const href = $(el).attr('href') ?? '';
+        const href = $(el).attr("href") ?? "";
         const parsed = parseGCalLink(href);
         if (!parsed) {
           invalid++;
           return;
         }
 
-        const { title, startToken, endToken, canonicalUrl, description, location } = parsed;
+        const {
+          title,
+          startToken,
+          endToken,
+          canonicalUrl,
+          description,
+          location,
+        } = parsed;
 
         const { iso: start_at, allDay: all_day } = gcalTokenToIso(startToken);
         const end_at = endToken ? gcalTokenToIso(endToken).iso : undefined;
@@ -252,7 +288,7 @@ export async function fetchBampfa(): Promise<FetchResult> {
         const source_id = `${slug}::${eventDate}`;
 
         const candidate: CanonicalEvent = {
-          source_name: 'bampfa',
+          source_name: "bampfa",
           source_id,
           source_url: CALENDAR_URL,
           evidence_url: canonicalUrl,
@@ -260,20 +296,20 @@ export async function fetchBampfa(): Promise<FetchResult> {
           description,
           start_at,
           end_at,
-          timezone: 'America/Los_Angeles',
+          timezone: "America/Los_Angeles",
           all_day,
-          venue: location || 'BAMPFA',
-          building: 'Berkeley Art Museum & Pacific Film Archive',
-          address: '2155 Center St, Berkeley, CA 94720',
-          modality: 'in_person',
-          organizer: 'BAMPFA',
-          organizer_unit: 'BAMPFA',
-          audience: '',
-          cost: '',
+          venue: location || "BAMPFA",
+          building: "Berkeley Art Museum & Pacific Film Archive",
+          address: "2155 Center St, Berkeley, CA 94720",
+          modality: "in_person",
+          organizer: "BAMPFA",
+          organizer_unit: "BAMPFA",
+          audience: "",
+          cost: "",
           registration_url: undefined,
           canonical_url: canonicalUrl,
-          categories: ['Arts'],
-          tags: ['Arts'],
+          categories: ["Arts"],
+          tags: ["Arts"],
           last_seen_at: fetched_at,
           confidence: 0.95,
           quality_flags: [],
@@ -285,8 +321,8 @@ export async function fetchBampfa(): Promise<FetchResult> {
           if (invalid <= 5) {
             console.warn(
               `[bampfa] schema reject "${title}": ${validated.error.issues
-                .map(i => `${i.path.join('.')}:${i.message}`)
-                .join('; ')}`
+                .map((i) => `${i.path.join(".")}:${i.message}`)
+                .join("; ")}`,
             );
           }
           return;
@@ -297,9 +333,13 @@ export async function fetchBampfa(): Promise<FetchResult> {
       }
     });
 
-    console.log(`[bampfa] month ${ym}: collected ${events.length} events so far`);
+    console.log(
+      `[bampfa] month ${ym}: collected ${events.length} events so far`,
+    );
   }
 
-  console.log(`[bampfa] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`);
+  console.log(
+    `[bampfa] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`,
+  );
   return { events, rawCount, filteredPast, invalid };
 }

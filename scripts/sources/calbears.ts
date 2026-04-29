@@ -11,6 +11,11 @@
  */
 
 import ical, { type VEvent } from "node-ical";
+import {
+  abortableDelay,
+  signalWithTimeout,
+  type FetchOptions,
+} from "../lib/abort.js";
 import type { CanonicalEvent } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
 import { isoDateInPT } from "../lib/normalize.js";
@@ -27,10 +32,6 @@ export interface FetchResult {
   rawCount: number;
   filteredPast: number;
   invalid: number;
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function asString(value: unknown): string {
@@ -80,7 +81,7 @@ function decodeIcalText(text: string): string {
  * [N] = neutral site, [W] = completed win, [L] = completed loss.
  * Strip the tag so the title reads cleanly.
  */
-function cleanSummary(summary: string): string {
+export function cleanSummary(summary: string): string {
   return summary.replace(/^\[[A-Z]\]\s*/i, "").trim();
 }
 
@@ -88,7 +89,7 @@ function cleanSummary(summary: string): string {
  * Infer home/away/neutral from the bracket tag in the Sidearm SUMMARY.
  * Returns a quality flag if the tag indicates the game is already over.
  */
-function parseGameFlags(summary: string): {
+export function parseGameFlags(summary: string): {
   modality: "in_person";
   isHome: boolean;
   isPast: boolean;
@@ -101,7 +102,9 @@ function parseGameFlags(summary: string): {
   };
 }
 
-async function fetchFeed(): Promise<Record<string, unknown>> {
+async function fetchFeed(
+  options: FetchOptions,
+): Promise<Record<string, unknown>> {
   let lastErr = "";
   for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
     console.log(
@@ -109,7 +112,7 @@ async function fetchFeed(): Promise<Record<string, unknown>> {
     );
     try {
       const res = await fetch(FEED_URL, {
-        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        signal: signalWithTimeout(options.signal, FETCH_TIMEOUT_MS),
         headers: { "User-Agent": "Cal-Events-Discovery-Bot" },
         redirect: "follow",
       });
@@ -132,15 +135,18 @@ async function fetchFeed(): Promise<Record<string, unknown>> {
       lastErr = err instanceof Error ? err.message : String(err);
       console.warn(`[calbears] fetch error: ${lastErr}`);
     }
-    if (attempt < MAX_FETCH_ATTEMPTS) await sleep(RETRY_DELAY_MS * attempt);
+    if (attempt < MAX_FETCH_ATTEMPTS)
+      await abortableDelay(RETRY_DELAY_MS * attempt, options.signal);
   }
   throw new Error(
     `Cal Bears fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr}`,
   );
 }
 
-export async function fetchCalBears(): Promise<FetchResult> {
-  const parsed = await fetchFeed();
+export async function fetchCalBears(
+  options: FetchOptions = {},
+): Promise<FetchResult> {
+  const parsed = await fetchFeed(options);
 
   const todayIso = todayPT();
   const fetched_at = new Date().toISOString();
