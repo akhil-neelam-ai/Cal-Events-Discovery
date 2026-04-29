@@ -6,8 +6,8 @@
  *   livewhale (structured iCal) > callink/cal_performances/calbears (JSON APIs) > ehub (parsed HTML) > gemini (LLM extraction)
  */
 
-import type { CanonicalEvent, SourceName } from './schema.js';
-import { isoDateInPT, normalizeForDedupe } from './normalize.js';
+import type { CanonicalEvent, SourceName } from "./schema.js";
+import { isoDateInPT, normalizeForDedupe } from "./normalize.js";
 
 const SOURCE_PRIORITY: Record<SourceName, number> = {
   livewhale: 4,

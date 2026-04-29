@@ -3,6 +3,10 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22 <26",
+    "npm": ">=10"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -10,12 +14,13 @@
     "preview:e2e": "vite preview --host 127.0.0.1 --port 4173",
     "lint": "eslint App.tsx appConfig.ts components hooks tests index.tsx types.ts utils services scripts vite.config.ts vitest.config.ts playwright.config.ts tailwind.config.ts eslint.config.js",
     "lint:fix": "eslint App.tsx appConfig.ts components hooks tests index.tsx types.ts utils services scripts vite.config.ts vitest.config.ts playwright.config.ts tailwind.config.ts eslint.config.js --fix",
-    "format:check": "prettier --check appConfig.ts \"components/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\" \"utils/**/*.ts\" eslint.config.js package.json tsconfig.json vitest.config.ts playwright.config.ts .github/workflows/*.yml",
-    "format:fix": "prettier --write appConfig.ts \"components/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\" \"utils/**/*.ts\" eslint.config.js package.json tsconfig.json vitest.config.ts playwright.config.ts .github/workflows/*.yml",
+    "format:check": "prettier --check App.tsx appConfig.ts \"components/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"scripts/**/*.{ts,mjs}\" \"tests/**/*.{ts,tsx}\" \"utils/**/*.ts\" eslint.config.js package.json tsconfig.json vitest.config.ts playwright.config.ts .github/workflows/*.yml",
+    "format:fix": "prettier --write App.tsx appConfig.ts \"components/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"scripts/**/*.{ts,mjs}\" \"tests/**/*.{ts,tsx}\" \"utils/**/*.ts\" eslint.config.js package.json tsconfig.json vitest.config.ts playwright.config.ts .github/workflows/*.yml",
     "test:ui": "vitest run",
     "install:browsers": "playwright install chromium",
     "test:e2e": "npm run build && playwright test",
     "test:e2e:headed": "npm run build && playwright test --headed",
+    "audit:security": "npm audit --audit-level=moderate",
     "validate": "npm run lint && npm run format:check && node --import tsx/esm --test scripts/tests/*.test.mjs && npm run test:ui",
     "test": "npm run validate",
     "update-events": "tsx scripts/updateEvents.ts"

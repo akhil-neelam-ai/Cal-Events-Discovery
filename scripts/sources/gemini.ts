@@ -9,22 +9,23 @@
  * anything that fails. Failures are non-fatal — the orchestrator continues.
  */
 
-import { GoogleGenAI } from '@google/genai';
-import type { CanonicalEvent } from '../lib/schema.js';
-import { CanonicalEventSchema } from '../lib/schema.js';
+import { GoogleGenAI } from "@google/genai";
+import {
+  abortableDelay,
+  throwIfAborted,
+  type FetchOptions,
+} from "../lib/abort.js";
+import type { CanonicalEvent } from "../lib/schema.js";
+import { CanonicalEventSchema } from "../lib/schema.js";
 
 const MAX_ATTEMPTS = 4;
 const BACKOFF_MS = [15_000, 45_000, 90_000]; // longer waits for 503 congestion
 const MAX_EVENTS = 12;
 
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 function extractJsonArray(text: string): unknown[] | null {
   const stripped = text
-    .replace(/^```(?:json)?\s*/i, '')
-    .replace(/\s*```\s*$/i, '')
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```\s*$/i, "")
     .trim();
 
   // Try parsing the stripped text directly first — handles bare arrays and
@@ -32,25 +33,27 @@ function extractJsonArray(text: string): unknown[] | null {
   try {
     const parsed = JSON.parse(stripped);
     if (Array.isArray(parsed)) return parsed;
-    if (parsed && typeof parsed === 'object') {
-      const arr = Object.values(parsed).find(v => Array.isArray(v));
+    if (parsed && typeof parsed === "object") {
+      const arr = Object.values(parsed).find((v) => Array.isArray(v));
       if (arr) return arr as unknown[];
     }
-  } catch { /* fall through to bracket search */ }
+  } catch {
+    /* fall through to bracket search */
+  }
 
   // Bracket-search fallback for responses with leading/trailing prose.
-  const first = stripped.indexOf('[');
-  const last = stripped.lastIndexOf(']');
+  const first = stripped.indexOf("[");
+  const last = stripped.lastIndexOf("]");
   if (first === -1 || last <= first) return null;
   const candidate = stripped.substring(first, last + 1);
   try {
     const parsed = JSON.parse(candidate);
     return Array.isArray(parsed) ? parsed : null;
   } catch {
-    const lastBrace = candidate.lastIndexOf('}');
+    const lastBrace = candidate.lastIndexOf("}");
     if (lastBrace === -1) return null;
     try {
-      const repaired = candidate.substring(0, lastBrace + 1) + ']';
+      const repaired = candidate.substring(0, lastBrace + 1) + "]";
       const parsed = JSON.parse(repaired);
       return Array.isArray(parsed) ? parsed : null;
     } catch {
@@ -67,15 +70,18 @@ export interface FetchResult {
   groundingSources: Array<{ title: string; uri: string }>;
 }
 
-export async function fetchGeminiLongTail(apiKey: string): Promise<FetchResult> {
+export async function fetchGeminiLongTail(
+  apiKey: string,
+  options: FetchOptions = {},
+): Promise<FetchResult> {
   const ai = new GoogleGenAI({ apiKey });
   const fetched_at = new Date().toISOString();
 
-  const todayIso = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Los_Angeles',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+  const todayIso = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).format(new Date());
 
   const prompt = `
@@ -112,41 +118,47 @@ If you cannot find ${MAX_EVENTS} events that satisfy ALL requirements, return fe
 `.trim();
 
   let response: { text?: string; candidates?: unknown[] } | null = null;
-  let lastError = '';
+  let lastError = "";
   let attemptsMade = 0;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     attemptsMade = attempt;
+    throwIfAborted(options.signal);
     try {
-      response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+      response = (await ai.models.generateContent({
+        model: "gemini-2.5-flash",
         contents: prompt,
         config: {
           tools: [{ googleSearch: {} }],
           temperature: 0.2,
           topP: 0.9,
         },
-      }) as { text?: string; candidates?: unknown[] };
+      })) as { text?: string; candidates?: unknown[] };
       break;
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
       lastError = msg;
       const is503 = /503|UNAVAILABLE|high demand/i.test(msg);
-      console.warn(`[gemini] attempt ${attempt}/${MAX_ATTEMPTS} failed${is503 ? ' (503 congestion)' : ''}: ${msg}`);
+      console.warn(
+        `[gemini] attempt ${attempt}/${MAX_ATTEMPTS} failed${is503 ? " (503 congestion)" : ""}: ${msg}`,
+      );
       if (/API_KEY_INVALID|API key not valid/i.test(msg)) break;
       if (/429|quota|rate.?limit|403|forbidden/i.test(msg)) break;
-      if (attempt < MAX_ATTEMPTS) await sleep(BACKOFF_MS[attempt - 1]);
+      if (attempt < MAX_ATTEMPTS)
+        await abortableDelay(BACKOFF_MS[attempt - 1], options.signal);
     }
   }
 
   if (!response) {
-    throw new Error(`Gemini failed after ${attemptsMade} attempt${attemptsMade === 1 ? '' : 's'}: ${lastError}`);
+    throw new Error(
+      `Gemini failed after ${attemptsMade} attempt${attemptsMade === 1 ? "" : "s"}: ${lastError}`,
+    );
   }
 
-  const text = response.text || '';
+  const text = response.text || "";
   const parsed = extractJsonArray(text);
   if (!parsed) {
-    throw new Error('Gemini returned no parseable JSON array');
+    throw new Error("Gemini returned no parseable JSON array");
   }
 
   const events: CanonicalEvent[] = [];
@@ -155,46 +167,48 @@ If you cannot find ${MAX_EVENTS} events that satisfy ALL requirements, return fe
 
   for (let i = 0; i < parsed.length; i++) {
     const raw = parsed[i] as Record<string, unknown>;
-    const start_at = String(raw.start_at ?? '');
+    const start_at = String(raw.start_at ?? "");
     const dateOnly = start_at.slice(0, 10);
     if (dateOnly && dateOnly < todayIso) {
       filteredPast++;
       continue;
     }
 
-    const canonicalUrl = String(raw.canonical_url ?? '');
-    if (canonicalUrl.includes('events.berkeley.edu')) {
+    const canonicalUrl = String(raw.canonical_url ?? "");
+    if (canonicalUrl.includes("events.berkeley.edu")) {
       // We told it not to dup the official feed; drop if it ignored us.
       invalid++;
       continue;
     }
 
     const candidate: CanonicalEvent = {
-      source_name: 'gemini',
-      source_id: `gemini_${dateOnly.replace(/-/g, '')}_${i + 1}`,
-      source_url: 'https://gemini.google.com/',
+      source_name: "gemini",
+      source_id: `gemini_${dateOnly.replace(/-/g, "")}_${i + 1}`,
+      source_url: "https://gemini.google.com/",
       evidence_url: canonicalUrl || undefined,
-      title: String(raw.title ?? ''),
-      description: String(raw.description ?? ''),
+      title: String(raw.title ?? ""),
+      description: String(raw.description ?? ""),
       start_at,
       end_at: undefined,
-      timezone: 'America/Los_Angeles',
+      timezone: "America/Los_Angeles",
       all_day: Boolean(raw.all_day),
-      venue: String(raw.venue ?? ''),
-      building: '',
-      address: '',
-      modality: 'in_person',
-      organizer: String(raw.organizer ?? ''),
-      organizer_unit: String(raw.organizer ?? ''),
-      audience: '',
-      cost: '',
+      venue: String(raw.venue ?? ""),
+      building: "",
+      address: "",
+      modality: "in_person",
+      organizer: String(raw.organizer ?? ""),
+      organizer_unit: String(raw.organizer ?? ""),
+      audience: "",
+      cost: "",
       registration_url: undefined,
       canonical_url: canonicalUrl,
-      categories: Array.isArray(raw.categories) ? raw.categories.map(String) : [],
+      categories: Array.isArray(raw.categories)
+        ? raw.categories.map(String)
+        : [],
       tags: Array.isArray(raw.categories) ? raw.categories.map(String) : [],
       last_seen_at: fetched_at,
       confidence: 0.55,
-      quality_flags: ['llm_extracted'],
+      quality_flags: ["llm_extracted"],
     };
 
     const validated = CanonicalEventSchema.safeParse(candidate);
@@ -208,15 +222,28 @@ If you cannot find ${MAX_EVENTS} events that satisfy ALL requirements, return fe
   // Pull grounding sources for the published source list.
   const groundingSources: Array<{ title: string; uri: string }> = [];
   const candidates = (response.candidates ?? []) as Array<{
-    groundingMetadata?: { groundingChunks?: Array<{ web?: { uri?: string; title?: string } }> };
+    groundingMetadata?: {
+      groundingChunks?: Array<{ web?: { uri?: string; title?: string } }>;
+    };
   }>;
   const chunks = candidates[0]?.groundingMetadata?.groundingChunks ?? [];
   for (const chunk of chunks) {
     if (chunk.web?.uri) {
-      groundingSources.push({ title: chunk.web.title || chunk.web.uri, uri: chunk.web.uri });
+      groundingSources.push({
+        title: chunk.web.title || chunk.web.uri,
+        uri: chunk.web.uri,
+      });
     }
   }
 
-  console.log(`[gemini] parsed ${events.length}/${parsed.length} (past: ${filteredPast}, invalid: ${invalid})`);
-  return { events, rawCount: parsed.length, filteredPast, invalid, groundingSources };
+  console.log(
+    `[gemini] parsed ${events.length}/${parsed.length} (past: ${filteredPast}, invalid: ${invalid})`,
+  );
+  return {
+    events,
+    rawCount: parsed.length,
+    filteredPast,
+    invalid,
+    groundingSources,
+  };
 }

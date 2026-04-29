@@ -76,7 +76,7 @@ export function useUrlStateSync({
 
       setFilters(nextState.filters);
       setSelectedEventId(nextState.selectedEventId);
-      setUserSetDateRange(false);
+      setUserSetDateRange(nextState.hasExplicitDateRange);
     };
 
     window.addEventListener("popstate", handlePopState);

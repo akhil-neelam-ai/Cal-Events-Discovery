@@ -6,12 +6,28 @@
  * shape that public/events.json (and the React frontend) consumes.
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
-export const SourceNameSchema = z.enum(['livewhale', 'callink', 'cal_performances', 'calbears', 'bampfa', 'haas', 'berkeley_law', 'simons', 'ehub', 'gemini']);
+export const SourceNameSchema = z.enum([
+  "livewhale",
+  "callink",
+  "cal_performances",
+  "calbears",
+  "bampfa",
+  "haas",
+  "berkeley_law",
+  "simons",
+  "ehub",
+  "gemini",
+]);
 export type SourceName = z.infer<typeof SourceNameSchema>;
 
-export const ModalitySchema = z.enum(['in_person', 'virtual', 'hybrid', 'unknown']);
+export const ModalitySchema = z.enum([
+  "in_person",
+  "virtual",
+  "hybrid",
+  "unknown",
+]);
 export type Modality = z.infer<typeof ModalitySchema>;
 
 export const CanonicalEventSchema = z.object({
@@ -23,27 +39,27 @@ export const CanonicalEventSchema = z.object({
 
   // Identity
   title: z.string().min(2),
-  description: z.string().default(''),
+  description: z.string().default(""),
 
   // Time (ISO 8601 with offset, OR YYYY-MM-DD when all_day)
   start_at: z.string().min(8),
   end_at: z.string().min(8).optional(),
-  timezone: z.string().default('America/Los_Angeles'),
+  timezone: z.string().default("America/Los_Angeles"),
   all_day: z.boolean().default(false),
 
   // Place
-  venue: z.string().default(''),
-  building: z.string().default(''),
-  address: z.string().default(''),
-  modality: ModalitySchema.default('in_person'),
+  venue: z.string().default(""),
+  building: z.string().default(""),
+  address: z.string().default(""),
+  modality: ModalitySchema.default("in_person"),
 
   // People / unit
-  organizer: z.string().default(''),
-  organizer_unit: z.string().default(''),
-  audience: z.string().default(''),
+  organizer: z.string().default(""),
+  organizer_unit: z.string().default(""),
+  audience: z.string().default(""),
 
   // Engagement
-  cost: z.string().default(''),
+  cost: z.string().default(""),
   registration_url: z.string().url().optional(),
   canonical_url: z.string().url(),
 
@@ -95,6 +111,7 @@ export interface SourceStatus {
   degraded?: boolean;
   fallback_used?: boolean;
   fallback_count?: number;
+  fallback_age_hours?: number;
   degraded_reason?: string;
 }
 
@@ -113,6 +130,8 @@ export interface StatusReport {
   degraded: boolean;
   degraded_reason?: string;
   last_good_used: number;
+  fallback_age_hours?: number;
+  data_quality_blocked?: boolean;
   fallback_sources?: SourceName[];
   degraded_sources?: SourceName[];
 }

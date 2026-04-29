@@ -18,9 +18,14 @@
  * hosts.
  */
 
-import type { CanonicalEvent, SourceName } from '../lib/schema.js';
-import { CanonicalEventSchema } from '../lib/schema.js';
-import { deriveFrontendTags } from '../lib/normalize.js';
+import type { CanonicalEvent, SourceName } from "../lib/schema.js";
+import { CanonicalEventSchema } from "../lib/schema.js";
+import { deriveFrontendTags } from "../lib/normalize.js";
+import {
+  abortableDelay,
+  signalWithTimeout,
+  type FetchOptions,
+} from "../lib/abort.js";
 
 const FETCH_TIMEOUT_MS = 30_000;
 const MAX_FETCH_ATTEMPTS = 3;
@@ -50,44 +55,45 @@ export interface TribeSourceConfig {
   defaultCategory: string;
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 function todayPT(): string {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Los_Angeles',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).format(new Date());
 }
 
 const NAMED_ENTITIES: Record<string, string> = {
-  amp: '&',
-  lt: '<',
-  gt: '>',
+  amp: "&",
+  lt: "<",
+  gt: ">",
   quot: '"',
   apos: "'",
-  nbsp: ' ',
-  ndash: '\u2013',
-  mdash: '\u2014',
-  lsquo: '\u2018',
-  rsquo: '\u2019',
-  ldquo: '\u201c',
-  rdquo: '\u201d',
-  hellip: '\u2026',
+  nbsp: " ",
+  ndash: "\u2013",
+  mdash: "\u2014",
+  lsquo: "\u2018",
+  rsquo: "\u2019",
+  ldquo: "\u201c",
+  rdquo: "\u201d",
+  hellip: "\u2026",
 };
 
 function stripHtml(html: string): string {
   return html
-    .replace(/<br\s*\/?>/gi, ' ')
-    .replace(/<\/(p|div|li)>/gi, ' ')
-    .replace(/<[^>]+>/g, '')
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<\/(p|div|li)>/gi, " ")
+    .replace(/<[^>]+>/g, "")
     .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
-    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
-    .replace(/&([a-z]+);/gi, (m, name) => NAMED_ENTITIES[name.toLowerCase()] ?? m)
-    .replace(/\s+/g, ' ')
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) =>
+      String.fromCodePoint(parseInt(h, 16)),
+    )
+    .replace(
+      /&([a-z]+);/gi,
+      (m, name) => NAMED_ENTITIES[name.toLowerCase()] ?? m,
+    )
+    .replace(/\s+/g, " ")
     .trim();
 }
 
@@ -137,17 +143,21 @@ interface TribeResponse {
   next_rest_url?: string;
 }
 
-async function fetchPage(url: string, logPrefix: string): Promise<TribeResponse> {
-  let lastErr = '';
+async function fetchPage(
+  url: string,
+  logPrefix: string,
+  options: FetchOptions,
+): Promise<TribeResponse> {
+  let lastErr = "";
   for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
     try {
       const res = await fetch(url, {
-        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        signal: signalWithTimeout(options.signal, FETCH_TIMEOUT_MS),
         headers: {
-          'User-Agent': 'Cal-Events-Discovery-Bot',
-          Accept: 'application/json',
+          "User-Agent": "Cal-Events-Discovery-Bot",
+          Accept: "application/json",
         },
-        redirect: 'follow',
+        redirect: "follow",
       });
       if (!res.ok) {
         lastErr = `${res.status} ${res.statusText}`;
@@ -157,9 +167,12 @@ async function fetchPage(url: string, logPrefix: string): Promise<TribeResponse>
       }
     } catch (err) {
       lastErr = err instanceof Error ? err.message : String(err);
-      console.warn(`${logPrefix} fetch error on attempt ${attempt}: ${lastErr}`);
+      console.warn(
+        `${logPrefix} fetch error on attempt ${attempt}: ${lastErr}`,
+      );
     }
-    if (attempt < MAX_FETCH_ATTEMPTS) await sleep(RETRY_DELAY_MS * attempt);
+    if (attempt < MAX_FETCH_ATTEMPTS)
+      await abortableDelay(RETRY_DELAY_MS * attempt, options.signal);
   }
   throw new Error(`Tribe fetch failed for ${url}: ${lastErr}`);
 }
@@ -181,10 +194,13 @@ function utcStringToIso(s: string | undefined): string | undefined {
   if (!s) return undefined;
   // Already has a T separator and Z/offset? Pass through.
   if (/[TZ]|[+-]\d{2}:?\d{2}$/.test(s)) return s;
-  return s.replace(' ', 'T') + 'Z';
+  return s.replace(" ", "T") + "Z";
 }
 
-export async function fetchTribe(config: TribeSourceConfig): Promise<FetchResult> {
+export async function fetchTribe(
+  config: TribeSourceConfig,
+  options: FetchOptions = {},
+): Promise<FetchResult> {
   const todayIso = todayPT();
   const fetched_at = new Date().toISOString();
   const logPrefix = `[${config.sourceName}]`;
@@ -197,11 +213,12 @@ export async function fetchTribe(config: TribeSourceConfig): Promise<FetchResult
   const seenIds = new Set<string>();
 
   const baseApi = `${config.baseUrl}/wp-json/tribe/events/v1/events`;
-  let pageUrl: string | null = `${baseApi}?per_page=${PER_PAGE}&start_date=${todayIso}&status=publish`;
+  let pageUrl: string | null =
+    `${baseApi}?per_page=${PER_PAGE}&start_date=${todayIso}&status=publish`;
 
   for (let page = 1; page <= MAX_PAGES && pageUrl; page++) {
     console.log(`${logPrefix} fetching page ${page}: ${pageUrl}`);
-    const data = await fetchPage(pageUrl, logPrefix);
+    const data = await fetchPage(pageUrl, logPrefix, options);
     const pageEvents = data.events ?? [];
     if (pageEvents.length === 0) break;
 
@@ -213,7 +230,7 @@ export async function fetchTribe(config: TribeSourceConfig): Promise<FetchResult
           invalid++;
           continue;
         }
-        if (raw.status && raw.status !== 'publish') {
+        if (raw.status && raw.status !== "publish") {
           invalid++;
           continue;
         }
@@ -227,7 +244,7 @@ export async function fetchTribe(config: TribeSourceConfig): Promise<FetchResult
         const start_at =
           utcStringToIso(raw.utc_start_date) ??
           utcStringToIso(raw.start_date) ??
-          '';
+          "";
         if (!start_at) {
           invalid++;
           continue;
@@ -241,11 +258,11 @@ export async function fetchTribe(config: TribeSourceConfig): Promise<FetchResult
           invalid++;
           continue;
         }
-        const eventPtDate = new Intl.DateTimeFormat('en-CA', {
-          timeZone: 'America/Los_Angeles',
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
+        const eventPtDate = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "America/Los_Angeles",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
         }).format(startDate);
         if (eventPtDate < todayIso) {
           filteredPast++;
@@ -254,21 +271,23 @@ export async function fetchTribe(config: TribeSourceConfig): Promise<FetchResult
 
         const title = stripHtml(raw.title);
         const description = stripHtml(
-          raw.description || raw.excerpt || raw.title
+          raw.description || raw.excerpt || raw.title,
         );
 
         const venue = firstOf(raw.venue);
         const organizer = firstOf(raw.organizer);
-        const venueName = venue?.venue ? stripHtml(venue.venue) : '';
+        const venueName = venue?.venue ? stripHtml(venue.venue) : "";
         const venueAddress = [venue?.address, venue?.city, venue?.state]
           .filter(Boolean)
-          .map(s => stripHtml(s as string))
-          .join(', ');
+          .map((s) => stripHtml(s as string))
+          .join(", ");
 
         const categoryNames = (raw.categories ?? [])
-          .map(c => (c.name ? stripHtml(c.name) : ''))
+          .map((c) => (c.name ? stripHtml(c.name) : ""))
           .filter(Boolean);
-        const organizerName = organizer?.organizer ? stripHtml(organizer.organizer) : config.defaultOrganizer;
+        const organizerName = organizer?.organizer
+          ? stripHtml(organizer.organizer)
+          : config.defaultOrganizer;
         const tags = deriveFrontendTags({
           title,
           description,
@@ -285,19 +304,21 @@ export async function fetchTribe(config: TribeSourceConfig): Promise<FetchResult
           description,
           start_at,
           end_at,
-          timezone: raw.timezone || 'America/Los_Angeles',
+          timezone: raw.timezone || "America/Los_Angeles",
           all_day: Boolean(raw.all_day),
           venue: venueName,
-          building: '',
+          building: "",
           address: venueAddress || config.defaultAddress,
-          modality: raw.is_virtual ? 'virtual' : 'in_person',
+          modality: raw.is_virtual ? "virtual" : "in_person",
           organizer: organizerName,
           organizer_unit: config.defaultOrganizerUnit,
-          audience: '',
-          cost: raw.cost ? stripHtml(raw.cost) : '',
+          audience: "",
+          cost: raw.cost ? stripHtml(raw.cost) : "",
           registration_url: undefined,
           canonical_url: raw.url,
-          categories: categoryNames.length ? categoryNames : [config.defaultCategory],
+          categories: categoryNames.length
+            ? categoryNames
+            : [config.defaultCategory],
           tags,
           last_seen_at: fetched_at,
           confidence: 0.95,
@@ -310,8 +331,8 @@ export async function fetchTribe(config: TribeSourceConfig): Promise<FetchResult
           if (invalid <= 5) {
             console.warn(
               `${logPrefix} schema reject "${title}": ${validated.error.issues
-                .map(i => `${i.path.join('.')}:${i.message}`)
-                .join('; ')}`
+                .map((i) => `${i.path.join(".")}:${i.message}`)
+                .join("; ")}`,
             );
           }
           continue;
@@ -320,7 +341,9 @@ export async function fetchTribe(config: TribeSourceConfig): Promise<FetchResult
       } catch (err) {
         invalid++;
         if (invalid <= 3) {
-          console.warn(`${logPrefix} parse error: ${err instanceof Error ? err.message : err}`);
+          console.warn(
+            `${logPrefix} parse error: ${err instanceof Error ? err.message : err}`,
+          );
         }
       }
     }
@@ -329,28 +352,38 @@ export async function fetchTribe(config: TribeSourceConfig): Promise<FetchResult
     pageUrl = data.next_rest_url ?? null;
   }
 
-  console.log(`${logPrefix} parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`);
+  console.log(
+    `${logPrefix} parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`,
+  );
   return { events, rawCount, filteredPast, invalid };
 }
 
-export function fetchHaas(): Promise<FetchResult> {
-  return fetchTribe({
-    sourceName: 'haas',
-    baseUrl: 'https://haas.berkeley.edu',
-    defaultOrganizer: 'Berkeley Haas',
-    defaultOrganizerUnit: 'Berkeley Haas School of Business',
-    defaultAddress: '2220 Piedmont Ave, Berkeley, CA 94720',
-    defaultCategory: 'Entrepreneurship',
-  });
+export function fetchHaas(options: FetchOptions = {}): Promise<FetchResult> {
+  return fetchTribe(
+    {
+      sourceName: "haas",
+      baseUrl: "https://haas.berkeley.edu",
+      defaultOrganizer: "Berkeley Haas",
+      defaultOrganizerUnit: "Berkeley Haas School of Business",
+      defaultAddress: "2220 Piedmont Ave, Berkeley, CA 94720",
+      defaultCategory: "Entrepreneurship",
+    },
+    options,
+  );
 }
 
-export function fetchBerkeleyLaw(): Promise<FetchResult> {
-  return fetchTribe({
-    sourceName: 'berkeley_law',
-    baseUrl: 'https://www.law.berkeley.edu',
-    defaultOrganizer: 'Berkeley Law',
-    defaultOrganizerUnit: 'UC Berkeley School of Law',
-    defaultAddress: '215 Law Building, Berkeley, CA 94720',
-    defaultCategory: 'Academic',
-  });
+export function fetchBerkeleyLaw(
+  options: FetchOptions = {},
+): Promise<FetchResult> {
+  return fetchTribe(
+    {
+      sourceName: "berkeley_law",
+      baseUrl: "https://www.law.berkeley.edu",
+      defaultOrganizer: "Berkeley Law",
+      defaultOrganizerUnit: "UC Berkeley School of Law",
+      defaultAddress: "215 Law Building, Berkeley, CA 94720",
+      defaultCategory: "Academic",
+    },
+    options,
+  );
 }

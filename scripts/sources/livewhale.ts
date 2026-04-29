@@ -9,6 +9,11 @@
  */
 
 import ical, { type VEvent } from "node-ical";
+import {
+  abortableDelay,
+  signalWithTimeout,
+  type FetchOptions,
+} from "../lib/abort.js";
 import type { CanonicalEvent } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
 import { deriveFrontendTags, isoDateInPT } from "../lib/normalize.js";
@@ -64,10 +69,6 @@ const LIVEWHALE_GROUPS: string[] = [
   "Scandinavian",
   "Center for African Studies",
 ];
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 /**
  * Map known LiveWhale calendar slugs (the path segment after the host) to
@@ -196,7 +197,10 @@ function cacheSet(key: string, value: string): void {
  */
 const MAX_REDIRECT_HOPS = 4;
 
-async function resolveUnitSlugViaRedirect(url: string): Promise<string> {
+async function resolveUnitSlugViaRedirect(
+  url: string,
+  options: FetchOptions = {},
+): Promise<string> {
   if (redirectSlugCache.has(url)) return redirectSlugCache.get(url) || "";
   let current = url;
   try {
@@ -205,7 +209,7 @@ async function resolveUnitSlugViaRedirect(url: string): Promise<string> {
         method: "HEAD",
         redirect: "manual",
         headers: { "User-Agent": "Cal-Events-Discovery-Bot" },
-        signal: AbortSignal.timeout(8_000),
+        signal: signalWithTimeout(options.signal, 8_000),
       });
       if (res.status < 300 || res.status >= 400) break;
       const loc = res.headers.get("location");
@@ -236,7 +240,7 @@ function isAcronymLikeSlug(slug: string): boolean {
   return compact.length > 0 && compact.length <= 4;
 }
 
-function unitFromSlug(slug: string): string {
+export function unitFromSlug(slug: string): string {
   if (!slug) return "";
   const mapped = ORG_UNIT_MAP[slug.toLowerCase()];
   if (mapped) return mapped;
@@ -253,6 +257,7 @@ function unitFromSlug(slug: string): string {
  */
 async function unitFromUrl(
   url: string | undefined,
+  options: FetchOptions = {},
 ): Promise<{ slug: string; unit: string }> {
   if (!url) return { slug: "", unit: "UC Berkeley" };
   let parsed: URL;
@@ -271,7 +276,7 @@ async function unitFromUrl(
 
   // Generic namespace — try the redirect trick for events.berkeley.edu.
   if (parsed.hostname === HOST_EVENTS_BERKELEY && slugLower === "live") {
-    const resolved = await resolveUnitSlugViaRedirect(url);
+    const resolved = await resolveUnitSlugViaRedirect(url, options);
     if (resolved) {
       return { slug: resolved, unit: unitFromSlug(resolved) };
     }
@@ -337,6 +342,7 @@ export interface FetchResult {
 async function fetchFeed(
   url: string = FEED_URL,
   minEvents = MIN_HEALTHY_EVENT_COUNT,
+  options: FetchOptions = {},
 ): Promise<Record<string, unknown>> {
   let lastErr = "";
   for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
@@ -345,7 +351,7 @@ async function fetchFeed(
     );
     try {
       const res = await fetch(url, {
-        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        signal: signalWithTimeout(options.signal, FETCH_TIMEOUT_MS),
         headers: { "User-Agent": "Cal-Events-Discovery-Bot" },
       });
       if (!res.ok) {
@@ -370,7 +376,7 @@ async function fetchFeed(
       console.warn(`[livewhale] fetch error: ${lastErr}`);
     }
     if (attempt < MAX_FETCH_ATTEMPTS)
-      await sleep(EMPTY_FEED_RETRY_DELAY_MS * attempt);
+      await abortableDelay(EMPTY_FEED_RETRY_DELAY_MS * attempt, options.signal);
   }
   throw new Error(
     `LiveWhale fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr}`,
@@ -378,10 +384,13 @@ async function fetchFeed(
 }
 
 /** Fetch a single group feed, returning an empty object on any error (non-fatal). */
-async function fetchGroupFeed(group: string): Promise<Record<string, unknown>> {
+async function fetchGroupFeed(
+  group: string,
+  options: FetchOptions,
+): Promise<Record<string, unknown>> {
   const url = `${GROUP_BASE}/${encodeURIComponent(group)}`;
   try {
-    return await fetchFeed(url, 0); // minEvents=0: any response is acceptable
+    return await fetchFeed(url, 0, options); // minEvents=0: any response is acceptable
   } catch (err) {
     console.warn(
       `[livewhale] group feed "${group}" failed: ${err instanceof Error ? err.message : err}`,
@@ -395,7 +404,10 @@ async function fetchGroupFeed(group: string): Promise<Record<string, unknown>> {
  * generic LiveWhale namespace ("live"). Populates `redirectSlugCache` so the
  * subsequent synchronous mapping pass can read results without awaiting.
  */
-async function prewarmRedirectCache(urls: string[]): Promise<void> {
+async function prewarmRedirectCache(
+  urls: string[],
+  options: FetchOptions,
+): Promise<void> {
   const CONCURRENCY = 8;
   const toResolve: string[] = [];
   for (const u of urls) {
@@ -418,17 +430,19 @@ async function prewarmRedirectCache(urls: string[]): Promise<void> {
   const worker = async (): Promise<void> => {
     while (idx < toResolve.length) {
       const myIdx = idx++;
-      await resolveUnitSlugViaRedirect(toResolve[myIdx]);
+      await resolveUnitSlugViaRedirect(toResolve[myIdx], options);
     }
   };
   await Promise.all(Array.from({ length: CONCURRENCY }, worker));
 }
 
-export async function fetchLiveWhale(): Promise<FetchResult> {
+export async function fetchLiveWhale(
+  options: FetchOptions = {},
+): Promise<FetchResult> {
   // Fetch main feed + all group feeds in parallel
   const [mainParsed, ...groupResults] = await Promise.all([
-    fetchFeed(),
-    ...LIVEWHALE_GROUPS.map((g) => fetchGroupFeed(g)),
+    fetchFeed(FEED_URL, MIN_HEALTHY_EVENT_COUNT, options),
+    ...LIVEWHALE_GROUPS.map((g) => fetchGroupFeed(g, options)),
   ]);
 
   // Merge all iCal records; deduplicate by UID (group feeds overlap with main)
@@ -459,7 +473,7 @@ export async function fetchLiveWhale(): Promise<FetchResult> {
       `https://events.berkeley.edu/live/events/${(ve as unknown as { uid?: string }).uid}`;
     urlsToPrewarm.push(url);
   }
-  await prewarmRedirectCache(urlsToPrewarm);
+  await prewarmRedirectCache(urlsToPrewarm, options);
 
   for (const key of Object.keys(parsed)) {
     const component = parsed[key] as { type?: string };
@@ -509,7 +523,7 @@ export async function fetchLiveWhale(): Promise<FetchResult> {
       const url =
         asString(ve.url) ||
         `https://events.berkeley.edu/live/events/${(ve as unknown as { uid?: string }).uid}`;
-      const { slug, unit } = await unitFromUrl(url);
+      const { slug, unit } = await unitFromUrl(url, options);
 
       const description = decodeIcalText(asString(ve.description));
       const location = decodeIcalText(asString(ve.location));
