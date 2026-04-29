@@ -88,12 +88,10 @@ export function useEventBrowserState({
         return false;
       }
 
+      const primaryCategory = event.tags?.[0]?.toLowerCase();
       const matchesCategory =
         filters.category === "All" ||
-        event.tags?.some((tag) =>
-          tag.toLowerCase().includes(filters.category.toLowerCase()),
-        ) ||
-        event.tags?.includes(filters.category);
+        primaryCategory === filters.category.toLowerCase();
 
       const matchesSource =
         filters.source === "All" || event.source === filters.source;

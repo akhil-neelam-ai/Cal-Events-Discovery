@@ -10,11 +10,12 @@
  * that ultimately resolve to /calendar.ashx/calendar.ics (text/calendar).
  */
 
-import ical, { type VEvent } from 'node-ical';
-import type { CanonicalEvent } from '../lib/schema.js';
-import { CanonicalEventSchema } from '../lib/schema.js';
+import ical, { type VEvent } from "node-ical";
+import type { CanonicalEvent } from "../lib/schema.js";
+import { CanonicalEventSchema } from "../lib/schema.js";
+import { isoDateInPT } from "../lib/normalize.js";
 
-const FEED_URL = 'https://calbears.com/calendar.ashx/calendar.ics';
+const FEED_URL = "https://calbears.com/calendar.ashx/calendar.ics";
 const FETCH_TIMEOUT_MS = 30_000;
 const MAX_FETCH_ATTEMPTS = 3;
 const RETRY_DELAY_MS = 1_500;
@@ -29,48 +30,48 @@ export interface FetchResult {
 }
 
 function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function asString(value: unknown): string {
-  if (typeof value === 'string') return value;
-  if (value && typeof value === 'object' && 'val' in (value as object)) {
-    return String((value as { val: unknown }).val ?? '');
+  if (typeof value === "string") return value;
+  if (value && typeof value === "object" && "val" in (value as object)) {
+    return String((value as { val: unknown }).val ?? "");
   }
-  return '';
+  return "";
 }
 
 function isAllDay(component: VEvent): boolean {
   const datetype = (component as unknown as { datetype?: string }).datetype;
-  return datetype === 'date';
+  return datetype === "date";
 }
 
 function isoDateUTC(d: Date): string {
   const y = d.getUTCFullYear();
-  const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(d.getUTCDate()).padStart(2, '0');
+  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 }
 
 function todayPT(): string {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Los_Angeles',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).format(new Date());
 }
 
 function decodeIcalText(text: string): string {
   return text
-    .replace(/\\n/g, ' ')
-    .replace(/\\,/g, ',')
-    .replace(/\\;/g, ';')
-    .replace(/\\\\/g, '\\')
-    .replace(/&amp;/g, '&')
-    .replace(/&#160;/g, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/\\n/g, " ")
+    .replace(/\\,/g, ",")
+    .replace(/\\;/g, ";")
+    .replace(/\\\\/g, "\\")
+    .replace(/&amp;/g, "&")
+    .replace(/&#160;/g, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
@@ -80,31 +81,37 @@ function decodeIcalText(text: string): string {
  * Strip the tag so the title reads cleanly.
  */
 function cleanSummary(summary: string): string {
-  return summary.replace(/^\[[A-Z]\]\s*/i, '').trim();
+  return summary.replace(/^\[[A-Z]\]\s*/i, "").trim();
 }
 
 /**
  * Infer home/away/neutral from the bracket tag in the Sidearm SUMMARY.
  * Returns a quality flag if the tag indicates the game is already over.
  */
-function parseGameFlags(summary: string): { modality: 'in_person'; isHome: boolean; isPast: boolean } {
-  const tag = /^\[([A-Z])\]/i.exec(summary)?.[1]?.toUpperCase() ?? '';
+function parseGameFlags(summary: string): {
+  modality: "in_person";
+  isHome: boolean;
+  isPast: boolean;
+} {
+  const tag = /^\[([A-Z])\]/i.exec(summary)?.[1]?.toUpperCase() ?? "";
   return {
-    modality: 'in_person',
-    isHome: tag === 'H',
-    isPast: tag === 'W' || tag === 'L',
+    modality: "in_person",
+    isHome: tag === "H",
+    isPast: tag === "W" || tag === "L",
   };
 }
 
 async function fetchFeed(): Promise<Record<string, unknown>> {
-  let lastErr = '';
+  let lastErr = "";
   for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
-    console.log(`[calbears] fetching ${FEED_URL} (attempt ${attempt}/${MAX_FETCH_ATTEMPTS})`);
+    console.log(
+      `[calbears] fetching ${FEED_URL} (attempt ${attempt}/${MAX_FETCH_ATTEMPTS})`,
+    );
     try {
       const res = await fetch(FEED_URL, {
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-        headers: { 'User-Agent': 'Cal-Events-Discovery-Bot' },
-        redirect: 'follow',
+        headers: { "User-Agent": "Cal-Events-Discovery-Bot" },
+        redirect: "follow",
       });
       if (!res.ok) {
         lastErr = `${res.status} ${res.statusText}`;
@@ -113,7 +120,7 @@ async function fetchFeed(): Promise<Record<string, unknown>> {
         const ics = await res.text();
         const parsed = ical.sync.parseICS(ics);
         const veventCount = Object.values(parsed).filter(
-          c => (c as { type?: string }).type === 'VEVENT'
+          (c) => (c as { type?: string }).type === "VEVENT",
         ).length;
         if (veventCount >= MIN_HEALTHY_EVENT_COUNT) {
           return parsed;
@@ -127,7 +134,9 @@ async function fetchFeed(): Promise<Record<string, unknown>> {
     }
     if (attempt < MAX_FETCH_ATTEMPTS) await sleep(RETRY_DELAY_MS * attempt);
   }
-  throw new Error(`Cal Bears fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr}`);
+  throw new Error(
+    `Cal Bears fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr}`,
+  );
 }
 
 export async function fetchCalBears(): Promise<FetchResult> {
@@ -142,7 +151,7 @@ export async function fetchCalBears(): Promise<FetchResult> {
 
   for (const key of Object.keys(parsed)) {
     const component = parsed[key] as { type?: string };
-    if (!component || component.type !== 'VEVENT') continue;
+    if (!component || component.type !== "VEVENT") continue;
     const ve = component as unknown as VEvent;
     rawCount++;
 
@@ -162,7 +171,7 @@ export async function fetchCalBears(): Promise<FetchResult> {
           : endDate.toISOString()
         : undefined;
 
-      const eventDate = allDay ? start_at : start_at.slice(0, 10);
+      const eventDate = isoDateInPT(start_at);
       if (eventDate < todayIso) {
         filteredPast++;
         continue;
@@ -188,20 +197,21 @@ export async function fetchCalBears(): Promise<FetchResult> {
 
       // Sidearm location format: "City, ST, Venue Name" or "City, ST"
       // Use everything after the first comma-space as the venue, or the whole string.
-      const locationParts = rawLocation.split(', ');
-      const venue = locationParts.length >= 3
-        ? locationParts.slice(2).join(', ')
-        : rawLocation;
+      const locationParts = rawLocation.split(", ");
+      const venue =
+        locationParts.length >= 3
+          ? locationParts.slice(2).join(", ")
+          : rawLocation;
 
-      const rawUrl = asString(ve.url).replace(/&amp;/g, '&');
+      const rawUrl = asString(ve.url).replace(/&amp;/g, "&");
       const uid = asString((ve as unknown as { uid?: unknown }).uid);
       const url = rawUrl || `https://calbears.com/calendar.aspx#${uid}`;
 
       const quality_flags: string[] = [];
-      if (!isHome) quality_flags.push('away_or_neutral');
+      if (!isHome) quality_flags.push("away_or_neutral");
 
       const candidate: CanonicalEvent = {
-        source_name: 'calbears',
+        source_name: "calbears",
         source_id: uid || key,
         source_url: FEED_URL,
         evidence_url: url,
@@ -209,20 +219,20 @@ export async function fetchCalBears(): Promise<FetchResult> {
         description,
         start_at,
         end_at,
-        timezone: 'America/Los_Angeles',
+        timezone: "America/Los_Angeles",
         all_day: allDay,
         venue,
-        building: '',
-        address: '',
-        modality: 'in_person',
-        organizer: 'Cal Athletics',
-        organizer_unit: 'Cal Athletics',
-        audience: '',
-        cost: '',
+        building: "",
+        address: "",
+        modality: "in_person",
+        organizer: "Cal Athletics",
+        organizer_unit: "Cal Athletics",
+        audience: "",
+        cost: "",
         registration_url: undefined,
         canonical_url: url,
-        categories: ['Sports'],
-        tags: ['Sports'],
+        categories: ["Sports"],
+        tags: ["Sports"],
         last_seen_at: fetched_at,
         confidence: 1,
         quality_flags,
@@ -234,8 +244,8 @@ export async function fetchCalBears(): Promise<FetchResult> {
         if (invalid <= 5) {
           console.warn(
             `[calbears] schema reject "${title}": ${validated.error.issues
-              .map(i => `${i.path.join('.')}:${i.message}`)
-              .join('; ')}`
+              .map((i) => `${i.path.join(".")}:${i.message}`)
+              .join("; ")}`,
           );
         }
         continue;
@@ -245,14 +255,14 @@ export async function fetchCalBears(): Promise<FetchResult> {
       invalid++;
       if (invalid <= 5) {
         console.warn(
-          `[calbears] failed to parse VEVENT: ${err instanceof Error ? err.message : err}`
+          `[calbears] failed to parse VEVENT: ${err instanceof Error ? err.message : err}`,
         );
       }
     }
   }
 
   console.log(
-    `[calbears] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`
+    `[calbears] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`,
   );
   return { events, rawCount, filteredPast, invalid };
 }

@@ -379,6 +379,16 @@ function applyPoolFilters(
   const { filters } = plan;
   return events.filter((ev) => {
     if (
+      filters.category &&
+      !dismissedKeys.has(`category:${filters.category}`)
+    ) {
+      const primaryCategory = ev.tags?.[0] ?? "";
+      if (primaryCategory.toLowerCase() !== filters.category.toLowerCase()) {
+        return false;
+      }
+    }
+
+    if (
       filters.campusArea &&
       !dismissedKeys.has(`campusArea:${filters.campusArea}`)
     ) {
@@ -556,7 +566,7 @@ export function searchEvents(
     (i) => !dismissedKeys.has(i.key),
   );
 
-  // Apply plan-level hard filters (timeOfDay, free, modality)
+  // Apply plan-level hard filters before relevance scoring.
   const pool = applyPoolFilters(events, plan, dismissedKeys);
 
   if (!index && plan.expandedTokens.length === 0) {
@@ -565,8 +575,8 @@ export function searchEvents(
 
   const results = runScoring(pool, plan, index);
 
-  // Fallback: fewer than 3 strong results → broaden and explain
-  if (results.length < 3) {
+  // Fallback: empty result sets can broaden and explain.
+  if (results.length === 0) {
     // Try broadening date range
     if (plan.filters.dateRange && plan.filters.dateRange !== "upcoming") {
       const relaxedPlan: SearchPlan = {
