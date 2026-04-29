@@ -54,6 +54,14 @@ export function buildStatusBanner(
   const degradedLabel = formatNamedSources(statusReport.degraded_sources);
 
   if (
+    statusReport.fallback_used &&
+    !statusReport.data_quality_blocked &&
+    statusReport.last_good_used > 0
+  ) {
+    return null;
+  }
+
+  if (
     statusReport.degraded ||
     statusReport.fallback_used ||
     statusReport.last_good_used > 0
