@@ -226,7 +226,9 @@ test("filters by source dropdown", async ({ page }) => {
   await expect(page).toHaveURL(/source=callink/);
 });
 
-test("shows and dismisses degraded status banner", async ({ page }) => {
+test("shows and dismisses data-quality blocked status banner", async ({
+  page,
+}) => {
   await page.route("**/status.json", async (route) => {
     const now = new Date().toISOString();
     await route.fulfill({
@@ -255,6 +257,7 @@ test("shows and dismisses degraded status banner", async ({ page }) => {
         degraded: true,
         degraded_reason: "bampfa failed: bampfa timed out after 60000ms",
         last_good_used: 1,
+        data_quality_blocked: true,
         fallback_sources: ["bampfa"],
         degraded_sources: ["bampfa"],
       }),
