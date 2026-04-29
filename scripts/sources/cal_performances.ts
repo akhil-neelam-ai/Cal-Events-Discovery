@@ -65,6 +65,17 @@ function decodeHtmlEntities(text: string): string {
     .trim();
 }
 
+function ptOffsetFor(year: number, month: number, day: number): string {
+  const probe = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Los_Angeles",
+    timeZoneName: "longOffset",
+  }).formatToParts(probe);
+  const tz = parts.find((p) => p.type === "timeZoneName")?.value ?? "";
+  const match = tz.match(/GMT([+-])(\d{2}):(\d{2})/);
+  return match ? `${match[1]}${match[2]}:${match[3]}` : "-08:00";
+}
+
 /**
  * Parse "MM/DD/YYYY HH:MM am/pm" (the addeventatc format) into an ISO 8601
  * string anchored to America/Los_Angeles. Returns null if unparseable.
@@ -81,47 +92,25 @@ export function parseAddeventatcDate(raw: string): string | null {
   if (ampm.toLowerCase() === "pm" && hr !== 12) hr += 12;
   if (ampm.toLowerCase() === "am" && hr === 12) hr = 0;
 
-  // Build a date string in PT and format as ISO with offset.
-  // We use Intl to detect the UTC offset for that instant in PT.
-  const candidate = new Date(
-    `${year}-${mon.padStart(2, "0")}-${day.padStart(2, "0")}T${String(hr).padStart(2, "0")}:${min}:00`,
-  );
-  if (isNaN(candidate.getTime())) return null;
-
-  // Determine UTC offset for America/Los_Angeles at this date and emit
-  // an ISO string tagged with the PT offset.
-  const isDST = isDaylightSavingTime(candidate, "America/Los_Angeles");
-  const offsetMin = isDST ? -7 * 60 : -8 * 60;
-  const offsetSign = offsetMin < 0 ? "-" : "+";
-  const absOffset = Math.abs(offsetMin);
-  const offsetStr = `${offsetSign}${String(Math.floor(absOffset / 60)).padStart(2, "0")}:${String(absOffset % 60).padStart(2, "0")}`;
+  const monthNum = Number(mon);
+  const dayNum = Number(day);
+  const yearNum = Number(year);
+  const probe = new Date(Date.UTC(yearNum, monthNum - 1, dayNum, 12, 0, 0));
+  if (
+    probe.getUTCFullYear() !== yearNum ||
+    probe.getUTCMonth() !== monthNum - 1 ||
+    probe.getUTCDate() !== dayNum
+  ) {
+    return null;
+  }
 
   const yyyy = year;
   const mm = mon.padStart(2, "0");
   const dd = day.padStart(2, "0");
   const HH = String(hr).padStart(2, "0");
   const MM = min.padStart(2, "0");
+  const offsetStr = ptOffsetFor(yearNum, monthNum, dayNum);
   return `${yyyy}-${mm}-${dd}T${HH}:${MM}:00${offsetStr}`;
-}
-
-function isDaylightSavingTime(date: Date, tz: string): boolean {
-  // Compare a known standard-time date in January against the tested date.
-  const jan = new Date(date.getFullYear(), 0, 15);
-  const getOffset = (d: Date): number => {
-    const utcHour = d.getUTCHours();
-    const ptHour = parseInt(
-      new Intl.DateTimeFormat("en-US", {
-        timeZone: tz,
-        hour: "numeric",
-        hour12: false,
-      }).format(d),
-      10,
-    );
-    return utcHour - ptHour;
-  };
-  const stdOffset = getOffset(jan); // should be 8
-  const testOffset = getOffset(date);
-  return testOffset < stdOffset; // if offset is smaller (e.g. 7), it's DST
 }
 
 /**
