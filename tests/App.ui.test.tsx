@@ -176,6 +176,42 @@ describe("App UI regressions", () => {
     expect(screen.getByText("Tomorrow Founder Talk")).toBeInTheDocument();
   });
 
+  it("keeps category filtering aligned with the primary event tag", async () => {
+    const user = userEvent.setup();
+
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "arts-primary",
+        title: "BAMPFA Screening",
+        organizer: "BAMPFA",
+        tags: ["Arts"],
+        description: "A primary Arts event.",
+      }),
+      makeEvent({
+        id: "academic-primary",
+        title: "Cricket Archive Lecture",
+        organizer: "Center for South Asia Studies",
+        tags: ["Academic", "Arts", "Sports"],
+        description: "An academic lecture with Arts as a secondary tag.",
+      }),
+    ]);
+
+    render(<App />);
+
+    expect(screen.getByText("BAMPFA Screening")).toBeInTheDocument();
+    expect(screen.getByText("Cricket Archive Lecture")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Arts" }));
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: /arts · today/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("BAMPFA Screening")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Cricket Archive Lecture"),
+    ).not.toBeInTheDocument();
+  });
+
   it("lets users dismiss interpreted campus-area chips and broadens results", async () => {
     const user = userEvent.setup();
 

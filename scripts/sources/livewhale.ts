@@ -8,13 +8,13 @@
  * start/end timestamps.
  */
 
-import ical, { type VEvent } from 'node-ical';
-import type { CanonicalEvent } from '../lib/schema.js';
-import { CanonicalEventSchema } from '../lib/schema.js';
-import { deriveFrontendTags } from '../lib/normalize.js';
+import ical, { type VEvent } from "node-ical";
+import type { CanonicalEvent } from "../lib/schema.js";
+import { CanonicalEventSchema } from "../lib/schema.js";
+import { deriveFrontendTags, isoDateInPT } from "../lib/normalize.js";
 
-const FEED_URL = 'https://events.berkeley.edu/live/ical/events';
-const GROUP_BASE = 'https://events.berkeley.edu/live/ical/events/group';
+const FEED_URL = "https://events.berkeley.edu/live/ical/events";
+const GROUP_BASE = "https://events.berkeley.edu/live/ical/events/group";
 const FETCH_TIMEOUT_MS = 30_000;
 const MAX_FETCH_ATTEMPTS = 3;
 const EMPTY_FEED_RETRY_DELAY_MS = 1_500;
@@ -29,44 +29,44 @@ const MIN_HEALTHY_EVENT_COUNT = 50;
  * not to the main campus feed. Fetched in parallel; deduped by UID.
  */
 const LIVEWHALE_GROUPS: string[] = [
-  'physics',
-  'Mathematics',
-  'statistics',
-  'integrative biology',
-  'political science',
-  'history',
-  'economics',
-  'psychology',
-  'linguistics',
-  'music',
-  'German',
-  'classics',
-  'Buddhist Studies',
-  'African American Studies',
-  'bioengineering',
-  'geography',
-  'law',
+  "physics",
+  "Mathematics",
+  "statistics",
+  "integrative biology",
+  "political science",
+  "history",
+  "economics",
+  "psychology",
+  "linguistics",
+  "music",
+  "German",
+  "classics",
+  "Buddhist Studies",
+  "African American Studies",
+  "bioengineering",
+  "geography",
+  "law",
   // New groups found in systematic sweep
-  'library',
-  'college of engineering',
-  'botanical garden',
-  'college of chemistry',
-  'English',
-  'Center for Race and Gender',
-  'Institute of Governmental Studies',
-  'Center for Korean Studies',
-  'International House',
-  'plant and microbial biology',
-  'Social Science Matrix',
-  'Human Rights Center',
-  'Center for Japanese Studies',
-  'graduate division',
-  'Scandinavian',
-  'Center for African Studies',
+  "library",
+  "college of engineering",
+  "botanical garden",
+  "college of chemistry",
+  "English",
+  "Center for Race and Gender",
+  "Institute of Governmental Studies",
+  "Center for Korean Studies",
+  "International House",
+  "plant and microbial biology",
+  "Social Science Matrix",
+  "Human Rights Center",
+  "Center for Japanese Studies",
+  "graduate division",
+  "Scandinavian",
+  "Center for African Studies",
 ];
 
 function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -78,92 +78,92 @@ function sleep(ms: number): Promise<void> {
  * casing, e.g. `Library`, `BAMPFA`, `Magnes`).
  */
 const ORG_UNIT_MAP: Record<string, string> = {
-  ac: 'Arts + Culture at Berkeley',
-  africam: 'African American Studies Department',
-  apasd: 'Asian Pacific American Student Development',
-  are: 'Agricultural & Resource Economics',
-  arf: 'Archaeological Research Facility',
-  art: 'Department of Art Practice',
-  sports: 'Cal Athletics',
-  bot: 'UC Botanical Garden',
-  bph: 'Berkeley Public Health',
-  brc: 'Berkeley Retirement Center',
-  bcsr: 'Berkeley Center for the Study of Religion',
-  bs: 'Buddhist Studies',
-  bsac: 'Berkeley Sensor & Actuator Center',
-  ihouse: 'International House',
-  calperfs: 'Cal Performances',
-  calparents: 'Cal Parents',
-  ced: 'College of Environmental Design',
-  cee: 'Civil & Environmental Engineering',
-  serc: 'Student Environmental Resource Center',
-  chem: 'Department of Chemistry',
-  cjs: 'Center for Japanese Studies',
-  cks: 'Center for Korean Studies',
-  clacs: 'Center for Latin American and Caribbean Studies',
-  coe: 'College of Engineering',
-  crb: 'Center for Responsible Business',
-  crg: 'Center for Race and Gender',
-  csas: 'Center for South Asia Studies',
-  cseas: 'Center for Southeast Asia Studies',
-  cshe: 'Center for Studies in Higher Education',
-  csls: 'Center for the Study of Law and Society',
-  educ: 'Berkeley School of Education',
-  cdss: 'College of Computing, Data Science, and Society',
-  econ: 'Department of Economics',
-  extension: 'UC Berkeley Extension',
-  geneq: 'Gender Equity Resource Center',
-  geog: 'Geography Department',
-  hdi: 'Helen Diller Institute',
-  hr: 'Human Resources',
-  hrc: 'Human Rights Center',
-  ib: 'Integrative Biology',
-  ieas: 'Institute of East Asian Studies',
-  ies: 'Institute of European Studies',
-  igs: 'Institute of Governmental Studies',
-  ihd: 'Institute of Human Development',
-  ischool: 'School of Information',
-  issi: 'Institute for the Study of Societal Issues',
-  its: 'Institute of Transportation Studies',
-  jsp: 'Jurisprudence and Social Policy Program',
-  law: 'Berkeley Law',
-  lhs: 'Lawrence Hall of Science',
-  ling: 'Department of Linguistics',
-  mse: 'Materials Science & Engineering',
-  pmb: 'Plant & Microbial Biology',
-  publichealth: 'School of Public Health',
-  gspp: 'Goldman School of Public Policy',
-  haas: 'Berkeley Haas',
-  bampfa: 'BAMPFA',
-  bio: 'Berkeley International Office',
-  botanicalgarden: 'UC Botanical Garden',
-  bids: 'Berkeley Institute for Data Science',
-  citris: 'CITRIS',
-  cltc: 'Center for Long-Term Cybersecurity',
-  simons: 'Simons Institute',
-  scet: 'Sutardja Center for Entrepreneurship & Technology',
-  ssm: 'Social Science Matrix',
-  sp: 'Spanish and Portuguese',
-  tdps: 'Theater, Dance, and Performance Studies',
-  ttp: 'Technology Transfer Program',
-  udar: 'University Development and Alumni Relations',
-  uhs: 'University Health Services',
-  blumcenter: 'Blum Center',
-  ssl: 'Space Sciences Laboratory',
-  rdi: 'Berkeley RDI',
-  cnr: 'College of Natural Resources',
-  graddiv: 'Graduate Division',
-  library: 'UC Berkeley Library',
-  mcb: 'Molecular & Cell Biology',
-  physics: 'Department of Physics',
-  math: 'Department of Mathematics',
-  eecs: 'EECS',
-  ce: 'Civil & Environmental Engineering',
-  me: 'Mechanical Engineering',
-  bioe: 'Bioengineering',
+  ac: "Arts + Culture at Berkeley",
+  africam: "African American Studies Department",
+  apasd: "Asian Pacific American Student Development",
+  are: "Agricultural & Resource Economics",
+  arf: "Archaeological Research Facility",
+  art: "Department of Art Practice",
+  sports: "Cal Athletics",
+  bot: "UC Botanical Garden",
+  bph: "Berkeley Public Health",
+  brc: "Berkeley Retirement Center",
+  bcsr: "Berkeley Center for the Study of Religion",
+  bs: "Buddhist Studies",
+  bsac: "Berkeley Sensor & Actuator Center",
+  ihouse: "International House",
+  calperfs: "Cal Performances",
+  calparents: "Cal Parents",
+  ced: "College of Environmental Design",
+  cee: "Civil & Environmental Engineering",
+  serc: "Student Environmental Resource Center",
+  chem: "Department of Chemistry",
+  cjs: "Center for Japanese Studies",
+  cks: "Center for Korean Studies",
+  clacs: "Center for Latin American and Caribbean Studies",
+  coe: "College of Engineering",
+  crb: "Center for Responsible Business",
+  crg: "Center for Race and Gender",
+  csas: "Center for South Asia Studies",
+  cseas: "Center for Southeast Asia Studies",
+  cshe: "Center for Studies in Higher Education",
+  csls: "Center for the Study of Law and Society",
+  educ: "Berkeley School of Education",
+  cdss: "College of Computing, Data Science, and Society",
+  econ: "Department of Economics",
+  extension: "UC Berkeley Extension",
+  geneq: "Gender Equity Resource Center",
+  geog: "Geography Department",
+  hdi: "Helen Diller Institute",
+  hr: "Human Resources",
+  hrc: "Human Rights Center",
+  ib: "Integrative Biology",
+  ieas: "Institute of East Asian Studies",
+  ies: "Institute of European Studies",
+  igs: "Institute of Governmental Studies",
+  ihd: "Institute of Human Development",
+  ischool: "School of Information",
+  issi: "Institute for the Study of Societal Issues",
+  its: "Institute of Transportation Studies",
+  jsp: "Jurisprudence and Social Policy Program",
+  law: "Berkeley Law",
+  lhs: "Lawrence Hall of Science",
+  ling: "Department of Linguistics",
+  mse: "Materials Science & Engineering",
+  pmb: "Plant & Microbial Biology",
+  publichealth: "School of Public Health",
+  gspp: "Goldman School of Public Policy",
+  haas: "Berkeley Haas",
+  bampfa: "BAMPFA",
+  bio: "Berkeley International Office",
+  botanicalgarden: "UC Botanical Garden",
+  bids: "Berkeley Institute for Data Science",
+  citris: "CITRIS",
+  cltc: "Center for Long-Term Cybersecurity",
+  simons: "Simons Institute",
+  scet: "Sutardja Center for Entrepreneurship & Technology",
+  ssm: "Social Science Matrix",
+  sp: "Spanish and Portuguese",
+  tdps: "Theater, Dance, and Performance Studies",
+  ttp: "Technology Transfer Program",
+  udar: "University Development and Alumni Relations",
+  uhs: "University Health Services",
+  blumcenter: "Blum Center",
+  ssl: "Space Sciences Laboratory",
+  rdi: "Berkeley RDI",
+  cnr: "College of Natural Resources",
+  graddiv: "Graduate Division",
+  library: "UC Berkeley Library",
+  mcb: "Molecular & Cell Biology",
+  physics: "Department of Physics",
+  math: "Department of Mathematics",
+  eecs: "EECS",
+  ce: "Civil & Environmental Engineering",
+  me: "Mechanical Engineering",
+  bioe: "Bioengineering",
   // Units surfaced by redirect resolution on /live/events/ URLs
-  magnes: 'Magnes Collection of Jewish Art & Life',
-  music: 'Department of Music',
+  magnes: "Magnes Collection of Jewish Art & Life",
+  music: "Department of Music",
 };
 
 /**
@@ -174,8 +174,8 @@ const ORG_UNIT_MAP: Record<string, string> = {
  * resolve the unit from the 302 redirect (events.berkeley.edu) or fall back
  * to "UC Berkeley" rather than mislabel these as "Live" / "Event" / "Events".
  */
-const GENERIC_URL_SLUGS = new Set(['live', 'event', 'events']);
-const HOST_EVENTS_BERKELEY = 'events.berkeley.edu';
+const GENERIC_URL_SLUGS = new Set(["live", "event", "events"]);
+const HOST_EVENTS_BERKELEY = "events.berkeley.edu";
 
 /** Cache: /live/events/<slug> URL → resolved unit slug (after 302 redirect). */
 const redirectSlugCache = new Map<string, string>();
@@ -197,21 +197,21 @@ function cacheSet(key: string, value: string): void {
 const MAX_REDIRECT_HOPS = 4;
 
 async function resolveUnitSlugViaRedirect(url: string): Promise<string> {
-  if (redirectSlugCache.has(url)) return redirectSlugCache.get(url) || '';
+  if (redirectSlugCache.has(url)) return redirectSlugCache.get(url) || "";
   let current = url;
   try {
     for (let hop = 0; hop < MAX_REDIRECT_HOPS; hop++) {
       const res = await fetch(current, {
-        method: 'HEAD',
-        redirect: 'manual',
-        headers: { 'User-Agent': 'Cal-Events-Discovery-Bot' },
+        method: "HEAD",
+        redirect: "manual",
+        headers: { "User-Agent": "Cal-Events-Discovery-Bot" },
         signal: AbortSignal.timeout(8_000),
       });
       if (res.status < 300 || res.status >= 400) break;
-      const loc = res.headers.get('location');
+      const loc = res.headers.get("location");
       if (!loc) break;
       const target = new URL(loc, current);
-      const firstSeg = target.pathname.split('/').filter(Boolean)[0] || '';
+      const firstSeg = target.pathname.split("/").filter(Boolean)[0] || "";
       if (firstSeg && !GENERIC_URL_SLUGS.has(firstSeg.toLowerCase())) {
         cacheSet(url, firstSeg);
         return firstSeg;
@@ -223,21 +223,21 @@ async function resolveUnitSlugViaRedirect(url: string): Promise<string> {
   } catch {
     // Network error, timeout, etc — fall through.
   }
-  cacheSet(url, '');
-  return '';
+  cacheSet(url, "");
+  return "";
 }
 
 function prettifySlug(slug: string): string {
-  return slug.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  return slug.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function isAcronymLikeSlug(slug: string): boolean {
-  const compact = slug.replace(/[^a-zA-Z]/g, '');
+  const compact = slug.replace(/[^a-zA-Z]/g, "");
   return compact.length > 0 && compact.length <= 4;
 }
 
 function unitFromSlug(slug: string): string {
-  if (!slug) return '';
+  if (!slug) return "";
   const mapped = ORG_UNIT_MAP[slug.toLowerCase()];
   if (mapped) return mapped;
   if (isAcronymLikeSlug(slug)) return slug.toUpperCase();
@@ -251,16 +251,18 @@ function unitFromSlug(slug: string): string {
  * 302 redirect that LiveWhale serves for /live/events/<id> URLs.
  * On failure, fall back to "UC Berkeley" rather than emit "Live".
  */
-async function unitFromUrl(url: string | undefined): Promise<{ slug: string; unit: string }> {
-  if (!url) return { slug: '', unit: 'UC Berkeley' };
+async function unitFromUrl(
+  url: string | undefined,
+): Promise<{ slug: string; unit: string }> {
+  if (!url) return { slug: "", unit: "UC Berkeley" };
   let parsed: URL;
   try {
     parsed = new URL(url);
   } catch {
-    return { slug: '', unit: 'UC Berkeley' };
+    return { slug: "", unit: "UC Berkeley" };
   }
-  const segments = parsed.pathname.split('/').filter(Boolean);
-  const firstSeg = segments[0] || '';
+  const segments = parsed.pathname.split("/").filter(Boolean);
+  const firstSeg = segments[0] || "";
   const slugLower = firstSeg.toLowerCase();
 
   if (slugLower && !GENERIC_URL_SLUGS.has(slugLower)) {
@@ -268,7 +270,7 @@ async function unitFromUrl(url: string | undefined): Promise<{ slug: string; uni
   }
 
   // Generic namespace — try the redirect trick for events.berkeley.edu.
-  if (parsed.hostname === HOST_EVENTS_BERKELEY && slugLower === 'live') {
+  if (parsed.hostname === HOST_EVENTS_BERKELEY && slugLower === "live") {
     const resolved = await resolveUnitSlugViaRedirect(url);
     if (resolved) {
       return { slug: resolved, unit: unitFromSlug(resolved) };
@@ -277,51 +279,51 @@ async function unitFromUrl(url: string | undefined): Promise<{ slug: string; uni
 
   // Last-resort fallback: keep the generic slug for the quality flag,
   // but emit a neutral organizer name instead of "Live" / "Event" / "Events".
-  return { slug: firstSeg, unit: 'UC Berkeley' };
+  return { slug: firstSeg, unit: "UC Berkeley" };
 }
 
 function asString(value: unknown): string {
-  if (typeof value === 'string') return value;
-  if (value && typeof value === 'object' && 'val' in (value as object)) {
-    return String((value as { val: unknown }).val ?? '');
+  if (typeof value === "string") return value;
+  if (value && typeof value === "object" && "val" in (value as object)) {
+    return String((value as { val: unknown }).val ?? "");
   }
-  return '';
+  return "";
 }
 
 function isAllDay(component: VEvent): boolean {
   // node-ical sets datetype to 'date' for VALUE=DATE entries
   // (it leaves it as 'date-time' for TZID-anchored timestamps)
   const datetype = (component as unknown as { datetype?: string }).datetype;
-  return datetype === 'date';
+  return datetype === "date";
 }
 
 function isoDateUTC(d: Date): string {
   // For all-day VEVENTs node-ical returns a Date at UTC midnight; format YYYY-MM-DD
   const y = d.getUTCFullYear();
-  const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(d.getUTCDate()).padStart(2, '0');
+  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 }
 
 function todayPT(): string {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Los_Angeles',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).format(new Date());
 }
 
 function decodeIcalText(text: string): string {
   return text
-    .replace(/\\n/g, ' ')
-    .replace(/\\,/g, ',')
-    .replace(/\\;/g, ';')
-    .replace(/\\\\/g, '\\')
-    .replace(/&amp;/g, '&')
-    .replace(/&#160;/g, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/\\n/g, " ")
+    .replace(/\\,/g, ",")
+    .replace(/\\;/g, ";")
+    .replace(/\\\\/g, "\\")
+    .replace(/&amp;/g, "&")
+    .replace(/&#160;/g, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
@@ -332,14 +334,19 @@ export interface FetchResult {
   invalid: number;
 }
 
-async function fetchFeed(url: string = FEED_URL, minEvents = MIN_HEALTHY_EVENT_COUNT): Promise<Record<string, unknown>> {
-  let lastErr = '';
+async function fetchFeed(
+  url: string = FEED_URL,
+  minEvents = MIN_HEALTHY_EVENT_COUNT,
+): Promise<Record<string, unknown>> {
+  let lastErr = "";
   for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
-    console.log(`[livewhale] fetching ${url} (attempt ${attempt}/${MAX_FETCH_ATTEMPTS})`);
+    console.log(
+      `[livewhale] fetching ${url} (attempt ${attempt}/${MAX_FETCH_ATTEMPTS})`,
+    );
     try {
       const res = await fetch(url, {
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-        headers: { 'User-Agent': 'Cal-Events-Discovery-Bot' },
+        headers: { "User-Agent": "Cal-Events-Discovery-Bot" },
       });
       if (!res.ok) {
         lastErr = `${res.status} ${res.statusText}`;
@@ -347,7 +354,9 @@ async function fetchFeed(url: string = FEED_URL, minEvents = MIN_HEALTHY_EVENT_C
       } else {
         const ics = await res.text();
         const parsed = ical.sync.parseICS(ics);
-        const veventCount = Object.values(parsed).filter(c => (c as { type?: string }).type === 'VEVENT').length;
+        const veventCount = Object.values(parsed).filter(
+          (c) => (c as { type?: string }).type === "VEVENT",
+        ).length;
         if (veventCount >= minEvents) {
           return parsed;
         }
@@ -360,9 +369,12 @@ async function fetchFeed(url: string = FEED_URL, minEvents = MIN_HEALTHY_EVENT_C
       lastErr = err instanceof Error ? err.message : String(err);
       console.warn(`[livewhale] fetch error: ${lastErr}`);
     }
-    if (attempt < MAX_FETCH_ATTEMPTS) await sleep(EMPTY_FEED_RETRY_DELAY_MS * attempt);
+    if (attempt < MAX_FETCH_ATTEMPTS)
+      await sleep(EMPTY_FEED_RETRY_DELAY_MS * attempt);
   }
-  throw new Error(`LiveWhale fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr}`);
+  throw new Error(
+    `LiveWhale fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr}`,
+  );
 }
 
 /** Fetch a single group feed, returning an empty object on any error (non-fatal). */
@@ -371,7 +383,9 @@ async function fetchGroupFeed(group: string): Promise<Record<string, unknown>> {
   try {
     return await fetchFeed(url, 0); // minEvents=0: any response is acceptable
   } catch (err) {
-    console.warn(`[livewhale] group feed "${group}" failed: ${err instanceof Error ? err.message : err}`);
+    console.warn(
+      `[livewhale] group feed "${group}" failed: ${err instanceof Error ? err.message : err}`,
+    );
     return {};
   }
 }
@@ -388,14 +402,18 @@ async function prewarmRedirectCache(urls: string[]): Promise<void> {
     try {
       const parsed = new URL(u);
       if (parsed.hostname !== HOST_EVENTS_BERKELEY) continue;
-      const first = (parsed.pathname.split('/').filter(Boolean)[0] || '').toLowerCase();
-      if (first === 'live' && !redirectSlugCache.has(u)) toResolve.push(u);
+      const first = (
+        parsed.pathname.split("/").filter(Boolean)[0] || ""
+      ).toLowerCase();
+      if (first === "live" && !redirectSlugCache.has(u)) toResolve.push(u);
     } catch {
       // skip invalid URLs
     }
   }
   if (toResolve.length === 0) return;
-  console.log(`[livewhale] resolving ${toResolve.length} /live/events/ redirects (concurrency ${CONCURRENCY})`);
+  console.log(
+    `[livewhale] resolving ${toResolve.length} /live/events/ redirects (concurrency ${CONCURRENCY})`,
+  );
   let idx = 0;
   const worker = async (): Promise<void> => {
     while (idx < toResolve.length) {
@@ -410,7 +428,7 @@ export async function fetchLiveWhale(): Promise<FetchResult> {
   // Fetch main feed + all group feeds in parallel
   const [mainParsed, ...groupResults] = await Promise.all([
     fetchFeed(),
-    ...LIVEWHALE_GROUPS.map(g => fetchGroupFeed(g)),
+    ...LIVEWHALE_GROUPS.map((g) => fetchGroupFeed(g)),
   ]);
 
   // Merge all iCal records; deduplicate by UID (group feeds overlap with main)
@@ -434,16 +452,18 @@ export async function fetchLiveWhale(): Promise<FetchResult> {
   const urlsToPrewarm: string[] = [];
   for (const key of Object.keys(parsed)) {
     const component = parsed[key] as { type?: string };
-    if (!component || component.type !== 'VEVENT') continue;
+    if (!component || component.type !== "VEVENT") continue;
     const ve = component as unknown as VEvent;
-    const url = asString(ve.url) || `https://events.berkeley.edu/live/events/${(ve as unknown as { uid?: string }).uid}`;
+    const url =
+      asString(ve.url) ||
+      `https://events.berkeley.edu/live/events/${(ve as unknown as { uid?: string }).uid}`;
     urlsToPrewarm.push(url);
   }
   await prewarmRedirectCache(urlsToPrewarm);
 
   for (const key of Object.keys(parsed)) {
     const component = parsed[key] as { type?: string };
-    if (!component || component.type !== 'VEVENT') continue;
+    if (!component || component.type !== "VEVENT") continue;
     const ve = component as unknown as VEvent;
     rawCount++;
 
@@ -465,37 +485,50 @@ export async function fetchLiveWhale(): Promise<FetchResult> {
 
       // Drop events that have already started before today (PT).
       // For multi-day events still upcoming or in progress, keep them.
-      const eventDate = allDay ? start_at : start_at.slice(0, 10);
+      const eventDate = isoDateInPT(start_at);
       if (eventDate < todayIso) {
         filteredPast++;
         continue;
       }
 
       // Skip canceled/postponed events — check iCal STATUS field and title prefix.
-      const icalStatus = asString((ve as unknown as { status?: unknown }).status).toUpperCase();
-      if (icalStatus === 'CANCELLED' || icalStatus === 'CANCELED') { invalid++; continue; }
+      const icalStatus = asString(
+        (ve as unknown as { status?: unknown }).status,
+      ).toUpperCase();
+      if (icalStatus === "CANCELLED" || icalStatus === "CANCELED") {
+        invalid++;
+        continue;
+      }
 
       const summary = decodeIcalText(asString(ve.summary));
-      if (/^(canceled|cancelled|postponed|rescheduled)[:\s]/i.test(summary)) { invalid++; continue; }
+      if (/^(canceled|cancelled|postponed|rescheduled)[:\s]/i.test(summary)) {
+        invalid++;
+        continue;
+      }
 
-      const url = asString(ve.url) || `https://events.berkeley.edu/live/events/${(ve as unknown as { uid?: string }).uid}`;
+      const url =
+        asString(ve.url) ||
+        `https://events.berkeley.edu/live/events/${(ve as unknown as { uid?: string }).uid}`;
       const { slug, unit } = await unitFromUrl(url);
 
       const description = decodeIcalText(asString(ve.description));
       const location = decodeIcalText(asString(ve.location));
-      const categoriesRaw = (ve as unknown as { categories?: string[] | string }).categories;
+      const categoriesRaw = (
+        ve as unknown as { categories?: string[] | string }
+      ).categories;
       const categories = Array.isArray(categoriesRaw)
         ? categoriesRaw
-        : typeof categoriesRaw === 'string'
-        ? [categoriesRaw]
-        : [];
+        : typeof categoriesRaw === "string"
+          ? [categoriesRaw]
+          : [];
 
       const liveWhaleId =
-        asString((ve as unknown as { ['x-livewhale-id']?: unknown })['x-livewhale-id']) ||
-        asString((ve as unknown as { uid?: unknown }).uid);
+        asString(
+          (ve as unknown as { ["x-livewhale-id"]?: unknown })["x-livewhale-id"],
+        ) || asString((ve as unknown as { uid?: unknown }).uid);
 
       const candidate: CanonicalEvent = {
-        source_name: 'livewhale',
+        source_name: "livewhale",
         source_id: String(liveWhaleId),
         source_url: FEED_URL,
         evidence_url: url,
@@ -503,16 +536,16 @@ export async function fetchLiveWhale(): Promise<FetchResult> {
         description,
         start_at,
         end_at,
-        timezone: 'America/Los_Angeles',
+        timezone: "America/Los_Angeles",
         all_day: allDay,
         venue: location,
-        building: '',
-        address: '',
-        modality: 'in_person',
+        building: "",
+        address: "",
+        modality: "in_person",
         organizer: unit,
         organizer_unit: unit,
-        audience: '',
-        cost: '',
+        audience: "",
+        cost: "",
         registration_url: undefined,
         canonical_url: url,
         categories,
@@ -525,17 +558,19 @@ export async function fetchLiveWhale(): Promise<FetchResult> {
         last_seen_at: fetched_at,
         confidence: 1,
         quality_flags: !slug
-          ? ['unknown_org_slug']
+          ? ["unknown_org_slug"]
           : GENERIC_URL_SLUGS.has(slug.toLowerCase())
-          ? ['generic_org_slug']
-          : [],
+            ? ["generic_org_slug"]
+            : [],
       };
 
       const validated = CanonicalEventSchema.safeParse(candidate);
       if (!validated.success) {
         invalid++;
         if (invalid <= 5) {
-          console.warn(`[livewhale] schema reject "${summary}": ${validated.error.issues.map(i => `${i.path.join('.')}:${i.message}`).join('; ')}`);
+          console.warn(
+            `[livewhale] schema reject "${summary}": ${validated.error.issues.map((i) => `${i.path.join(".")}:${i.message}`).join("; ")}`,
+          );
         }
         continue;
       }
@@ -543,11 +578,15 @@ export async function fetchLiveWhale(): Promise<FetchResult> {
     } catch (err) {
       invalid++;
       if (invalid <= 5) {
-        console.warn(`[livewhale] failed to parse VEVENT: ${err instanceof Error ? err.message : err}`);
+        console.warn(
+          `[livewhale] failed to parse VEVENT: ${err instanceof Error ? err.message : err}`,
+        );
       }
     }
   }
 
-  console.log(`[livewhale] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`);
+  console.log(
+    `[livewhale] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`,
+  );
   return { events, rawCount, filteredPast, invalid };
 }
