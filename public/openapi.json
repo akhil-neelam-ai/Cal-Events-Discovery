@@ -1,0 +1,143 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CalEvents Public Data API",
+    "version": "1.0.0",
+    "description": "Static public data resources for UC Berkeley campus event discovery."
+  },
+  "servers": [
+    {
+      "url": "https://cal-events.com"
+    }
+  ],
+  "paths": {
+    "/events.json": {
+      "get": {
+        "summary": "Get the latest normalized event snapshot",
+        "operationId": "getEvents",
+        "responses": {
+          "200": {
+            "description": "Current event feed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["events", "sources", "lastUpdated"],
+                  "properties": {
+                    "events": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Event"
+                      }
+                    },
+                    "sources": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Source"
+                      }
+                    },
+                    "lastUpdated": {
+                      "type": "number",
+                      "description": "Unix epoch milliseconds for the published snapshot."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/status.json": {
+      "get": {
+        "summary": "Get ingestion status and source health",
+        "operationId": "getStatus",
+        "responses": {
+          "200": {
+            "description": "Current ingestion status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "generated_at": { "type": "string", "format": "date-time" },
+                    "total_events": { "type": "integer" },
+                    "fallback_used": { "type": "boolean" },
+                    "data_quality_blocked": { "type": "boolean" },
+                    "sources": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SourceStatus"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search-index.json": {
+      "get": {
+        "summary": "Get generated search index",
+        "operationId": "getSearchIndex",
+        "responses": {
+          "200": {
+            "description": "Generated search index",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Event": {
+        "type": "object",
+        "required": ["id", "title", "organizer", "date", "time", "location", "description", "tags", "url"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "organizer": { "type": "string" },
+          "date": { "type": "string", "format": "date" },
+          "time": { "type": "string" },
+          "location": { "type": "string" },
+          "description": { "type": "string" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "url": { "type": "string", "format": "uri" },
+          "source": { "type": "string" }
+        }
+      },
+      "Source": {
+        "type": "object",
+        "required": ["title", "uri"],
+        "properties": {
+          "title": { "type": "string" },
+          "uri": { "type": "string", "format": "uri" }
+        }
+      },
+      "SourceStatus": {
+        "type": "object",
+        "required": ["name", "ok", "count", "duration_ms", "fetched_at"],
+        "properties": {
+          "name": { "type": "string" },
+          "ok": { "type": "boolean" },
+          "count": { "type": "integer" },
+          "duration_ms": { "type": "integer" },
+          "fetched_at": { "type": "string", "format": "date-time" },
+          "error": { "type": "string" },
+          "degraded": { "type": "boolean" },
+          "fallback_used": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

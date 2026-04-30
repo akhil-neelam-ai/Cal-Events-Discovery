@@ -1,0 +1,24 @@
+{
+  "name": "CalEvents",
+  "description": "Agent-readable UC Berkeley campus events discovery site.",
+  "url": "https://cal-events.com/",
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false
+  },
+  "defaultInputModes": ["text/plain", "application/json"],
+  "defaultOutputModes": ["text/plain", "application/json"],
+  "skills": [
+    {
+      "id": "search-events",
+      "name": "Search Berkeley events",
+      "description": "Find upcoming UC Berkeley events by keyword, date, category, source, organizer, or location."
+    },
+    {
+      "id": "event-feed-status",
+      "name": "Inspect event feed status",
+      "description": "Inspect source freshness, fallback usage, and ingestion status."
+    }
+  ]
+}

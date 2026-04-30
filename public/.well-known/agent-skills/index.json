@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "search-events",
+      "type": "skill-md",
+      "description": "Search upcoming UC Berkeley campus events using the public CalEvents event feed.",
+      "url": "/.well-known/agent-skills/search-events/SKILL.md",
+      "digest": "sha256:c10c7e1b5dd183846c6ea59c8a34c7263c3c1f705ff8480ef0dac6b252f5a6b0"
+    },
+    {
+      "name": "event-feed-status",
+      "type": "skill-md",
+      "description": "Inspect CalEvents ingestion freshness, source health, and fallback status.",
+      "url": "/.well-known/agent-skills/event-feed-status/SKILL.md",
+      "digest": "sha256:0b5d05a8a177f4206061d726b6cb57871fabf99f0f8b364b5dd94865e69c82b1"
+    }
+  ]
+}
