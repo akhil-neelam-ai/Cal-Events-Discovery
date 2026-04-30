@@ -83,6 +83,19 @@ test("agent discovery JSON files are valid and internally linked", () => {
   assert.ok(Array.isArray(apiCatalog.linkset));
   assert.equal(serverCard.serverInfo.name, "CalEvents");
   assert.equal(agentCard.name, "CalEvents");
+  assert.ok(
+    Array.isArray(agentCard.supportedInterfaces),
+    "A2A Agent Card must declare supportedInterfaces",
+  );
+  assert.ok(
+    agentCard.supportedInterfaces.some(
+      (supportedInterface) =>
+        supportedInterface.url === "https://cal-events.com/" &&
+        supportedInterface.transport === "webmcp" &&
+        supportedInterface.protocolBinding,
+    ),
+    "A2A Agent Card must advertise the browser WebMCP interface",
+  );
   assert.equal(openapi.openapi, "3.1.0");
   assert.ok(openapi.paths["/events.json"]);
   assert.ok(openapi.paths["/status.json"]);

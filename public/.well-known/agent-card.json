@@ -3,6 +3,22 @@
   "description": "Agent-readable UC Berkeley campus events discovery site.",
   "url": "https://cal-events.com/",
   "version": "1.0.0",
+  "supportedInterfaces": [
+    {
+      "url": "https://cal-events.com/",
+      "transport": "webmcp",
+      "protocolBinding": "https://webmachinelearning.github.io/webmcp/",
+      "protocolVersion": "0.1",
+      "description": "Browser-based WebMCP tools exposed on the CalEvents homepage."
+    },
+    {
+      "url": "https://cal-events.com/openapi.json",
+      "transport": "http-json",
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0",
+      "description": "Read-only public event data interface described by OpenAPI."
+    }
+  ],
   "capabilities": {
     "streaming": false,
     "pushNotifications": false
