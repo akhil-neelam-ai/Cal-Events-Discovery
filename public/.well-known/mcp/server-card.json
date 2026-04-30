@@ -1,0 +1,26 @@
+{
+  "serverInfo": {
+    "name": "CalEvents",
+    "version": "1.0.0",
+    "description": "Public UC Berkeley campus event discovery resources for agents."
+  },
+  "transports": [
+    {
+      "type": "https",
+      "endpoint": "https://cal-events.com/.well-known/api-catalog"
+    }
+  ],
+  "capabilities": {
+    "resources": {
+      "events": "https://cal-events.com/events.json",
+      "status": "https://cal-events.com/status.json",
+      "searchIndex": "https://cal-events.com/search-index.json",
+      "openapi": "https://cal-events.com/openapi.json"
+    },
+    "tools": {
+      "discovery": "https://cal-events.com/.well-known/agent-skills/index.json",
+      "browser": "WebMCP tools are registered on the homepage when navigator.modelContext is available."
+    },
+    "prompts": {}
+  }
+}

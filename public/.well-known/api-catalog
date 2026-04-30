@@ -1,0 +1,33 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://cal-events.com/",
+      "service-desc": [
+        {
+          "href": "https://cal-events.com/openapi.json",
+          "type": "application/vnd.oai.openapi+json",
+          "title": "CalEvents Public Data API OpenAPI description"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://cal-events.com/llms.txt",
+          "type": "text/markdown",
+          "title": "CalEvents agent overview"
+        },
+        {
+          "href": "https://cal-events.com/llms-full.txt",
+          "type": "text/markdown",
+          "title": "CalEvents full agent context"
+        }
+      ],
+      "status": [
+        {
+          "href": "https://cal-events.com/status.json",
+          "type": "application/json",
+          "title": "CalEvents ingestion status"
+        }
+      ]
+    }
+  ]
+}

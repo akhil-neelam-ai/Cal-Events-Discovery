@@ -1,31 +1,107 @@
 {
-  "headers": [
+  "routes": [
     {
-      "source": "/events.json",
-      "headers": [
+      "src": "^/$",
+      "has": [
         {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
+          "type": "header",
+          "key": "accept",
+          "value": ".*text/markdown.*"
         }
-      ]
+      ],
+      "dest": "/llms.txt",
+      "headers": {
+        "Content-Type": "text/markdown; charset=utf-8",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "X-Markdown-Tokens": "650",
+        "Link": "</.well-known/api-catalog>; rel=\"api-catalog\", </openapi.json>; rel=\"service-desc\"; type=\"application/vnd.oai.openapi+json\", </.well-known/mcp/server-card.json>; rel=\"service-desc\"; type=\"application/json\", </.well-known/agent-skills/index.json>; rel=\"describedby\"; type=\"application/json\", </llms.txt>; rel=\"alternate\"; type=\"text/markdown\""
+      }
     },
     {
-      "source": "/search-index.json",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
+      "src": "^/$",
+      "headers": {
+        "Link": "</.well-known/api-catalog>; rel=\"api-catalog\", </openapi.json>; rel=\"service-desc\"; type=\"application/vnd.oai.openapi+json\", </.well-known/mcp/server-card.json>; rel=\"service-desc\"; type=\"application/json\", </.well-known/agent-skills/index.json>; rel=\"describedby\"; type=\"application/json\", </llms.txt>; rel=\"alternate\"; type=\"text/markdown\""
+      },
+      "continue": true
     },
     {
-      "source": "/status.json",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
+      "src": "^/llms\\.txt$",
+      "headers": {
+        "Content-Type": "text/markdown; charset=utf-8",
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/llms-full\\.txt$",
+      "headers": {
+        "Content-Type": "text/markdown; charset=utf-8",
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/robots\\.txt$",
+      "headers": {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/sitemap\\.xml$",
+      "headers": {
+        "Content-Type": "application/xml; charset=utf-8",
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/\\.well-known/api-catalog$",
+      "headers": {
+        "Content-Type": "application/linkset+json; charset=utf-8",
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/openapi\\.json$",
+      "headers": {
+        "Content-Type": "application/vnd.oai.openapi+json; charset=utf-8",
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/\\.well-known(?:/(.*))$",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/events\\.json$",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/search-index\\.json$",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/status\\.json$",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      },
+      "continue": true
+    },
+    {
+      "handle": "filesystem"
     }
   ]
 }
