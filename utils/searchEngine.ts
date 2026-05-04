@@ -69,7 +69,7 @@ const CATEGORY_PATTERNS: Array<[string, RegExp]> = [
   ],
   [
     "Science & Tech",
-    /\b(ai\b|machine learning|data science|hackathon|coding|computer science|eecs|engineering talk|robotics|biotech|genomics|tech talk)\b/i,
+    /\b(ai\b|artificial intelligence|machine learning|language models?|llm|data science|hackathon|coding|computer science|eecs|engineering talk|robotics|biotech|genomics|tech talk)\b/i,
   ],
   [
     "Student Life",

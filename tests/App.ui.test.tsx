@@ -232,6 +232,43 @@ describe("App UI regressions", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("interprets artificial intelligence searches as science and tech", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "ai-science",
+        title: "Responsible AI Seminar",
+        tags: ["Science & Tech"],
+        date: TOMORROW_KEY,
+        description:
+          "A technical seminar about artificial intelligence and machine learning systems.",
+      }),
+      makeEvent({
+        id: "ai-arts",
+        title: "A.I. Artificial Intelligence Film Screening",
+        organizer: "BAMPFA",
+        tags: ["Arts"],
+        date: TOMORROW_KEY,
+        description: "A film screening about artificial intelligence.",
+      }),
+    ]);
+
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=Artificial%20Intelligence&date=upcoming",
+    );
+
+    render(<App />);
+
+    expect(
+      screen.getByRole("button", { name: /remove science & tech filter/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Responsible AI Seminar")).toBeInTheDocument();
+    expect(
+      screen.queryByText("A.I. Artificial Intelligence Film Screening"),
+    ).not.toBeInTheDocument();
+  });
+
   it("lets users dismiss interpreted campus-area chips and broadens results", async () => {
     const user = userEvent.setup();
 
