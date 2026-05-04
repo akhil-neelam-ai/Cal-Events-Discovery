@@ -213,6 +213,13 @@ export const DOMAIN_SYNONYMS: Record<string, string[]> = {
   fun: ["social", "performance", "game", "festival", "party", "arts"],
   interesting: ["talk", "lecture", "workshop", "exhibition", "seminar"],
   code: ["programming", "hackathon", "engineering", "software", "cs"],
+  ai: ["artificial intelligence", "machine learning", "language model", "llm"],
+  "artificial intelligence": [
+    "ai",
+    "machine learning",
+    "language model",
+    "llm",
+  ],
   // Sports
   game: [
     "basketball",

@@ -88,6 +88,31 @@ const SYNTHETIC_EVENTS = [
     url: "https://example.com/founder",
     source: "ehub",
   },
+  {
+    id: "evt-ai-science",
+    title: "Responsible AI and Language Models",
+    organizer: "EECS",
+    date: "2026-04-24",
+    time: "2:00 PM",
+    location: "Soda Hall",
+    description:
+      "A technical talk about artificial intelligence, machine learning, and language model evaluation.",
+    tags: ["Science & Tech"],
+    url: "https://example.com/ai-science",
+    source: "livewhale",
+  },
+  {
+    id: "evt-ai-arts",
+    title: "A.I. Artificial Intelligence Film Screening",
+    organizer: "BAMPFA",
+    date: "2026-04-24",
+    time: "7:00 PM",
+    location: "BAMPFA",
+    description: "A film screening about artificial intelligence.",
+    tags: ["Arts"],
+    url: "https://example.com/ai-arts",
+    source: "bampfa",
+  },
 ];
 
 test("structured-only temporal queries do not turn into text keywords", () => {
@@ -203,6 +228,59 @@ test("invalid event dates do not drop indexed text matches", () => {
     output.results.map((event) => event.id),
     ["evt-valid-date", "evt-invalid-date"],
   );
+});
+
+test('natural-language query "artificial intelligence" applies science and tech intent', () => {
+  const output = searchEvents(
+    SYNTHETIC_EVENTS,
+    "Artificial Intelligence",
+    null,
+  );
+
+  assert.equal(output.plan.filters.category, "Science & Tech");
+  assert.ok(
+    output.plan.expandedTokens.includes("ai"),
+    "AI synonym should be searched for the full phrase",
+  );
+  assert.equal(output.results[0]?.id, "evt-ai-science");
+  assert.ok(!output.results.some((event) => event.id === "evt-ai-arts"));
+});
+
+test('indexed query "artificial intelligence" does not rank arts film above AI events', () => {
+  const events = SYNTHETIC_EVENTS;
+  const index = {
+    ids: events.map((event) => event.id),
+    t: {
+      ai: [7],
+      artificial: [8],
+      intelligence: [8],
+      language: [7],
+      model: [7],
+    },
+    g: {
+      science: [7],
+      tech: [7],
+      arts: [8],
+    },
+    o: {},
+    d: {
+      artificial: [7, 8],
+      intelligence: [7, 8],
+      machine: [7],
+      learn: [7],
+      language: [7],
+      model: [7],
+    },
+    l: {},
+    buildAt: "test",
+    eventCount: events.length,
+  };
+
+  const output = searchEvents(events, "Artificial Intelligence", index);
+
+  assert.equal(output.plan.filters.category, "Science & Tech");
+  assert.equal(output.results[0]?.id, "evt-ai-science");
+  assert.ok(!output.results.some((event) => event.id === "evt-ai-arts"));
 });
 
 test('natural-language query "free events near northside" applies free and campus-area filters', () => {
