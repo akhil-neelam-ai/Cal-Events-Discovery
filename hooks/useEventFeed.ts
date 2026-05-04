@@ -17,6 +17,21 @@ interface EventFeedState {
   loadEvents: () => Promise<void>;
 }
 
+async function fetchOptionalSearchIndex(): Promise<SearchIndex | null> {
+  try {
+    const response = await fetch("/search-index.json");
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return (await response.json()) as SearchIndex;
+  } catch {
+    // Search index generation is optional; fall back to text-only search.
+    return null;
+  }
+}
+
 export function useEventFeed(): EventFeedState {
   const [allEvents, setAllEvents] = useState<CalEvent[]>([]);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
@@ -31,29 +46,15 @@ export function useEventFeed(): EventFeedState {
     setStatusReport(null);
 
     try {
-      const results = await Promise.all([
+      const [data, nextSearchIndex] = await Promise.all([
         fetchEventsFromGemini(),
-        fetch("/search-index.json")
-          .then((response) => (response.ok ? response.json() : null))
-          .then((index: SearchIndex | null) => {
-            if (index) {
-              setSearchIndex(index);
-            }
-          })
-          .catch(() => {
-            // Search index generation is optional; fall back to text-only search.
-          }),
-      ]).catch((error: unknown) => {
-        console.error(error);
-        setLoading(LoadingState.ERROR);
-        return null;
-      });
+        fetchOptionalSearchIndex(),
+      ]);
 
-      if (!results) {
-        return;
+      if (nextSearchIndex) {
+        setSearchIndex(nextSearchIndex);
       }
 
-      const [data] = results;
       setAllEvents(data.events);
       setLastUpdated(data.lastUpdated);
       setStatusReport(data.status || null);

@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import type { Dispatch, MutableRefObject, SetStateAction } from "react";
 
 import type { QuickFilterPreset } from "../appConfig";
@@ -34,6 +34,11 @@ export function useEventBrowserActions({
   searchTimeoutRef,
 }: UseEventBrowserActionsParams) {
   const prevSearchQueryRef = useRef<string>(initialSearchQuery);
+  const latestFilteredEventsCountRef = useRef(filteredEventsCount);
+
+  useEffect(() => {
+    latestFilteredEventsCountRef.current = filteredEventsCount;
+  }, [filteredEventsCount]);
 
   const handleSearchChange = useCallback(
     (query: string) => {
@@ -63,13 +68,12 @@ export function useEventBrowserActions({
         searchTimeoutRef.current = setTimeout(() => {
           trackSearch({
             search_term: query.trim(),
-            results_count: filteredEventsCount,
+            results_count: latestFilteredEventsCountRef.current,
           });
         }, 500);
       }
     },
     [
-      filteredEventsCount,
       historyModeRef,
       searchTimeoutRef,
       setDismissedInterpretationKeys,

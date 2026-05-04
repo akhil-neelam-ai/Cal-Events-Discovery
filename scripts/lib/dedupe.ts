@@ -31,12 +31,21 @@ export interface DedupeResult {
   duplicatesRemoved: number;
 }
 
+function dedupeKey(event: CanonicalEvent): string {
+  const date = isoDateInPT(event.start_at);
+  const normalizedTitle = normalizeForDedupe(event.title);
+  const identity = normalizedTitle
+    ? ["title", normalizedTitle]
+    : ["source", event.source_name, event.source_id];
+
+  return JSON.stringify([...identity, date]);
+}
+
 export function dedupeEvents(events: CanonicalEvent[]): DedupeResult {
   const buckets = new Map<string, CanonicalEvent>();
 
   for (const event of events) {
-    const date = isoDateInPT(event.start_at);
-    const key = `${normalizeForDedupe(event.title)}::${date}`;
+    const key = dedupeKey(event);
     const existing = buckets.get(key);
     if (!existing) {
       buckets.set(key, event);
