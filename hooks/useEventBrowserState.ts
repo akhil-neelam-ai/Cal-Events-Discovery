@@ -74,10 +74,35 @@ export function useEventBrowserState({
       return [];
     }
 
-    return activePlan.interpretations.filter(
-      (interpretation) => !dismissedInterpretationKeys.has(interpretation.key),
-    );
-  }, [activePlan, dismissedInterpretationKeys]);
+    return activePlan.interpretations.filter((interpretation) => {
+      if (dismissedInterpretationKeys.has(interpretation.key)) {
+        return false;
+      }
+
+      if (
+        interpretation.key.startsWith("category:") &&
+        filters.category !== "All" &&
+        interpretation.key !== `category:${filters.category}`
+      ) {
+        return false;
+      }
+
+      if (
+        interpretation.key.startsWith("source:") &&
+        filters.source !== "All" &&
+        interpretation.key !== `source:${filters.source}`
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [
+    activePlan,
+    dismissedInterpretationKeys,
+    filters.category,
+    filters.source,
+  ]);
 
   const searchOutput = useMemo(() => {
     const query = filters.searchQuery.trim();
@@ -99,7 +124,7 @@ export function useEventBrowserState({
       return matchesCategory && matchesSource;
     });
 
-    if (!query) {
+    if (query.length < 2) {
       return {
         results: sortEventsChronologically(pool),
         fallbackUsed: false,
@@ -107,11 +132,28 @@ export function useEventBrowserState({
       };
     }
 
+    const effectiveDismissedKeys = new Set(dismissedInterpretationKeys);
+    if (
+      activePlan?.filters.category &&
+      filters.category !== "All" &&
+      activePlan.filters.category !== filters.category
+    ) {
+      effectiveDismissedKeys.add(`category:${activePlan.filters.category}`);
+    }
+
+    if (
+      activePlan?.filters.source &&
+      filters.source !== "All" &&
+      activePlan.filters.source !== filters.source
+    ) {
+      effectiveDismissedKeys.add(`source:${activePlan.filters.source}`);
+    }
+
     const { results, fallbackUsed, fallbackMessage } = searchEvents(
       pool,
       query,
       searchIndex,
-      dismissedInterpretationKeys,
+      effectiveDismissedKeys,
     );
 
     return {
@@ -121,6 +163,7 @@ export function useEventBrowserState({
     };
   }, [
     allEvents,
+    activePlan,
     dismissedInterpretationKeys,
     filters.category,
     filters.searchQuery,

@@ -6,6 +6,11 @@ import {
   DOMAIN_SYNONYMS,
   BERKELEY_VENUE_ALIASES,
 } from "./textUtils";
+import {
+  addDaysToDateKey,
+  getCurrentPacificDateKey,
+  getPacificDateKey,
+} from "./eventDates";
 import type { SearchIndex } from "./textUtils";
 
 export type { SearchIndex };
@@ -14,8 +19,10 @@ export type { SearchIndex };
 
 export interface SearchFilter {
   dateRange?: "today" | "tomorrow" | "week" | "upcoming";
+  weekend?: boolean;
   timeOfDay?: "morning" | "afternoon" | "evening";
   category?: string;
+  source?: string;
   campusArea?: "northside" | "southside" | "downtown";
   free?: boolean;
   modality?: "online" | "in-person";
@@ -38,20 +45,25 @@ export interface SearchPlan {
 
 // ─── Pattern library ──────────────────────────────────────────────────────────
 
-const RE_TODAY =
-  /\b(tonight|today|this evening|this afternoon|this morning)\b/i;
+const RE_TONIGHT = /\b(tonight|this evening)\b/i;
+const RE_TODAY = /\b(today|this afternoon|this morning)\b/i;
 const RE_TOMORROW = /\b(tomorrow|tmrw|tmr)\b/i;
-const RE_WEEK = /\b(this week|next 7 days|this weekend|weekend)\b/i;
+const RE_WEEKEND = /\b(this weekend|weekend)\b/i;
+const RE_WEEK = /\b(this week|next 7 days)\b/i;
 const RE_UPCOMING = /\b(upcoming|next month|coming up|soon)\b/i;
 
-const RE_MORNING = /\b(morning|breakfast|early morning)\b/i;
+const RE_MORNING = /\b(this morning|morning|breakfast|early morning)\b/i;
 const RE_AFTERNOON =
-  /\b(afternoon|lunch|midday|after class|after lunch|noon)\b/i;
-const RE_EVENING = /\b(evening|after work|after 5|nighttime)\b/i;
+  /\b(this afternoon|afternoon|lunch|midday|after class|after lunch|noon)\b/i;
+const RE_EVENING =
+  /\b(tonight|this evening|evening|after work|after 5|nighttime|night)\b/i;
 
-const RE_FREE = /\bfree\b(?!\s*(?:throw|agent|range|radical|speech))/i;
+const RE_FREE =
+  /(?:\bfree\b(?!\s*(?:throw|agent|range|radical|speech))|\bcomplimentary\b|\bno[-\s]?charge\b|\bno[-\s]?cost\b|\$0\b)/i;
+const RE_CONTEXTUAL_FREE = /\bfree\s+(?:throw|agent|range|radical|speech)\b/i;
 const RE_ONLINE = /\b(online|virtual|zoom|remote|webinar|livestream)\b/i;
 const RE_INPERSON = /\b(in.?person|on campus)\b/i;
+const RE_CAL_GAMES = /\b(cal games?|bears games?|cal bears games?)\b/i;
 
 // Category patterns — first match wins
 const CATEGORY_PATTERNS: Array<[string, RegExp]> = [
@@ -61,23 +73,43 @@ const CATEGORY_PATTERNS: Array<[string, RegExp]> = [
   ],
   [
     "Sports",
-    /\b(cal game|bears game|cal bears|athletics|basketball|football|baseball|volleyball|soccer|swim meet|swim team|tennis|gymnastics|rowing|crew|sports)\b/i,
+    /\b(cal games?|bears games?|cal bears|athletics|basketball|football|baseball|volleyball|soccer|swim meet|swim team|tennis|gymnastics|rowing|crew|sports)\b/i,
   ],
   [
     "Arts",
-    /\b(film screening|film|movie|concert|performance|theater|theatre|gallery|bampfa|dance|opera|recital|exhibition|exhibit|museum)\b/i,
+    /\b(arts?|film screening|film|movie|concert|performance|theater|theatre|gallery|bampfa|dance|opera|recital|exhibition|exhibit|museum|poetry)\b/i,
   ],
   [
     "Science & Tech",
-    /\b(ai\b|artificial intelligence|machine learning|language models?|llm|data science|hackathon|coding|computer science|eecs|engineering talk|robotics|biotech|genomics|tech talk)\b/i,
+    /\b(science(?:\s*&\s*tech)?|tech(?:nology)?|ai\b|artificial intelligence|machine learning|language models?|llm|data science|hackathon|coding|computer science|eecs|engineering talk|robotics|biotech|genomics|tech talk)\b/i,
   ],
   [
     "Student Life",
-    /\b(free food|student org|club|social|mixer|orientation|undergrad|grad student|tabling|info session|open house|coffee chat)\b/i,
+    /\b(student life|free food|student org|club|social|mixer|orientation|undergrad|grad student|tabling|info session|open house|coffee chat)\b/i,
   ],
   [
     "Academic",
-    /\b(seminar|colloquium|lecture|symposium|dissertation defense|dissertation|thesis defense|guest speaker|research talk|keynote)\b/i,
+    /\b(academic|seminar|colloquium|lecture|symposium|dissertation defense|dissertation|thesis defense|guest speaker|research talk|keynote)\b/i,
+  ],
+];
+
+const SOURCE_PATTERNS: Array<[string, RegExp, string]> = [
+  [
+    "bampfa",
+    /\b(bampfa|berkeley art museum|pacific film archive)\b/i,
+    "BAMPFA",
+  ],
+  ["calbears", /\b(cal bears|cal athletics|calbears)\b/i, "Cal Bears"],
+  ["cal_performances", /\b(cal performances)\b/i, "Cal Performances"],
+  ["callink", /\b(callink|cal link|student orgs?)\b/i, "CalLink"],
+  ["haas", /\b(haas|berkeley haas|business school)\b/i, "Berkeley Haas"],
+  ["berkeley_law", /\b(berkeley law|law school|bclt)\b/i, "Berkeley Law"],
+  ["simons", /\b(simons|simons institute)\b/i, "Simons Institute"],
+  ["livewhale", /\b(livewhale|uc berkeley events)\b/i, "UC Berkeley Events"],
+  [
+    "ehub",
+    /\b(e-?hub|entrepreneurship hub|berkeley e-?hub)\b/i,
+    "Berkeley E-Hub",
   ],
 ];
 
@@ -123,6 +155,54 @@ const KNOWN_PHRASES = [
   "machine learning",
 ];
 
+const STRICT_FUZZY_TOKENS = new Set([
+  "basketball",
+  "football",
+  "baseball",
+  "volleyball",
+  "soccer",
+  "tennis",
+  "gymnastic",
+  "rowing",
+  "hackathon",
+  "moffitt",
+  "bampfa",
+  "haas",
+  "simons",
+  "eecs",
+  "cdss",
+]);
+
+const AI_SEMANTIC_TOKENS = new Set([
+  "ai",
+  "artificial",
+  "intelligence",
+  "machine",
+  "learn",
+  "language",
+  "model",
+  "llm",
+]);
+
+function hasAiSemanticIntent(plan: SearchPlan): boolean {
+  return /\b(ai|artificial intelligence|machine learning|language models?|llm)\b/i.test(
+    plan.raw,
+  );
+}
+
+function stripIntent(text: string, pattern: RegExp): string {
+  return text.replace(pattern, " ").replace(/\s+/g, " ").trim();
+}
+
+function addInterpretationOnce(
+  interpretations: InterpretedChip[],
+  next: InterpretedChip,
+): void {
+  if (!interpretations.some((item) => item.key === next.key)) {
+    interpretations.push(next);
+  }
+}
+
 // ─── buildSearchPlan ──────────────────────────────────────────────────────────
 
 export function buildSearchPlan(query: string): SearchPlan {
@@ -145,51 +225,87 @@ export function buildSearchPlan(query: string): SearchPlan {
   }
 
   // ── Temporal ──────────────────────────────────────────────────────────────
-  if (RE_TODAY.test(raw)) {
+  if (RE_TONIGHT.test(raw)) {
+    filters.dateRange = "today";
+    filters.timeOfDay = "evening";
+    interpretations.push({ key: "dateRange:today", label: "Today" });
+    interpretations.push({ key: "timeOfDay:evening", label: "Evening" });
+    cleaned = stripIntent(cleaned, RE_TONIGHT);
+  } else if (RE_TODAY.test(raw)) {
     filters.dateRange = "today";
     interpretations.push({ key: "dateRange:today", label: "Today" });
-    cleaned = cleaned.replace(RE_TODAY, "").trim();
+    cleaned = stripIntent(cleaned, RE_TODAY);
   } else if (RE_TOMORROW.test(raw)) {
     filters.dateRange = "tomorrow";
     interpretations.push({ key: "dateRange:tomorrow", label: "Tomorrow" });
-    cleaned = cleaned.replace(RE_TOMORROW, "").trim();
+    cleaned = stripIntent(cleaned, RE_TOMORROW);
+  } else if (RE_WEEKEND.test(raw)) {
+    filters.dateRange = "week";
+    filters.weekend = true;
+    interpretations.push({ key: "dateRange:week", label: "This Week" });
+    interpretations.push({ key: "weekend:true", label: "This Weekend" });
+    cleaned = stripIntent(cleaned, RE_WEEKEND);
   } else if (RE_WEEK.test(raw)) {
     filters.dateRange = "week";
     interpretations.push({ key: "dateRange:week", label: "This Week" });
-    cleaned = cleaned.replace(RE_WEEK, "").trim();
+    cleaned = stripIntent(cleaned, RE_WEEK);
   } else if (RE_UPCOMING.test(raw)) {
     filters.dateRange = "upcoming";
     interpretations.push({ key: "dateRange:upcoming", label: "Upcoming" });
-    cleaned = cleaned.replace(RE_UPCOMING, "").trim();
+    cleaned = stripIntent(cleaned, RE_UPCOMING);
   }
 
   // ── Time of day ───────────────────────────────────────────────────────────
-  if (!filters.dateRange && RE_MORNING.test(raw)) {
+  if (RE_MORNING.test(raw)) {
     filters.timeOfDay = "morning";
-    interpretations.push({ key: "timeOfDay:morning", label: "Morning" });
+    addInterpretationOnce(interpretations, {
+      key: "timeOfDay:morning",
+      label: "Morning",
+    });
+    cleaned = stripIntent(cleaned, RE_MORNING);
   } else if (RE_AFTERNOON.test(raw)) {
     filters.timeOfDay = "afternoon";
-    interpretations.push({ key: "timeOfDay:afternoon", label: "Afternoon" });
+    addInterpretationOnce(interpretations, {
+      key: "timeOfDay:afternoon",
+      label: "Afternoon",
+    });
+    cleaned = stripIntent(cleaned, RE_AFTERNOON);
   } else if (RE_EVENING.test(raw)) {
     filters.timeOfDay = "evening";
-    interpretations.push({ key: "timeOfDay:evening", label: "Evening" });
+    addInterpretationOnce(interpretations, {
+      key: "timeOfDay:evening",
+      label: "Evening",
+    });
+    cleaned = stripIntent(cleaned, RE_EVENING);
   }
 
   // ── Modality ──────────────────────────────────────────────────────────────
   if (RE_ONLINE.test(raw)) {
     filters.modality = "online";
     interpretations.push({ key: "modality:online", label: "Online" });
-    cleaned = cleaned.replace(RE_ONLINE, "").trim();
+    cleaned = stripIntent(cleaned, RE_ONLINE);
   } else if (RE_INPERSON.test(raw)) {
     filters.modality = "in-person";
     interpretations.push({ key: "modality:in-person", label: "In Person" });
-    cleaned = cleaned.replace(RE_INPERSON, "").trim();
+    cleaned = stripIntent(cleaned, RE_INPERSON);
   }
 
   // ── Free ──────────────────────────────────────────────────────────────────
   if (RE_FREE.test(raw)) {
     filters.free = true;
     interpretations.push({ key: "free:true", label: "Free" });
+  } else if (RE_CONTEXTUAL_FREE.test(raw)) {
+    cleaned = stripIntent(cleaned, /\bfree\b/i);
+  }
+
+  // ── Source ────────────────────────────────────────────────────────────────
+  for (const [source, pattern, label] of SOURCE_PATTERNS) {
+    if (pattern.test(raw)) {
+      filters.source = source;
+      interpretations.push({ key: `source:${source}`, label });
+      cleaned = stripIntent(cleaned, pattern);
+      break;
+    }
   }
 
   // ── Category ─────────────────────────────────────────────────────────────
@@ -201,9 +317,11 @@ export function buildSearchPlan(query: string): SearchPlan {
     }
   }
 
+  if (RE_CAL_GAMES.test(raw)) {
+    cleaned = stripIntent(cleaned, RE_CAL_GAMES);
+  }
+
   // ── Campus area ───────────────────────────────────────────────────────────
-  // (detection kept for future use, but chip intentionally not shown — filter
-  //  is not yet applied in applyPoolFilters, so showing a chip would be misleading)
   for (const [area, pattern] of AREA_PATTERNS) {
     if (pattern.test(raw)) {
       filters.campusArea = area;
@@ -214,7 +332,7 @@ export function buildSearchPlan(query: string): SearchPlan {
             ? "Southside"
             : "Downtown";
       interpretations.push({ key: `campusArea:${area}`, label });
-      cleaned = cleaned.replace(pattern, "").trim();
+      cleaned = stripIntent(cleaned, pattern);
       break;
     }
   }
@@ -304,6 +422,42 @@ function parseHour(timeStr: string): number | null {
   return h;
 }
 
+function currentWeekendKeys(): Set<string> {
+  const todayKey = getCurrentPacificDateKey();
+  const [, , day] = todayKey.split("-").map(Number);
+  const date = new Date(`${todayKey}T00:00:00Z`);
+  const weekday = date.getUTCDay();
+  const saturdayOffset = weekday === 0 ? -1 : (6 - weekday + 7) % 7;
+  const saturday = addDaysToDateKey(todayKey, saturdayOffset);
+  const sunday = addDaysToDateKey(saturday, 1);
+
+  if (!day) return new Set();
+  return new Set([saturday, sunday]);
+}
+
+function tokenFrequencyMultiplier(token: string, index: SearchIndex): number {
+  const positions = new Set<number>();
+  for (const field of [index.t, index.g, index.o, index.l, index.d]) {
+    for (const pos of field[token] ?? []) positions.add(pos);
+  }
+
+  const ratio = positions.size / Math.max(index.eventCount, 1);
+  if (ratio > 0.3) return 0.2;
+  if (ratio > 0.15) return 0.4;
+  if (ratio > 0.08) return 0.65;
+  if (ratio < 0.01) return 1.15;
+  return 1;
+}
+
+function requiredCoreMatches(plan: SearchPlan): number {
+  const coreCount = new Set(plan.keywords).size;
+  if (coreCount <= 1) return coreCount;
+  if (hasAiSemanticIntent(plan) && !plan.keywords.includes("talk")) {
+    return 1;
+  }
+  return Math.min(2, coreCount);
+}
+
 function scoreEvent(
   pos: number,
   plan: SearchPlan,
@@ -315,7 +469,9 @@ function scoreEvent(
 
   let score = 0;
   let matched = 0;
+  const coreMatched = new Set<string>();
   const titleLower = ev.title.toLowerCase();
+  const aiSemanticIntent = hasAiSemanticIntent(plan);
 
   // Exact raw phrase in title
   if (plan.raw && titleLower.includes(plan.raw.toLowerCase())) {
@@ -337,31 +493,42 @@ function scoreEvent(
   // Field-weighted token scoring
   for (const qt of plan.expandedTokens) {
     const isCore = plan.keywords.includes(qt);
-    const mult = isCore ? W.coreMultiplier : W.synMultiplier;
+    const mult =
+      (isCore ? W.coreMultiplier : W.synMultiplier) *
+      tokenFrequencyMultiplier(qt, index);
+
+    const markMatched = () => {
+      matched++;
+      if (isCore) coreMatched.add(qt);
+      if (aiSemanticIntent && AI_SEMANTIC_TOKENS.has(qt)) {
+        coreMatched.add("__ai_semantic__");
+      }
+    };
 
     if (index.t[qt]?.includes(pos)) {
       score += W.title * mult;
-      matched++;
+      markMatched();
     }
     if (index.g[qt]?.includes(pos)) {
       score += W.tag * mult;
-      matched++;
+      markMatched();
     }
     if (index.o[qt]?.includes(pos)) {
       score += W.org * mult;
-      matched++;
+      markMatched();
     }
     if (index.l[qt]?.includes(pos)) {
       score += W.location * mult;
-      matched++;
+      markMatched();
     }
     if (index.d[qt]?.includes(pos)) {
       score += W.desc * mult;
-      matched++;
+      markMatched();
     }
   }
 
   if (matched === 0) return 0;
+  if (coreMatched.size < requiredCoreMatches(plan)) return 0;
 
   // Category boost
   if (plan.filters.category) {
@@ -383,7 +550,20 @@ function applyPoolFilters(
   dismissedKeys: Set<string>,
 ): CalEvent[] {
   const { filters } = plan;
+  const weekendKeys =
+    filters.weekend && !dismissedKeys.has("weekend:true")
+      ? currentWeekendKeys()
+      : null;
+
   return events.filter((ev) => {
+    if (
+      filters.source &&
+      !dismissedKeys.has(`source:${filters.source}`) &&
+      ev.source !== filters.source
+    ) {
+      return false;
+    }
+
     if (
       filters.category &&
       !dismissedKeys.has(`category:${filters.category}`)
@@ -407,24 +587,30 @@ function applyPoolFilters(
         return false;
       }
     }
+
+    if (weekendKeys) {
+      const eventDateKey = getPacificDateKey(ev.date);
+      if (!eventDateKey || !weekendKeys.has(eventDateKey)) {
+        return false;
+      }
+    }
+
     // Time-of-day: soft hard filter — only when explicitly detected
     if (
       filters.timeOfDay &&
-      !dismissedKeys.has(`timeOfDay:${filters.timeOfDay}`) &&
-      ev.time
+      !dismissedKeys.has(`timeOfDay:${filters.timeOfDay}`)
     ) {
-      const hour = parseHour(ev.time);
-      if (hour !== null) {
-        if (filters.timeOfDay === "morning" && hour >= 12) return false;
-        if (filters.timeOfDay === "afternoon" && (hour < 12 || hour >= 17))
-          return false;
-        if (filters.timeOfDay === "evening" && hour < 17) return false;
-      }
+      const hour = ev.time ? parseHour(ev.time) : null;
+      if (hour === null) return false;
+      if (filters.timeOfDay === "morning" && hour >= 12) return false;
+      if (filters.timeOfDay === "afternoon" && (hour < 12 || hour >= 17))
+        return false;
+      if (filters.timeOfDay === "evening" && hour < 17) return false;
     }
     // Free events
     if (filters.free && !dismissedKeys.has("free:true")) {
       const text = `${ev.title} ${ev.description ?? ""}`.toLowerCase();
-      if (!/\bfree\b/.test(text)) return false;
+      if (!RE_FREE.test(text)) return false;
     }
     // Modality
     if (
@@ -505,8 +691,10 @@ function runScoring(
     : new Set<string>();
 
   const fuzzyTokens = plan.keywords.filter((t) => !tokensWithHits.has(t));
+  const hasMissingStrictToken =
+    Boolean(index) && fuzzyTokens.some((t) => STRICT_FUZZY_TOKENS.has(t));
 
-  if (fuzzyTokens.length > 0 || scored.length === 0) {
+  if (!hasMissingStrictToken && fuzzyTokens.length > 0) {
     const fuzzyPool =
       scored.length === 0 ? pool : pool.filter((e) => !scoredIds.has(e.id));
     const fuse = new Fuse(fuzzyPool, {
@@ -555,7 +743,9 @@ function withDismissedInterpretations(
   for (const key of dismissedKeys) {
     const [field] = key.split(":");
     if (field === "dateRange") delete filters.dateRange;
+    if (field === "weekend") delete filters.weekend;
     if (field === "category") delete filters.category;
+    if (field === "source") delete filters.source;
     if (field === "campusArea") delete filters.campusArea;
     if (field === "timeOfDay") delete filters.timeOfDay;
     if (field === "free") delete filters.free;
@@ -578,7 +768,12 @@ export function searchEvents(
   dismissedKeys: Set<string> = new Set(),
 ): SearchOutput {
   if (!query.trim()) {
-    return { results: events, plan: buildSearchPlan(""), fallbackUsed: false };
+    return {
+      results: events,
+      plan: buildSearchPlan(""),
+      fallbackUsed: false,
+      fallbackMessage: undefined,
+    };
   }
 
   const plan = withDismissedInterpretations(
@@ -612,7 +807,7 @@ export function searchEvents(
       };
       const fallbackPool = applyPoolFilters(events, relaxedPlan, dismissedKeys);
       const fallbackResults = runScoring(fallbackPool, relaxedPlan, index);
-      if (fallbackResults.length >= 3) {
+      if (fallbackResults.length > 0) {
         const rangeLabel =
           plan.filters.dateRange === "today"
             ? "today"

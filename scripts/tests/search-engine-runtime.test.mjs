@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { buildSearchPlan, searchEvents } from "../../utils/searchEngine.ts";
+import {
+  buildSearchPlan,
+  searchEvents,
+  tokenize,
+} from "../../utils/searchEngine.ts";
 
 const SYNTHETIC_EVENTS = [
   {
@@ -113,6 +117,102 @@ const SYNTHETIC_EVENTS = [
     url: "https://example.com/ai-arts",
     source: "bampfa",
   },
+  {
+    id: "evt-morning",
+    title: "Morning Study Session",
+    organizer: "Student Union",
+    date: "2026-04-22",
+    time: "9:00 AM",
+    location: "MLK Student Union",
+    description: "Morning study time.",
+    tags: ["Student Life"],
+    url: "https://example.com/morning",
+    source: "callink",
+  },
+  {
+    id: "evt-evening",
+    title: "Evening Music Concert",
+    organizer: "Music Department",
+    date: "2026-04-22",
+    time: "7:00 PM",
+    location: "Hertz Hall",
+    description: "An evening concert.",
+    tags: ["Arts"],
+    url: "https://example.com/evening",
+    source: "livewhale",
+  },
+  {
+    id: "evt-all-day",
+    title: "All Day Exhibit",
+    organizer: "Library",
+    date: "2026-04-22",
+    time: "All day",
+    location: "Doe Library",
+    description: "An all-day exhibit.",
+    tags: ["Arts"],
+    url: "https://example.com/all-day",
+    source: "livewhale",
+  },
+  {
+    id: "evt-baseball",
+    title: "California Baseball vs Stanford",
+    organizer: "Cal Athletics",
+    date: "2026-04-24",
+    time: "6:00 PM",
+    location: "Evans Diamond",
+    description: "A Cal Bears baseball game.",
+    tags: ["Sports"],
+    url: "https://example.com/baseball",
+    source: "calbears",
+  },
+  {
+    id: "evt-library",
+    title: "Bancroft Library Exhibit",
+    organizer: "UC Berkeley Library",
+    date: "2026-04-24",
+    time: "All day",
+    location: "Bancroft Library",
+    description: "A library exhibition with archival material.",
+    tags: ["Arts"],
+    url: "https://example.com/library",
+    source: "livewhale",
+  },
+  {
+    id: "evt-moffitt",
+    title: "Moffitt Study Night",
+    organizer: "Student Union",
+    date: "2026-04-24",
+    time: "8:00 PM",
+    location: "Moffitt Library",
+    description: "Study support in Moffitt.",
+    tags: ["Student Life"],
+    url: "https://example.com/moffitt",
+    source: "callink",
+  },
+  {
+    id: "evt-law",
+    title: "Berkeley Law Certificate Ceremony",
+    organizer: "Berkeley Law",
+    date: "2026-04-24",
+    time: "2:00 PM",
+    location: "Law Building",
+    description: "A law school ceremony.",
+    tags: ["Academic"],
+    url: "https://example.com/law",
+    source: "berkeley_law",
+  },
+  {
+    id: "evt-speech",
+    title: "Free Speech and Public Debate",
+    organizer: "Political Science",
+    date: "2026-04-24",
+    time: "5:00 PM",
+    location: "Dwinelle Hall",
+    description: "A lecture about speech rights.",
+    tags: ["Academic"],
+    url: "https://example.com/speech",
+    source: "livewhale",
+  },
 ];
 
 test("structured-only temporal queries do not turn into text keywords", () => {
@@ -123,6 +223,15 @@ test("structured-only temporal queries do not turn into text keywords", () => {
   assert.equal(tomorrowPlan.filters.dateRange, "tomorrow");
   assert.deepEqual(todayPlan.keywords, []);
   assert.deepEqual(tomorrowPlan.keywords, []);
+});
+
+test("tokenization normalizes accents and hyphenated terms", () => {
+  assert.deepEqual(tokenize("Müller COVID-19 research"), [
+    "muller",
+    "covid",
+    "19",
+    "research",
+  ]);
 });
 
 test("pure temporal queries return the full pool for later date filtering", () => {
@@ -304,4 +413,79 @@ test('natural-language query "founder talks tomorrow" preserves tomorrow intent 
   assert.equal(output.plan.filters.dateRange, "tomorrow");
   assert.equal(output.plan.filters.category, "Entrepreneurship");
   assert.equal(output.results[0]?.id, "evt-founder");
+});
+
+test('"tonight" applies today plus evening intent and excludes all-day events', () => {
+  const output = searchEvents(SYNTHETIC_EVENTS, "tonight", null);
+
+  assert.equal(output.plan.filters.dateRange, "today");
+  assert.equal(output.plan.filters.timeOfDay, "evening");
+  assert.ok(output.results.some((event) => event.id === "evt-evening"));
+  assert.ok(!output.results.some((event) => event.id === "evt-morning"));
+  assert.ok(!output.results.some((event) => event.id === "evt-all-day"));
+});
+
+test('"today morning" preserves date intent and strips time words from keywords', () => {
+  const output = searchEvents(SYNTHETIC_EVENTS, "today morning", null);
+
+  assert.equal(output.plan.filters.dateRange, "today");
+  assert.equal(output.plan.filters.timeOfDay, "morning");
+  assert.deepEqual(output.plan.keywords, []);
+  assert.ok(output.results.some((event) => event.id === "evt-morning"));
+  assert.ok(!output.results.some((event) => event.id === "evt-evening"));
+});
+
+test('"cal games" is interpreted as sports without searching for generic game text', () => {
+  const output = searchEvents(SYNTHETIC_EVENTS, "cal games", null);
+
+  assert.equal(output.plan.filters.category, "Sports");
+  assert.deepEqual(output.plan.keywords, []);
+  assert.deepEqual(
+    output.results.map((event) => event.id),
+    ["evt-baseball"],
+  );
+});
+
+test("specific sport searches do not fuzzy-substitute unrelated sports", () => {
+  const output = searchEvents(SYNTHETIC_EVENTS, "basketball", {
+    ids: SYNTHETIC_EVENTS.map((event) => event.id),
+    t: { baseball: [12] },
+    g: { sport: [12] },
+    o: {},
+    d: {},
+    l: {},
+    buildAt: "test",
+    eventCount: SYNTHETIC_EVENTS.length,
+  });
+
+  assert.equal(output.plan.filters.category, "Sports");
+  assert.deepEqual(output.results, []);
+});
+
+test("venue aliases do not broaden Moffitt into every library event", () => {
+  const output = searchEvents(SYNTHETIC_EVENTS, "moffitt", null);
+
+  assert.deepEqual(
+    output.results.map((event) => event.id),
+    ["evt-moffitt"],
+  );
+});
+
+test("source names act as source intent instead of generic text", () => {
+  const output = searchEvents(SYNTHETIC_EVENTS, "berkeley law", null);
+
+  assert.equal(output.plan.filters.source, "berkeley_law");
+  assert.deepEqual(
+    output.results.map((event) => event.id),
+    ["evt-law"],
+  );
+});
+
+test('"free speech" searches speech, not free admission', () => {
+  const output = searchEvents(SYNTHETIC_EVENTS, "free speech", null);
+
+  assert.equal(output.plan.filters.free, undefined);
+  assert.deepEqual(output.plan.keywords, ["speech"]);
+  assert.equal(output.results[0]?.id, "evt-speech");
+  assert.ok(!output.results.some((event) => event.id === "evt-bampfa"));
 });

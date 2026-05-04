@@ -269,6 +269,103 @@ describe("App UI regressions", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("applies tonight as an evening search instead of showing all-day events", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "morning",
+        title: "Morning Seminar",
+        time: "9:00 AM",
+        description: "A morning event.",
+      }),
+      makeEvent({
+        id: "all-day",
+        title: "All Day Exhibit",
+        time: "All day",
+        tags: ["Arts"],
+        description: "An all-day exhibit.",
+      }),
+      makeEvent({
+        id: "evening",
+        title: "Evening Concert",
+        time: "7:00 PM",
+        tags: ["Arts"],
+        description: "An evening concert.",
+      }),
+    ]);
+
+    window.history.replaceState({}, "", "/?q=tonight");
+
+    render(<App />);
+
+    expect(screen.getByText("Evening Concert")).toBeInTheDocument();
+    expect(screen.queryByText("Morning Seminar")).not.toBeInTheDocument();
+    expect(screen.queryByText("All Day Exhibit")).not.toBeInTheDocument();
+  });
+
+  it("shows a clear-category empty state when search intent conflicts with the UI category", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "arts",
+        title: "Arts Reception",
+        tags: ["Arts"],
+        description: "An arts event.",
+      }),
+      makeEvent({
+        id: "baseball",
+        title: "California Baseball vs Stanford",
+        tags: ["Sports"],
+        description: "A sports event.",
+      }),
+    ]);
+
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=basketball&category=Arts&date=upcoming",
+    );
+
+    render(<App />);
+
+    expect(screen.getByText("No “basketball” in Arts.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Clear “Arts”" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("California Baseball vs Stanford"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("interprets source names as source filters", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "law-source",
+        title: "Law Certificate Ceremony",
+        source: "berkeley_law",
+        tags: ["Academic"],
+        description: "A Berkeley Law ceremony.",
+      }),
+      makeEvent({
+        id: "law-generic",
+        title: "Berkeley Law and Finance Talk",
+        source: "livewhale",
+        tags: ["Academic"],
+        description: "A generic campus event mentioning Berkeley Law.",
+      }),
+    ]);
+
+    window.history.replaceState({}, "", "/?q=berkeley%20law&date=upcoming");
+
+    render(<App />);
+
+    expect(
+      screen.getByRole("button", { name: /remove berkeley law filter/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Law Certificate Ceremony")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Berkeley Law and Finance Talk"),
+    ).not.toBeInTheDocument();
+  });
+
   it("lets users dismiss interpreted campus-area chips and broadens results", async () => {
     const user = userEvent.setup();
 

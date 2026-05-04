@@ -1,4 +1,4 @@
-import { DEFAULT_FILTERS } from "../appConfig";
+import { DEFAULT_FILTERS, SOURCE_LABELS } from "../appConfig";
 import { SearchFilters } from "../types";
 
 export interface EmptyStateConfig {
@@ -14,6 +14,7 @@ export interface EmptyStateActions {
   resetAll: () => void;
   clearSearch: () => void;
   clearCategory: () => void;
+  clearSource: () => void;
   showWeek: () => void;
   showUpcoming: () => void;
 }
@@ -60,6 +61,8 @@ export function buildEmptyStateConfig({
   const query = filters.searchQuery.trim();
   const hasSearch = Boolean(query);
   const hasCategory = filters.category !== DEFAULT_FILTERS.category;
+  const hasSource = filters.source !== DEFAULT_FILTERS.source;
+  const sourceLabel = SOURCE_LABELS[filters.source] || filters.source;
 
   if (hasSearch && upcomingEventsCount > 0) {
     const dateLabel =
@@ -85,12 +88,34 @@ export function buildEmptyStateConfig({
     };
   }
 
+  if (hasSearch && hasCategory && hasSource) {
+    return {
+      title: `No “${query}” matches these filters.`,
+      description: `Try clearing ${filters.category} and ${sourceLabel} to search the full campus feed.`,
+      primaryLabel: "Clear all filters",
+      primaryAction: actions.resetAll,
+      secondaryLabel: "Clear search",
+      secondaryAction: actions.clearSearch,
+    };
+  }
+
   if (hasSearch && hasCategory) {
     return {
       title: `No “${query}” in ${filters.category}.`,
       description: `Try removing the ${filters.category} filter — there may be matches across other categories.`,
       primaryLabel: `Clear “${filters.category}”`,
       primaryAction: actions.clearCategory,
+      secondaryLabel: "Clear search",
+      secondaryAction: actions.clearSearch,
+    };
+  }
+
+  if (hasSearch && hasSource) {
+    return {
+      title: `No “${query}” from ${sourceLabel}.`,
+      description: `Try removing the ${sourceLabel} source filter — there may be matches from other feeds.`,
+      primaryLabel: `Clear “${sourceLabel}”`,
+      primaryAction: actions.clearSource,
       secondaryLabel: "Clear search",
       secondaryAction: actions.clearSearch,
     };

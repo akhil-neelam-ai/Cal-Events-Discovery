@@ -370,6 +370,82 @@ test("mixed temporal+keyword query preserves keyword tokens", () => {
   );
 });
 
+test('real search: "tonight" is evening-only, not all-day or morning', () => {
+  const output = searchEvents(events, "tonight", searchIndex);
+
+  assert.equal(output.plan.filters.dateRange, "today");
+  assert.equal(output.plan.filters.timeOfDay, "evening");
+  assert.ok(output.results.length > 0, '"tonight" should find evening events');
+  assert.ok(
+    output.results.every((event) => {
+      const time = String(event.time ?? "").toLowerCase();
+      return (
+        !time.includes("all day") && !/\b(9|10|11):\d\d\s*am\b/i.test(time)
+      );
+    }),
+    '"tonight" should not include all-day or morning events',
+  );
+});
+
+test('real search: "cal games" returns sports-only results', () => {
+  const output = searchEvents(events, "cal games", searchIndex);
+
+  assert.equal(output.plan.filters.category, "Sports");
+  assert.ok(output.results.length > 0, '"cal games" should find sports events');
+  assert.ok(
+    output.results.slice(0, 20).every((event) => event.tags?.[0] === "Sports"),
+    '"cal games" should not rank non-sports events',
+  );
+});
+
+test('real search: "basketball" does not substitute baseball', () => {
+  const output = searchEvents(events, "basketball", searchIndex);
+  const bad = output.results.filter((event) =>
+    /baseball/i.test(event.title ?? ""),
+  );
+
+  assert.equal(bad.length, 0, '"basketball" should not return baseball games');
+});
+
+test('real search: "moffitt" does not broaden to generic library exhibits', () => {
+  const output = searchEvents(events, "moffitt", searchIndex);
+  const bad = output.results.filter((event) =>
+    /bancroft library|doe library/i.test(
+      `${event.title ?? ""} ${event.location ?? ""}`,
+    ),
+  );
+
+  assert.equal(
+    bad.length,
+    0,
+    '"moffitt" should not return generic library events',
+  );
+});
+
+test('real search: "berkeley law" is scoped to the Berkeley Law source', () => {
+  const output = searchEvents(events, "berkeley law", searchIndex);
+
+  assert.equal(output.plan.filters.source, "berkeley_law");
+  assert.ok(output.results.length > 0, '"berkeley law" should find law events');
+  assert.ok(
+    output.results.every((event) => event.source === "berkeley_law"),
+    '"berkeley law" should not return generic Berkeley events',
+  );
+});
+
+test('real search: "career fair" does not return Free First Thursday', () => {
+  const output = searchEvents(events, "career fair", searchIndex);
+  const bad = output.results.filter((event) =>
+    /free first thursday/i.test(event.title ?? ""),
+  );
+
+  assert.equal(
+    bad.length,
+    0,
+    '"career fair" should not fuzzy-match free events',
+  );
+});
+
 test("no canceled or postponed events in published feed", () => {
   const canceledPattern = /^(canceled|cancelled|postponed|rescheduled)[:\s]/i;
   const bad = events.filter((e) => canceledPattern.test(e.title ?? ""));

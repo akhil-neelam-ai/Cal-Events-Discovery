@@ -116,6 +116,11 @@ export default function App() {
     setSelectedEventId(null);
   }, []);
 
+  const clearSource = useCallback(() => {
+    setFilters((prev) => ({ ...prev, source: DEFAULT_FILTERS.source }));
+    setSelectedEventId(null);
+  }, []);
+
   const showWeek = useCallback(() => {
     setFilters((prev) => ({ ...prev, dateRange: "week" }));
     setSelectedEventId(null);
@@ -133,10 +138,11 @@ export default function App() {
       resetAll,
       clearSearch,
       clearCategory,
+      clearSource,
       showWeek,
       showUpcoming,
     }),
-    [resetAll, clearSearch, clearCategory, showWeek, showUpcoming],
+    [resetAll, clearSearch, clearCategory, clearSource, showWeek, showUpcoming],
   );
 
   const {
