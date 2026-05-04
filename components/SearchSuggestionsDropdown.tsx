@@ -1,4 +1,18 @@
+import type { MouseEvent, PointerEvent } from "react";
+
 import { POPULAR_SEARCHES } from "../appConfig";
+
+function suggestionHandlers(query: string, onSelect: (query: string) => void) {
+  return {
+    onPointerDown: (event: PointerEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      onSelect(query);
+    },
+    onClick: (event: MouseEvent<HTMLButtonElement>) => {
+      if (event.detail === 0) onSelect(query);
+    },
+  };
+}
 
 export function SearchSuggestionsDropdown({
   recents,
@@ -33,7 +47,7 @@ export function SearchSuggestionsDropdown({
               <button
                 key={query}
                 type="button"
-                onClick={() => onSelect(query)}
+                {...suggestionHandlers(query, onSelect)}
                 className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm text-slate-700 tap-highlight hover:bg-slate-50 active:bg-slate-100"
               >
                 <svg
@@ -65,7 +79,7 @@ export function SearchSuggestionsDropdown({
               <button
                 key={query}
                 type="button"
-                onClick={() => onSelect(query)}
+                {...suggestionHandlers(query, onSelect)}
                 className="select-none rounded-full border border-berkeley-gold/30 bg-berkeley-gold/10 px-3 py-1 text-xs text-berkeley-blue tap-highlight hover:bg-berkeley-gold/20 active:bg-berkeley-gold/30"
               >
                 {query}

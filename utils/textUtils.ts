@@ -113,6 +113,10 @@ const STOP_WORDS = new Set([
   "so",
   "if",
   "us",
+  "uc",
+  "berkeley",
+  "campus",
+  "university",
 ]);
 
 /**
@@ -165,10 +169,13 @@ export function stem(word: string): string {
 export function tokenize(text: string): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
-  for (const raw of text
+  const normalized = text
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .split(/\s+/)) {
+    .replace(/[-–—]/g, " ");
+
+  for (const raw of normalized.replace(/[^\p{L}\p{N}\s]/gu, " ").split(/\s+/)) {
     if (raw.length < 2 || STOP_WORDS.has(raw)) continue;
     const s = stem(raw);
     if (s.length >= 2 && !seen.has(s)) {
@@ -198,7 +205,8 @@ export const DOMAIN_SYNONYMS: Record<string, string[]> = {
   seminar: ["talk", "lecture", "speaker", "panel"],
   workshop: ["class", "training", "hands-on", "session"],
   // Career / Student life
-  career: ["job", "recruiting", "internship", "networking", "professional"],
+  "career fair": ["job fair", "recruiting fair", "internship fair"],
+  career: ["job", "recruiting", "internship", "networking"],
   networking: ["career", "job", "professional", "mixer", "reception"],
   // Food
   "free food": [
@@ -213,6 +221,7 @@ export const DOMAIN_SYNONYMS: Record<string, string[]> = {
   fun: ["social", "performance", "game", "festival", "party", "arts"],
   interesting: ["talk", "lecture", "workshop", "exhibition", "seminar"],
   code: ["programming", "hackathon", "engineering", "software", "cs"],
+  coding: ["programming", "hackathon", "engineering", "software", "cs"],
   ai: ["artificial intelligence", "machine learning", "language model", "llm"],
   "artificial intelligence": [
     "ai",
@@ -237,9 +246,9 @@ export const DOMAIN_SYNONYMS: Record<string, string[]> = {
 // and in searchEngine.ts to expand queries mentioning these venues.
 
 export const BERKELEY_VENUE_ALIASES: Record<string, string> = {
-  bampfa: "arts film museum cinema gallery",
-  moffitt: "library study moffitt",
-  "doe library": "library research doe",
+  bampfa: "bampfa film museum cinema",
+  moffitt: "moffitt",
+  "doe library": "doe library",
   mlk: "student union meeting",
   rsf: "gym fitness recreation sports wellness",
   haas: "business school management haas",
@@ -247,6 +256,9 @@ export const BERKELEY_VENUE_ALIASES: Record<string, string> = {
   "memorial glade": "outdoor event lawn",
   soda: "computer science engineering cs",
   "cory hall": "electrical engineering eecs",
+  eecs: "electrical engineering computer science",
+  cdss: "data science computing statistics",
+  "graduate division": "graduate student academic",
   "stanley hall": "biology bioengineering health",
   "mulford hall": "environmental science biology",
   dwinelle: "humanities languages",
