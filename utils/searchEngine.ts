@@ -51,7 +51,7 @@ const RE_EVENING = /\b(evening|after work|after 5|nighttime)\b/i;
 
 const RE_FREE = /\bfree\b(?!\s*(?:throw|agent|range|radical|speech))/i;
 const RE_ONLINE = /\b(online|virtual|zoom|remote|webinar|livestream)\b/i;
-const RE_INPERSON = /\b(in.?person|on campus|in.?person)\b/i;
+const RE_INPERSON = /\b(in.?person|on campus)\b/i;
 
 // Category patterns — first match wins
 const CATEGORY_PATTERNS: Array<[string, RegExp]> = [
@@ -284,7 +284,9 @@ const W = {
 
 function recencyBonus(dateStr: string): number {
   try {
-    const ms = new Date(dateStr).getTime() - Date.now();
+    const time = new Date(dateStr).getTime();
+    if (Number.isNaN(time)) return 0;
+    const ms = time - Date.now();
     const days = ms / 86_400_000;
     if (days < 0 || days > 30) return 0;
     return Math.round(W.recency * (1 - days / 30));
@@ -313,16 +315,20 @@ function scoreEvent(
 
   let score = 0;
   let matched = 0;
+  const titleLower = ev.title.toLowerCase();
 
   // Exact raw phrase in title
-  if (plan.raw && ev.title.toLowerCase().includes(plan.raw.toLowerCase())) {
+  if (plan.raw && titleLower.includes(plan.raw.toLowerCase())) {
     score += W.titlePhrase;
     matched++;
   }
   // Known phrase matches
+  const phraseText =
+    plan.phrases.length > 0
+      ? `${ev.title} ${ev.description ?? ""}`.toLowerCase()
+      : "";
   for (const phrase of plan.phrases) {
-    const text = `${ev.title} ${ev.description ?? ""}`.toLowerCase();
-    if (text.includes(phrase)) {
+    if (phraseText.includes(phrase)) {
       score += W.phraseMatch;
       matched++;
     }
@@ -540,6 +546,31 @@ export interface SearchOutput {
   fallbackMessage?: string;
 }
 
+function withDismissedInterpretations(
+  plan: SearchPlan,
+  dismissedKeys: Set<string>,
+): SearchPlan {
+  const filters: SearchFilter = { ...plan.filters };
+
+  for (const key of dismissedKeys) {
+    const [field] = key.split(":");
+    if (field === "dateRange") delete filters.dateRange;
+    if (field === "category") delete filters.category;
+    if (field === "campusArea") delete filters.campusArea;
+    if (field === "timeOfDay") delete filters.timeOfDay;
+    if (field === "free") delete filters.free;
+    if (field === "modality") delete filters.modality;
+  }
+
+  return {
+    ...plan,
+    filters,
+    interpretations: plan.interpretations.filter(
+      (i) => !dismissedKeys.has(i.key),
+    ),
+  };
+}
+
 export function searchEvents(
   events: CalEvent[],
   query: string,
@@ -550,20 +581,9 @@ export function searchEvents(
     return { results: events, plan: buildSearchPlan(""), fallbackUsed: false };
   }
 
-  const plan = buildSearchPlan(query);
-
-  // Remove dismissed interpretations from plan filters
-  for (const key of dismissedKeys) {
-    const [field] = key.split(":");
-    if (field === "dateRange") delete plan.filters.dateRange;
-    if (field === "category") delete plan.filters.category;
-    if (field === "campusArea") delete plan.filters.campusArea;
-    if (field === "timeOfDay") delete plan.filters.timeOfDay;
-    if (field === "free") delete plan.filters.free;
-    if (field === "modality") delete plan.filters.modality;
-  }
-  plan.interpretations = plan.interpretations.filter(
-    (i) => !dismissedKeys.has(i.key),
+  const plan = withDismissedInterpretations(
+    buildSearchPlan(query),
+    dismissedKeys,
   );
 
   // Apply plan-level hard filters before relevance scoring.

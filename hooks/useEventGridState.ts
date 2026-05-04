@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { VISIBLE_EVENT_BATCH_SIZE } from "../appConfig";
 import { LoadingState } from "../types";
@@ -25,6 +25,7 @@ export function useEventGridState({
   const [visibleEventCount, setVisibleEventCount] = useState(
     VISIBLE_EVENT_BATCH_SIZE,
   );
+  const previousDateRangeRef = useRef(effectiveDateRange);
 
   useEffect(() => {
     if (
@@ -46,13 +47,20 @@ export function useEventGridState({
       setShouldAnimateCards(!prefersReducedMotion);
     });
 
+    return () => window.cancelAnimationFrame(frame);
+  }, [filteredEvents, filters, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (previousDateRangeRef.current === effectiveDateRange) {
+      return;
+    }
+
+    previousDateRangeRef.current = effectiveDateRange;
     window.scrollTo({
       top: 0,
       behavior: prefersReducedMotion ? "auto" : "smooth",
     });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, [effectiveDateRange, filters, prefersReducedMotion]);
+  }, [effectiveDateRange, prefersReducedMotion]);
 
   const showMoreEvents = useCallback(() => {
     setVisibleEventCount((count) => count + VISIBLE_EVENT_BATCH_SIZE);

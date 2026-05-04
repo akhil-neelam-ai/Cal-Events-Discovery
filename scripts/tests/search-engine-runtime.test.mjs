@@ -127,6 +127,11 @@ test("dismissing campus area removes the hard filter", () => {
   );
 
   assert.equal(output.plan.filters.campusArea, undefined);
+  assert.ok(
+    !output.plan.interpretations.some(
+      (chip) => chip.key === "campusArea:northside",
+    ),
+  );
   assert.ok(output.results.some((event) => event.id === "evt-south"));
 });
 
@@ -158,7 +163,46 @@ test("dismissing interpreted category removes the category hard filter", () => {
   );
 
   assert.equal(output.plan.filters.category, undefined);
+  assert.ok(
+    !output.plan.interpretations.some((chip) => chip.key === "category:Arts"),
+  );
   assert.ok(output.results.some((event) => event.id === "evt-academic-film"));
+});
+
+test("invalid event dates do not drop indexed text matches", () => {
+  const events = [
+    {
+      ...SYNTHETIC_EVENTS[0],
+      id: "evt-invalid-date",
+      title: "Quantum Seminar",
+      date: "not-a-real-date",
+      description: "Quantum research seminar.",
+    },
+    {
+      ...SYNTHETIC_EVENTS[0],
+      id: "evt-valid-date",
+      title: "Quantum Workshop",
+      date: new Date(Date.now() + 7 * 86_400_000).toISOString(),
+      description: "Quantum research workshop.",
+    },
+  ];
+  const index = {
+    ids: events.map((event) => event.id),
+    t: { quantum: [0, 1] },
+    g: {},
+    o: {},
+    d: {},
+    l: {},
+    buildAt: "test",
+    eventCount: events.length,
+  };
+
+  const output = searchEvents(events, "quantum", index);
+
+  assert.deepEqual(
+    output.results.map((event) => event.id),
+    ["evt-valid-date", "evt-invalid-date"],
+  );
 });
 
 test('natural-language query "free events near northside" applies free and campus-area filters', () => {
