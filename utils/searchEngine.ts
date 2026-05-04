@@ -59,8 +59,10 @@ const RE_EVENING =
   /\b(tonight|this evening|evening|after work|after 5|nighttime|night)\b/i;
 
 const RE_FREE =
-  /(?:\bfree\b(?!\s*(?:throw|agent|range|radical|speech))|\bcomplimentary\b|\bno[-\s]?charge\b|\bno[-\s]?cost\b|\$0\b)/i;
+  /(?:\bfree\s+(?:admission|entry|event|events|food|lunch|dinner|pizza|snacks|refreshments|ticket|tickets|screening|workshop|concert)\b|\bcomplimentary\b|\bno[-\s]?charge\b|\bno[-\s]?cost\b|\$0\b)/i;
 const RE_CONTEXTUAL_FREE = /\bfree\s+(?:throw|agent|range|radical|speech)\b/i;
+const RE_FREE_EVENT =
+  /(?:\bfree\b(?!\s*(?:throw|agent|range|radical|speech|will))|\bcomplimentary\b|\bno[-\s]?charge\b|\bno[-\s]?cost\b|\$0\b)/i;
 const RE_ONLINE = /\b(online|virtual|zoom|remote|webinar|livestream)\b/i;
 const RE_INPERSON = /\b(in.?person|on campus)\b/i;
 const RE_CAL_GAMES = /\b(cal games?|bears games?|cal bears games?)\b/i;
@@ -101,7 +103,7 @@ const SOURCE_PATTERNS: Array<[string, RegExp, string]> = [
   ],
   ["calbears", /\b(cal bears|cal athletics|calbears)\b/i, "Cal Bears"],
   ["cal_performances", /\b(cal performances)\b/i, "Cal Performances"],
-  ["callink", /\b(callink|cal link|student orgs?)\b/i, "CalLink"],
+  ["callink", /\b(callink|cal link)\b/i, "CalLink"],
   ["haas", /\b(haas|berkeley haas|business school)\b/i, "Berkeley Haas"],
   ["berkeley_law", /\b(berkeley law|law school|bclt)\b/i, "Berkeley Law"],
   ["simons", /\b(simons|simons institute)\b/i, "Simons Institute"],
@@ -201,6 +203,32 @@ function addInterpretationOnce(
   if (!interpretations.some((item) => item.key === next.key)) {
     interpretations.push(next);
   }
+}
+
+function expandKeywordTokens(keywords: string[], rawLower: string): string[] {
+  const expandedSet = new Set<string>(keywords);
+
+  // Multi-word synonyms (e.g. "free food")
+  for (const [phrase, syns] of Object.entries(DOMAIN_SYNONYMS)) {
+    if (phrase.includes(" ") && rawLower.includes(phrase)) {
+      for (const s of syns) tokenize(s).forEach((t) => expandedSet.add(t));
+    }
+  }
+  // Single-word synonyms
+  for (const kw of keywords) {
+    const syns = DOMAIN_SYNONYMS[kw];
+    if (syns) {
+      for (const s of syns) tokenize(s).forEach((t) => expandedSet.add(t));
+    }
+  }
+  // Berkeley venue alias expansions
+  for (const [alias, expansion] of Object.entries(BERKELEY_VENUE_ALIASES)) {
+    if (rawLower.includes(alias)) {
+      tokenize(expansion).forEach((t) => expandedSet.add(t));
+    }
+  }
+
+  return Array.from(expandedSet);
 }
 
 // ─── buildSearchPlan ──────────────────────────────────────────────────────────
@@ -348,30 +376,7 @@ export function buildSearchPlan(query: string): SearchPlan {
     cleaned || (interpretations.length === 0 ? raw : ""),
   );
 
-  // ── Synonym expansion ─────────────────────────────────────────────────────
-  const expandedSet = new Set<string>(keywords);
-
-  // Multi-word synonyms (e.g. "free food")
-  for (const [phrase, syns] of Object.entries(DOMAIN_SYNONYMS)) {
-    if (phrase.includes(" ") && rawLower.includes(phrase)) {
-      for (const s of syns) tokenize(s).forEach((t) => expandedSet.add(t));
-    }
-  }
-  // Single-word synonyms
-  for (const kw of keywords) {
-    const syns = DOMAIN_SYNONYMS[kw];
-    if (syns) {
-      for (const s of syns) tokenize(s).forEach((t) => expandedSet.add(t));
-    }
-  }
-  // Berkeley venue alias expansions
-  for (const [alias, expansion] of Object.entries(BERKELEY_VENUE_ALIASES)) {
-    if (rawLower.includes(alias)) {
-      tokenize(expansion).forEach((t) => expandedSet.add(t));
-    }
-  }
-
-  const expandedTokens = Array.from(expandedSet);
+  const expandedTokens = expandKeywordTokens(keywords, rawLower);
 
   return {
     raw,
@@ -458,6 +463,46 @@ function requiredCoreMatches(plan: SearchPlan): number {
   return Math.min(2, coreCount);
 }
 
+function phraseBoost(ev: CalEvent, plan: SearchPlan): number {
+  let score = 0;
+  const titleLower = ev.title.toLowerCase();
+
+  if (plan.raw && titleLower.includes(plan.raw.toLowerCase())) {
+    score += W.titlePhrase;
+  }
+
+  if (plan.phrases.length > 0) {
+    const phraseText = `${ev.title} ${ev.description ?? ""}`.toLowerCase();
+    for (const phrase of plan.phrases) {
+      if (phraseText.includes(phrase)) {
+        score += W.phraseMatch;
+      }
+    }
+  }
+
+  return score;
+}
+
+function eventHasAnyExpandedToken(ev: CalEvent, plan: SearchPlan): boolean {
+  if (plan.expandedTokens.length === 0) {
+    return true;
+  }
+
+  const tokens = new Set(
+    tokenize(
+      [
+        ev.title,
+        ev.organizer ?? "",
+        ev.description ?? "",
+        ev.location ?? "",
+        ...(ev.tags ?? []),
+      ].join(" "),
+    ),
+  );
+
+  return plan.expandedTokens.some((token) => tokens.has(token));
+}
+
 function scoreEvent(
   pos: number,
   plan: SearchPlan,
@@ -470,25 +515,12 @@ function scoreEvent(
   let score = 0;
   let matched = 0;
   const coreMatched = new Set<string>();
-  const titleLower = ev.title.toLowerCase();
   const aiSemanticIntent = hasAiSemanticIntent(plan);
 
-  // Exact raw phrase in title
-  if (plan.raw && titleLower.includes(plan.raw.toLowerCase())) {
-    score += W.titlePhrase;
-    matched++;
-  }
-  // Known phrase matches
-  const phraseText =
-    plan.phrases.length > 0
-      ? `${ev.title} ${ev.description ?? ""}`.toLowerCase()
-      : "";
-  for (const phrase of plan.phrases) {
-    if (phraseText.includes(phrase)) {
-      score += W.phraseMatch;
-      matched++;
-    }
-  }
+  // Exact raw and known-phrase matches should count even before token scoring.
+  const boostedPhraseScore = phraseBoost(ev, plan);
+  if (boostedPhraseScore > 0) matched++;
+  score += boostedPhraseScore;
 
   // Field-weighted token scoring
   for (const qt of plan.expandedTokens) {
@@ -610,7 +642,7 @@ function applyPoolFilters(
     // Free events
     if (filters.free && !dismissedKeys.has("free:true")) {
       const text = `${ev.title} ${ev.description ?? ""}`.toLowerCase();
-      if (!RE_FREE.test(text)) return false;
+      if (!RE_FREE_EVENT.test(text)) return false;
     }
     // Modality
     if (
@@ -708,15 +740,37 @@ function runScoring(
       includeScore: true,
       minMatchCharLength: 2,
     });
-    const fuseQuery = fuzzyTokens.length > 0 ? fuzzyTokens.join(" ") : plan.raw;
-    for (const { item, score: fs } of fuse.search(fuseQuery, { limit: 100 })) {
-      const relevance =
-        Math.round((1 - (fs ?? 1)) * 40) + recencyBonus(item.date);
-      const existing = scored.find((r) => r.event.id === item.id);
-      if (existing) {
-        existing.score += relevance;
-      } else {
-        scored.push({ event: item, score: relevance });
+    const fuseQueries: Array<{ query: string; requireTokenMatch: boolean }> =
+      [];
+    const seenFuseQueries = new Set<string>();
+    const addFuseQuery = (query: string, requireTokenMatch: boolean) => {
+      if (!query || seenFuseQueries.has(query)) return;
+      seenFuseQueries.add(query);
+      fuseQueries.push({ query, requireTokenMatch });
+    };
+
+    addFuseQuery(plan.cleaned, true);
+    addFuseQuery(fuzzyTokens.length > 0 ? fuzzyTokens.join(" ") : "", false);
+    addFuseQuery(plan.raw, true);
+
+    for (const { query: fuseQuery, requireTokenMatch } of fuseQueries) {
+      for (const { item, score: fs } of fuse.search(fuseQuery, {
+        limit: 100,
+      })) {
+        if (requireTokenMatch && !eventHasAnyExpandedToken(item, plan)) {
+          continue;
+        }
+
+        const relevance =
+          Math.round((1 - (fs ?? 1)) * 40) +
+          phraseBoost(item, plan) +
+          recencyBonus(item.date);
+        const existing = scored.find((r) => r.event.id === item.id);
+        if (existing) {
+          existing.score += relevance;
+        } else {
+          scored.push({ event: item, score: relevance });
+        }
       }
     }
   }
@@ -739,6 +793,9 @@ function withDismissedInterpretations(
   dismissedKeys: Set<string>,
 ): SearchPlan {
   const filters: SearchFilter = { ...plan.filters };
+  let cleaned = plan.cleaned;
+  let keywords = plan.keywords;
+  let expandedTokens = plan.expandedTokens;
 
   for (const key of dismissedKeys) {
     const [field] = key.split(":");
@@ -752,8 +809,30 @@ function withDismissedInterpretations(
     if (field === "modality") delete filters.modality;
   }
 
+  const dismissedLiteralText = plan.interpretations
+    .filter(
+      (interpretation) =>
+        dismissedKeys.has(interpretation.key) &&
+        (interpretation.key.startsWith("source:") ||
+          interpretation.key.startsWith("category:")),
+    )
+    .map((interpretation) => interpretation.label)
+    .join(" ");
+
+  if (keywords.length === 0 && dismissedLiteralText) {
+    cleaned = dismissedLiteralText;
+    keywords = tokenize(cleaned);
+    expandedTokens = expandKeywordTokens(
+      keywords,
+      `${plan.raw} ${dismissedLiteralText}`.toLowerCase(),
+    );
+  }
+
   return {
     ...plan,
+    cleaned,
+    keywords,
+    expandedTokens,
     filters,
     interpretations: plan.interpretations.filter(
       (i) => !dismissedKeys.has(i.key),
@@ -805,6 +884,9 @@ export function searchEvents(
               : "upcoming",
         },
       };
+      if (plan.filters.weekend) {
+        delete relaxedPlan.filters.weekend;
+      }
       const fallbackPool = applyPoolFilters(events, relaxedPlan, dismissedKeys);
       const fallbackResults = runScoring(fallbackPool, relaxedPlan, index);
       if (fallbackResults.length > 0) {
