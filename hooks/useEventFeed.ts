@@ -17,9 +17,16 @@ interface EventFeedState {
   loadEvents: () => Promise<void>;
 }
 
-async function fetchOptionalSearchIndex(): Promise<SearchIndex | null> {
+async function fetchOptionalSearchIndex(
+  timeoutMs = 3000,
+): Promise<SearchIndex | null> {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+
   try {
-    const response = await fetch("/search-index.json");
+    const response = await fetch("/search-index.json", {
+      signal: controller.signal,
+    });
 
     if (!response.ok) {
       return null;
@@ -29,6 +36,8 @@ async function fetchOptionalSearchIndex(): Promise<SearchIndex | null> {
   } catch {
     // Search index generation is optional; fall back to text-only search.
     return null;
+  } finally {
+    window.clearTimeout(timeoutId);
   }
 }
 
@@ -51,10 +60,7 @@ export function useEventFeed(): EventFeedState {
         fetchOptionalSearchIndex(),
       ]);
 
-      if (nextSearchIndex) {
-        setSearchIndex(nextSearchIndex);
-      }
-
+      setSearchIndex(nextSearchIndex);
       setAllEvents(data.events);
       setLastUpdated(data.lastUpdated);
       setStatusReport(data.status || null);

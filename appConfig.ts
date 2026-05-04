@@ -76,7 +76,12 @@ export const DEFAULT_FILTERS: SearchFilters = {
 export const VISIBLE_EVENT_BATCH_SIZE = 72;
 
 export const DESKTOP_HERO_PRESETS: QuickFilterPreset[] = [
-  { label: "Tonight", dateRange: "today", category: "All", searchQuery: "" },
+  {
+    label: "Tonight",
+    dateRange: "today",
+    category: "All",
+    searchQuery: "tonight",
+  },
   {
     label: "AI talks",
     dateRange: "week",
@@ -95,8 +100,8 @@ export const DESKTOP_HERO_PRESETS: QuickFilterPreset[] = [
 export const POPULAR_SEARCHES = [
   "AI",
   "Film screening",
-  "Career fair",
-  "Hackathon",
+  "Cal games",
+  "Free food",
   "Speaker",
   "Workshop",
   "Wellness",

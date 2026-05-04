@@ -302,6 +302,44 @@ describe("App UI regressions", () => {
     expect(screen.queryByText("All Day Exhibit")).not.toBeInTheDocument();
   });
 
+  it("uses the Tonight quick-start preset as an evening search", async () => {
+    const user = userEvent.setup();
+
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "morning",
+        title: "Morning Seminar",
+        time: "9:00 AM",
+        description: "A morning event.",
+      }),
+      makeEvent({
+        id: "all-day",
+        title: "All Day Exhibit",
+        time: "All day",
+        tags: ["Arts"],
+        description: "An all-day exhibit.",
+      }),
+      makeEvent({
+        id: "evening",
+        title: "Evening Concert",
+        time: "7:00 PM",
+        tags: ["Arts"],
+        description: "An evening concert.",
+      }),
+    ]);
+
+    render(<App />);
+
+    await user.click(screen.getByRole("button", { name: "Tonight" }));
+
+    expect(
+      screen.getByRole("textbox", { name: /search campus events/i }),
+    ).toHaveValue("tonight");
+    expect(screen.getByText("Evening Concert")).toBeInTheDocument();
+    expect(screen.queryByText("Morning Seminar")).not.toBeInTheDocument();
+    expect(screen.queryByText("All Day Exhibit")).not.toBeInTheDocument();
+  });
+
   it("shows a clear-category empty state when search intent conflicts with the UI category", () => {
     mockFeedState = makeFeedState([
       makeEvent({
@@ -363,6 +401,51 @@ describe("App UI regressions", () => {
     expect(screen.getByText("Law Certificate Ceremony")).toBeInTheDocument();
     expect(
       screen.queryByText("Berkeley Law and Finance Talk"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not return the full selected source when source intent conflicts with the UI source", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "law-source",
+        title: "Law Certificate Ceremony",
+        source: "berkeley_law",
+        tags: ["Academic"],
+        description: "A Berkeley Law ceremony.",
+      }),
+      makeEvent({
+        id: "law-livewhale",
+        title: "Berkeley Law and Finance Talk",
+        source: "livewhale",
+        tags: ["Academic"],
+        description: "A generic campus event mentioning Berkeley Law.",
+      }),
+      makeEvent({
+        id: "unrelated-livewhale",
+        title: "Campus Exhibit",
+        source: "livewhale",
+        tags: ["Arts"],
+        description: "An unrelated campus event.",
+      }),
+    ]);
+
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=berkeley%20law&source=livewhale&date=upcoming",
+    );
+
+    render(<App />);
+
+    expect(
+      screen.queryByRole("button", { name: /remove berkeley law filter/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Berkeley Law and Finance Talk"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Campus Exhibit")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Law Certificate Ceremony"),
     ).not.toBeInTheDocument();
   });
 

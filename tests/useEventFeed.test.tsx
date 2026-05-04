@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useEventFeed } from "../hooks/useEventFeed";
@@ -52,7 +52,7 @@ function makeJsonResponse(body: unknown, ok = true): Response {
 }
 
 function EventFeedProbe() {
-  const { allEvents, loading, searchIndex } = useEventFeed();
+  const { allEvents, loading, searchIndex, loadEvents } = useEventFeed();
 
   return (
     <div>
@@ -61,6 +61,9 @@ function EventFeedProbe() {
       <output aria-label="search-index">
         {searchIndex ? "loaded" : "missing"}
       </output>
+      <button type="button" onClick={() => void loadEvents()}>
+        Reload
+      </button>
     </div>
   );
 }
@@ -95,7 +98,10 @@ describe("useEventFeed", () => {
 
     expect(screen.getByLabelText("event-count")).toHaveTextContent("1");
     expect(screen.getByLabelText("search-index")).toHaveTextContent("missing");
-    expect(fetchMock).toHaveBeenCalledWith("/search-index.json");
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/search-index.json",
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
   });
 
   it("enters the error state when the events payload fails", async () => {
@@ -116,5 +122,40 @@ describe("useEventFeed", () => {
     });
 
     expect(screen.getByLabelText("event-count")).toHaveTextContent("0");
+  });
+
+  it("clears a stale search index when a later optional index fetch fails", async () => {
+    const fetchMock = vi.fn<typeof fetch>();
+    fetchMock
+      .mockResolvedValueOnce(makeJsonResponse(makeSearchIndex()))
+      .mockRejectedValueOnce(new Error("search index unavailable"));
+    vi.stubGlobal("fetch", fetchMock);
+
+    fetchEventsFromGeminiMock
+      .mockResolvedValueOnce({
+        events: [makeEvent()],
+        sources: [],
+        lastUpdated: Date.parse("2026-04-22T19:00:00.000Z"),
+      })
+      .mockResolvedValueOnce({
+        events: [makeEvent({ id: "event-2" })],
+        sources: [],
+        lastUpdated: Date.parse("2026-04-23T19:00:00.000Z"),
+      });
+
+    render(<EventFeedProbe />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("search-index")).toHaveTextContent("loaded");
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Reload" }));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("search-index")).toHaveTextContent(
+        "missing",
+      );
+    });
+    expect(screen.getByLabelText("event-count")).toHaveTextContent("1");
   });
 });

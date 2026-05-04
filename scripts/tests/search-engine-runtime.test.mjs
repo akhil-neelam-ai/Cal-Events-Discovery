@@ -6,6 +6,10 @@ import {
   searchEvents,
   tokenize,
 } from "../../utils/searchEngine.ts";
+import {
+  addDaysToDateKey,
+  getCurrentPacificDateKey,
+} from "../../utils/eventDates.ts";
 
 const SYNTHETIC_EVENTS = [
   {
@@ -481,6 +485,27 @@ test("source names act as source intent instead of generic text", () => {
   );
 });
 
+test("dismissed source intent becomes literal search text instead of returning the full pool", () => {
+  const output = searchEvents(
+    SYNTHETIC_EVENTS,
+    "berkeley law",
+    null,
+    new Set(["source:berkeley_law"]),
+  );
+
+  assert.equal(output.plan.filters.source, undefined);
+  assert.deepEqual(output.plan.keywords, ["law"]);
+  assert.ok(output.results.length < SYNTHETIC_EVENTS.length);
+  assert.equal(output.results[0]?.id, "evt-law");
+});
+
+test('"student org" is not treated as a CalLink source lock', () => {
+  const plan = buildSearchPlan("student org");
+
+  assert.equal(plan.filters.source, undefined);
+  assert.equal(plan.filters.category, "Student Life");
+});
+
 test('"free speech" searches speech, not free admission', () => {
   const output = searchEvents(SYNTHETIC_EVENTS, "free speech", null);
 
@@ -488,4 +513,45 @@ test('"free speech" searches speech, not free admission', () => {
   assert.deepEqual(output.plan.keywords, ["speech"]);
   assert.equal(output.results[0]?.id, "evt-speech");
   assert.ok(!output.results.some((event) => event.id === "evt-bampfa"));
+});
+
+test('"free will lecture" is not interpreted as free admission', () => {
+  const events = [
+    ...SYNTHETIC_EVENTS,
+    {
+      ...SYNTHETIC_EVENTS[16],
+      id: "evt-free-will",
+      title: "Free Will Lecture",
+      description: "A philosophy lecture about free will.",
+      tags: ["Academic"],
+      source: "livewhale",
+    },
+  ];
+
+  const output = searchEvents(events, "free will lecture", null);
+
+  assert.equal(output.plan.filters.free, undefined);
+  assert.equal(output.plan.filters.category, "Academic");
+  assert.equal(output.results[0]?.id, "evt-free-will");
+});
+
+test("date fallback clears this-weekend hard filters when relaxing to upcoming", () => {
+  const futureDate = addDaysToDateKey(getCurrentPacificDateKey(), 14);
+  const events = [
+    {
+      ...SYNTHETIC_EVENTS[7],
+      id: "evt-future-hackathon",
+      title: "Future Hackathon",
+      date: futureDate,
+      description: "A hackathon happening after the current weekend.",
+      tags: ["Science & Tech"],
+    },
+  ];
+
+  const output = searchEvents(events, "this weekend hackathon", null);
+
+  assert.equal(output.fallbackUsed, true);
+  assert.equal(output.plan.filters.dateRange, "upcoming");
+  assert.equal(output.plan.filters.weekend, undefined);
+  assert.equal(output.results[0]?.id, "evt-future-hackathon");
 });
