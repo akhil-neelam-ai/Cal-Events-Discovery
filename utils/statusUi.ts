@@ -48,7 +48,6 @@ export function buildStatusBanner(
     return null;
   }
 
-  const failedSources = statusReport.sources.filter((source) => !source.ok);
   const failedLabel = formatStatusSources(statusReport);
   const fallbackLabel = formatNamedSources(statusReport.fallback_sources);
   const degradedLabel = formatNamedSources(statusReport.degraded_sources);
@@ -81,16 +80,6 @@ export function buildStatusBanner(
           ? `${degradedLabel} did not return a healthy result in the latest run.`
           : statusReport.degraded_reason ||
             "One or more sources did not return a healthy result in the latest run.",
-    };
-  }
-
-  if (failedSources.length > 0) {
-    return {
-      tone: "info",
-      title: "Some sources were unavailable.",
-      message: failedLabel
-        ? `The current dataset loaded successfully, but ${failedLabel} did not return data in the latest run.`
-        : "The current dataset loaded successfully, but one or more sources did not return data in the latest run.",
     };
   }
 
