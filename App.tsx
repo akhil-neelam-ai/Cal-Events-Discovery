@@ -27,6 +27,25 @@ import { initGA, trackPageView, trackEventClick } from "./utils/analytics";
 import { buildStatusBanner } from "./utils/statusUi";
 import { addRecentSearch } from "./utils/recentSearches";
 
+function readStatusBannerDismissed(): boolean {
+  try {
+    return (
+      typeof sessionStorage !== "undefined" &&
+      sessionStorage.getItem("statusBannerDismissed") === "1"
+    );
+  } catch {
+    return false;
+  }
+}
+
+function persistStatusBannerDismissed(): void {
+  try {
+    sessionStorage.setItem("statusBannerDismissed", "1");
+  } catch {
+    // Storage can be unavailable in private or locked-down browser contexts.
+  }
+}
+
 export default function App() {
   const initialUrlState = readAppUrlState();
   const {
@@ -87,13 +106,11 @@ export default function App() {
   }, []);
 
   const [bannerDismissed, setBannerDismissed] = useState(
-    () =>
-      typeof sessionStorage !== "undefined" &&
-      sessionStorage.getItem("statusBannerDismissed") === "1",
+    readStatusBannerDismissed,
   );
   const dismissBanner = () => {
     setBannerDismissed(true);
-    sessionStorage.setItem("statusBannerDismissed", "1");
+    persistStatusBannerDismissed();
   };
 
   const statusBanner = buildStatusBanner(statusReport);
@@ -103,22 +120,26 @@ export default function App() {
     setFilters(DEFAULT_FILTERS);
     setSelectedEventId(null);
     setUserSetDateRange(false);
+    setDismissedInterpretationKeys(new Set());
   }, []);
 
   const clearSearch = useCallback(() => {
     setFilters((prev) => ({ ...prev, searchQuery: "" }));
     setSelectedEventId(null);
     setUserSetDateRange(false);
+    setDismissedInterpretationKeys(new Set());
   }, []);
 
   const clearCategory = useCallback(() => {
     setFilters((prev) => ({ ...prev, category: DEFAULT_FILTERS.category }));
     setSelectedEventId(null);
+    setDismissedInterpretationKeys(new Set());
   }, []);
 
   const clearSource = useCallback(() => {
     setFilters((prev) => ({ ...prev, source: DEFAULT_FILTERS.source }));
     setSelectedEventId(null);
+    setDismissedInterpretationKeys(new Set());
   }, []);
 
   const showWeek = useCallback(() => {

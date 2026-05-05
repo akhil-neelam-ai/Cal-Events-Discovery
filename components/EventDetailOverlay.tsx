@@ -18,6 +18,38 @@ function DetailActions({
   compact?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
+  const copyResetTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyResetTimeoutRef.current !== null) {
+        window.clearTimeout(copyResetTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleCopyLink = useCallback(() => {
+    if (!navigator.clipboard) {
+      return;
+    }
+
+    void navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => {
+        if (copyResetTimeoutRef.current !== null) {
+          window.clearTimeout(copyResetTimeoutRef.current);
+        }
+
+        setCopied(true);
+        copyResetTimeoutRef.current = window.setTimeout(() => {
+          setCopied(false);
+          copyResetTimeoutRef.current = null;
+        }, 2000);
+      })
+      .catch(() => {
+        // clipboard not available
+      });
+  }, []);
 
   return compact ? (
     <div className="space-y-3">
@@ -47,15 +79,7 @@ function DetailActions({
           type="button"
           className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none"
           style={{ transition: "background-color 150ms ease" }}
-          onClick={() => {
-            try {
-              navigator.clipboard.writeText(window.location.href);
-              setCopied(true);
-              setTimeout(() => setCopied(false), 2000);
-            } catch {
-              // clipboard not available
-            }
-          }}
+          onClick={handleCopyLink}
         >
           {copied ? (
             <svg
@@ -139,15 +163,7 @@ function DetailActions({
         type="button"
         className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none"
         style={{ transition: "background-color 150ms ease" }}
-        onClick={() => {
-          try {
-            navigator.clipboard.writeText(window.location.href);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-          } catch {
-            // clipboard not available
-          }
-        }}
+        onClick={handleCopyLink}
       >
         {copied ? (
           <svg

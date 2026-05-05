@@ -183,21 +183,15 @@ export async function fetchCalPerformances(
   let filteredPast = 0;
   let invalid = 0;
 
-  // Fetch all pages in parallel (typically 4)
-  // We don't know the total pages ahead of time, so fetch until empty.
-  const firstPage = await fetchPage(1, options);
-  const allPosts: WpCpEvent[] = [...firstPage];
+  // Fetch pages sequentially so we stop as soon as WordPress returns a short
+  // page instead of issuing guaranteed-empty requests.
+  const allPosts: WpCpEvent[] = [];
+  for (let pageNumber = 1; pageNumber <= 10; pageNumber += 1) {
+    const page = await fetchPage(pageNumber, options);
+    allPosts.push(...page);
 
-  if (firstPage.length === PER_PAGE) {
-    // Fetch remaining pages
-    const remainingPages: Promise<WpCpEvent[]>[] = [];
-    for (let p = 2; p <= 10; p++) {
-      remainingPages.push(fetchPage(p, options));
-    }
-    const settled = await Promise.all(remainingPages);
-    for (const page of settled) {
-      allPosts.push(...page);
-      if (page.length < PER_PAGE) break;
+    if (page.length < PER_PAGE) {
+      break;
     }
   }
 

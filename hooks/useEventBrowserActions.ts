@@ -97,9 +97,16 @@ export function useEventBrowserActions({
       setUserSetDateRange(true);
       setFilters((prev) => ({ ...prev, dateRange }));
       setSelectedEventId(null);
+      setDismissedInterpretationKeys(new Set());
       trackDateFilter(dateRange);
     },
-    [historyModeRef, setFilters, setSelectedEventId, setUserSetDateRange],
+    [
+      historyModeRef,
+      setDismissedInterpretationKeys,
+      setFilters,
+      setSelectedEventId,
+      setUserSetDateRange,
+    ],
   );
 
   const handleCategoryChange = useCallback(
@@ -107,9 +114,15 @@ export function useEventBrowserActions({
       historyModeRef.current = "push";
       setFilters((prev) => ({ ...prev, category }));
       setSelectedEventId(null);
+      setDismissedInterpretationKeys(new Set());
       trackCategoryFilter(category);
     },
-    [historyModeRef, setFilters, setSelectedEventId],
+    [
+      historyModeRef,
+      setDismissedInterpretationKeys,
+      setFilters,
+      setSelectedEventId,
+    ],
   );
 
   const handleSourceChange = useCallback(
@@ -117,9 +130,15 @@ export function useEventBrowserActions({
       historyModeRef.current = "push";
       setFilters((prev) => ({ ...prev, source }));
       setSelectedEventId(null);
+      setDismissedInterpretationKeys(new Set());
       trackFilter({ filter_type: "source", filter_value: source });
     },
-    [historyModeRef, setFilters, setSelectedEventId],
+    [
+      historyModeRef,
+      setDismissedInterpretationKeys,
+      setFilters,
+      setSelectedEventId,
+    ],
   );
 
   const handleQuickPreset = useCallback(
@@ -137,6 +156,7 @@ export function useEventBrowserActions({
         searchQuery: preset.searchQuery,
       }));
       setSelectedEventId(null);
+      setDismissedInterpretationKeys(new Set());
 
       trackDateFilter(preset.dateRange);
       if (preset.category !== "All") {
@@ -146,6 +166,7 @@ export function useEventBrowserActions({
     [
       historyModeRef,
       searchTimeoutRef,
+      setDismissedInterpretationKeys,
       setFilters,
       setSelectedEventId,
       setUserSetDateRange,

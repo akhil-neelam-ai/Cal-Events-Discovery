@@ -112,6 +112,22 @@ function todayPT(): string {
   }).format(new Date());
 }
 
+const PT_DATE_FORMATTER = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Los_Angeles",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+export function eventDateInPT(startAt: string): string {
+  const parsed = new Date(startAt);
+  if (Number.isNaN(parsed.getTime())) {
+    return "";
+  }
+
+  return PT_DATE_FORMATTER.format(parsed);
+}
+
 interface RawCampusGroupsEvent {
   id: string;
   name: string;
@@ -197,7 +213,12 @@ export async function fetchCallink(
         continue;
       }
 
-      const eventDate = start_at.slice(0, 10);
+      const eventDate = eventDateInPT(start_at);
+      if (!eventDate) {
+        invalid++;
+        continue;
+      }
+
       if (eventDate < todayIso) {
         filteredPast++;
         continue;

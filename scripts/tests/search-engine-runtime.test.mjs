@@ -238,6 +238,16 @@ test("tokenization normalizes accents and hyphenated terms", () => {
   ]);
 });
 
+test("single-word synonyms are matched after query stemming", () => {
+  const plan = buildSearchPlan("sports analytics");
+
+  assert.ok(
+    plan.expandedTokens.includes("athletic"),
+    "sports should expand through the stemmed sport token",
+  );
+  assert.ok(plan.expandedTokens.includes("basketball"));
+});
+
 test("pure temporal queries return the full pool for later date filtering", () => {
   const todayResults = searchEvents(SYNTHETIC_EVENTS, "today", null);
   const tomorrowResults = searchEvents(SYNTHETIC_EVENTS, "tomorrow", null);

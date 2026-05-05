@@ -41,6 +41,14 @@ async function fetchOptionalSearchIndex(
   }
 }
 
+function assertValidEventsPayload(
+  data: Awaited<ReturnType<typeof fetchEventsFromGemini>>,
+): void {
+  if (!Array.isArray(data.events)) {
+    throw new Error("Invalid events payload: events must be an array");
+  }
+}
+
 export function useEventFeed(): EventFeedState {
   const [allEvents, setAllEvents] = useState<CalEvent[]>([]);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
@@ -60,6 +68,7 @@ export function useEventFeed(): EventFeedState {
         fetchOptionalSearchIndex(),
       ]);
 
+      assertValidEventsPayload(data);
       setSearchIndex(nextSearchIndex);
       setAllEvents(data.events);
       setLastUpdated(data.lastUpdated);
