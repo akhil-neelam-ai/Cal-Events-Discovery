@@ -18,15 +18,26 @@ export function SearchSuggestionsDropdown({
   recents,
   onSelect,
   onClear,
+  placement = "overlay",
 }: {
   recents: string[];
   onSelect: (query: string) => void;
   onClear: () => void;
+  placement?: "overlay" | "inline";
 }) {
+  const wrapperClassName =
+    placement === "inline"
+      ? "mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg animate-dropdown-in"
+      : "absolute left-0 right-0 top-full z-[60] mt-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl animate-dropdown-in";
+
   return (
     <div
-      className="absolute left-0 right-0 top-full z-[60] mt-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl animate-dropdown-in"
-      style={{ transformOrigin: "top center", maxHeight: "min(320px, 40vh)" }}
+      className={wrapperClassName}
+      style={{
+        transformOrigin: "top center",
+        maxHeight:
+          placement === "inline" ? "min(280px, 32vh)" : "min(320px, 40vh)",
+      }}
     >
       <div className="h-full overflow-y-auto no-scrollbar">
         {recents.length > 0 && (
