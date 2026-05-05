@@ -159,6 +159,7 @@ export function DesktopHero({
               {searchFocused && (
                 <SearchSuggestionsDropdown
                   recents={recents}
+                  placement="inline"
                   onSelect={handleSelectSuggestion}
                   onClear={() => {
                     clearRecentSearches();
