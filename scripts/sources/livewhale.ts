@@ -181,9 +181,15 @@ const HOST_EVENTS_BERKELEY = "events.berkeley.edu";
 /** Cache: /live/events/<slug> URL → resolved unit slug (after 302 redirect). */
 const redirectSlugCache = new Map<string, string>();
 
-/** Write to redirectSlugCache, clearing it when it exceeds 500 entries. */
+/** Write to redirectSlugCache, evicting the oldest entry when it exceeds 500 entries. */
 function cacheSet(key: string, value: string): void {
-  if (redirectSlugCache.size >= 500) redirectSlugCache.clear();
+  if (!redirectSlugCache.has(key) && redirectSlugCache.size >= 500) {
+    const oldestKey = redirectSlugCache.keys().next().value;
+    if (oldestKey) {
+      redirectSlugCache.delete(oldestKey);
+    }
+  }
+
   redirectSlugCache.set(key, value);
 }
 

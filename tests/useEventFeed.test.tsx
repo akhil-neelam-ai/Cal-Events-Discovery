@@ -124,6 +124,28 @@ describe("useEventFeed", () => {
     expect(screen.getByLabelText("event-count")).toHaveTextContent("0");
   });
 
+  it("enters the error state when the events payload is malformed", async () => {
+    const fetchMock = vi.fn<typeof fetch>();
+    fetchMock.mockResolvedValue(makeJsonResponse(makeSearchIndex()));
+    vi.stubGlobal("fetch", fetchMock);
+
+    fetchEventsFromGeminiMock.mockResolvedValue({
+      events: undefined,
+      sources: [],
+      lastUpdated: Date.parse("2026-04-22T19:00:00.000Z"),
+    } as unknown as Awaited<ReturnType<typeof fetchEventsFromGemini>>);
+
+    render(<EventFeedProbe />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("loading")).toHaveTextContent(
+        LoadingState.ERROR,
+      );
+    });
+
+    expect(screen.getByLabelText("event-count")).toHaveTextContent("0");
+  });
+
   it("clears a stale search index when a later optional index fetch fails", async () => {
     const fetchMock = vi.fn<typeof fetch>();
     fetchMock

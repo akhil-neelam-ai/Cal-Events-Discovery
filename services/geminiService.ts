@@ -28,27 +28,35 @@ async function fetchJson<T>(path: string, timeoutMs = 8000): Promise<T> {
   }
 }
 
-export const fetchStaticArtifacts = async (_forceRefresh: boolean = false): Promise<SearchResponse & { lastUpdated: number; status?: IngestionStatus }> => {
+export const fetchStaticArtifacts = async (
+  _forceRefresh: boolean = false,
+): Promise<
+  SearchResponse & { lastUpdated: number; status?: IngestionStatus }
+> => {
   try {
     const [eventsResult, statusResult] = await Promise.allSettled([
-      fetchJson<EventsPayload>('/events.json'),
-      fetchJson<IngestionStatus>('/status.json'),
+      fetchJson<EventsPayload>("/events.json"),
+      fetchJson<IngestionStatus>("/status.json"),
     ]);
 
-    if (eventsResult.status === 'rejected') {
+    if (eventsResult.status === "rejected") {
       throw eventsResult.reason;
     }
 
     const data = eventsResult.value;
+    if (!Array.isArray(data.events)) {
+      throw new Error("Invalid events payload: events must be an array");
+    }
 
     return {
-      events: data.events || [],
-      sources: data.sources || [],
+      events: data.events,
+      sources: Array.isArray(data.sources) ? data.sources : [],
       lastUpdated: data.lastUpdated ?? 0,
-      status: statusResult.status === 'fulfilled' ? statusResult.value : undefined,
+      status:
+        statusResult.status === "fulfilled" ? statusResult.value : undefined,
     };
   } catch (error) {
-    console.error('Error loading events:', error);
+    console.error("Error loading events:", error);
     throw error;
   }
 };

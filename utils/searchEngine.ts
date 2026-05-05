@@ -205,6 +205,21 @@ function addInterpretationOnce(
   }
 }
 
+const STEMMED_DOMAIN_SYNONYMS = new Map<string, string[]>();
+
+for (const [key, synonyms] of Object.entries(DOMAIN_SYNONYMS)) {
+  if (key.includes(" ")) {
+    continue;
+  }
+
+  for (const token of tokenize(key)) {
+    STEMMED_DOMAIN_SYNONYMS.set(token, [
+      ...(STEMMED_DOMAIN_SYNONYMS.get(token) ?? []),
+      ...synonyms,
+    ]);
+  }
+}
+
 function expandKeywordTokens(keywords: string[], rawLower: string): string[] {
   const expandedSet = new Set<string>(keywords);
 
@@ -216,7 +231,7 @@ function expandKeywordTokens(keywords: string[], rawLower: string): string[] {
   }
   // Single-word synonyms
   for (const kw of keywords) {
-    const syns = DOMAIN_SYNONYMS[kw];
+    const syns = DOMAIN_SYNONYMS[kw] ?? STEMMED_DOMAIN_SYNONYMS.get(kw);
     if (syns) {
       for (const s of syns) tokenize(s).forEach((t) => expandedSet.add(t));
     }

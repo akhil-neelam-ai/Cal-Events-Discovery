@@ -11,7 +11,11 @@ import {
   cleanSummary,
   parseGameFlags,
 } from "../../scripts/sources/calbears.ts";
-import { parseAddeventatcDate } from "../../scripts/sources/cal_performances.ts";
+import { eventDateInPT } from "../../scripts/sources/callink.ts";
+import {
+  fetchCalPerformances,
+  parseAddeventatcDate,
+} from "../../scripts/sources/cal_performances.ts";
 import { inferEhubDate } from "../../scripts/sources/ehub.ts";
 import { unitFromSlug } from "../../scripts/sources/livewhale.ts";
 
@@ -59,6 +63,55 @@ test("Cal Performances date parser preserves Pacific offsets", () => {
     parseAddeventatcDate("01/17/2026 11:05 am"),
     "2026-01-17T11:05:00-08:00",
   );
+});
+
+test("Cal Performances pagination stops after the first short page", async () => {
+  const originalFetch = globalThis.fetch;
+  const firstPage = Array.from({ length: 100 }, (_, index) => ({
+    id: index + 1,
+    slug: `event-${index + 1}`,
+    link: `https://example.com/event-${index + 1}`,
+    title: { rendered: `Event ${index + 1}` },
+    content: { rendered: "" },
+  }));
+  const secondPage = [
+    {
+      id: 101,
+      slug: "event-101",
+      link: "https://example.com/event-101",
+      title: { rendered: "Event 101" },
+      content: { rendered: "" },
+    },
+  ];
+  const pages = [firstPage, secondPage];
+  const fetchedUrls = [];
+
+  globalThis.fetch = async (url) => {
+    fetchedUrls.push(String(url));
+    const page = pages.shift() ?? [];
+    return {
+      ok: true,
+      json: async () => page,
+    };
+  };
+
+  try {
+    const result = await fetchCalPerformances();
+
+    assert.equal(result.rawCount, 101);
+    assert.equal(result.invalid, 101);
+    assert.equal(fetchedUrls.length, 2);
+    assert.match(fetchedUrls[0], /page=1/);
+    assert.match(fetchedUrls[1], /page=2/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("CalLink filters by Pacific event date instead of UTC date prefix", () => {
+  assert.equal(eventDateInPT("2026-04-28T06:30:00.000Z"), "2026-04-27");
+  assert.equal(eventDateInPT("2026-04-28T11:30:00.000Z"), "2026-04-28");
+  assert.equal(eventDateInPT("not-a-date"), "");
 });
 
 test("Cal Bears parser strips game status flags", () => {
