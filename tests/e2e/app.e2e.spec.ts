@@ -188,7 +188,7 @@ test("preserves search and filter state across detail open and reload", async ({
   await expect(page).toHaveURL(/date=upcoming/);
   await expect(page).toHaveURL(/event=evt-dreams/);
 
-  await page.reload({ waitUntil: "networkidle" });
+  await page.reload({ waitUntil: "domcontentloaded" });
 
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(
