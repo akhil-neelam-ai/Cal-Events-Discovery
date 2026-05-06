@@ -8,7 +8,6 @@ import { buildEventGroups } from "../utils/eventDates";
 interface UseEventGridStateParams {
   loading: LoadingState;
   filteredEvents: CalEvent[];
-  filters: SearchFilters;
   effectiveDateRange: SearchFilters["dateRange"];
   prefersReducedMotion: boolean;
 }
@@ -16,7 +15,6 @@ interface UseEventGridStateParams {
 export function useEventGridState({
   loading,
   filteredEvents,
-  filters,
   effectiveDateRange,
   prefersReducedMotion,
 }: UseEventGridStateParams) {
@@ -48,7 +46,7 @@ export function useEventGridState({
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [filteredEvents, filters, prefersReducedMotion]);
+  }, [filteredEvents, prefersReducedMotion]);
 
   useEffect(() => {
     if (previousDateRangeRef.current === effectiveDateRange) {

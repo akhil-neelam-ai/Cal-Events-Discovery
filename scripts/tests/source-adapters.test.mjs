@@ -17,6 +17,7 @@ import {
   parseAddeventatcDate,
 } from "../../scripts/sources/cal_performances.ts";
 import { inferEhubDate } from "../../scripts/sources/ehub.ts";
+import { extractJsonArray } from "../../scripts/sources/gemini.ts";
 import { unitFromSlug } from "../../scripts/sources/livewhale.ts";
 
 test("BAMPFA parser reads Google Calendar links", () => {
@@ -112,6 +113,17 @@ test("CalLink filters by Pacific event date instead of UTC date prefix", () => {
   assert.equal(eventDateInPT("2026-04-28T06:30:00.000Z"), "2026-04-27");
   assert.equal(eventDateInPT("2026-04-28T11:30:00.000Z"), "2026-04-28");
   assert.equal(eventDateInPT("not-a-date"), "");
+});
+
+test("Gemini JSON extraction does not repair truncated arrays", () => {
+  assert.deepEqual(
+    extractJsonArray('Here are events: [{"title":"Complete"}]'),
+    [{ title: "Complete" }],
+  );
+  assert.equal(
+    extractJsonArray('[{"title":"Complete"},{"title":"Truncated"'),
+    null,
+  );
 });
 
 test("Cal Bears parser strips game status flags", () => {

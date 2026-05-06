@@ -96,7 +96,6 @@ export function useEventBrowserActions({
       historyModeRef.current = "push";
       setUserSetDateRange(true);
       setFilters((prev) => ({ ...prev, dateRange }));
-      setSelectedEventId(null);
       setDismissedInterpretationKeys(new Set());
       trackDateFilter(dateRange);
     },
@@ -104,7 +103,6 @@ export function useEventBrowserActions({
       historyModeRef,
       setDismissedInterpretationKeys,
       setFilters,
-      setSelectedEventId,
       setUserSetDateRange,
     ],
   );
@@ -113,32 +111,20 @@ export function useEventBrowserActions({
     (category: string) => {
       historyModeRef.current = "push";
       setFilters((prev) => ({ ...prev, category }));
-      setSelectedEventId(null);
       setDismissedInterpretationKeys(new Set());
       trackCategoryFilter(category);
     },
-    [
-      historyModeRef,
-      setDismissedInterpretationKeys,
-      setFilters,
-      setSelectedEventId,
-    ],
+    [historyModeRef, setDismissedInterpretationKeys, setFilters],
   );
 
   const handleSourceChange = useCallback(
     (source: string) => {
       historyModeRef.current = "push";
       setFilters((prev) => ({ ...prev, source }));
-      setSelectedEventId(null);
       setDismissedInterpretationKeys(new Set());
       trackFilter({ filter_type: "source", filter_value: source });
     },
-    [
-      historyModeRef,
-      setDismissedInterpretationKeys,
-      setFilters,
-      setSelectedEventId,
-    ],
+    [historyModeRef, setDismissedInterpretationKeys, setFilters],
   );
 
   const handleQuickPreset = useCallback(
@@ -155,7 +141,6 @@ export function useEventBrowserActions({
         category: preset.category,
         searchQuery: preset.searchQuery,
       }));
-      setSelectedEventId(null);
       setDismissedInterpretationKeys(new Set());
 
       trackDateFilter(preset.dateRange);
@@ -168,7 +153,6 @@ export function useEventBrowserActions({
       searchTimeoutRef,
       setDismissedInterpretationKeys,
       setFilters,
-      setSelectedEventId,
       setUserSetDateRange,
     ],
   );

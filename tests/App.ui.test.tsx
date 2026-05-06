@@ -335,9 +335,11 @@ describe("App UI regressions", () => {
     expect(
       screen.getByRole("textbox", { name: /search campus events/i }),
     ).toHaveValue("tonight");
-    expect(screen.getByText("Evening Concert")).toBeInTheDocument();
-    expect(screen.queryByText("Morning Seminar")).not.toBeInTheDocument();
-    expect(screen.queryByText("All Day Exhibit")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Evening Concert")).toBeInTheDocument();
+      expect(screen.queryByText("Morning Seminar")).not.toBeInTheDocument();
+      expect(screen.queryByText("All Day Exhibit")).not.toBeInTheDocument();
+    });
   });
 
   it("shows a clear-category empty state when search intent conflicts with the UI category", () => {
@@ -535,6 +537,44 @@ describe("App UI regressions", () => {
 
     await waitFor(() => {
       expect(window.location.search).toContain("event=detail-1");
+    });
+  });
+
+  it("keeps event details open when filters exclude the selected event", async () => {
+    const user = userEvent.setup();
+
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "detail-arts",
+        title: "Gallery Detail Event",
+        tags: ["Arts"],
+        description: "An arts event that can be filtered out.",
+      }),
+      makeEvent({
+        id: "sports-event",
+        title: "California Baseball vs Stanford",
+        tags: ["Sports"],
+        description: "A sports event.",
+      }),
+    ]);
+
+    render(<App />);
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /open details for gallery detail event/i,
+      }),
+    );
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Sports" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "Gallery Detail Event" }),
+      ).toBeInTheDocument();
     });
   });
 });
