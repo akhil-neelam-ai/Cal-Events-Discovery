@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { VISIBLE_EVENT_BATCH_SIZE } from "../appConfig";
 import { LoadingState } from "../types";
@@ -24,9 +24,12 @@ export function useEventGridState({
     VISIBLE_EVENT_BATCH_SIZE,
   );
   const previousDateRangeRef = useRef(effectiveDateRange);
-  const filteredEventsSignature = filteredEvents
-    .map((event) => event.id)
-    .join("\u0000");
+  const previousFilteredEventIdsRef = useRef<Set<string> | null>(null);
+  const previousPrefersReducedMotionRef = useRef(prefersReducedMotion);
+  const filteredEventsSignature = useMemo(
+    () => filteredEvents.map((event) => event.id).join("\u0000"),
+    [filteredEvents],
+  );
 
   useEffect(() => {
     if (
@@ -43,9 +46,28 @@ export function useEventGridState({
   }, [filteredEvents.length, loading, shouldAnimateCards]);
 
   useEffect(() => {
+    const nextIds = filteredEventsSignature
+      ? filteredEventsSignature.split("\u0000")
+      : [];
+    const previousIds = previousFilteredEventIdsRef.current;
+    const nextIsSubset =
+      previousIds !== null &&
+      nextIds.length <= previousIds.size &&
+      nextIds.every((id) => previousIds.has(id));
+    const motionChanged =
+      previousPrefersReducedMotionRef.current !== prefersReducedMotion;
+
+    previousFilteredEventIdsRef.current = new Set(nextIds);
+    previousPrefersReducedMotionRef.current = prefersReducedMotion;
+
     const frame = window.requestAnimationFrame(() => {
-      setVisibleEventCount(VISIBLE_EVENT_BATCH_SIZE);
-      setShouldAnimateCards(!prefersReducedMotion);
+      if (!nextIsSubset) {
+        setVisibleEventCount(VISIBLE_EVENT_BATCH_SIZE);
+      }
+
+      if (!nextIsSubset || motionChanged) {
+        setShouldAnimateCards(!prefersReducedMotion);
+      }
     });
 
     return () => window.cancelAnimationFrame(frame);

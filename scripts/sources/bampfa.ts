@@ -34,6 +34,21 @@ const MAX_FETCH_ATTEMPTS = 2;
 const RETRY_DELAY_MS = 1_500;
 /** Fetch the current month plus this many future months. */
 const MONTHS_AHEAD = 3;
+const PT_TIME_ZONE = "America/Los_Angeles";
+const PT_OFFSET_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  timeZone: PT_TIME_ZONE,
+  timeZoneName: "longOffset",
+});
+const PT_WALL_TIME_FORMATTER = new Intl.DateTimeFormat("en-CA", {
+  timeZone: PT_TIME_ZONE,
+  hourCycle: "h23",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+});
 
 export interface FetchResult {
   events: CanonicalEvent[];
@@ -44,27 +59,75 @@ export interface FetchResult {
 
 function todayPT(): string {
   return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Los_Angeles",
+    timeZone: PT_TIME_ZONE,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   }).format(new Date());
 }
 
+function pad2(value: number): string {
+  return String(value).padStart(2, "0");
+}
+
+function ptOffsetForInstant(instant: Date): string {
+  const parts = PT_OFFSET_FORMATTER.formatToParts(instant);
+  const tz = parts.find((p) => p.type === "timeZoneName")?.value ?? "";
+  const match = tz.match(/GMT([+-])(\d{1,2})(?::(\d{2}))?/);
+  return match
+    ? `${match[1]}${pad2(Number(match[2]))}:${match[3] ?? "00"}`
+    : "-08:00";
+}
+
+function ptWallTimeParts(instant: Date): Record<string, string> {
+  return Object.fromEntries(
+    PT_WALL_TIME_FORMATTER.formatToParts(instant)
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, part.value]),
+  );
+}
+
 /**
  * Compute the Pacific-time UTC offset (e.g. "-07:00" PDT, "-08:00" PST) for a
- * given calendar date. We probe noon UTC on that date through Intl with
- * `timeZoneName: 'longOffset'` to get DST correct without hard-coding rules.
+ * given local calendar moment. Candidate offsets are round-tripped through
+ * Intl so transition days use the offset in effect at the event's wall time.
  */
-function ptOffsetFor(year: number, month: number, day: number): string {
-  const probe = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Los_Angeles",
-    timeZoneName: "longOffset",
-  }).formatToParts(probe);
-  const tz = parts.find((p) => p.type === "timeZoneName")?.value ?? "";
-  const match = tz.match(/GMT([+-])(\d{2}):(\d{2})/);
-  return match ? `${match[1]}${match[2]}:${match[3]}` : "-08:00";
+function ptOffsetFor(
+  year: number,
+  month: number,
+  day: number,
+  hour = 12,
+  minute = 0,
+  second = 0,
+): string {
+  const target = {
+    year: String(year),
+    month: pad2(month),
+    day: pad2(day),
+    hour: pad2(hour),
+    minute: pad2(minute),
+    second: pad2(second),
+  };
+  const localIso = `${target.year}-${target.month}-${target.day}T${target.hour}:${target.minute}:${target.second}`;
+
+  for (const candidateOffset of ["-08:00", "-07:00"]) {
+    const candidate = new Date(`${localIso}${candidateOffset}`);
+    if (Number.isNaN(candidate.getTime())) continue;
+
+    const parts = ptWallTimeParts(candidate);
+    if (
+      parts.year === target.year &&
+      parts.month === target.month &&
+      parts.day === target.day &&
+      parts.hour === target.hour &&
+      parts.minute === target.minute &&
+      parts.second === target.second
+    ) {
+      return ptOffsetForInstant(candidate);
+    }
+  }
+
+  return ptOffsetForInstant(new Date(Date.UTC(year, month - 1, day, 12, 0, 0)));
 }
 
 /**
@@ -93,7 +156,14 @@ export function gcalTokenToIso(token: string): {
   const hour = token.slice(9, 11);
   const min = token.slice(11, 13);
   const sec = token.slice(13, 15) || "00";
-  const offset = ptOffsetFor(Number(year), Number(month), Number(day));
+  const offset = ptOffsetFor(
+    Number(year),
+    Number(month),
+    Number(day),
+    Number(hour),
+    Number(min),
+    Number(sec),
+  );
   return {
     iso: `${year}-${month}-${day}T${hour}:${min}:${sec}${offset}`,
     allDay: false,

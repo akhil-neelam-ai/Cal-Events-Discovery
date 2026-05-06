@@ -18,6 +18,7 @@
  * hosts.
  */
 
+import * as cheerio from "cheerio";
 import type { CanonicalEvent, SourceName } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
 import { deriveFrontendTags } from "../lib/normalize.js";
@@ -64,37 +65,13 @@ function todayPT(): string {
   }).format(new Date());
 }
 
-const NAMED_ENTITIES: Record<string, string> = {
-  amp: "&",
-  lt: "<",
-  gt: ">",
-  quot: '"',
-  apos: "'",
-  nbsp: " ",
-  ndash: "\u2013",
-  mdash: "\u2014",
-  lsquo: "\u2018",
-  rsquo: "\u2019",
-  ldquo: "\u201c",
-  rdquo: "\u201d",
-  hellip: "\u2026",
-};
-
 function stripHtml(html: string): string {
-  return html
-    .replace(/<br\s*\/?>/gi, " ")
-    .replace(/<\/(p|div|li)>/gi, " ")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
-    .replace(/&#x([0-9a-f]+);/gi, (_, h) =>
-      String.fromCodePoint(parseInt(h, 16)),
-    )
-    .replace(
-      /&([a-z]+);/gi,
-      (m, name) => NAMED_ENTITIES[name.toLowerCase()] ?? m,
-    )
-    .replace(/\s+/g, " ")
-    .trim();
+  const $ = cheerio.load(html);
+  $("script, style").remove();
+  $("br").replaceWith(" ");
+  $("p, div, li").append(" ");
+
+  return $.root().text().replace(/\s+/g, " ").trim();
 }
 
 interface TribeOrganizer {

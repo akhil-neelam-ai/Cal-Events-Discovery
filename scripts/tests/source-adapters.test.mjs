@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import { HttpUrlSchema } from "../../scripts/lib/schema.ts";
 import {
   calendarUrlForMonth,
   gcalTokenToIso,
@@ -11,7 +12,7 @@ import {
   cleanSummary,
   parseGameFlags,
 } from "../../scripts/sources/calbears.ts";
-import { eventDateInPT } from "../../scripts/sources/callink.ts";
+import { eventDateInPT, stripHtml } from "../../scripts/sources/callink.ts";
 import {
   fetchCalPerformances,
   parseAddeventatcDate,
@@ -35,6 +36,14 @@ test("BAMPFA parser reads Google Calendar links", () => {
   assert.equal(
     gcalTokenToIso("20261222T190000").iso,
     "2026-12-22T19:00:00-08:00",
+  );
+  assert.equal(
+    gcalTokenToIso("20260308T013000").iso,
+    "2026-03-08T01:30:00-08:00",
+  );
+  assert.equal(
+    gcalTokenToIso("20260308T033000").iso,
+    "2026-03-08T03:30:00-07:00",
   );
   assert.deepEqual(targetMonths(new Date(2026, 10, 15)), [
     "2026-11",
@@ -114,6 +123,35 @@ test("CalLink filters by Pacific event date instead of UTC date prefix", () => {
   assert.equal(eventDateInPT("2026-04-28T06:30:00.000Z"), "2026-04-27");
   assert.equal(eventDateInPT("2026-04-28T11:30:00.000Z"), "2026-04-28");
   assert.equal(eventDateInPT("not-a-date"), "");
+});
+
+test("CalLink HTML extraction preserves comparison text", () => {
+  assert.equal(
+    stripHtml("Requirements: GPA > 3.0 and Age < 25"),
+    "Requirements: GPA > 3.0 and Age < 25",
+  );
+  assert.equal(
+    stripHtml(
+      "<p>Welcome&nbsp;Bears<br>GPA &gt; 3.0</p><script>bad()</script>",
+    ),
+    "Welcome Bears GPA > 3.0",
+  );
+});
+
+test("canonical URLs only allow HTTP(S) protocols", () => {
+  assert.equal(
+    HttpUrlSchema.safeParse("https://example.com/event").success,
+    true,
+  );
+  assert.equal(
+    HttpUrlSchema.safeParse("http://example.com/event").success,
+    true,
+  );
+  assert.equal(HttpUrlSchema.safeParse("javascript:alert(1)").success, false);
+  assert.equal(
+    HttpUrlSchema.safeParse("data:text/html,<script>alert(1)</script>").success,
+    false,
+  );
 });
 
 test("Gemini JSON extraction does not repair truncated arrays", () => {

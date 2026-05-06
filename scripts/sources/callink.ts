@@ -13,6 +13,7 @@
  *   visibility ("Public"), status ("Approved"), latitude, longitude.
  */
 
+import * as cheerio from "cheerio";
 import type { CanonicalEvent } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
 import { signalWithTimeout, type FetchOptions } from "../lib/abort.js";
@@ -29,22 +30,14 @@ export interface FetchResult {
   invalid: number;
 }
 
-/** Strip HTML tags from CampusGroups rich-text description fields. */
-function stripHtml(html: string): string {
-  return html
-    .replace(/<br\s*\/?>/gi, " ")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&ndash;/g, "\u2013")
-    .replace(/&ldquo;/g, "\u201c")
-    .replace(/&rdquo;/g, "\u201d")
-    .replace(/\s+/g, " ")
-    .trim();
+/** Convert CampusGroups rich-text fields to text without regex tag stripping. */
+export function stripHtml(html: string): string {
+  const $ = cheerio.load(html);
+  $("script, style").remove();
+  $("br").replaceWith(" ");
+  $("p, div, li").append(" ");
+
+  return $.root().text().replace(/\s+/g, " ").trim();
 }
 
 /** Map CampusGroups "theme" values to frontend-friendly category labels. */

@@ -1,15 +1,24 @@
 (function registerCalEventsWebMcpTools() {
   const EVENTS_CACHE_TTL_MS = 120_000;
+  const FETCH_TIMEOUT_MS = 8_000;
   let eventsCache = null;
 
-  async function fetchJson(path) {
-    const response = await fetch(path, {
-      headers: { Accept: "application/json" },
-    });
-    if (!response.ok) {
-      throw new Error(`Request failed: ${response.status}`);
+  async function fetchJson(path, timeoutMs = FETCH_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const response = await fetch(path, {
+        signal: controller.signal,
+        headers: { Accept: "application/json" },
+      });
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+      return response.json();
+    } finally {
+      clearTimeout(timeoutId);
     }
-    return response.json();
   }
 
   async function fetchEventsPayload() {
@@ -43,6 +52,14 @@
     const parsed = Number(value ?? 10);
     if (!Number.isFinite(parsed)) return 10;
     return Math.min(Math.max(Math.trunc(parsed), 1), 50);
+  }
+
+  function findMatchingCategory(event, category) {
+    if (!category || !Array.isArray(event.tags)) return null;
+    const requested = category.toLowerCase();
+    return (
+      event.tags.find((tag) => String(tag).toLowerCase() === requested) ?? null
+    );
   }
 
   const searchEventsTool = {
@@ -96,7 +113,9 @@
       },
     },
     annotations: { readOnlyHint: true },
-    execute: async function executeSearchEvents(input = {}) {
+    execute: async function executeSearchEvents(input) {
+      input = input ?? {};
+
       if (input.startDate && input.endDate && input.startDate > input.endDate) {
         return {
           error: "startDate must be earlier than or equal to endDate",
@@ -111,8 +130,8 @@
       const results = events
         .filter((event) => matchesText(event, input.query || ""))
         .filter((event) =>
-          input.category && Array.isArray(event.tags)
-            ? event.tags.includes(input.category)
+          input.category
+            ? Boolean(findMatchingCategory(event, input.category))
             : true,
         )
         .filter((event) =>
@@ -123,17 +142,22 @@
         )
         .filter((event) => (input.endDate ? event.date <= input.endDate : true))
         .slice(0, limit)
-        .map((event) => ({
-          id: event.id,
-          title: event.title,
-          date: event.date,
-          time: event.time,
-          location: event.location,
-          organizer: event.organizer,
-          category: event.tags?.[0] || null,
-          source: event.source || null,
-          url: event.url,
-        }));
+        .map((event) => {
+          const matchedCategory = findMatchingCategory(event, input.category);
+          return {
+            id: event.id,
+            title: event.title,
+            date: event.date,
+            time: event.time,
+            location: event.location,
+            organizer: event.organizer,
+            category: matchedCategory || event.tags?.[0] || null,
+            matchedCategory,
+            tags: Array.isArray(event.tags) ? event.tags : [],
+            source: event.source || null,
+            url: event.url,
+          };
+        });
 
       return {
         lastUpdated: data.lastUpdated,

@@ -48,7 +48,13 @@ export function SearchSuggestionsDropdown({
               </span>
               <button
                 type="button"
-                onClick={onClear}
+                onPointerDown={(event) => {
+                  event.preventDefault();
+                  onClear();
+                }}
+                onClick={(event) => {
+                  if (event.detail === 0) onClear();
+                }}
                 className="text-[11px] text-slate-400 tap-highlight hover:text-slate-600 active:text-slate-800"
               >
                 Clear
