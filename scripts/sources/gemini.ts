@@ -22,7 +22,7 @@ const MAX_ATTEMPTS = 4;
 const BACKOFF_MS = [15_000, 45_000, 90_000]; // longer waits for 503 congestion
 const MAX_EVENTS = 12;
 
-function extractJsonArray(text: string): unknown[] | null {
+export function extractJsonArray(text: string): unknown[] | null {
   const stripped = text
     .replace(/^```(?:json)?\s*/i, "")
     .replace(/\s*```\s*$/i, "")
@@ -50,15 +50,10 @@ function extractJsonArray(text: string): unknown[] | null {
     const parsed = JSON.parse(candidate);
     return Array.isArray(parsed) ? parsed : null;
   } catch {
-    const lastBrace = candidate.lastIndexOf("}");
-    if (lastBrace === -1) return null;
-    try {
-      const repaired = candidate.substring(0, lastBrace + 1) + "]";
-      const parsed = JSON.parse(repaired);
-      return Array.isArray(parsed) ? parsed : null;
-    } catch {
-      return null;
-    }
+    // Do not attempt to repair truncated arrays. A syntactically valid repair
+    // can silently convert a partial model response into semantically corrupt
+    // event data; the adapter should retry or fail clearly instead.
+    return null;
   }
 }
 

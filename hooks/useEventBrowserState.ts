@@ -306,11 +306,10 @@ export function useEventBrowserState({
 
   const selectedEvent = useMemo(
     () =>
-      visibleSelectedEventId
-        ? (allEvents.find((event) => event.id === visibleSelectedEventId) ??
-          null)
+      selectedEventId
+        ? (allEvents.find((event) => event.id === selectedEventId) ?? null)
         : null,
-    [allEvents, visibleSelectedEventId],
+    [allEvents, selectedEventId],
   );
 
   const fallbackBannerCopy = useMemo(

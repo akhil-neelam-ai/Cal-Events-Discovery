@@ -120,10 +120,26 @@ test("homepage and Vercel config expose discovery hooks", () => {
   const html = readText("index.html");
   const vercel = readJson("vercel.json");
   const publicFiles = fs.readdirSync(publicDir);
+  const securityHeadersRoute = vercel.routes.find(
+    (entry) => entry.src === "^/(.*)$",
+  );
 
   assert.ok(publicFiles.includes("llms.txt"));
   assert.match(html, /navigator\.modelContext\.registerTool/);
   assert.match(html, /search_berkeley_events/);
+  assert.equal(
+    securityHeadersRoute.headers["X-Content-Type-Options"],
+    "nosniff",
+  );
+  assert.equal(securityHeadersRoute.headers["X-Frame-Options"], "DENY");
+  assert.match(
+    securityHeadersRoute.headers["Content-Security-Policy"],
+    /frame-ancestors 'none'/,
+  );
+  assert.equal(
+    securityHeadersRoute.headers["Referrer-Policy"],
+    "strict-origin-when-cross-origin",
+  );
 
   const markdownRoute = vercel.routes.find(
     (entry) => entry.src === "^/$" && entry.dest === "/llms.txt",

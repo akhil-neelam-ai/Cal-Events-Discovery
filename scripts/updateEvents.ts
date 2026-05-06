@@ -385,30 +385,77 @@ async function main(): Promise<void> {
   // Each adapter is wrapped in a 60 s timeout so a hanging source cannot
   // block the entire pipeline. Promise.allSettled ensures one timeout does
   // not cancel the others.
-  const adapterPromises: Array<Promise<AdapterRun>> = [
-    runAdapterWithTimeout("livewhale", fetchLiveWhale),
-    runAdapterWithTimeout("callink", fetchCallink),
-    runAdapterWithTimeout("cal_performances", fetchCalPerformances),
-    runAdapterWithTimeout("calbears", fetchCalBears),
-    runAdapterWithTimeout("bampfa", fetchBampfa),
-    runAdapterWithTimeout("haas", fetchHaas),
-    runAdapterWithTimeout("berkeley_law", fetchBerkeleyLaw),
-    runAdapterWithTimeout("simons", fetchSimons),
-    runAdapterWithTimeout("ehub", fetchEHub),
-  ];
+  const adapterRuns: Array<{ name: SourceName; promise: Promise<AdapterRun> }> =
+    [
+      {
+        name: "livewhale",
+        promise: runAdapterWithTimeout("livewhale", fetchLiveWhale),
+      },
+      {
+        name: "callink",
+        promise: runAdapterWithTimeout("callink", fetchCallink),
+      },
+      {
+        name: "cal_performances",
+        promise: runAdapterWithTimeout(
+          "cal_performances",
+          fetchCalPerformances,
+        ),
+      },
+      {
+        name: "calbears",
+        promise: runAdapterWithTimeout("calbears", fetchCalBears),
+      },
+      { name: "bampfa", promise: runAdapterWithTimeout("bampfa", fetchBampfa) },
+      { name: "haas", promise: runAdapterWithTimeout("haas", fetchHaas) },
+      {
+        name: "berkeley_law",
+        promise: runAdapterWithTimeout("berkeley_law", fetchBerkeleyLaw),
+      },
+      { name: "simons", promise: runAdapterWithTimeout("simons", fetchSimons) },
+      { name: "ehub", promise: runAdapterWithTimeout("ehub", fetchEHub) },
+    ];
   if (apiKey) {
-    adapterPromises.push(
-      runAdapterWithTimeout("gemini", (options) =>
+    adapterRuns.push({
+      name: "gemini",
+      promise: runAdapterWithTimeout("gemini", (options) =>
         fetchGeminiLongTail(apiKey, options),
       ),
-    );
+    });
   } else {
     console.warn(
       "[orchestrator] API_KEY not set — skipping Gemini long-tail adapter",
     );
   }
 
-  const runs = await Promise.all(adapterPromises);
+  const settledRuns = await Promise.allSettled(
+    adapterRuns.map(({ promise }) => promise),
+  );
+  const runs: AdapterRun[] = settledRuns.map((result, index) => {
+    if (result.status === "fulfilled") {
+      return result.value;
+    }
+
+    const name = adapterRuns[index]?.name ?? "gemini";
+    const message =
+      result.reason instanceof Error
+        ? result.reason.message
+        : String(result.reason);
+    console.error(`[orchestrator] ${name} rejected unexpectedly: ${message}`);
+    return {
+      status: {
+        name,
+        ok: false,
+        count: 0,
+        duration_ms: 0,
+        error: `unexpected rejection: ${message}`,
+        fetched_at: new Date().toISOString(),
+      },
+      events: [],
+      filteredPast: 0,
+      invalid: 0,
+    };
+  });
 
   const allCanonical: CanonicalEvent[] = runs.flatMap((r) => r.events);
   const groundingSources: PublishedSource[] = runs.flatMap(

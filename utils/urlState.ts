@@ -41,6 +41,9 @@ export function parseUrlState(
 ): AppUrlState {
   const params = new URLSearchParams(search);
   const rawDateRange = params.get("date");
+  const rawSearchQuery = params.get("q")?.trim() ?? "";
+  const rawCategory = params.get("category");
+  const rawSource = params.get("source");
   const hasExplicitDateRange = Boolean(
     rawDateRange && VALID_DATE_RANGES.has(rawDateRange as DateRange),
   );
@@ -48,13 +51,15 @@ export function parseUrlState(
   const nextFilters: SearchFilters = {
     ...defaultFilters,
     dateRange: sanitizeDateRange(rawDateRange, defaultFilters.dateRange),
-    searchQuery: params.get("q")?.trim() ?? defaultFilters.searchQuery,
-    category: allowedCategories.includes(params.get("category") ?? "")
-      ? (params.get("category") ?? defaultFilters.category)
-      : defaultFilters.category,
-    source: allowedSources.includes(params.get("source") ?? "")
-      ? (params.get("source") ?? defaultFilters.source)
-      : defaultFilters.source,
+    searchQuery: rawSearchQuery || defaultFilters.searchQuery,
+    category:
+      rawCategory && allowedCategories.includes(rawCategory)
+        ? rawCategory
+        : defaultFilters.category,
+    source:
+      rawSource && allowedSources.includes(rawSource)
+        ? rawSource
+        : defaultFilters.source,
   };
 
   const rawEventId = params.get("event")?.trim() ?? "";

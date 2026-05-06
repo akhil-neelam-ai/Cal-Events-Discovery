@@ -50,13 +50,13 @@ jobs:
 
       - name: Checkout repository
         if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
         if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
@@ -120,8 +120,30 @@ jobs:
           echo "::warning::AUTOMATION_PR_TOKEN is not set."
           echo "::warning::The updater PR was created with GITHUB_TOKEN, so downstream pull_request workflows like browser-e2e will not run and auto-merge is skipped."
 
-      - name: Enable auto-merge for artifact update PR
+      - name: Wait for checks and merge artifact update PR
         if: ${{ steps.create_pr.outputs.pull-request-number && env.AUTOMATION_PR_TOKEN != '' }}
-        run: gh pr merge --auto --merge "${{ steps.create_pr.outputs.pull-request-number }}"
+        run: |
+          pr_number="${{ steps.create_pr.outputs.pull-request-number }}"
+
+          for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            if gh pr checks "${pr_number}" > /tmp/pr-checks.txt 2>&1; then
+              if [ -s /tmp/pr-checks.txt ]; then
+                cat /tmp/pr-checks.txt
+                break
+              fi
+            else
+              cat /tmp/pr-checks.txt || true
+            fi
+
+            if [ "${attempt}" = "12" ]; then
+              echo "::error::No PR checks appeared for #${pr_number}; refusing to merge automatically."
+              exit 1
+            fi
+
+            sleep 10
+          done
+
+          gh pr checks --watch --fail-fast "${pr_number}"
+          gh pr merge --merge "${pr_number}"
         env:
           GH_TOKEN: ${{ env.AUTOMATION_PR_TOKEN }}

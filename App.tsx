@@ -14,6 +14,7 @@ import { EventDetailOverlay } from "./components/EventDetailOverlay";
 import { ErrorStateView } from "./components/ErrorStateView";
 import { EventsResultsSection } from "./components/EventsResultsSection";
 import { LoadingStateView } from "./components/LoadingStateView";
+import { useDebouncedValue } from "./hooks/useDebouncedValue";
 import { useEventBrowserActions } from "./hooks/useEventBrowserActions";
 import { useEventBrowserState } from "./hooks/useEventBrowserState";
 import { useBackToTopVisibility } from "./hooks/useBackToTopVisibility";
@@ -115,6 +116,11 @@ export default function App() {
 
   const statusBanner = buildStatusBanner(statusReport);
   const { todayKey, tomorrowKey, nextWeekKey } = usePacificDateKeys();
+  const debouncedSearchQuery = useDebouncedValue(filters.searchQuery, 140);
+  const browserStateFilters = useMemo(
+    () => ({ ...filters, searchQuery: debouncedSearchQuery }),
+    [debouncedSearchQuery, filters],
+  );
 
   const resetAll = useCallback(() => {
     setFilters(DEFAULT_FILTERS);
@@ -177,7 +183,7 @@ export default function App() {
     emptyState,
   } = useEventBrowserState({
     allEvents,
-    filters,
+    filters: browserStateFilters,
     searchIndex,
     dismissedInterpretationKeys,
     selectedEventId,
@@ -197,7 +203,6 @@ export default function App() {
   } = useEventGridState({
     loading,
     filteredEvents,
-    filters,
     effectiveDateRange,
     prefersReducedMotion,
   });
