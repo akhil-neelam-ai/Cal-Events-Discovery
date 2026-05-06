@@ -40,6 +40,14 @@ export function useEventBrowserActions({
     latestFilteredEventsCountRef.current = filteredEventsCount;
   }, [filteredEventsCount]);
 
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchTimeoutRef]);
+
   const handleSearchChange = useCallback(
     (query: string) => {
       historyModeRef.current = "replace";

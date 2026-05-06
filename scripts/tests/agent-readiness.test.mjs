@@ -31,6 +31,8 @@ test("agent-readable static files are present", () => {
   for (const relativePath of [
     "public/robots.txt",
     "public/sitemap.xml",
+    "public/gtag-init.js",
+    "public/webmcp-tools.js",
     "public/llms.txt",
     "public/llms-full.txt",
     "public/openapi.json",
@@ -118,6 +120,7 @@ test("agent skills index contains valid SHA-256 digests", () => {
 
 test("homepage and Vercel config expose discovery hooks", () => {
   const html = readText("index.html");
+  const webmcpTools = readText("public/webmcp-tools.js");
   const vercel = readJson("vercel.json");
   const publicFiles = fs.readdirSync(publicDir);
   const securityHeadersRoute = vercel.routes.find(
@@ -125,8 +128,9 @@ test("homepage and Vercel config expose discovery hooks", () => {
   );
 
   assert.ok(publicFiles.includes("llms.txt"));
-  assert.match(html, /navigator\.modelContext\.registerTool/);
-  assert.match(html, /search_berkeley_events/);
+  assert.match(html, /src="\/webmcp-tools\.js"/);
+  assert.match(webmcpTools, /navigator\.modelContext\.registerTool/);
+  assert.match(webmcpTools, /search_berkeley_events/);
   assert.equal(
     securityHeadersRoute.headers["X-Content-Type-Options"],
     "nosniff",
@@ -136,6 +140,17 @@ test("homepage and Vercel config expose discovery hooks", () => {
     securityHeadersRoute.headers["Content-Security-Policy"],
     /frame-ancestors 'none'/,
   );
+  const scriptSrc =
+    securityHeadersRoute.headers["Content-Security-Policy"].match(
+      /script-src[^;]+/,
+    )?.[0];
+  assert.ok(scriptSrc);
+  assert.doesNotMatch(scriptSrc, /'unsafe-inline'/);
+  assert.match(
+    securityHeadersRoute.headers["Content-Security-Policy"],
+    /object-src 'none'/,
+  );
+  assert.ok(securityHeadersRoute.headers["Permissions-Policy"]);
   assert.equal(
     securityHeadersRoute.headers["Referrer-Policy"],
     "strict-origin-when-cross-origin",

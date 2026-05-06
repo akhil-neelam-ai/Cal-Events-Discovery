@@ -24,6 +24,9 @@ export function useEventGridState({
     VISIBLE_EVENT_BATCH_SIZE,
   );
   const previousDateRangeRef = useRef(effectiveDateRange);
+  const filteredEventsSignature = filteredEvents
+    .map((event) => event.id)
+    .join("\u0000");
 
   useEffect(() => {
     if (
@@ -46,7 +49,7 @@ export function useEventGridState({
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [filteredEvents, prefersReducedMotion]);
+  }, [filteredEventsSignature, prefersReducedMotion]);
 
   useEffect(() => {
     if (previousDateRangeRef.current === effectiveDateRange) {

@@ -61,7 +61,15 @@ export function inferEhubDate(
   const eventMonth = Number(month);
   let candidate = `${todayYear}-${month}-${day}`;
 
-  if (candidate < todayIso && todayMonth >= 11 && eventMonth <= 2) {
+  const daysPast =
+    (Date.parse(`${todayIso}T00:00:00Z`) -
+      Date.parse(`${candidate}T00:00:00Z`)) /
+    86_400_000;
+
+  if (
+    candidate < todayIso &&
+    ((todayMonth >= 11 && eventMonth <= 2) || daysPast > 180)
+  ) {
     candidate = `${todayYear + 1}-${month}-${day}`;
   }
 

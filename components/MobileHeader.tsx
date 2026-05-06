@@ -1,5 +1,4 @@
-import { useRef, useState } from "react";
-import { useId } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { formatPacificDateTime } from "../utils/eventDates";
 import {
@@ -22,6 +21,14 @@ export function MobileHeader({
   const [searchFocused, setSearchFocused] = useState(false);
   const [recents, setRecents] = useState<string[]>([]);
   const blurRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (blurRef.current) {
+        clearTimeout(blurRef.current);
+      }
+    };
+  }, []);
 
   return (
     <header

@@ -65,6 +65,10 @@ jobs:
         if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
         run: npm ci
 
+      - name: Audit dependencies
+        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
+        run: npm run audit:security
+
       - name: Generate events snapshot
         if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
         env:
@@ -125,7 +129,7 @@ jobs:
         run: |
           pr_number="${{ steps.create_pr.outputs.pull-request-number }}"
 
-          for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
+          for attempt in {1..30}; do
             if gh pr checks "${pr_number}" > /tmp/pr-checks.txt 2>&1; then
               if [ -s /tmp/pr-checks.txt ]; then
                 cat /tmp/pr-checks.txt
@@ -135,7 +139,7 @@ jobs:
               cat /tmp/pr-checks.txt || true
             fi
 
-            if [ "${attempt}" = "12" ]; then
+            if [ "${attempt}" = "30" ]; then
               echo "::error::No PR checks appeared for #${pr_number}; refusing to merge automatically."
               exit 1
             fi

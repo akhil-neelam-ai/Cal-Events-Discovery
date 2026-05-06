@@ -48,10 +48,11 @@ test("BAMPFA parser reads Google Calendar links", () => {
   );
 });
 
-test("E-Hub infers next-year dates across year rollover only", () => {
+test("E-Hub infers next-year dates for far-future announcements", () => {
   assert.equal(inferEhubDate("Jan 8", "2026-12-15"), "2027-01-08");
   assert.equal(inferEhubDate("Feb 3", "2026-12-15"), "2027-02-03");
-  assert.equal(inferEhubDate("Mar 3", "2026-12-15"), "2026-03-03");
+  assert.equal(inferEhubDate("Mar 3", "2026-10-15"), "2027-03-03");
+  assert.equal(inferEhubDate("Sep 3", "2026-10-15"), "2026-09-03");
   assert.equal(inferEhubDate("Apr 3", "2026-04-01"), "2026-04-03");
 });
 

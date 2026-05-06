@@ -1,14 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function useBackToTopVisibility(threshold = 800) {
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const visibleRef = useRef(showBackToTop);
 
   useEffect(() => {
     let frameId: number | null = null;
 
     const updateVisibility = () => {
       frameId = null;
-      setShowBackToTop(window.scrollY > threshold);
+      const nextVisible = window.scrollY > threshold;
+      if (visibleRef.current !== nextVisible) {
+        visibleRef.current = nextVisible;
+        setShowBackToTop(nextVisible);
+      }
     };
 
     const handleScroll = () => {
