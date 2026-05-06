@@ -54,7 +54,19 @@ const eventsOutPath = path.join(__dirname, "..", "public", "events.json");
 const statusOutPath = path.join(__dirname, "..", "public", "status.json");
 const indexOutPath = path.join(__dirname, "..", "public", "search-index.json");
 const ADAPTER_TIMEOUT_MS = 60_000;
-const MAX_FALLBACK_AGE_HOURS = Number(process.env.MAX_FALLBACK_AGE_HOURS ?? 48);
+function parseMaxFallbackAgeHours(value: string | undefined): number {
+  const parsed = Number(value ?? 48);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    throw new Error(
+      `MAX_FALLBACK_AGE_HOURS must be a non-negative number, got ${JSON.stringify(value)}`,
+    );
+  }
+  return parsed;
+}
+
+const MAX_FALLBACK_AGE_HOURS = parseMaxFallbackAgeHours(
+  process.env.MAX_FALLBACK_AGE_HOURS,
+);
 const STRICT_DATA_QUALITY = /^(1|true|yes)$/i.test(
   process.env.STRICT_DATA_QUALITY ?? "",
 );
@@ -565,6 +577,21 @@ async function main(): Promise<void> {
     }
   }
 
+  const qualityFailure = dataQualityFailure(recovery);
+  if (qualityFailure) {
+    writeStatus(
+      runs,
+      legacy.length,
+      duplicatesRemoved,
+      recovery,
+      false,
+      undefined,
+      true,
+    );
+    console.error(`[orchestrator] data quality gate failed: ${qualityFailure}`);
+    process.exit(1);
+  }
+
   const outputData = {
     events: legacy,
     sources: uniqueSources,
@@ -582,7 +609,6 @@ async function main(): Promise<void> {
     `[orchestrator] wrote search index (${stemCount} title-stems) → ${indexOutPath}`,
   );
 
-  const qualityFailure = dataQualityFailure(recovery);
   writeStatus(
     runs,
     legacy.length,
@@ -590,13 +616,8 @@ async function main(): Promise<void> {
     recovery,
     false,
     undefined,
-    Boolean(qualityFailure),
+    false,
   );
-
-  if (qualityFailure) {
-    console.error(`[orchestrator] data quality gate failed: ${qualityFailure}`);
-    process.exit(1);
-  }
 }
 
 function writeStatus(

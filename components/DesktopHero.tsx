@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { CAL_PHRASES, DESKTOP_HERO_PRESETS } from "../appConfig";
 import type { QuickFilterPreset } from "../appConfig";
@@ -31,6 +31,14 @@ export function DesktopHero({
   const [searchFocused, setSearchFocused] = useState(false);
   const [recents, setRecents] = useState<string[]>([]);
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (blurTimerRef.current) {
+        clearTimeout(blurTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleFocus = () => {
     if (blurTimerRef.current) {

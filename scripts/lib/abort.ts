@@ -23,6 +23,10 @@ export function abortableDelay(
   ms: number,
   signal: AbortSignal | undefined,
 ): Promise<void> {
+  if (!Number.isFinite(ms) || ms < 0) {
+    throw new Error(`Delay must be a non-negative finite number, got ${ms}`);
+  }
+
   throwIfAborted(signal);
 
   return new Promise((resolve, reject) => {

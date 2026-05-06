@@ -27,21 +27,32 @@ import { readAppUrlState, useUrlStateSync } from "./hooks/useUrlStateSync";
 import { initGA, trackPageView, trackEventClick } from "./utils/analytics";
 import { buildStatusBanner } from "./utils/statusUi";
 import { addRecentSearch } from "./utils/recentSearches";
+import type { StatusBannerData } from "./utils/statusUi";
 
-function readStatusBannerDismissed(): boolean {
+const STATUS_BANNER_DISMISS_PREFIX = "statusBannerDismissed:";
+
+function getStatusBannerDismissalKey(banner: StatusBannerData): string {
+  return `${STATUS_BANNER_DISMISS_PREFIX}${banner.tone}:${banner.title}:${banner.message}`;
+}
+
+function readStatusBannerDismissed(key: string | null): boolean {
+  if (!key) {
+    return false;
+  }
+
   try {
     return (
       typeof sessionStorage !== "undefined" &&
-      sessionStorage.getItem("statusBannerDismissed") === "1"
+      sessionStorage.getItem(key) === "1"
     );
   } catch {
     return false;
   }
 }
 
-function persistStatusBannerDismissed(): void {
+function persistStatusBannerDismissed(key: string): void {
   try {
-    sessionStorage.setItem("statusBannerDismissed", "1");
+    sessionStorage.setItem(key, "1");
   } catch {
     // Storage can be unavailable in private or locked-down browser contexts.
   }
@@ -106,15 +117,25 @@ export default function App() {
     });
   }, []);
 
-  const [bannerDismissed, setBannerDismissed] = useState(
-    readStatusBannerDismissed,
-  );
+  const statusBanner = buildStatusBanner(statusReport);
+  const statusBannerDismissalKey = statusBanner
+    ? getStatusBannerDismissalKey(statusBanner)
+    : null;
+  const [dismissedStatusBannerKey, setDismissedStatusBannerKey] = useState<
+    string | null
+  >(null);
+  const bannerDismissed =
+    dismissedStatusBannerKey === statusBannerDismissalKey ||
+    readStatusBannerDismissed(statusBannerDismissalKey);
   const dismissBanner = () => {
-    setBannerDismissed(true);
-    persistStatusBannerDismissed();
+    if (!statusBannerDismissalKey) {
+      return;
+    }
+
+    setDismissedStatusBannerKey(statusBannerDismissalKey);
+    persistStatusBannerDismissed(statusBannerDismissalKey);
   };
 
-  const statusBanner = buildStatusBanner(statusReport);
   const { todayKey, tomorrowKey, nextWeekKey } = usePacificDateKeys();
   const debouncedSearchQuery = useDebouncedValue(filters.searchQuery, 140);
   const browserStateFilters = useMemo(

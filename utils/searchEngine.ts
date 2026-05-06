@@ -421,24 +421,22 @@ const W = {
 } as const;
 
 function recencyBonus(dateStr: string): number {
-  try {
-    const time = new Date(dateStr).getTime();
-    if (Number.isNaN(time)) return 0;
-    const ms = time - Date.now();
-    const days = ms / 86_400_000;
-    if (days < 0 || days > 30) return 0;
-    return Math.round(W.recency * (1 - days / 30));
-  } catch {
-    return 0;
-  }
+  const time = new Date(dateStr).getTime();
+  if (Number.isNaN(time)) return 0;
+  const ms = time - Date.now();
+  const days = ms / 86_400_000;
+  if (days < 0 || days > 30) return 0;
+  return Math.round(W.recency * (1 - days / 30));
 }
 
 function parseHour(timeStr: string): number | null {
-  const m = timeStr.match(/(\d+):?\d*\s*(am|pm)/i);
+  const m = timeStr.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
   if (!m) return null;
+  if (m[2] && Number(m[2]) > 59) return null;
   let h = parseInt(m[1], 10);
-  if (m[2].toLowerCase() === "pm" && h !== 12) h += 12;
-  if (m[2].toLowerCase() === "am" && h === 12) h = 0;
+  if (h < 1 || h > 12) return null;
+  if (m[3].toLowerCase() === "pm" && h !== 12) h += 12;
+  if (m[3].toLowerCase() === "am" && h === 12) h = 0;
   return h;
 }
 

@@ -17,7 +17,9 @@ function DetailActions({
   directionsUrl: string | null;
   compact?: boolean;
 }) {
-  const [copied, setCopied] = useState(false);
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">(
+    "idle",
+  );
   const copyResetTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -28,28 +30,39 @@ function DetailActions({
     };
   }, []);
 
+  const showCopyState = useCallback((state: "copied" | "failed") => {
+    if (copyResetTimeoutRef.current !== null) {
+      window.clearTimeout(copyResetTimeoutRef.current);
+    }
+
+    setCopyState(state);
+    copyResetTimeoutRef.current = window.setTimeout(() => {
+      setCopyState("idle");
+      copyResetTimeoutRef.current = null;
+    }, 2000);
+  }, []);
+
   const handleCopyLink = useCallback(() => {
     if (!navigator.clipboard) {
+      showCopyState("failed");
       return;
     }
 
     void navigator.clipboard
       .writeText(window.location.href)
-      .then(() => {
-        if (copyResetTimeoutRef.current !== null) {
-          window.clearTimeout(copyResetTimeoutRef.current);
-        }
-
-        setCopied(true);
-        copyResetTimeoutRef.current = window.setTimeout(() => {
-          setCopied(false);
-          copyResetTimeoutRef.current = null;
-        }, 2000);
-      })
+      .then(() => showCopyState("copied"))
       .catch(() => {
-        // clipboard not available
+        showCopyState("failed");
       });
-  }, []);
+  }, [showCopyState]);
+
+  const copied = copyState === "copied";
+  const copyLabel =
+    copyState === "copied"
+      ? "Copied!"
+      : copyState === "failed"
+        ? "Copy failed"
+        : "Copy link";
 
   return compact ? (
     <div className="space-y-3">
@@ -110,7 +123,7 @@ function DetailActions({
               />
             </svg>
           )}
-          <span>{copied ? "Copied!" : "Copy link"}</span>
+          <span>{copyLabel}</span>
         </button>
       </div>
       {directionsUrl && (
@@ -194,7 +207,7 @@ function DetailActions({
             />
           </svg>
         )}
-        <span>{copied ? "Copied!" : "Copy link"}</span>
+        <span>{copyLabel}</span>
       </button>
       {directionsUrl && (
         <a
