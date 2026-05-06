@@ -131,6 +131,10 @@ test("homepage and Vercel config expose discovery hooks", () => {
   assert.match(html, /src="\/webmcp-tools\.js"/);
   assert.match(webmcpTools, /navigator\.modelContext\.registerTool/);
   assert.match(webmcpTools, /search_berkeley_events/);
+  assert.match(webmcpTools, /AbortController/);
+  assert.match(webmcpTools, /input = input \?\? \{\}/);
+  assert.match(webmcpTools, /matchedCategory/);
+  assert.match(webmcpTools, /tags: Array\.isArray/);
   assert.equal(
     securityHeadersRoute.headers["X-Content-Type-Options"],
     "nosniff",

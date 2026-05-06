@@ -30,12 +30,27 @@ export const ModalitySchema = z.enum([
 ]);
 export type Modality = z.infer<typeof ModalitySchema>;
 
+export const HttpUrlSchema = z
+  .string()
+  .url()
+  .refine(
+    (value) => {
+      try {
+        const protocol = new URL(value).protocol;
+        return protocol === "http:" || protocol === "https:";
+      } catch {
+        return false;
+      }
+    },
+    { message: "URL must use http or https" },
+  );
+
 export const CanonicalEventSchema = z.object({
   // Provenance
   source_name: SourceNameSchema,
   source_id: z.string().min(1),
-  source_url: z.string().url(),
-  evidence_url: z.string().url().optional(),
+  source_url: HttpUrlSchema,
+  evidence_url: HttpUrlSchema.optional(),
 
   // Identity
   title: z.string().min(2),
@@ -60,8 +75,8 @@ export const CanonicalEventSchema = z.object({
 
   // Engagement
   cost: z.string().default(""),
-  registration_url: z.string().url().optional(),
-  canonical_url: z.string().url(),
+  registration_url: HttpUrlSchema.optional(),
+  canonical_url: HttpUrlSchema,
 
   // Categorization
   categories: z.array(z.string()).default([]),

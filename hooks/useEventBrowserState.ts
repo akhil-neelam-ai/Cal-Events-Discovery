@@ -299,10 +299,8 @@ export function useEventBrowserState({
       return null;
     }
 
-    return filteredEvents.some((event) => event.id === selectedEventId)
-      ? selectedEventId
-      : null;
-  }, [allEvents, filteredEvents, selectedEventId]);
+    return selectedEventId;
+  }, [allEvents, selectedEventId]);
 
   const selectedEvent = useMemo(
     () =>

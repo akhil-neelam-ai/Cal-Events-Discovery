@@ -21,6 +21,12 @@ import { signalWithTimeout, type FetchOptions } from "../lib/abort.js";
 const BASE_URL = "https://simons.berkeley.edu";
 const API_URL = `${BASE_URL}/api/events`;
 const FETCH_TIMEOUT_MS = 30_000;
+const PT_DATE_FORMATTER = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Los_Angeles",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
 
 export interface FetchResult {
   events: CanonicalEvent[];
@@ -42,23 +48,13 @@ interface RawSimonsEvent {
 }
 
 function todayPT(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Los_Angeles",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
+  return PT_DATE_FORMATTER.format(new Date());
 }
 
 function ptDateOf(utcIso: string): string {
   const d = new Date(utcIso);
   if (isNaN(d.getTime())) return "";
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Los_Angeles",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(d);
+  return PT_DATE_FORMATTER.format(d);
 }
 
 /** Ensure an ISO timestamp has an explicit timezone suffix. */
