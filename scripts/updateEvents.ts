@@ -86,6 +86,45 @@ const CRITICAL_SOURCES = new Set<SourceName>(
   ALL_SOURCE_NAMES.filter((source) => source !== "gemini"),
 );
 
+function legacyTimeSortValue(time: string | undefined): number {
+  if (!time || /all\s*day/i.test(time)) {
+    return 0;
+  }
+
+  const match = time.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
+  if (!match) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  let hour = Number(match[1]);
+  const minute = Number(match[2] ?? 0);
+  const meridiem = match[3].toLowerCase();
+
+  if (hour < 1 || hour > 12 || minute < 0 || minute > 59) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  if (meridiem === "am" && hour === 12) {
+    hour = 0;
+  } else if (meridiem === "pm" && hour !== 12) {
+    hour += 12;
+  }
+
+  return hour * 60 + minute;
+}
+
+function compareLegacyEvents(
+  left: LegacyCalEvent,
+  right: LegacyCalEvent,
+): number {
+  return (
+    left.date.localeCompare(right.date) ||
+    legacyTimeSortValue(left.time) - legacyTimeSortValue(right.time) ||
+    left.title.localeCompare(right.title) ||
+    left.id.localeCompare(right.id)
+  );
+}
+
 interface AdapterRun {
   status: SourceStatus;
   events: CanonicalEvent[];
@@ -247,7 +286,7 @@ function appendLastGoodEvents(
   const merged = lastGood.filter((e) => !seenIds.has(e.id));
   if (merged.length === 0) return 0;
   legacy.push(...merged);
-  legacy.sort((a, b) => a.date.localeCompare(b.date));
+  legacy.sort(compareLegacyEvents);
   return merged.length;
 }
 
@@ -509,6 +548,7 @@ async function main(): Promise<void> {
   for (const run of runs) {
     markRecovery(run, legacy, existing, recovery);
   }
+  legacy.sort(compareLegacyEvents);
 
   // Build the source list shown in the UI
   const sourceLinks: PublishedSource[] = [

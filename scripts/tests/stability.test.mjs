@@ -27,6 +27,42 @@ function isUpcoming(date, today) {
   return date >= today;
 }
 
+function timeSortValue(time) {
+  if (!time || /all\s*day/i.test(time)) {
+    return 0;
+  }
+
+  const match = time.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
+  if (!match) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  let hour = Number(match[1]);
+  const minute = Number(match[2] ?? 0);
+  const meridiem = match[3].toLowerCase();
+
+  if (hour < 1 || hour > 12 || minute < 0 || minute > 59) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  if (meridiem === "am" && hour === 12) {
+    hour = 0;
+  } else if (meridiem === "pm" && hour !== 12) {
+    hour += 12;
+  }
+
+  return hour * 60 + minute;
+}
+
+function comparePublishedEvents(left, right) {
+  return (
+    left.date.localeCompare(right.date) ||
+    timeSortValue(left.time) - timeSortValue(right.time) ||
+    left.title.localeCompare(right.title) ||
+    left.id.localeCompare(right.id)
+  );
+}
+
 const published = readJson(eventsPath);
 const status = readJson(statusPath);
 const searchIndex = readJson(searchIndexPath);
@@ -79,6 +115,14 @@ test("published events artifact is internally consistent", () => {
     );
     assert.ok(!ids.has(event.id), `duplicate event id: ${event.id}`);
     ids.add(event.id);
+
+    if (index > 0) {
+      const previous = published.events[index - 1];
+      assert.ok(
+        comparePublishedEvents(previous, event) <= 0,
+        `events must be chronological: ${previous.date} ${previous.time} ${previous.title} came before ${event.date} ${event.time} ${event.title}`,
+      );
+    }
   }
 });
 

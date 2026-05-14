@@ -1,0 +1,57 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import { buildEventGroups } from "../../utils/eventDates.ts";
+
+function event(overrides = {}) {
+  return {
+    id: overrides.id ?? "event",
+    title: overrides.title ?? "Campus Event",
+    organizer: "UC Berkeley",
+    date: overrides.date ?? "2026-05-13",
+    time: overrides.time ?? "12:00 PM",
+    location: "Campus",
+    description: "Test event",
+    tags: ["Academic"],
+    url: "https://example.com",
+    source: "livewhale",
+  };
+}
+
+test("event groups are chronological even when caller input is relevance ordered", () => {
+  const groups = buildEventGroups([
+    event({
+      id: "june",
+      title: "June AI Workshop",
+      date: "2026-06-01",
+      time: "9:00 AM",
+    }),
+    event({
+      id: "may-late",
+      title: "May Late Talk",
+      date: "2026-05-13",
+      time: "5:00 PM",
+    }),
+    event({
+      id: "october",
+      title: "October AI Forum",
+      date: "2026-10-05",
+      time: "1:00 PM",
+    }),
+    event({
+      id: "may-early",
+      title: "May Early Talk",
+      date: "2026-05-13",
+      time: "9:00 AM",
+    }),
+  ]);
+
+  assert.deepEqual(
+    groups.map((group) => group.dateKey),
+    ["2026-05-13", "2026-06-01", "2026-10-05"],
+  );
+  assert.deepEqual(
+    groups[0].events.map((item) => item.id),
+    ["may-early", "may-late"],
+  );
+});
