@@ -203,7 +203,7 @@ function timeSortValue(time: string | undefined): number {
 export function buildEventGroups(events: CalEvent[]): EventGroup[] {
   const groups: EventGroup[] = [];
 
-  for (const event of events) {
+  for (const event of sortEventsChronologically(events)) {
     const dateKey = getPacificDateKey(event.date);
     const last = groups[groups.length - 1];
 

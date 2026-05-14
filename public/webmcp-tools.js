@@ -62,6 +62,36 @@
     );
   }
 
+  function timeSortValue(time) {
+    if (!time || /all\s*day/i.test(time)) return 0;
+    const match = String(time).match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
+    if (!match) return Number.MAX_SAFE_INTEGER;
+
+    let hour = Number(match[1]);
+    const minute = Number(match[2] || 0);
+    const meridiem = match[3].toLowerCase();
+
+    if (hour < 1 || hour > 12 || minute < 0 || minute > 59) {
+      return Number.MAX_SAFE_INTEGER;
+    }
+
+    if (meridiem === "am" && hour === 12) {
+      hour = 0;
+    } else if (meridiem === "pm" && hour !== 12) {
+      hour += 12;
+    }
+
+    return hour * 60 + minute;
+  }
+
+  function compareEventsChronologically(left, right) {
+    return (
+      String(left.date || "").localeCompare(String(right.date || "")) ||
+      timeSortValue(left.time) - timeSortValue(right.time) ||
+      String(left.title || "").localeCompare(String(right.title || ""))
+    );
+  }
+
   const searchEventsTool = {
     name: "search_berkeley_events",
     description:
@@ -141,6 +171,7 @@
           input.startDate ? event.date >= input.startDate : true,
         )
         .filter((event) => (input.endDate ? event.date <= input.endDate : true))
+        .sort(compareEventsChronologically)
         .slice(0, limit)
         .map((event) => {
           const matchedCategory = findMatchingCategory(event, input.category);
