@@ -175,45 +175,53 @@ export function useEventBrowserState({
 
   const todayEvents = useMemo(
     () =>
-      filterEventsByDateRange(
-        baseFilteredEvents,
-        "today",
-        todayKey,
-        nextWeekKey,
+      sortEventsChronologically(
+        filterEventsByDateRange(
+          baseFilteredEvents,
+          "today",
+          todayKey,
+          nextWeekKey,
+        ),
       ),
     [baseFilteredEvents, todayKey, nextWeekKey],
   );
 
   const tomorrowEvents = useMemo(
     () =>
-      filterEventsByDateRange(
-        baseFilteredEvents,
-        "tomorrow",
-        todayKey,
-        nextWeekKey,
-        tomorrowKey,
+      sortEventsChronologically(
+        filterEventsByDateRange(
+          baseFilteredEvents,
+          "tomorrow",
+          todayKey,
+          nextWeekKey,
+          tomorrowKey,
+        ),
       ),
     [baseFilteredEvents, todayKey, nextWeekKey, tomorrowKey],
   );
 
   const weekEvents = useMemo(
     () =>
-      filterEventsByDateRange(
-        baseFilteredEvents,
-        "week",
-        todayKey,
-        nextWeekKey,
+      sortEventsChronologically(
+        filterEventsByDateRange(
+          baseFilteredEvents,
+          "week",
+          todayKey,
+          nextWeekKey,
+        ),
       ),
     [baseFilteredEvents, todayKey, nextWeekKey],
   );
 
   const upcomingEvents = useMemo(
     () =>
-      filterEventsByDateRange(
-        baseFilteredEvents,
-        "upcoming",
-        todayKey,
-        nextWeekKey,
+      sortEventsChronologically(
+        filterEventsByDateRange(
+          baseFilteredEvents,
+          "upcoming",
+          todayKey,
+          nextWeekKey,
+        ),
       ),
     [baseFilteredEvents, todayKey, nextWeekKey],
   );

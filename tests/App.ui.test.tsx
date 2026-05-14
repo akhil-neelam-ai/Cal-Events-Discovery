@@ -269,6 +269,50 @@ describe("App UI regressions", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("shows searched upcoming results in chronological order", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "june-ai",
+        title: "Multi-Program AI Reunion Workshop",
+        date: "2026-06-01",
+        description: "AI AI AI workshop.",
+      }),
+      makeEvent({
+        id: "may-ai",
+        title: "Infrastructure for Science Agents",
+        date: "2026-05-14",
+        description: "AI agents talk.",
+      }),
+      makeEvent({
+        id: "october-ai",
+        title: "Trustworthy AI: Reliable Autonomy",
+        date: "2026-10-05",
+        description: "AI reliability talk.",
+      }),
+      makeEvent({
+        id: "later-june-ai",
+        title: "World Models and Social Reasoning",
+        date: "2026-06-08",
+        description: "AI reasoning lecture.",
+      }),
+    ]);
+
+    window.history.replaceState({}, "", "/?q=AI&date=upcoming");
+
+    render(<App />);
+
+    const pageText = document.body.textContent ?? "";
+    expect(pageText.indexOf("Infrastructure for Science Agents")).toBeLessThan(
+      pageText.indexOf("Multi-Program AI Reunion Workshop"),
+    );
+    expect(pageText.indexOf("Multi-Program AI Reunion Workshop")).toBeLessThan(
+      pageText.indexOf("World Models and Social Reasoning"),
+    );
+    expect(pageText.indexOf("World Models and Social Reasoning")).toBeLessThan(
+      pageText.indexOf("Trustworthy AI: Reliable Autonomy"),
+    );
+  });
+
   it("applies tonight as an evening search instead of showing all-day events", () => {
     mockFeedState = makeFeedState([
       makeEvent({
