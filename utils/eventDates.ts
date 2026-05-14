@@ -167,10 +167,37 @@ export function sortEventsChronologically(events: CalEvent[]): CalEvent[] {
     );
     if (dateCompare !== 0) return dateCompare;
     return (
-      (left.time || "").localeCompare(right.time || "") ||
+      timeSortValue(left.time) - timeSortValue(right.time) ||
       left.title.localeCompare(right.title)
     );
   });
+}
+
+function timeSortValue(time: string | undefined): number {
+  if (!time || /all\s*day/i.test(time)) {
+    return 0;
+  }
+
+  const match = time.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
+  if (!match) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  let hour = Number(match[1]);
+  const minute = Number(match[2] ?? 0);
+  const meridiem = match[3].toLowerCase();
+
+  if (hour < 1 || hour > 12 || minute < 0 || minute > 59) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  if (meridiem === "am" && hour === 12) {
+    hour = 0;
+  } else if (meridiem === "pm" && hour !== 12) {
+    hour += 12;
+  }
+
+  return hour * 60 + minute;
 }
 
 export function buildEventGroups(events: CalEvent[]): EventGroup[] {
