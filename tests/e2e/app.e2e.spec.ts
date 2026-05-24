@@ -165,7 +165,7 @@ test("preserves search and filter state across detail open and reload", async ({
   await page.getByRole("button", { name: /all events/i }).click();
   await page.getByRole("button", { name: /^arts$/i }).click();
 
-  const searchInput = page.getByRole("textbox", {
+  const searchInput = page.getByRole("combobox", {
     name: /search campus events/i,
   });
   await searchInput.fill("dreams");
