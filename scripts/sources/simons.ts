@@ -16,7 +16,8 @@
 
 import type { CanonicalEvent } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { signalWithTimeout, type FetchOptions } from "../lib/abort.js";
+import type { FetchOptions } from "../lib/abort.js";
+import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 
 const BASE_URL = "https://simons.berkeley.edu";
 const API_URL = `${BASE_URL}/api/events`;
@@ -77,15 +78,20 @@ export async function fetchSimons(
   const todayIso = todayPT();
   const fetched_at = new Date().toISOString();
 
-  console.log(`[simons] fetching ${API_URL}`);
-  const res = await fetch(API_URL, {
-    signal: signalWithTimeout(options.signal, FETCH_TIMEOUT_MS),
-    headers: {
-      "User-Agent": "Cal-Events-Discovery-Bot",
-      Accept: "application/json",
+  const res = await fetchWithRetry(
+    API_URL,
+    {
+      headers: {
+        "User-Agent": "Cal-Events-Discovery-Bot",
+        Accept: "application/json",
+      },
     },
-  });
-  if (!res.ok) throw new Error(`Simons API: ${res.status} ${res.statusText}`);
+    {
+      signal: options.signal,
+      timeoutMs: FETCH_TIMEOUT_MS,
+      label: "simons",
+    },
+  );
 
   const raw: RawSimonsEvent[] = await res.json();
 

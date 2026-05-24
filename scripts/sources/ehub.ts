@@ -7,7 +7,8 @@
  */
 
 import * as cheerio from "cheerio";
-import { signalWithTimeout, type FetchOptions } from "../lib/abort.js";
+import type { FetchOptions } from "../lib/abort.js";
+import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 import type { CanonicalEvent } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
 
@@ -79,19 +80,22 @@ export function inferEhubDate(
 export async function fetchEHub(
   options: FetchOptions = {},
 ): Promise<FetchResult> {
-  console.log(`[ehub] fetching ${EHUB_URL}`);
   const events: CanonicalEvent[] = [];
   let rawCount = 0;
   let filteredPast = 0;
   let invalid = 0;
 
-  const response = await fetch(EHUB_URL, {
-    signal: signalWithTimeout(options.signal, FETCH_TIMEOUT_MS),
-    headers: { "User-Agent": "Cal-Events-Discovery-Bot" },
-  });
-  if (!response.ok) {
-    throw new Error(`E-Hub fetch failed: ${response.status}`);
-  }
+  const response = await fetchWithRetry(
+    EHUB_URL,
+    {
+      headers: { "User-Agent": "Cal-Events-Discovery-Bot" },
+    },
+    {
+      signal: options.signal,
+      timeoutMs: FETCH_TIMEOUT_MS,
+      label: "ehub",
+    },
+  );
 
   const html = await response.text();
   const $ = cheerio.load(html);

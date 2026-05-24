@@ -17,7 +17,8 @@
  */
 
 import * as cheerio from "cheerio";
-import { signalWithTimeout, type FetchOptions } from "../lib/abort.js";
+import type { FetchOptions } from "../lib/abort.js";
+import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 import type { CanonicalEvent } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
 
@@ -158,16 +159,19 @@ async function fetchPage(
   options: FetchOptions,
 ): Promise<WpCpEvent[]> {
   const url = `${WP_API_BASE}?per_page=${PER_PAGE}&page=${page}&_fields=id,slug,link,title,content`;
-  const res = await fetch(url, {
-    signal: signalWithTimeout(options.signal, FETCH_TIMEOUT_MS),
-    headers: { "User-Agent": "Cal-Events-Discovery-Bot" },
-  });
-  if (!res.ok) {
-    if (res.status === 400) return []; // page out of range
-    throw new Error(
-      `WP API fetch failed: ${res.status} ${res.statusText} (page ${page})`,
-    );
-  }
+  const res = await fetchWithRetry(
+    url,
+    {
+      headers: { "User-Agent": "Cal-Events-Discovery-Bot" },
+    },
+    {
+      signal: options.signal,
+      timeoutMs: FETCH_TIMEOUT_MS,
+      label: "cal_performances",
+      acceptStatuses: [400],
+    },
+  );
+  if (res.status === 400) return []; // page out of range
   return (await res.json()) as WpCpEvent[];
 }
 
