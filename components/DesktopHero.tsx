@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { CAL_PHRASES, DESKTOP_HERO_PRESETS } from "../appConfig";
 import type { QuickFilterPreset } from "../appConfig";
+import { useSearchCombobox } from "../hooks/useSearchCombobox";
 import {
   addRecentSearch,
   clearRecentSearches,
@@ -31,6 +32,31 @@ export function DesktopHero({
   const [searchFocused, setSearchFocused] = useState(false);
   const [recents, setRecents] = useState<string[]>([]);
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const listboxRef = useRef<HTMLDivElement | null>(null);
+  const isSuggestionsOpen = searchFocused;
+
+  const closeSuggestions = () => setSearchFocused(false);
+
+  const handleSelectSuggestion = (query: string) => {
+    onSearchChange(query);
+    addRecentSearch(query);
+    setRecents(getRecentSearches());
+    closeSuggestions();
+  };
+
+  const {
+    suggestions,
+    activeIndex,
+    activeDescendantId,
+    handleInputKeyDown,
+    getItemProps,
+    suggestionCount,
+  } = useSearchCombobox({
+    isOpen: isSuggestionsOpen,
+    recents,
+    onSelect: handleSelectSuggestion,
+    onClose: closeSuggestions,
+  });
 
   useEffect(() => {
     return () => {
@@ -49,14 +75,7 @@ export function DesktopHero({
   };
 
   const handleBlur = () => {
-    blurTimerRef.current = setTimeout(() => setSearchFocused(false), 150);
-  };
-
-  const handleSelectSuggestion = (query: string) => {
-    onSearchChange(query);
-    addRecentSearch(query);
-    setRecents(getRecentSearches());
-    setSearchFocused(false);
+    blurTimerRef.current = setTimeout(() => closeSuggestions(), 150);
   };
 
   return (
@@ -130,6 +149,7 @@ export function DesktopHero({
                 Search campus events
               </label>
               <svg
+                aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
                 fill="none"
@@ -147,26 +167,50 @@ export function DesktopHero({
                 id={inputId}
                 type="text"
                 name="event-search"
+                role="combobox"
+                aria-expanded={isSuggestionsOpen}
+                aria-controls="search-suggestions"
+                aria-autocomplete="list"
+                aria-activedescendant={activeDescendantId}
                 aria-label="Search campus events"
                 autoComplete="off"
                 placeholder="Search events, speakers, topics, or venues…"
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-5 text-base text-slate-900 outline-none transition focus:border-berkeley-medblue focus:bg-white focus:ring-2 focus:ring-berkeley-gold/50"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-5 text-base text-slate-900 outline-none transition focus:border-berkeley-medblue focus:bg-white focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
                 value={searchQuery}
                 onChange={(event) => onSearchChange(event.target.value)}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 onKeyDown={(event) => {
+                  handleInputKeyDown(event);
+                  if (event.defaultPrevented) {
+                    return;
+                  }
                   if (event.key === "Enter" && searchQuery.trim()) {
                     const trimmed = searchQuery.trim();
                     onSearchChange(trimmed);
                     addRecentSearch(trimmed);
-                    setSearchFocused(false);
+                    closeSuggestions();
                   }
                 }}
+                aria-describedby={
+                  isSuggestionsOpen && suggestionCount > 0
+                    ? "search-suggestion-count-desktop"
+                    : undefined
+                }
               />
-              {searchFocused && (
+              {isSuggestionsOpen && suggestionCount > 0 && (
+                <span id="search-suggestion-count-desktop" className="sr-only">
+                  {suggestionCount} suggestions available. Use up and down
+                  arrows to navigate.
+                </span>
+              )}
+              {isSuggestionsOpen && (
                 <SearchSuggestionsDropdown
                   recents={recents}
+                  suggestions={suggestions}
+                  activeIndex={activeIndex}
+                  getItemProps={getItemProps}
+                  listboxRef={listboxRef}
                   placement="inline"
                   onSelect={handleSelectSuggestion}
                   onClear={() => {
@@ -186,7 +230,7 @@ export function DesktopHero({
                   key={preset.label}
                   type="button"
                   onClick={() => onPresetSelect(preset)}
-                  className="rounded-full border border-[rgba(253,181,21,0.5)] bg-[rgba(253,181,21,0.08)] px-4 py-2 text-sm font-medium text-[#003262] transition hover:border-[#FDB515] hover:bg-[rgba(253,181,21,0.18)]"
+                  className="rounded-full border border-[rgba(253,181,21,0.5)] bg-[rgba(253,181,21,0.08)] px-4 py-2 text-sm font-medium text-[#003262] transition hover:border-[#FDB515] hover:bg-[rgba(253,181,21,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
                 >
                   {preset.label}
                 </button>

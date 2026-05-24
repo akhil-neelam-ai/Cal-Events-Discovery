@@ -34,6 +34,7 @@ import type {
 import type { FetchOptions } from "./lib/abort.js";
 import { dedupeEvents } from "./lib/dedupe.js";
 import { projectToLegacy } from "./lib/normalize.js";
+import { atomicWriteJsonSync } from "./lib/atomicWrite.js";
 import { fetchLiveWhale } from "./sources/livewhale.js";
 
 const LIVEWHALE_HEALTHY_THRESHOLD = 100;
@@ -632,18 +633,26 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  const dataAgeHours =
+    typeof recovery.fallbackAgeHours === "number"
+      ? recovery.fallbackAgeHours
+      : 0;
+  const degradedSourceList = Array.from(recovery.degradedSources);
+
   const outputData = {
     events: legacy,
     sources: uniqueSources,
     lastUpdated: Date.now(),
+    data_age_hours: dataAgeHours,
+    degraded_sources: degradedSourceList,
   };
-  fs.writeFileSync(eventsOutPath, JSON.stringify(outputData, null, 2));
+  atomicWriteJsonSync(eventsOutPath, outputData, 2);
   console.log(
     `[orchestrator] wrote ${legacy.length} events → ${eventsOutPath}`,
   );
 
   const searchIndex = buildSearchIndex(legacy);
-  fs.writeFileSync(indexOutPath, JSON.stringify(searchIndex));
+  atomicWriteJsonSync(indexOutPath, searchIndex);
   const stemCount = Object.keys(searchIndex.t).length;
   console.log(
     `[orchestrator] wrote search index (${stemCount} title-stems) → ${indexOutPath}`,
@@ -696,7 +705,7 @@ function writeStatus(
     fallback_sources: fallbackSources,
     degraded_sources: degradedSources,
   };
-  fs.writeFileSync(statusOutPath, JSON.stringify(report, null, 2));
+  atomicWriteJsonSync(statusOutPath, report, 2);
   console.log(`[orchestrator] wrote status report → ${statusOutPath}`);
 }
 

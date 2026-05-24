@@ -370,21 +370,22 @@ test("mixed temporal+keyword query preserves keyword tokens", () => {
   );
 });
 
-test('real search: "tonight" is evening-only, not all-day or morning', () => {
+test('real search: "tonight" keeps all-day events and excludes morning times', () => {
   const output = searchEvents(events, "tonight", searchIndex);
 
   assert.equal(output.plan.filters.dateRange, "today");
   assert.equal(output.plan.filters.timeOfDay, "evening");
   assert.ok(output.results.length > 0, '"tonight" should find evening events');
-  assert.ok(
-    output.results.every((event) => {
-      const time = String(event.time ?? "").toLowerCase();
-      return (
-        !time.includes("all day") && !/\b(9|10|11):\d\d\s*am\b/i.test(time)
-      );
-    }),
-    '"tonight" should not include all-day or morning events',
-  );
+
+  for (const event of output.results) {
+    const time = String(event.time ?? "").toLowerCase();
+    assert.ok(
+      time.includes("all day") ||
+        /\b(5|6|7|8|9|10|11):\d\d\s*pm\b/i.test(time) ||
+        /\b12:\d\d\s*am\b/i.test(time),
+      `"tonight" returned unexpected time "${event.time}" for ${event.id}`,
+    );
+  }
 });
 
 test('real search: "cal games" returns sports-only results', () => {

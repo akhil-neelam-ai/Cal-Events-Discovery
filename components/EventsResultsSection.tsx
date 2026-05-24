@@ -1,5 +1,6 @@
 import type { CalEvent, SearchFilters } from "../types";
-import { formatPacificDateTime, type EventGroup } from "../utils/eventDates";
+import { useUpdatedStatusCopy } from "../hooks/useLiveTimestamp";
+import type { EventGroup } from "../utils/eventDates";
 import type { EmptyStateConfig } from "../utils/emptyState";
 import type { InterpretedChip } from "../utils/searchEngine";
 import { EmptyStateCard } from "./EmptyStateCard";
@@ -46,6 +47,8 @@ export function EventsResultsSection({
   onEventClick: (event: CalEvent) => void;
   onLoadMore: () => void;
 }) {
+  const updatedCopy = useUpdatedStatusCopy(lastUpdated);
+
   return (
     <>
       {fallbackBannerCopy && (
@@ -68,10 +71,8 @@ export function EventsResultsSection({
               ({filteredEvents.length})
             </span>
           </h2>
-          {lastUpdated && (
-            <p className="mt-1 text-sm text-slate-500">
-              Updated {formatPacificDateTime(lastUpdated)}
-            </p>
+          {updatedCopy && (
+            <p className="mt-1 text-sm text-slate-500">{updatedCopy}</p>
           )}
         </div>
       </div>

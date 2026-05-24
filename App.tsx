@@ -63,6 +63,8 @@ export default function App() {
   const {
     allEvents,
     lastUpdated,
+    dataAgeHours,
+    degradedSources,
     loading,
     statusReport,
     searchIndex,
@@ -277,6 +279,8 @@ export default function App() {
         statusBanner={statusBanner}
         bannerDismissed={bannerDismissed}
         onDismissBanner={dismissBanner}
+        dataAgeHours={dataAgeHours}
+        degradedSources={degradedSources}
       />
 
       {/* Main Content */}

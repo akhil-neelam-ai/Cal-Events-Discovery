@@ -3,11 +3,11 @@ name: Update Events Daily
 on:
   schedule:
     # GitHub cron is UTC-only, so run at both 11:00 and 12:00 UTC.
-    # A gate step below maps the triggering cron to the active Pacific offset
+    # schedule-gate maps the triggering cron to the active Pacific offset
     # so delayed runs still execute on the intended local 4:00 AM schedule.
     - cron: "0 11 * * *"
     - cron: "0 12 * * *"
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch:
 
 concurrency:
   group: update-events-main
@@ -22,14 +22,14 @@ permissions:
   issues: write
 
 jobs:
-  update-events:
+  schedule-gate:
+    if: ${{ github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-
+    outputs:
+      should_run: ${{ steps.gate.outputs.should_run }}
     steps:
       - name: Gate scheduled runs to 4:00 AM Pacific
-        id: schedule_gate
-        if: ${{ github.event_name == 'schedule' }}
+        id: gate
         run: |
           trigger_cron='${{ github.event.schedule }}'
           pacific_offset="$(TZ=America/Los_Angeles date +%z)"
@@ -42,40 +42,44 @@ jobs:
               ;;
           esac
 
-          echo "trigger_cron=${trigger_cron}" >> "$GITHUB_OUTPUT"
-          echo "pacific_offset=${pacific_offset}" >> "$GITHUB_OUTPUT"
           echo "should_run=${should_run}" >> "$GITHUB_OUTPUT"
 
           if [ "$should_run" != "true" ]; then
             echo "Skipping scheduled run triggered by '${trigger_cron}' with Pacific offset ${pacific_offset}."
           fi
 
+  update-events:
+    needs: schedule-gate
+    if: |
+      always() && (
+        github.event_name == 'workflow_dispatch' ||
+        (needs.schedule-gate.result == 'success' && needs.schedule-gate.outputs.should_run == 'true')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
       - name: Require automation token for scheduled runs
-        if: ${{ github.event_name == 'schedule' && steps.schedule_gate.outputs.should_run == 'true' && env.AUTOMATION_PR_TOKEN == '' }}
+        if: ${{ github.event_name == 'schedule' && env.AUTOMATION_PR_TOKEN == '' }}
         run: |
-          echo "::error::AUTOMATION_PR_TOKEN is required for scheduled daily updates."
-          echo "::error::Without it, automation PRs cannot trigger downstream checks or auto-merge, leaving production data stale."
+          echo "::error::AUTOMATION_PR_TOKEN required for scheduled runs — see README"
           exit 1
 
       - name: Checkout repository
-        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
         uses: actions/setup-node@v6
         with:
           node-version: "22"
           cache: npm
 
       - name: Install dependencies
-        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
         run: npm ci
 
       - name: Generate events snapshot
-        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
         env:
           API_KEY: ${{ secrets.API_KEY }}
           STRICT_DATA_QUALITY: "true"
@@ -95,7 +99,6 @@ jobs:
           done
 
       - name: Check feed health
-        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
         env:
           BLOCK_ON_DEGRADED: "true"
           FEED_STALE_HOURS: "36"
@@ -103,16 +106,12 @@ jobs:
         run: node scripts/checkFeedHealth.mjs
 
       - name: Validate published artifacts
-        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
         run: npm run validate
 
       - name: Create artifact update pull request
-        if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
         id: create_pr
         uses: peter-evans/create-pull-request@v8
         with:
-          # A dedicated token lets the automation PR trigger downstream
-          # pull_request workflows like browser-e2e and be auto-merged later.
           token: ${{ env.AUTOMATION_PR_TOKEN || github.token }}
           branch: automation/update-events
           base: main

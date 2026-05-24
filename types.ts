@@ -14,6 +14,9 @@ export interface GroundingSource {
 export interface SearchResponse {
   events: CalEvent[];
   sources: GroundingSource[];
+  lastUpdated?: number;
+  data_age_hours?: number;
+  degraded_sources?: string[];
 }
 
 export type SourceStatus = PipelineSourceStatus;

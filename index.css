@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role="button"]:focus-visible,
+  [role="combobox"]:focus-visible,
+  [role="option"]:focus-visible {
+    @apply outline-none ring-2 ring-berkeley-gold ring-offset-2;
+  }
+}
+
 body {
   font-family: 'Inter', sans-serif;
 }

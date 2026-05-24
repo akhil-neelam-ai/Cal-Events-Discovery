@@ -22,15 +22,10 @@ import * as cheerio from "cheerio";
 import type { CanonicalEvent, SourceName } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
 import { deriveFrontendTags } from "../lib/normalize.js";
-import {
-  abortableDelay,
-  signalWithTimeout,
-  type FetchOptions,
-} from "../lib/abort.js";
+import type { FetchOptions } from "../lib/abort.js";
+import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 
 const FETCH_TIMEOUT_MS = 30_000;
-const MAX_FETCH_ATTEMPTS = 3;
-const RETRY_DELAY_MS = 1_500;
 const PER_PAGE = 100;
 const MAX_PAGES = 10;
 
@@ -125,33 +120,23 @@ async function fetchPage(
   logPrefix: string,
   options: FetchOptions,
 ): Promise<TribeResponse> {
-  let lastErr = "";
-  for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
-    try {
-      const res = await fetch(url, {
-        signal: signalWithTimeout(options.signal, FETCH_TIMEOUT_MS),
-        headers: {
-          "User-Agent": "Cal-Events-Discovery-Bot",
-          Accept: "application/json",
-        },
-        redirect: "follow",
-      });
-      if (!res.ok) {
-        lastErr = `${res.status} ${res.statusText}`;
-        console.warn(`${logPrefix} non-2xx on attempt ${attempt}: ${lastErr}`);
-      } else {
-        return (await res.json()) as TribeResponse;
-      }
-    } catch (err) {
-      lastErr = err instanceof Error ? err.message : String(err);
-      console.warn(
-        `${logPrefix} fetch error on attempt ${attempt}: ${lastErr}`,
-      );
-    }
-    if (attempt < MAX_FETCH_ATTEMPTS)
-      await abortableDelay(RETRY_DELAY_MS * attempt, options.signal);
-  }
-  throw new Error(`Tribe fetch failed for ${url}: ${lastErr}`);
+  const res = await fetchWithRetry(
+    url,
+    {
+      headers: {
+        "User-Agent": "Cal-Events-Discovery-Bot",
+        Accept: "application/json",
+      },
+      redirect: "follow",
+    },
+    {
+      signal: options.signal,
+      timeoutMs: FETCH_TIMEOUT_MS,
+      label: logPrefix.replace(/^\[|\]$/g, ""),
+    },
+  );
+
+  return (await res.json()) as TribeResponse;
 }
 
 /** Tribe returns `venue: false` when there's none — normalize to a plain object. */
@@ -326,7 +311,16 @@ export async function fetchTribe(
     }
 
     // Tribe gives a next_rest_url when more pages exist; stop when exhausted.
-    pageUrl = data.next_rest_url ?? null;
+    if (data.next_rest_url) {
+      pageUrl = data.next_rest_url;
+    } else if (
+      typeof data.total_pages === "number" &&
+      page < data.total_pages
+    ) {
+      pageUrl = `${baseApi}?per_page=${PER_PAGE}&start_date=${todayIso}&status=publish&page=${page + 1}`;
+    } else {
+      pageUrl = null;
+    }
   }
 
   console.log(

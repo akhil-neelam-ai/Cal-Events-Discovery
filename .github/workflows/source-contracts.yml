@@ -3,6 +3,11 @@ name: Source Contracts
 on:
   schedule:
     - cron: "0 17 * * 1"
+  pull_request:
+    paths:
+      - "scripts/sources/**"
+      - "scripts/lib/fetchWithRetry.ts"
+      - "scripts/runSourceContracts.mjs"
   workflow_dispatch:
 
 permissions:

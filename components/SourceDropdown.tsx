@@ -166,13 +166,17 @@ export function SourceDropdown({
         aria-expanded={open}
         onClick={() => (open ? closeMenu() : openMenu())}
         onKeyDown={handleTriggerKey}
-        className={triggerClasses}
+        className={
+          triggerClasses +
+          " focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+        }
       >
         <span className="font-medium">
           {selected.label}{" "}
           <span className="opacity-70">({selected.count})</span>
         </span>
         <svg
+          aria-hidden="true"
           className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`}
           fill="none"
           viewBox="0 0 24 24"
