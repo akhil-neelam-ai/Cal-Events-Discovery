@@ -1,0 +1,60 @@
+name: Production Smoke Test
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: production-smoke-main
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Verify production artifacts
+        env:
+          PRODUCTION_URL: https://cal-events.com
+          MAX_STATUS_AGE_HOURS: "36"
+        run: |
+          set -euo pipefail
+
+          echo "Checking ${PRODUCTION_URL}"
+
+          curl -fsS "${PRODUCTION_URL}/" -o /dev/null
+          curl -fsS "${PRODUCTION_URL}/events.json" | jq -e '.events | length > 0'
+          curl -fsS "${PRODUCTION_URL}/status.json" | jq -e '.generated_at and (.total_events | tonumber) > 0'
+
+          generated_at="$(curl -fsS "${PRODUCTION_URL}/status.json" | jq -r '.generated_at')"
+          generated_epoch="$(date -u -d "${generated_at}" +%s)"
+          now_epoch="$(date -u +%s)"
+          age_hours="$(( (now_epoch - generated_epoch) / 3600 ))"
+
+          echo "Production status age: ${age_hours}h"
+          if [ "${age_hours}" -gt "${MAX_STATUS_AGE_HOURS}" ]; then
+            echo "::error::Production status.json is ${age_hours}h old (threshold ${MAX_STATUS_AGE_HOURS}h)"
+            exit 1
+          fi
+
+          echo "Production smoke test passed"
+
+  notify-failure:
+    needs: smoke
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Notify production smoke failure
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_NAME: Production Smoke Test
+          FAILURE_CONTEXT: live production artifact checks
+        run: node scripts/notifyPipelineFailure.mjs

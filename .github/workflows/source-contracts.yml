@@ -1,0 +1,39 @@
+name: Source Contracts
+
+on:
+  schedule:
+    - cron: "0 17 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  source-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Run live source contract checks
+        run: node scripts/runSourceContracts.mjs
+
+  notify-failure:
+    needs: source-contracts
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Notify contract failure
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_NAME: Source Contracts
+          FAILURE_CONTEXT: live Berkeley source contract checks
+        run: node scripts/notifyPipelineFailure.mjs
