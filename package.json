@@ -21,7 +21,8 @@
     "test:e2e": "npm run build && playwright test",
     "test:e2e:headed": "npm run build && playwright test --headed",
     "audit:security": "npm audit --audit-level=moderate",
-    "validate": "npm run lint && npm run format:check && node --import tsx/esm --test scripts/tests/*.test.mjs && npm run test:ui",
+    "typecheck": "tsc --noEmit",
+    "validate": "npm run lint && npm run format:check && npm run typecheck && node --import tsx/esm --test scripts/tests/*.test.mjs && npm run test:ui",
     "test": "npm run validate",
     "update-events": "tsx scripts/updateEvents.ts"
   },

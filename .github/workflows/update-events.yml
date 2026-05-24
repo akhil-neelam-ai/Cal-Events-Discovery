@@ -19,10 +19,12 @@ env:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
 
 jobs:
   update-events:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
       - name: Gate scheduled runs to 4:00 AM Pacific
@@ -47,6 +49,13 @@ jobs:
           if [ "$should_run" != "true" ]; then
             echo "Skipping scheduled run triggered by '${trigger_cron}' with Pacific offset ${pacific_offset}."
           fi
+
+      - name: Require automation token for scheduled runs
+        if: ${{ github.event_name == 'schedule' && steps.schedule_gate.outputs.should_run == 'true' && env.AUTOMATION_PR_TOKEN == '' }}
+        run: |
+          echo "::error::AUTOMATION_PR_TOKEN is required for scheduled daily updates."
+          echo "::error::Without it, automation PRs cannot trigger downstream checks or auto-merge, leaving production data stale."
+          exit 1
 
       - name: Checkout repository
         if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
@@ -87,6 +96,10 @@ jobs:
 
       - name: Check feed health
         if: ${{ github.event_name != 'schedule' || steps.schedule_gate.outputs.should_run == 'true' }}
+        env:
+          BLOCK_ON_DEGRADED: "true"
+          FEED_STALE_HOURS: "36"
+          MAX_FALLBACK_AGE_HOURS: "48"
         run: node scripts/checkFeedHealth.mjs
 
       - name: Validate published artifacts
@@ -163,3 +176,20 @@ jobs:
           gh pr merge --merge "${pr_number}"
         env:
           GH_TOKEN: ${{ env.AUTOMATION_PR_TOKEN }}
+
+  notify-failure:
+    needs: update-events
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Notify pipeline failure
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_NAME: Update Events Daily
+          FAILURE_CONTEXT: update-events job
+        run: node scripts/notifyPipelineFailure.mjs

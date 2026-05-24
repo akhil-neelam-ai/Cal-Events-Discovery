@@ -9,6 +9,8 @@
  * anything that fails. Failures are non-fatal — the orchestrator continues.
  */
 
+import { createHash } from "node:crypto";
+
 import { GoogleGenAI } from "@google/genai";
 import {
   abortableDelay,
@@ -21,6 +23,23 @@ import { CanonicalEventSchema } from "../lib/schema.js";
 const MAX_ATTEMPTS = 4;
 const BACKOFF_MS = [15_000, 45_000, 90_000]; // longer waits for 503 congestion
 const MAX_EVENTS = 12;
+
+export function geminiSourceId(
+  title: string,
+  start_at: string,
+  canonical_url: string,
+): string {
+  const normalized = [
+    title.trim().toLowerCase(),
+    start_at.slice(0, 10),
+    canonical_url.trim().toLowerCase(),
+  ].join("|");
+  const hash = createHash("sha256")
+    .update(normalized)
+    .digest("hex")
+    .slice(0, 16);
+  return `gemini_${hash}`;
+}
 
 export function extractJsonArray(text: string): unknown[] | null {
   const stripped = text
@@ -178,7 +197,11 @@ If you cannot find ${MAX_EVENTS} events that satisfy ALL requirements, return fe
 
     const candidate: CanonicalEvent = {
       source_name: "gemini",
-      source_id: `gemini_${dateOnly.replace(/-/g, "")}_${i + 1}`,
+      source_id: geminiSourceId(
+        String(raw.title ?? ""),
+        start_at,
+        canonicalUrl,
+      ),
       source_url: "https://gemini.google.com/",
       evidence_url: canonicalUrl || undefined,
       title: String(raw.title ?? ""),
