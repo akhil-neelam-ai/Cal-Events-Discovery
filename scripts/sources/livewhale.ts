@@ -14,6 +14,7 @@ import {
   signalWithTimeout,
   type FetchOptions,
 } from "../lib/abort.js";
+import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 import type { CanonicalEvent } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
 import { deriveFrontendTags, isoDateInPT } from "../lib/normalize.js";
@@ -351,39 +352,44 @@ async function fetchFeed(
   options: FetchOptions = {},
 ): Promise<Record<string, unknown>> {
   let lastErr = "";
+  const label = minEvents === 0 ? "livewhale-group" : "livewhale";
+
   for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
-    console.log(
-      `[livewhale] fetching ${url} (attempt ${attempt}/${MAX_FETCH_ATTEMPTS})`,
-    );
     try {
-      const res = await fetch(url, {
-        signal: signalWithTimeout(options.signal, FETCH_TIMEOUT_MS),
-        headers: { "User-Agent": "Cal-Events-Discovery-Bot" },
-      });
-      if (!res.ok) {
-        lastErr = `${res.status} ${res.statusText}`;
-        console.warn(`[livewhale] non-2xx (${lastErr})`);
-      } else {
-        const ics = await res.text();
-        const parsed = ical.sync.parseICS(ics);
-        const veventCount = Object.values(parsed).filter(
-          (c) => (c as { type?: string }).type === "VEVENT",
-        ).length;
-        if (veventCount >= minEvents) {
-          return parsed;
-        }
-        lastErr = `empty/short feed (${veventCount} VEVENTs, need ≥ ${minEvents})`;
-        console.warn(`[livewhale] ${lastErr}`);
-        // For group feeds a short response is often valid (small department) — don't retry
-        if (minEvents === 0) return parsed;
+      const res = await fetchWithRetry(
+        url,
+        {
+          headers: { "User-Agent": "Cal-Events-Discovery-Bot" },
+        },
+        {
+          signal: options.signal,
+          timeoutMs: FETCH_TIMEOUT_MS,
+          label,
+          maxAttempts: 1,
+        },
+      );
+      const ics = await res.text();
+      const parsed = ical.sync.parseICS(ics);
+      const veventCount = Object.values(parsed).filter(
+        (c) => (c as { type?: string }).type === "VEVENT",
+      ).length;
+      if (veventCount >= minEvents) {
+        return parsed;
       }
+
+      lastErr = `empty/short feed (${veventCount} VEVENTs, need ≥ ${minEvents})`;
+      console.warn(`[${label}] ${lastErr}`);
+      if (minEvents === 0) return parsed;
     } catch (err) {
       lastErr = err instanceof Error ? err.message : String(err);
-      console.warn(`[livewhale] fetch error: ${lastErr}`);
+      console.warn(`[${label}] fetch error: ${lastErr}`);
     }
-    if (attempt < MAX_FETCH_ATTEMPTS)
+
+    if (attempt < MAX_FETCH_ATTEMPTS) {
       await abortableDelay(EMPTY_FEED_RETRY_DELAY_MS * attempt, options.signal);
+    }
   }
+
   throw new Error(
     `LiveWhale fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr}`,
   );

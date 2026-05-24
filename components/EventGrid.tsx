@@ -2,7 +2,7 @@ import React from "react";
 
 import { trackExternalLink } from "../utils/analytics";
 import type { EventGroup } from "../utils/eventDates";
-import { formatEventDate } from "../utils/eventDates";
+import { formatRelativeEventDate } from "../utils/eventDates";
 import { getCategoryStyle, isHomeGame } from "../utils/eventPresentation";
 import { CalEvent, SearchFilters } from "../types";
 import { SourceBadge } from "./SourceBadge";
@@ -13,7 +13,7 @@ export function EventGrid({
   visibleEventsCount,
   hiddenEventCount,
   shouldAnimateCards,
-  effectiveDateRange,
+  effectiveDateRange: _effectiveDateRange,
   onEventClick,
   onLoadMore,
 }: {
@@ -101,6 +101,7 @@ export function EventGrid({
                             className="flex-shrink-0 rounded-full p-1.5 text-slate-300 transition hover:bg-white/80 hover:text-berkeley-blue"
                           >
                             <svg
+                              aria-hidden="true"
                               className="h-3.5 w-3.5"
                               fill="none"
                               viewBox="0 0 24 24"
@@ -133,6 +134,7 @@ export function EventGrid({
                         <div className="space-y-1.5 text-xs text-slate-500">
                           <div className="flex items-center gap-1.5">
                             <svg
+                              aria-hidden="true"
                               className="h-3.5 w-3.5 flex-shrink-0 text-[#FDB515]"
                               fill="none"
                               viewBox="0 0 24 24"
@@ -146,9 +148,7 @@ export function EventGrid({
                               />
                             </svg>
                             <span className="font-medium text-slate-700">
-                              {effectiveDateRange !== "today" &&
-                                `${formatEventDate(event.date)} · `}
-                              {event.time || "All day"}
+                              {formatRelativeEventDate(event)}
                             </span>
                             {event.location && (
                               <>
@@ -161,6 +161,7 @@ export function EventGrid({
                           </div>
                           <div className="flex items-center gap-1.5">
                             <svg
+                              aria-hidden="true"
                               className="h-3.5 w-3.5 flex-shrink-0 text-[#FDB515]"
                               fill="none"
                               viewBox="0 0 24 24"
@@ -197,6 +198,7 @@ export function EventGrid({
                       >
                         View details
                         <svg
+                          aria-hidden="true"
                           className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
                           fill="none"
                           viewBox="0 0 24 24"

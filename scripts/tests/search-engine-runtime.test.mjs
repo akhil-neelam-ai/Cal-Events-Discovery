@@ -429,17 +429,17 @@ test('natural-language query "founder talks tomorrow" preserves tomorrow intent 
   assert.equal(output.results[0]?.id, "evt-founder");
 });
 
-test('"tonight" applies today plus evening intent and excludes all-day events', () => {
+test('"tonight" applies today plus evening intent and includes all-day events', () => {
   const output = searchEvents(SYNTHETIC_EVENTS, "tonight", null);
 
   assert.equal(output.plan.filters.dateRange, "today");
   assert.equal(output.plan.filters.timeOfDay, "evening");
   assert.ok(output.results.some((event) => event.id === "evt-evening"));
   assert.ok(!output.results.some((event) => event.id === "evt-morning"));
-  assert.ok(!output.results.some((event) => event.id === "evt-all-day"));
+  assert.ok(output.results.some((event) => event.id === "evt-all-day"));
 });
 
-test('"today morning" preserves date intent and strips time words from keywords', () => {
+test('"today morning" includes all-day events', () => {
   const output = searchEvents(SYNTHETIC_EVENTS, "today morning", null);
 
   assert.equal(output.plan.filters.dateRange, "today");
@@ -447,6 +447,17 @@ test('"today morning" preserves date intent and strips time words from keywords'
   assert.deepEqual(output.plan.keywords, []);
   assert.ok(output.results.some((event) => event.id === "evt-morning"));
   assert.ok(!output.results.some((event) => event.id === "evt-evening"));
+  assert.ok(output.results.some((event) => event.id === "evt-all-day"));
+});
+
+test("all-day events match morning, afternoon, and evening filters", () => {
+  for (const query of ["morning", "afternoon", "evening"]) {
+    const output = searchEvents(SYNTHETIC_EVENTS, query, null);
+    assert.ok(
+      output.results.some((event) => event.id === "evt-all-day"),
+      `expected all-day event for ${query}`,
+    );
+  }
 });
 
 test('"cal games" is interpreted as sports without searching for generic game text', () => {

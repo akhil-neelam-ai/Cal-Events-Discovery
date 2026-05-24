@@ -5,6 +5,8 @@
  * - Date / time projection from start_at + timezone for the legacy shape
  */
 
+import he from "he";
+
 import type { CanonicalEvent, LegacyCalEvent } from "./schema.js";
 
 const FRONTEND_CATEGORIES = [
@@ -354,10 +356,15 @@ function dedupeOrderedTags(tags: FrontendCategory[]): FrontendCategory[] {
 }
 
 export function cleanTitle(raw: string): string {
-  return raw
-    .replace(/\s+/g, " ")
+  return sanitizePlainText(raw)
     .replace(/^[\s\-–—:]+|[\s\-–—:]+$/g, "")
     .trim();
+}
+
+export function sanitizePlainText(raw: string): string {
+  const withoutTags = raw.replace(/<[^>]+>/g, " ");
+  const decoded = he.decode(withoutTags);
+  return decoded.replace(/[<>]/g, "").replace(/\s+/g, " ").trim();
 }
 
 const TZ = "America/Los_Angeles";
@@ -409,7 +416,7 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
     date,
     time,
     location,
-    description: event.description || event.title,
+    description: sanitizePlainText(event.description || event.title),
     tags: tags.length > 0 ? tags : [inferCategory(event)],
     url: event.canonical_url || event.source_url,
     source: event.source_name,

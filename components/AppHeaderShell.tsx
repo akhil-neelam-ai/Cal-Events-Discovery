@@ -3,12 +3,13 @@ import { useId } from "react";
 import { Analytics } from "@vercel/analytics/react";
 
 import type { QuickFilterPreset, SourceOption } from "../appConfig";
+import { useSyncStatusCopy } from "../hooks/useLiveTimestamp";
 import { LoadingState, type SearchFilters } from "../types";
-import { formatPacificDateTime } from "../utils/eventDates";
 import type { StatusBannerData } from "../utils/statusUi";
 import { DesktopHero } from "./DesktopHero";
 import { DesktopFiltersBar, MobileFiltersBar } from "./FiltersBar";
 import { MobileHeader } from "./MobileHeader";
+import { StaleDataBanner } from "./StaleDataBanner";
 import { StatusBanner } from "./StatusBanner";
 
 export function AppHeaderShell({
@@ -29,6 +30,8 @@ export function AppHeaderShell({
   statusBanner,
   bannerDismissed,
   onDismissBanner,
+  dataAgeHours,
+  degradedSources,
 }: {
   mainContentId: string;
   isMobile: boolean;
@@ -47,14 +50,21 @@ export function AppHeaderShell({
   statusBanner: StatusBannerData | null;
   bannerDismissed: boolean;
   onDismissBanner: () => void;
+  dataAgeHours?: number;
+  degradedSources?: string[];
 }) {
   const desktopSearchInputId = useId();
+  const liveSyncCopy = useSyncStatusCopy(lastUpdated);
 
-  const desktopHeroStatusCopy = lastUpdated
-    ? `Synced ${formatPacificDateTime(lastUpdated)}`
+  const desktopHeroStatusCopy = liveSyncCopy
+    ? liveSyncCopy
     : loading === LoadingState.ERROR
       ? "Latest batch unavailable"
       : "Loading latest batch";
+
+  const showStaleBanner =
+    (typeof dataAgeHours === "number" && dataAgeHours > 12) ||
+    (degradedSources?.length ?? 0) > 0;
 
   const desktopHeroSummaryCopy =
     loading === LoadingState.SUCCESS && allEventsCount > 0
@@ -113,6 +123,13 @@ export function AppHeaderShell({
 
       {statusBanner && !bannerDismissed && (
         <StatusBanner banner={statusBanner} onDismiss={onDismissBanner} />
+      )}
+
+      {showStaleBanner && (
+        <StaleDataBanner
+          dataAgeHours={dataAgeHours ?? 0}
+          degradedSources={degradedSources ?? []}
+        />
       )}
     </>
   );

@@ -14,6 +14,8 @@ const NEXT_WEEK_KEY = "2026-04-29";
 type MockFeedState = {
   allEvents: CalEvent[];
   lastUpdated: number | null;
+  dataAgeHours: number;
+  degradedSources: string[];
   loading: LoadingState;
   statusReport: null;
   searchIndex: null;
@@ -105,6 +107,8 @@ function makeFeedState(events: CalEvent[]): MockFeedState {
   return {
     allEvents: events,
     lastUpdated: Date.parse("2026-04-22T19:00:00Z"),
+    dataAgeHours: 0,
+    degradedSources: [],
     loading: LoadingState.SUCCESS,
     statusReport: null,
     searchIndex: null,
@@ -143,7 +147,7 @@ describe("App UI regressions", () => {
     render(<App />);
 
     expect(
-      screen.getByRole("textbox", { name: /search campus events/i }),
+      screen.getByRole("combobox", { name: /search campus events/i }),
     ).toHaveValue("ai");
     expect(
       screen.getByRole("heading", {
@@ -313,7 +317,7 @@ describe("App UI regressions", () => {
     );
   });
 
-  it("applies tonight as an evening search instead of showing all-day events", () => {
+  it("applies tonight as an evening search and keeps all-day events visible", () => {
     mockFeedState = makeFeedState([
       makeEvent({
         id: "morning",
@@ -342,8 +346,8 @@ describe("App UI regressions", () => {
     render(<App />);
 
     expect(screen.getByText("Evening Concert")).toBeInTheDocument();
+    expect(screen.getByText("All Day Exhibit")).toBeInTheDocument();
     expect(screen.queryByText("Morning Seminar")).not.toBeInTheDocument();
-    expect(screen.queryByText("All Day Exhibit")).not.toBeInTheDocument();
   });
 
   it("uses the Tonight quick-start preset as an evening search", async () => {
@@ -377,12 +381,12 @@ describe("App UI regressions", () => {
     await user.click(screen.getByRole("button", { name: "Tonight" }));
 
     expect(
-      screen.getByRole("textbox", { name: /search campus events/i }),
+      screen.getByRole("combobox", { name: /search campus events/i }),
     ).toHaveValue("tonight");
     await waitFor(() => {
       expect(screen.getByText("Evening Concert")).toBeInTheDocument();
+      expect(screen.getByText("All Day Exhibit")).toBeInTheDocument();
       expect(screen.queryByText("Morning Seminar")).not.toBeInTheDocument();
-      expect(screen.queryByText("All Day Exhibit")).not.toBeInTheDocument();
     });
   });
 

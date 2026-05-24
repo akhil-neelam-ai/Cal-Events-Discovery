@@ -15,7 +15,7 @@ export type CategoryStyle = {
 const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   Academic: {
     label: "Academic",
-    badge: "bg-sky-50 text-sky-700",
+    badge: "bg-sky-100 text-sky-800",
     border: "border-l-sky-400",
     accent: "bg-sky-100 text-sky-800",
     stripColor: "#38bdf8",
@@ -23,7 +23,7 @@ const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   },
   Arts: {
     label: "Arts",
-    badge: "bg-amber-50 text-amber-700",
+    badge: "bg-amber-100 text-amber-800",
     border: "border-l-amber-400",
     accent: "bg-amber-100 text-amber-900",
     stripColor: "#fbbf24",
@@ -31,7 +31,7 @@ const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   },
   Sports: {
     label: "Sports",
-    badge: "bg-emerald-50 text-emerald-700",
+    badge: "bg-emerald-100 text-emerald-800",
     border: "border-l-emerald-400",
     accent: "bg-emerald-100 text-emerald-900",
     stripColor: "#34d399",
@@ -39,7 +39,7 @@ const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   },
   "Science & Tech": {
     label: "Science & Tech",
-    badge: "bg-indigo-50 text-indigo-700",
+    badge: "bg-indigo-100 text-indigo-800",
     border: "border-l-indigo-400",
     accent: "bg-indigo-100 text-indigo-900",
     stripColor: "#818cf8",
@@ -47,7 +47,7 @@ const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   },
   "Student Life": {
     label: "Student Life",
-    badge: "bg-rose-50 text-rose-700",
+    badge: "bg-rose-100 text-rose-800",
     border: "border-l-rose-400",
     accent: "bg-rose-100 text-rose-900",
     stripColor: "#fb7185",
@@ -55,7 +55,7 @@ const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   },
   Entrepreneurship: {
     label: "Entrepreneurship",
-    badge: "bg-violet-50 text-violet-700",
+    badge: "bg-violet-100 text-violet-800",
     border: "border-l-violet-400",
     accent: "bg-violet-100 text-violet-900",
     stripColor: "#a78bfa",
@@ -63,7 +63,7 @@ const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   },
   Event: {
     label: "Event",
-    badge: "bg-slate-50 text-slate-600",
+    badge: "bg-slate-100 text-slate-800",
     border: "border-l-slate-300",
     accent: "bg-slate-100 text-slate-800",
     stripColor: "#94a3b8",

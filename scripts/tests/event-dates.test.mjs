@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { buildEventGroups } from "../../utils/eventDates.ts";
+import {
+  buildEventGroups,
+  formatRelativeEventDate,
+} from "../../utils/eventDates.ts";
 
 function event(overrides = {}) {
   return {
@@ -53,5 +56,26 @@ test("event groups are chronological even when caller input is relevance ordered
   assert.deepEqual(
     groups[0].events.map((item) => item.id),
     ["may-early", "may-late"],
+  );
+});
+
+test("formatRelativeEventDate uses today, tomorrow, weekday, and absolute labels", () => {
+  const now = new Date("2026-05-23T18:00:00-07:00");
+
+  assert.equal(
+    formatRelativeEventDate({ date: "2026-05-23", time: "6:00 PM" }, now),
+    "Today, 6pm",
+  );
+  assert.equal(
+    formatRelativeEventDate({ date: "2026-05-24", time: "All day" }, now),
+    "Tomorrow, All day",
+  );
+  assert.equal(
+    formatRelativeEventDate({ date: "2026-05-28", time: "3:00 PM" }, now),
+    "Thursday, 3pm",
+  );
+  assert.equal(
+    formatRelativeEventDate({ date: "2026-06-10", time: "11:00 AM" }, now),
+    "Jun 10, 11am",
   );
 });

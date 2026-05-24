@@ -165,7 +165,7 @@ test("preserves search and filter state across detail open and reload", async ({
   await page.getByRole("button", { name: /all events/i }).click();
   await page.getByRole("button", { name: /^arts$/i }).click();
 
-  const searchInput = page.getByRole("textbox", {
+  const searchInput = page.getByRole("combobox", {
     name: /search campus events/i,
   });
   await searchInput.fill("dreams");
@@ -192,7 +192,7 @@ test("preserves search and filter state across detail open and reload", async ({
 
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(
-    page.getByRole("textbox", { name: /search campus events/i }),
+    page.getByRole("combobox", { name: /search campus events/i }),
   ).toHaveValue("dreams");
   await expect(
     page.getByRole("heading", { level: 2, name: /arts · upcoming/i }),

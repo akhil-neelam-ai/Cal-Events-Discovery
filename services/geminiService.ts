@@ -52,6 +52,11 @@ export const fetchStaticArtifacts = async (
       events: data.events,
       sources: Array.isArray(data.sources) ? data.sources : [],
       lastUpdated: data.lastUpdated ?? 0,
+      data_age_hours:
+        typeof data.data_age_hours === "number" ? data.data_age_hours : 0,
+      degraded_sources: Array.isArray(data.degraded_sources)
+        ? data.degraded_sources.map(String)
+        : [],
       status:
         statusResult.status === "fulfilled" ? statusResult.value : undefined,
     };

@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 
-import { formatPacificDateTime } from "../utils/eventDates";
+import { useLiveTimestamp } from "../hooks/useLiveTimestamp";
+import { useSearchCombobox } from "../hooks/useSearchCombobox";
 import {
   addRecentSearch,
   clearRecentSearches,
@@ -18,9 +19,35 @@ export function MobileHeader({
   onSearchChange: (query: string) => void;
 }) {
   const inputId = useId();
+  const listboxRef = useRef<HTMLDivElement | null>(null);
   const [searchFocused, setSearchFocused] = useState(false);
   const [recents, setRecents] = useState<string[]>([]);
   const blurRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const liveUpdatedCopy = useLiveTimestamp(lastUpdated);
+  const isSuggestionsOpen = searchFocused;
+
+  const closeSuggestions = () => setSearchFocused(false);
+
+  const handleSelectSuggestion = (query: string) => {
+    onSearchChange(query);
+    addRecentSearch(query);
+    setRecents(getRecentSearches());
+    closeSuggestions();
+  };
+
+  const {
+    suggestions,
+    activeIndex,
+    activeDescendantId,
+    handleInputKeyDown,
+    getItemProps,
+    suggestionCount,
+  } = useSearchCombobox({
+    isOpen: isSuggestionsOpen,
+    recents,
+    onSelect: handleSelectSuggestion,
+    onClose: closeSuggestions,
+  });
 
   useEffect(() => {
     return () => {
@@ -43,10 +70,10 @@ export function MobileHeader({
             </span>
             <span className="text-2xl font-light tracking-wide">Events</span>
           </div>
-          {lastUpdated && (
+          {liveUpdatedCopy && (
             <span className="flex items-center gap-1.5 text-[10px] text-berkeley-gold/70">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-              {formatPacificDateTime(lastUpdated)}
+              Updated {liveUpdatedCopy}
             </span>
           )}
         </div>
@@ -62,6 +89,7 @@ export function MobileHeader({
             Search campus events
           </label>
           <svg
+            aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2"
             style={{
@@ -83,10 +111,15 @@ export function MobileHeader({
             id={inputId}
             type="text"
             name="event-search-mobile"
+            role="combobox"
+            aria-expanded={isSuggestionsOpen}
+            aria-controls="search-suggestions"
+            aria-autocomplete="list"
+            aria-activedescendant={activeDescendantId}
             aria-label="Search campus events"
             autoComplete="off"
             placeholder="Search events, speakers, topics, or venues…"
-            className="w-full rounded-2xl bg-white py-3 pl-11 pr-11 text-base text-slate-900 outline-none"
+            className="w-full rounded-2xl bg-white py-3 pl-11 pr-11 text-base text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
             style={{
               border: searchFocused
                 ? "2px solid #FDB515"
@@ -107,22 +140,38 @@ export function MobileHeader({
               blurRef.current = setTimeout(() => setSearchFocused(false), 150);
             }}
             onKeyDown={(event) => {
+              handleInputKeyDown(event);
+              if (event.defaultPrevented) {
+                return;
+              }
               if (event.key === "Enter" && searchQuery.trim()) {
                 const trimmed = searchQuery.trim();
                 onSearchChange(trimmed);
                 addRecentSearch(trimmed);
-                setSearchFocused(false);
+                closeSuggestions();
               }
             }}
+            aria-describedby={
+              isSuggestionsOpen && suggestionCount > 0
+                ? "search-suggestion-count"
+                : undefined
+            }
           />
+          {isSuggestionsOpen && suggestionCount > 0 && (
+            <span id="search-suggestion-count" className="sr-only">
+              {suggestionCount} suggestions available. Use up and down arrows to
+              navigate.
+            </span>
+          )}
           {searchQuery && (
             <button
               type="button"
               onClick={() => onSearchChange("")}
               aria-label="Clear search"
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-slate-400 tap-highlight active:bg-slate-100 active:text-slate-700"
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-slate-400 tap-highlight active:bg-slate-100 active:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
             >
               <svg
+                aria-hidden="true"
                 className="h-4 w-4"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -137,15 +186,14 @@ export function MobileHeader({
               </svg>
             </button>
           )}
-          {searchFocused && (
+          {isSuggestionsOpen && (
             <SearchSuggestionsDropdown
               recents={recents}
-              onSelect={(query) => {
-                onSearchChange(query);
-                addRecentSearch(query);
-                setRecents(getRecentSearches());
-                setSearchFocused(false);
-              }}
+              suggestions={suggestions}
+              activeIndex={activeIndex}
+              getItemProps={getItemProps}
+              listboxRef={listboxRef}
+              onSelect={handleSelectSuggestion}
               onClear={() => {
                 clearRecentSearches();
                 setRecents([]);

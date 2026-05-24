@@ -9,6 +9,8 @@ import type { SearchIndex } from "../utils/textUtils";
 interface EventFeedState {
   allEvents: CalEvent[];
   lastUpdated: number | null;
+  dataAgeHours: number;
+  degradedSources: string[];
   loading: LoadingState;
   statusReport: IngestionStatus | null;
   searchIndex: SearchIndex | null;
@@ -52,6 +54,8 @@ function assertValidEventsPayload(
 export function useEventFeed(): EventFeedState {
   const [allEvents, setAllEvents] = useState<CalEvent[]>([]);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
+  const [dataAgeHours, setDataAgeHours] = useState(0);
+  const [degradedSources, setDegradedSources] = useState<string[]>([]);
   const [loading, setLoading] = useState<LoadingState>(LoadingState.IDLE);
   const [statusReport, setStatusReport] = useState<IngestionStatus | null>(
     null,
@@ -71,7 +75,13 @@ export function useEventFeed(): EventFeedState {
       assertValidEventsPayload(data);
       setSearchIndex(nextSearchIndex);
       setAllEvents(data.events);
-      setLastUpdated(data.lastUpdated);
+      setLastUpdated(data.lastUpdated ?? null);
+      setDataAgeHours(
+        typeof data.data_age_hours === "number" ? data.data_age_hours : 0,
+      );
+      setDegradedSources(
+        Array.isArray(data.degraded_sources) ? data.degraded_sources : [],
+      );
       setStatusReport(data.status || null);
       setLoading(LoadingState.SUCCESS);
     } catch (error) {
@@ -123,6 +133,8 @@ export function useEventFeed(): EventFeedState {
   return {
     allEvents,
     lastUpdated,
+    dataAgeHours,
+    degradedSources,
     loading,
     statusReport,
     searchIndex,

@@ -646,7 +646,7 @@ function applyPoolFilters(
       !dismissedKeys.has(`timeOfDay:${filters.timeOfDay}`)
     ) {
       const hour = ev.time ? parseHour(ev.time) : null;
-      if (hour === null) return false;
+      if (hour === null) return true;
       if (filters.timeOfDay === "morning" && hour >= 12) return false;
       if (filters.timeOfDay === "afternoon" && (hour < 12 || hour >= 17))
         return false;

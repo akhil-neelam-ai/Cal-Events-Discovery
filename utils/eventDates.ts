@@ -90,6 +90,109 @@ export function formatPacificDateTime(timestamp: number): string {
   return PACIFIC_SYNC_FORMATTER.format(new Date(timestamp));
 }
 
+export function formatRelativeSyncAge(
+  timestamp: number,
+  now = Date.now(),
+): string {
+  const diffMs = Math.max(0, now - timestamp);
+  const minutes = Math.floor(diffMs / 60_000);
+
+  if (minutes < 1) {
+    return "just now";
+  }
+
+  if (minutes < 60) {
+    return `${minutes}m ago`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 48) {
+    return `${hours}h ago`;
+  }
+
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+function formatCardTime(time: string | undefined): string {
+  if (!time || /all\s*day/i.test(time)) {
+    return "All day";
+  }
+
+  const match = time.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
+  if (!match) {
+    return time;
+  }
+
+  let hour = Number(match[1]);
+  const minute = Number(match[2] ?? 0);
+  const meridiem = match[3].toLowerCase();
+
+  if (meridiem === "am" && hour === 12) {
+    hour = 0;
+  } else if (meridiem === "pm" && hour !== 12) {
+    hour += 12;
+  }
+
+  const date = new Date(Date.UTC(2020, 0, 1, hour, minute));
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: minute === 0 ? undefined : "2-digit",
+    hour12: true,
+    timeZone: "UTC",
+  })
+    .format(date)
+    .replace(":00", "")
+    .toLowerCase()
+    .replace(" ", "");
+}
+
+function weekdayLabel(dateKey: string): string {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  if (!year || !month || !day) {
+    return dateKey;
+  }
+
+  return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString("en-US", {
+    weekday: "long",
+    timeZone: "UTC",
+  });
+}
+
+export function formatRelativeEventDate(
+  event: Pick<CalEvent, "date" | "time">,
+  now = new Date(),
+): string {
+  const dateKey = getPacificDateKey(event.date);
+  if (!dateKey) {
+    return formatEventDate(event.date);
+  }
+
+  const todayKey = getCurrentPacificDateKey(now);
+  const tomorrowKey = addDaysToDateKey(todayKey, 1);
+  const weekOutKey = addDaysToDateKey(todayKey, 7);
+  const timeLabel = formatCardTime(event.time);
+
+  if (dateKey === todayKey) {
+    return `Today, ${timeLabel}`;
+  }
+
+  if (dateKey === tomorrowKey) {
+    return `Tomorrow, ${timeLabel}`;
+  }
+
+  if (dateKey > todayKey && dateKey <= weekOutKey) {
+    return `${weekdayLabel(dateKey)}, ${timeLabel}`;
+  }
+
+  const [, month, day] = dateKey.split("-").map(Number);
+  if (!month || !day) {
+    return `${formatEventDate(event.date)}, ${timeLabel}`;
+  }
+
+  return `${MONTHS[month - 1]} ${day}, ${timeLabel}`;
+}
+
 export function dateGroupLabel(dateKey: string): string {
   const todayKey = getCurrentPacificDateKey();
   const tomorrowKey = addDaysToDateKey(todayKey, 1);

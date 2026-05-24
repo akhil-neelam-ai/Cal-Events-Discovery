@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { trackExternalLink } from "../utils/analytics";
 import { formatEventDate } from "../utils/eventDates";
+import { downloadEventIcs } from "../utils/icsExport";
 import { getCategoryStyle, getDirectionsUrl } from "../utils/eventPresentation";
 import { useDialogAccessibility } from "../hooks/useDialogAccessibility";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
@@ -41,6 +42,10 @@ function DetailActions({
       copyResetTimeoutRef.current = null;
     }, 2000);
   }, []);
+
+  const handleAddToCalendar = useCallback(() => {
+    downloadEventIcs(event);
+  }, [event]);
 
   const handleCopyLink = useCallback(() => {
     if (!navigator.clipboard) {
@@ -90,7 +95,15 @@ function DetailActions({
         )}
         <button
           type="button"
-          className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none"
+          className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+          style={{ transition: "background-color 150ms ease" }}
+          onClick={handleAddToCalendar}
+        >
+          Add to Calendar
+        </button>
+        <button
+          type="button"
+          className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
           style={{ transition: "background-color 150ms ease" }}
           onClick={handleCopyLink}
         >
@@ -151,6 +164,14 @@ function DetailActions({
     </div>
   ) : (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <button
+        type="button"
+        className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+        style={{ transition: "background-color 150ms ease" }}
+        onClick={handleAddToCalendar}
+      >
+        Add to Calendar
+      </button>
       {event.url && (
         <a
           href={event.url}
@@ -174,7 +195,7 @@ function DetailActions({
       )}
       <button
         type="button"
-        className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none"
+        className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
         style={{ transition: "background-color 150ms ease" }}
         onClick={handleCopyLink}
       >
