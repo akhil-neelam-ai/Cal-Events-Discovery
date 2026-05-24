@@ -16,7 +16,8 @@
 import * as cheerio from "cheerio";
 import type { CanonicalEvent } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { signalWithTimeout, type FetchOptions } from "../lib/abort.js";
+import type { FetchOptions } from "../lib/abort.js";
+import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 
 const BASE_URL = "https://callink.berkeley.edu";
 const DISCOVERY_API = `${BASE_URL}/api/discovery/event/search`;
@@ -156,15 +157,21 @@ export async function fetchCallink(
   });
 
   const url = `${DISCOVERY_API}?${params.toString()}`;
-  console.log(`[callink] fetching ${url}`);
 
-  const response = await fetch(url, {
-    signal: signalWithTimeout(options.signal, FETCH_TIMEOUT_MS),
-    headers: {
-      "User-Agent": "Cal-Events-Discovery-Bot",
-      Accept: "application/json",
+  const response = await fetchWithRetry(
+    url,
+    {
+      headers: {
+        "User-Agent": "Cal-Events-Discovery-Bot",
+        Accept: "application/json",
+      },
     },
-  });
+    {
+      signal: options.signal,
+      timeoutMs: FETCH_TIMEOUT_MS,
+      label: "callink",
+    },
+  );
 
   if (!response.ok) {
     throw new Error(
