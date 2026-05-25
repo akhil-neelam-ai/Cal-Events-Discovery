@@ -16,7 +16,7 @@ This project is built around static published artifacts and a client-side search
 
 - `scripts/lib/schema.ts` defines the canonical pipeline schema and published status shape.
 - `types.ts` re-exports the published status types for the frontend so the client and pipeline stay aligned.
-- `services/geminiService.ts` is a legacy name. It loads static artifacts only; it does not call Gemini in the browser.
+- `services/eventsLoader.ts` loads static artifacts only.
 
 ## Robustness Model
 
@@ -34,7 +34,6 @@ This project is built around static published artifacts and a client-side search
 
 ## Operational Expectations
 
-- `@google/genai` is used only in `scripts/sources/gemini.ts` during Node-based ingestion.
 - The GA4 measurement ID in `utils/analytics.ts` is public and not secret.
 - Search terms are sent to analytics events, so retention and privacy policy should match that behavior.
 - The published JSON artifacts are intended to be committed together through an automation PR so branch protection can remain enabled on `main`.

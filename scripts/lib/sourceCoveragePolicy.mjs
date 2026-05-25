@@ -15,7 +15,6 @@ export const SOURCE_EXPECTED_MIN_COUNTS = {
   berkeley_law: 3,
   simons: 10,
   ehub: 1,
-  gemini: 0,
 };
 
 /**

@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { evaluateFeedHealth } from "../lib/feedHealthPolicy.mjs";
-import { geminiSourceId } from "../../scripts/sources/gemini.ts";
 
 const healthyStatus = {
   generated_at: new Date().toISOString(),
@@ -100,26 +99,4 @@ test("evaluateFeedHealth warns on thin source coverage", () => {
     result.warnings.join(" "),
     /callink returned 1 events \(expected >= 5\)/,
   );
-});
-
-test("geminiSourceId is stable for the same event identity", () => {
-  const first = geminiSourceId(
-    "Startup Pitch Night",
-    "2026-05-30",
-    "https://example.com/events/pitch-night",
-  );
-  const second = geminiSourceId(
-    "Startup Pitch Night",
-    "2026-05-30",
-    "https://example.com/events/pitch-night",
-  );
-  const different = geminiSourceId(
-    "Startup Pitch Night",
-    "2026-05-31",
-    "https://example.com/events/pitch-night",
-  );
-
-  assert.equal(first, second);
-  assert.match(first, /^gemini_[a-f0-9]{16}$/);
-  assert.notEqual(first, different);
 });

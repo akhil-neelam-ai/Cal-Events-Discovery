@@ -40,7 +40,7 @@ test("dedupe keeps empty normalized titles distinct by stable source identity", 
     canonical_url: "https://example.com/events/punctuation-1",
   });
   const second = event({
-    source_name: "gemini",
+    source_name: "bampfa",
     source_id: "punctuation-2",
     title: "???",
     source_url: "https://example.com/source/punctuation-2",
@@ -58,11 +58,11 @@ test("dedupe keeps empty normalized titles distinct by stable source identity", 
 
 test("dedupe preserves source priority for normal title and date duplicates", () => {
   const lowerPriority = event({
-    source_name: "gemini",
-    source_id: "gemini-lecture",
+    source_name: "ehub",
+    source_id: "ehub-lecture",
     title: "The Spring Lecture",
-    source_url: "https://example.com/source/gemini-lecture",
-    canonical_url: "https://example.com/events/gemini-lecture",
+    source_url: "https://example.com/source/ehub-lecture",
+    canonical_url: "https://example.com/events/ehub-lecture",
   });
   const higherPriority = event({
     source_name: "livewhale",

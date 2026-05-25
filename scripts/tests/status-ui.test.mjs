@@ -38,32 +38,6 @@ test("recovered fallback status stays silent in the public UI", () => {
   assert.equal(buildStatusBanner(statusReport()), null);
 });
 
-test("healthy dataset with a failed non-critical source stays silent", () => {
-  assert.equal(
-    buildStatusBanner(
-      statusReport({
-        sources: [
-          {
-            name: "gemini",
-            ok: false,
-            count: 0,
-            duration_ms: 60_000,
-            fetched_at: "2026-04-29T12:00:00.000Z",
-            error: "gemini timed out after 60000ms",
-          },
-        ],
-        fallback_used: false,
-        degraded: false,
-        degraded_reason: undefined,
-        last_good_used: 0,
-        fallback_sources: [],
-        degraded_sources: [],
-      }),
-    ),
-    null,
-  );
-});
-
 test("data-quality blocked fallback still shows a warning", () => {
   const banner = buildStatusBanner(
     statusReport({

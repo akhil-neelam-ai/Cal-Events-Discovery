@@ -1,7 +1,7 @@
 /**
  * Canonical event schema — internal representation across all source adapters.
  *
- * Each adapter (LiveWhale, E-Hub, Gemini) maps its raw payload into CanonicalEvent.
+ * Each adapter maps its raw payload into CanonicalEvent.
  * The orchestrator dedupes the union, then projects down to the legacy CalEvent
  * shape that public/events.json (and the React frontend) consumes.
  */
@@ -18,7 +18,6 @@ export const SourceNameSchema = z.enum([
   "berkeley_law",
   "simons",
   "ehub",
-  "gemini",
 ]);
 export type SourceName = z.infer<typeof SourceNameSchema>;
 

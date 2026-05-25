@@ -8,7 +8,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm run dev                          # Vite dev server → localhost:5173
 npm run build                        # tsc + vite build → dist/
 npm run update-events                # Run full data pipeline → public/events.json + search-index.json + status.json
-API_KEY=... npm run update-events    # Also run Gemini long-tail adapter
 npm run validate                     # Run test suite (Node + tsx loader)
 npm run preview                      # Preview built output locally
 vercel --prod                        # Deploy to Vercel
@@ -24,7 +23,7 @@ Three layers, cleanly separated.
 
 **Source priority** (used by dedupe to pick winner when two sources have the same event):
 ```
-livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley_law / simons (3) > ehub (2) > gemini (1)
+livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley_law / simons (3) > ehub (2)
 ```
 
 **Failure handling** — each source has a `RecoveryPolicy` in `updateEvents.ts`:
@@ -46,7 +45,6 @@ livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley
 | `tribe.ts` | Tribe/WP REST API | Haas + Berkeley Law — generic adapter, reusable for any site running The Events Calendar plugin |
 | `simons.ts` | iCal | CS theory research institute |
 | `ehub.ts` | HTML scraper (cheerio) | Entrepreneurship hub |
-| `gemini.ts` | Gemini API + Google Search grounding | Long-tail only, ≤12 events, lowest confidence. Retry backoff: [15 s, 45 s, 90 s] on 503. Only runs if `API_KEY` env var is set. |
 
 ### 3. Frontend (`App.tsx` + `utils/`)
 
@@ -91,7 +89,5 @@ Loads `events.json` and `search-index.json` at startup. Search is entirely clien
 **Tribe adapter reusability**: `scripts/sources/tribe.ts` exports both `fetchHaas` and `fetchBerkeleyLaw` — it's a generic WP REST adapter. Adding a new WordPress site running The Events Calendar plugin requires only a new export with a different base URL.
 
 **Stemming must be consistent**: `buildIndex.ts` and `searchEngine.ts` both call the same `stem()` function from `utils/textUtils.ts`. If you change the stemmer, regenerate the index.
-
-**Gemini long-tail demoted**: Gemini was previously the primary data source. It is now lowest-priority supplemental only (≤12 events, no fallback policy). Hallucination prevention is enforced by Zod validation — records that fail the schema are silently dropped.
 
 **`runAdapterWithTimeout`** in `updateEvents.ts` wraps each adapter so it never rejects. This allows `Promise.all` (not `Promise.allSettled`) — one timeout cannot cancel the others, and source names are always preserved in the result.

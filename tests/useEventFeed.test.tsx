@@ -3,16 +3,16 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useEventFeed } from "../hooks/useEventFeed";
-import { fetchEventsFromGemini } from "../services/geminiService";
+import { fetchEventArtifacts } from "../services/eventsLoader";
 import { LoadingState } from "../types";
 import type { CalEvent } from "../types";
 import type { SearchIndex } from "../utils/textUtils";
 
-vi.mock("../services/geminiService", () => ({
-  fetchEventsFromGemini: vi.fn(),
+vi.mock("../services/eventsLoader", () => ({
+  fetchEventArtifacts: vi.fn(),
 }));
 
-const fetchEventsFromGeminiMock = vi.mocked(fetchEventsFromGemini);
+const fetchEventArtifactsMock = vi.mocked(fetchEventArtifacts);
 
 function makeEvent(overrides: Partial<CalEvent> = {}): CalEvent {
   const id = overrides.id ?? "event-1";
@@ -82,7 +82,7 @@ describe("useEventFeed", () => {
     fetchMock.mockRejectedValue(new Error("search index unavailable"));
     vi.stubGlobal("fetch", fetchMock);
 
-    fetchEventsFromGeminiMock.mockResolvedValue({
+    fetchEventArtifactsMock.mockResolvedValue({
       events: [makeEvent()],
       sources: [],
       lastUpdated: Date.parse("2026-04-22T19:00:00.000Z"),
@@ -109,9 +109,7 @@ describe("useEventFeed", () => {
     fetchMock.mockResolvedValue(makeJsonResponse(makeSearchIndex()));
     vi.stubGlobal("fetch", fetchMock);
 
-    fetchEventsFromGeminiMock.mockRejectedValue(
-      new Error("events unavailable"),
-    );
+    fetchEventArtifactsMock.mockRejectedValue(new Error("events unavailable"));
 
     render(<EventFeedProbe />);
 
@@ -129,11 +127,11 @@ describe("useEventFeed", () => {
     fetchMock.mockResolvedValue(makeJsonResponse(makeSearchIndex()));
     vi.stubGlobal("fetch", fetchMock);
 
-    fetchEventsFromGeminiMock.mockResolvedValue({
+    fetchEventArtifactsMock.mockResolvedValue({
       events: undefined,
       sources: [],
       lastUpdated: Date.parse("2026-04-22T19:00:00.000Z"),
-    } as unknown as Awaited<ReturnType<typeof fetchEventsFromGemini>>);
+    } as unknown as Awaited<ReturnType<typeof fetchEventArtifacts>>);
 
     render(<EventFeedProbe />);
 
@@ -153,7 +151,7 @@ describe("useEventFeed", () => {
       .mockRejectedValueOnce(new Error("search index unavailable"));
     vi.stubGlobal("fetch", fetchMock);
 
-    fetchEventsFromGeminiMock
+    fetchEventArtifactsMock
       .mockResolvedValueOnce({
         events: [makeEvent()],
         sources: [],

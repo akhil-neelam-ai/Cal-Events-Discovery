@@ -8,15 +8,14 @@
  *   cal_performances (WP REST API, arts presenter) =
  *   calbears         (athletics iCal) =
  *   bampfa           (HTML scraper, art museum & film archive) >
- *   ehub             (HTML scraper, entrepreneurship hub) >
- *   gemini           (LLM long-tail, lowest confidence)
+ *   ehub             (HTML scraper, entrepreneurship hub)
  *
  * Failure handling: each source is independent. If a source throws, we
  * record it in status.json and continue. We refuse to overwrite a healthy
  * events.json with an empty file — if every source returns zero, we keep
  * the existing file and exit non-zero so the workflow surfaces the regression.
  *
- * Run: API_KEY=... npx tsx scripts/updateEvents.ts
+ * Run: npx tsx scripts/updateEvents.ts
  */
 
 import * as fs from "fs";
@@ -45,7 +44,6 @@ import { fetchBampfa } from "./sources/bampfa.js";
 import { fetchHaas, fetchBerkeleyLaw } from "./sources/tribe.js";
 import { fetchSimons } from "./sources/simons.js";
 import { fetchEHub } from "./sources/ehub.js";
-import { fetchGeminiLongTail } from "./sources/gemini.js";
 import { buildSearchIndex } from "./lib/buildIndex.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -81,11 +79,8 @@ const ALL_SOURCE_NAMES: SourceName[] = [
   "berkeley_law",
   "simons",
   "ehub",
-  "gemini",
 ];
-const CRITICAL_SOURCES = new Set<SourceName>(
-  ALL_SOURCE_NAMES.filter((source) => source !== "gemini"),
-);
+const CRITICAL_SOURCES = new Set<SourceName>(ALL_SOURCE_NAMES);
 
 function legacyTimeSortValue(time: string | undefined): number {
   if (!time || /all\s*day/i.test(time)) {
@@ -170,7 +165,6 @@ const FALLBACK_POLICIES: Partial<Record<SourceName, RecoveryPolicy>> = {
   },
   simons: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
   ehub: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
-  gemini: { allowLastGood: false, degradeOnFailure: false },
 };
 
 async function runAdapter<
@@ -430,10 +424,8 @@ function dataQualityFailure(recovery: RecoveryState): string | null {
 }
 
 async function main(): Promise<void> {
-  const apiKey = process.env.API_KEY;
   const existing = loadExistingEvents();
 
-  // All non-Gemini adapters run regardless. Gemini only if we have a key.
   // Each adapter is wrapped in a 60 s timeout so a hanging source cannot
   // block the entire pipeline. Promise.allSettled ensures one timeout does
   // not cancel the others.
@@ -467,18 +459,6 @@ async function main(): Promise<void> {
       { name: "simons", promise: runAdapterWithTimeout("simons", fetchSimons) },
       { name: "ehub", promise: runAdapterWithTimeout("ehub", fetchEHub) },
     ];
-  if (apiKey) {
-    adapterRuns.push({
-      name: "gemini",
-      promise: runAdapterWithTimeout("gemini", (options) =>
-        fetchGeminiLongTail(apiKey, options),
-      ),
-    });
-  } else {
-    console.warn(
-      "[orchestrator] API_KEY not set — skipping Gemini long-tail adapter",
-    );
-  }
 
   const settledRuns = await Promise.allSettled(
     adapterRuns.map(({ promise }) => promise),
@@ -488,7 +468,7 @@ async function main(): Promise<void> {
       return result.value;
     }
 
-    const name = adapterRuns[index]?.name ?? "gemini";
+    const name = adapterRuns[index]?.name ?? "ehub";
     const message =
       result.reason instanceof Error
         ? result.reason.message
