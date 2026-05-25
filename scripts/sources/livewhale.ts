@@ -69,6 +69,14 @@ const LIVEWHALE_GROUPS: string[] = [
   "graduate division",
   "Scandinavian",
   "Center for African Studies",
+  // Added via group-feed probe 2026-05-25
+  "Institute of East Asian Studies",
+  "Institute for South Asia Studies",
+  "Institute of European Studies",
+  "Lawrence Hall of Science",
+  "School of Information",
+  "Helen Wills Neuroscience Institute",
+  "College of Environmental Design",
 ];
 
 /**
