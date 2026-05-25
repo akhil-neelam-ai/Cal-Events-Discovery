@@ -361,7 +361,7 @@ function BottomSheet({
                 type="button"
                 onClick={handleClose}
                 aria-label="Close event details"
-                className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
+                className="rounded-full border border-slate-200 p-3.5 text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
               >
                 <svg
                   className="h-4 w-4"
