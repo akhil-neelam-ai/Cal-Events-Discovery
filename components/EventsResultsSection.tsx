@@ -77,6 +77,17 @@ export function EventsResultsSection({
         </div>
       </div>
 
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {filteredEvents.length === 0
+          ? "No events match your filters."
+          : `Showing ${filteredEvents.length} ${filteredEvents.length === 1 ? "event" : "events"}.`}
+      </div>
+
       {searchFallbackMessage && (
         <div className="mb-4 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 shadow-xs">
           {searchFallbackMessage}
