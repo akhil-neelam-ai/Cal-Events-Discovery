@@ -38,9 +38,19 @@ const body = [
 ].join("\n");
 
 try {
-  gh(["label", "list", "--repo", REPO, "--limit", "200"]);
-} catch {
-  try {
+  const listed = gh([
+    "label",
+    "list",
+    "--repo",
+    REPO,
+    "--search",
+    "pipeline-failure",
+    "--json",
+    "name",
+  ]);
+  const labels = JSON.parse(listed || "[]");
+  const exists = labels.some((l) => l.name === "pipeline-failure");
+  if (!exists) {
     gh([
       "label",
       "create",
@@ -52,11 +62,11 @@ try {
       "--description",
       "Automated pipeline failure requiring operator attention",
     ]);
-  } catch (labelError) {
-    console.warn(
-      `[notifyPipelineFailure] could not ensure pipeline-failure label: ${labelError instanceof Error ? labelError.message : labelError}`,
-    );
   }
+} catch (labelError) {
+  console.warn(
+    `[notifyPipelineFailure] could not ensure pipeline-failure label: ${labelError instanceof Error ? labelError.message : labelError}`,
+  );
 }
 
 let issueNumber;
