@@ -53,7 +53,7 @@ export function EventGrid({
                   <article
                     key={event.id || idx}
                     aria-label={event.title}
-                    className={`group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,50,98,0.06),0_4px_16px_rgba(0,50,98,0.05)] transition-[transform,box-shadow] duration-150 ease-[cubic-bezier(0.32,0.72,0,1)] select-none will-change-transform motion-reduce:transition-none motion-safe:hover:-translate-y-[3px] motion-safe:hover:shadow-[0_8px_32px_rgba(0,50,98,0.13),0_1px_4px_rgba(0,50,98,0.06)] motion-safe:active:scale-[0.985] ${shouldAnimateCards ? "animate-card-in opacity-0" : ""}`}
+                    className={`group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,50,98,0.06),0_4px_16px_rgba(0,50,98,0.05)] transition-[transform,box-shadow] duration-150 ease-[cubic-bezier(0.32,0.72,0,1)] select-none will-change-transform motion-reduce:transition-none motion-safe:hover:translate-y-[-3px] motion-safe:hover:shadow-[0_8px_32px_rgba(0,50,98,0.13),0_1px_4px_rgba(0,50,98,0.06)] motion-safe:active:scale-[0.985] ${shouldAnimateCards ? "animate-card-in opacity-0" : ""}`}
                     style={{
                       ...(shouldAnimateCards
                         ? {
@@ -70,9 +70,7 @@ export function EventGrid({
                       }}
                     />
 
-                    <div
-                      className={`flex-grow p-5 pl-6 ${categoryStyle.tintBg}`}
-                    >
+                    <div className={`grow p-5 pl-6 ${categoryStyle.tintBg}`}>
                       <div className="mb-3 flex items-start justify-between gap-2">
                         <span
                           className={`inline-flex rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${categoryStyle.badge}`}
@@ -80,7 +78,7 @@ export function EventGrid({
                           {event.tags?.[0] || "Event"}
                         </span>
                         {event.source === "calbears" && !isHomeGame(event) && (
-                          <span className="inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-gray-600">
+                          <span className="inline-flex items-center rounded-sm bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-gray-600">
                             Away
                           </span>
                         )}
@@ -98,7 +96,7 @@ export function EventGrid({
                               });
                             }}
                             aria-label={`Open source page for ${event.title}`}
-                            className="flex-shrink-0 rounded-full p-1.5 text-slate-300 transition hover:bg-white/80 hover:text-berkeley-blue"
+                            className="shrink-0 rounded-full p-1.5 text-slate-300 transition hover:bg-white/80 hover:text-berkeley-blue"
                           >
                             <svg
                               aria-hidden="true"
@@ -122,7 +120,7 @@ export function EventGrid({
                         type="button"
                         onClick={() => onEventClick(event)}
                         aria-label={`Open details for ${event.title}`}
-                        className="block w-full rounded-xl text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                        className="block w-full rounded-xl text-left focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                       >
                         <h3
                           className="mb-4 text-[1.05rem] font-semibold leading-snug text-berkeley-blue transition-colors group-hover:text-berkeley-medblue md:font-serif"
@@ -135,7 +133,7 @@ export function EventGrid({
                           <div className="flex items-center gap-1.5">
                             <svg
                               aria-hidden="true"
-                              className="h-3.5 w-3.5 flex-shrink-0 text-[#FDB515]"
+                              className="h-3.5 w-3.5 shrink-0 text-[#FDB515]"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -162,7 +160,7 @@ export function EventGrid({
                           <div className="flex items-center gap-1.5">
                             <svg
                               aria-hidden="true"
-                              className="h-3.5 w-3.5 flex-shrink-0 text-[#FDB515]"
+                              className="h-3.5 w-3.5 shrink-0 text-[#FDB515]"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -194,7 +192,7 @@ export function EventGrid({
                         type="button"
                         onClick={() => onEventClick(event)}
                         aria-label={`View details for ${event.title}`}
-                        className="inline-flex items-center gap-1 text-sm font-semibold text-berkeley-blue transition-colors hover:text-berkeley-medblue focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60"
+                        className="inline-flex items-center gap-1 text-sm font-semibold text-berkeley-blue transition-colors hover:text-berkeley-medblue focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/60"
                       >
                         View details
                         <svg
@@ -228,7 +226,7 @@ export function EventGrid({
           <button
             type="button"
             onClick={onLoadMore}
-            className="rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-200 hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
+            className="rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-xs transition-colors duration-200 hover:border-slate-300 hover:bg-slate-50 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
           >
             Load more events ({hiddenEventCount} remaining)
           </button>

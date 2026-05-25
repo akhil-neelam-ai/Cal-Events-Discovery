@@ -95,7 +95,7 @@ function DetailActions({
         )}
         <button
           type="button"
-          className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+          className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
           style={{ transition: "background-color 150ms ease" }}
           onClick={handleAddToCalendar}
         >
@@ -103,7 +103,7 @@ function DetailActions({
         </button>
         <button
           type="button"
-          className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+          className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
           style={{ transition: "background-color 150ms ease" }}
           onClick={handleCopyLink}
         >
@@ -166,7 +166,7 @@ function DetailActions({
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       <button
         type="button"
-        className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+        className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
         style={{ transition: "background-color 150ms ease" }}
         onClick={handleAddToCalendar}
       >
@@ -195,7 +195,7 @@ function DetailActions({
       )}
       <button
         type="button"
-        className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+        className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
         style={{ transition: "background-color 150ms ease" }}
         onClick={handleCopyLink}
       >
@@ -361,7 +361,7 @@ function BottomSheet({
                 type="button"
                 onClick={handleClose}
                 aria-label="Close event details"
-                className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
+                className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
               >
                 <svg
                   className="h-4 w-4"
@@ -513,7 +513,7 @@ function SlideOutPanel({
     <div className="fixed inset-0 z-50 hidden md:block">
       <div
         aria-hidden="true"
-        className={`absolute inset-0 bg-black/40 backdrop-blur-sm ${prefersReducedMotion ? "" : `transition-opacity duration-300 ${isClosing ? "opacity-0" : "animate-fade-in"}`}`}
+        className={`absolute inset-0 bg-black/40 backdrop-blur-xs ${prefersReducedMotion ? "" : `transition-opacity duration-300 ${isClosing ? "opacity-0" : "animate-fade-in"}`}`}
         onClick={handleClose}
       />
       <div
@@ -538,7 +538,7 @@ function SlideOutPanel({
             type="button"
             onClick={handleClose}
             aria-label="Close event details"
-            className="rounded p-1 transition hover:bg-white/20"
+            className="rounded-sm p-1 transition hover:bg-white/20"
           >
             <svg
               className="h-5 w-5"

@@ -36,7 +36,7 @@ export class ErrorBoundary extends React.Component<
             <button
               type="button"
               onClick={this.handleReload}
-              className="rounded-xl bg-berkeley-blue px-5 py-2.5 text-sm font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+              className="rounded-xl bg-berkeley-blue px-5 py-2.5 text-sm font-semibold text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
             >
               Reload
             </button>

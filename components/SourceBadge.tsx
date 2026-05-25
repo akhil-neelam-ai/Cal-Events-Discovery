@@ -14,7 +14,7 @@ export function SourceBadge({
   const inner = (
     <span className="inline-flex items-center gap-1 text-[10px] font-medium text-gray-400">
       <svg
-        className="h-2.5 w-2.5 flex-shrink-0"
+        className="h-2.5 w-2.5 shrink-0"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -37,7 +37,7 @@ export function SourceBadge({
         target="_blank"
         rel="noopener noreferrer"
         onClick={(event) => event.stopPropagation()}
-        className="inline-flex rounded px-2 py-1 -mx-2 -my-1 transition-colors hover:text-gray-600"
+        className="inline-flex rounded-sm px-2 py-1 -mx-2 -my-1 transition-colors hover:text-gray-600"
       >
         {inner}
       </a>

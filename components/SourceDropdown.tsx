@@ -155,7 +155,7 @@ export function SourceDropdown({
   const triggerClasses =
     tone === "dark"
       ? "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition text-white"
-      : "inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-2 text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50";
+      : "inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-2 text-slate-700 shadow-xs transition hover:border-slate-300 hover:bg-slate-50";
 
   return (
     <div ref={containerRef} className="relative">
@@ -168,7 +168,7 @@ export function SourceDropdown({
         onKeyDown={handleTriggerKey}
         className={
           triggerClasses +
-          " focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+          " focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
         }
       >
         <span className="font-medium">
@@ -234,7 +234,7 @@ export function SourceDropdown({
                 >
                   <span className="truncate">{option.label}</span>
                   <span
-                    className={`flex-shrink-0 rounded-full px-1.5 py-0.5 text-[11px] tabular-nums ${
+                    className={`shrink-0 rounded-full px-1.5 py-0.5 text-[11px] tabular-nums ${
                       isSelected
                         ? "bg-white/20 text-white"
                         : "bg-slate-100 text-slate-500"
