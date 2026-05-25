@@ -43,7 +43,7 @@ export function SearchSuggestionsDropdown({
   const wrapperClassName =
     placement === "inline"
       ? "mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg animate-dropdown-in"
-      : "absolute left-0 right-0 top-full z-[60] mt-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl animate-dropdown-in";
+      : "absolute left-0 right-0 top-full z-60 mt-1.5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl animate-dropdown-in";
 
   const recentSuggestions = suggestions.filter((item) =>
     recents.includes(item),
@@ -81,7 +81,7 @@ export function SearchSuggestionsDropdown({
                 onClick={(event) => {
                   if (event.detail === 0) onClear();
                 }}
-                className="text-[11px] text-slate-400 tap-highlight hover:text-slate-600 active:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+                className="text-[11px] text-slate-400 tap-highlight hover:text-slate-600 active:text-slate-800 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
               >
                 Clear
               </button>
@@ -94,7 +94,7 @@ export function SearchSuggestionsDropdown({
                   type="button"
                   {...getItemProps(index)}
                   {...suggestionHandlers(query, onSelect)}
-                  className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm tap-highlight hover:bg-slate-50 active:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2 ${
+                  className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-sm tap-highlight hover:bg-slate-50 active:bg-slate-100 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2 ${
                     activeIndex === index
                       ? "bg-slate-100 text-berkeley-blue"
                       : "text-slate-700"
@@ -102,7 +102,7 @@ export function SearchSuggestionsDropdown({
                 >
                   <svg
                     aria-hidden="true"
-                    className="h-3.5 w-3.5 flex-shrink-0 text-slate-400"
+                    className="h-3.5 w-3.5 shrink-0 text-slate-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -136,7 +136,7 @@ export function SearchSuggestionsDropdown({
                     type="button"
                     {...getItemProps(index)}
                     {...suggestionHandlers(query, onSelect)}
-                    className={`select-none rounded-full border px-3 py-1 text-xs tap-highlight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2 ${
+                    className={`select-none rounded-full border px-3 py-1 text-xs tap-highlight focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2 ${
                       activeIndex === index
                         ? "border-berkeley-gold bg-berkeley-gold/25 text-berkeley-blue"
                         : "border-berkeley-gold/30 bg-berkeley-gold/10 text-berkeley-blue hover:bg-berkeley-gold/20 active:bg-berkeley-gold/30"

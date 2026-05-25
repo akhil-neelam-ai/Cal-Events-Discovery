@@ -138,7 +138,7 @@ export function DesktopHero({
           </p>
 
           <div
-            className="mt-6 rounded-[1.5rem] border border-white/10 bg-white p-4"
+            className="mt-6 rounded-3xl border border-white/10 bg-white p-4"
             style={{
               boxShadow:
                 "0 2px 4px rgba(0,50,98,0.08), 0 12px 40px rgba(0,50,98,0.18), 0 0 0 1px rgba(253,181,21,0.12)",
@@ -175,7 +175,7 @@ export function DesktopHero({
                 aria-label="Search campus events"
                 autoComplete="off"
                 placeholder="Search events, speakers, topics, or venues…"
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-5 text-base text-slate-900 outline-none transition focus:border-berkeley-medblue focus:bg-white focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-5 text-base text-slate-900 outline-hidden transition focus:border-berkeley-medblue focus:bg-white focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
                 value={searchQuery}
                 onChange={(event) => onSearchChange(event.target.value)}
                 onFocus={handleFocus}
@@ -230,7 +230,7 @@ export function DesktopHero({
                   key={preset.label}
                   type="button"
                   onClick={() => onPresetSelect(preset)}
-                  className="rounded-full border border-[rgba(253,181,21,0.5)] bg-[rgba(253,181,21,0.08)] px-4 py-2 text-sm font-medium text-[#003262] transition hover:border-[#FDB515] hover:bg-[rgba(253,181,21,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+                  className="rounded-full border border-[rgba(253,181,21,0.5)] bg-[rgba(253,181,21,0.08)] px-4 py-2 text-sm font-medium text-berkeley-blue transition hover:border-[#FDB515] hover:bg-[rgba(253,181,21,0.18)] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
                 >
                   {preset.label}
                 </button>

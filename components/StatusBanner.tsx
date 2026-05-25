@@ -14,8 +14,8 @@ export function StatusBanner({
 
   const iconClass =
     banner.tone === "warning"
-      ? "w-4 h-4 flex-shrink-0 mt-px text-yellow-700"
-      : "w-4 h-4 flex-shrink-0 mt-px text-blue-700";
+      ? "w-4 h-4 shrink-0 mt-px text-yellow-700"
+      : "w-4 h-4 shrink-0 mt-px text-blue-700";
 
   return (
     <div className={wrapperClass}>
@@ -40,7 +40,7 @@ export function StatusBanner({
           type="button"
           onClick={onDismiss}
           aria-label="Dismiss"
-          className="ml-2 flex-shrink-0 text-current opacity-60 transition-opacity hover:opacity-100"
+          className="ml-2 shrink-0 text-current opacity-60 transition-opacity hover:opacity-100"
         >
           ×
         </button>

@@ -30,7 +30,7 @@ export function InterpretedChips({
             type="button"
             aria-label={`Remove ${chip.label} filter`}
             onClick={() => onDismiss(chip.key)}
-            className="-m-1 ml-0.5 rounded-full p-2 text-slate-400 transition-colors hover:bg-berkeley-gold/20 hover:text-berkeley-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-berkeley-gold/70"
+            className="-m-1 ml-0.5 rounded-full p-2 text-slate-400 transition-colors hover:bg-berkeley-gold/20 hover:text-berkeley-blue focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/70"
           >
             <svg
               className="h-3 w-3"

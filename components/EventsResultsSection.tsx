@@ -52,7 +52,7 @@ export function EventsResultsSection({
   return (
     <>
       {fallbackBannerCopy && (
-        <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-sm">
+        <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-xs">
           {fallbackBannerCopy}
         </div>
       )}
@@ -78,7 +78,7 @@ export function EventsResultsSection({
       </div>
 
       {searchFallbackMessage && (
-        <div className="mb-4 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 shadow-sm">
+        <div className="mb-4 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 shadow-xs">
           {searchFallbackMessage}
         </div>
       )}

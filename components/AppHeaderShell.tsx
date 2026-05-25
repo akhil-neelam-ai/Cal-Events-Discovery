@@ -75,7 +75,7 @@ export function AppHeaderShell({
     <>
       <a
         href={`#${mainContentId}`}
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-berkeley-blue focus:text-white focus:rounded-md focus:text-sm focus:font-medium"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-100 focus:px-4 focus:py-2 focus:bg-berkeley-blue focus:text-white focus:rounded-md focus:text-sm focus:font-medium"
       >
         Skip to events
       </a>
@@ -108,7 +108,7 @@ export function AppHeaderShell({
             onPresetSelect={onPresetSelect}
             inputId={desktopSearchInputId}
           />
-          <div className="sticky top-0 z-50 shadow-sm">
+          <div className="sticky top-0 z-50 shadow-xs">
             <DesktopFiltersBar
               filters={filters}
               activeDateRange={activeDateRange}

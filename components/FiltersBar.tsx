@@ -26,7 +26,7 @@ export function DesktopFiltersBar({
       style={{ boxShadow: "0 1px 0 rgba(253,181,21,0.22)" }}
     >
       <div className="container mx-auto flex items-center gap-3 overflow-x-auto whitespace-nowrap px-4 py-3 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-300">
-        <div className="flex flex-shrink-0 items-center gap-1 rounded-full bg-slate-100 p-1 shadow-inner">
+        <div className="flex shrink-0 items-center gap-1 rounded-full bg-slate-100 p-1 shadow-inner">
           {DateRanges.map((range) => {
             const active = activeDateRange === range.value;
             return (
@@ -48,9 +48,9 @@ export function DesktopFiltersBar({
           })}
         </div>
 
-        <div className="hidden h-6 w-px flex-shrink-0 bg-slate-200 lg:block" />
+        <div className="hidden h-6 w-px shrink-0 bg-slate-200 lg:block" />
 
-        <div className="flex flex-shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           {Categories.map((category) => (
             <button
               key={category}
@@ -58,7 +58,7 @@ export function DesktopFiltersBar({
               onClick={() => onCategoryChange(category)}
               className={`rounded-full border px-3 py-1.5 text-sm transition ${
                 filters.category === category
-                  ? "border-berkeley-blue bg-berkeley-blue text-white shadow-sm"
+                  ? "border-berkeley-blue bg-berkeley-blue text-white shadow-xs"
                   : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
               }`}
             >
@@ -67,9 +67,9 @@ export function DesktopFiltersBar({
           ))}
         </div>
 
-        <div className="hidden h-6 w-px flex-shrink-0 bg-slate-200 lg:block" />
+        <div className="hidden h-6 w-px shrink-0 bg-slate-200 lg:block" />
 
-        <div className="flex flex-shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
             Source
           </span>
@@ -113,7 +113,7 @@ export function MobileFiltersBar({
   };
 
   return (
-    <div className="border-b border-slate-200/80 bg-white/95 shadow-sm backdrop-blur-md">
+    <div className="border-b border-slate-200/80 bg-white/95 shadow-xs backdrop-blur-md">
       <div className="container mx-auto flex items-center gap-2 overflow-x-auto whitespace-nowrap px-4 py-2.5 no-scrollbar">
         {DateRanges.map((range) => {
           const active = activeDateRange === range.value;

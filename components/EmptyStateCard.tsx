@@ -2,7 +2,7 @@ import { EmptyStateConfig } from "../utils/emptyState";
 
 export function EmptyStateCard({ state }: { state: EmptyStateConfig }) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white px-6 py-14 text-center shadow-sm">
+    <div className="rounded-3xl border border-slate-200 bg-white px-6 py-14 text-center shadow-xs">
       <p className="text-2xl font-semibold text-berkeley-blue md:font-serif">
         {state.title}
       </p>
@@ -13,7 +13,7 @@ export function EmptyStateCard({ state }: { state: EmptyStateConfig }) {
         <button
           type="button"
           onClick={state.primaryAction}
-          className="rounded-full bg-berkeley-blue px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-berkeley-medblue"
+          className="rounded-full bg-berkeley-blue px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-berkeley-medblue"
         >
           {state.primaryLabel}
         </button>
