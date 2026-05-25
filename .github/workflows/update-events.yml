@@ -81,7 +81,6 @@ jobs:
 
       - name: Generate events snapshot
         env:
-          API_KEY: ${{ secrets.API_KEY }}
           STRICT_DATA_QUALITY: "true"
           MAX_FALLBACK_AGE_HOURS: "48"
         run: |

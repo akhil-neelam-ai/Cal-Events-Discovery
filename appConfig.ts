@@ -3,7 +3,6 @@ import type { SearchFilters } from "./types";
 export const SOURCE_LABELS: Record<string, string> = {
   livewhale: "UC Berkeley Events",
   ehub: "Berkeley E-Hub",
-  gemini: "Discovered",
   cal_performances: "Cal Performances",
   bampfa: "BAMPFA",
   calbears: "Cal Bears",
@@ -51,7 +50,6 @@ export const ALL_SOURCES = [
   "All",
   "livewhale",
   "ehub",
-  "gemini",
   "cal_performances",
   "bampfa",
   "calbears",

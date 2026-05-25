@@ -16,8 +16,7 @@ npm run dev          # http://localhost:5173
 The app reads committed artifacts in `public/`. To refresh them locally:
 
 ```bash
-npm run update-events                    # 9 sources (no Gemini)
-API_KEY=your_gemini_key npm run update-events   # includes Gemini long-tail
+npm run update-events
 ```
 
 ## Commands
@@ -85,7 +84,6 @@ Set these in **Settings → Secrets and variables → Actions**:
 | Secret | Required | Purpose |
 |--------|----------|---------|
 | `AUTOMATION_PR_TOKEN` | **Yes for cron** | PAT with `contents` + `pull_requests` write. Lets the automation PR trigger downstream E2E and auto-merge. Scheduled runs fail without it. |
-| `API_KEY` | Optional | Google Gemini API key for long-tail adapter (≤12 events). Pipeline skips Gemini if unset. |
 
 `workflow_dispatch` runs work without `AUTOMATION_PR_TOKEN`, but the PR won't auto-merge.
 
@@ -157,7 +155,6 @@ npm run validate                            # full test suite
 | Berkeley Haas / Law | `tribe.ts` | Tribe Events Calendar REST |
 | Simons Institute | `simons.ts` | JSON API |
 | Berkeley E-Hub | `ehub.ts` | HTML scraper |
-| Gemini long-tail | `gemini.ts` | LLM + search grounding (optional) |
 
 ## Deploy
 
@@ -172,7 +169,6 @@ Post-deploy verification runs automatically via **Production Smoke** on every `m
 
 ## Notes
 
-- `services/geminiService.ts` is a legacy name. It only loads static JSON in the browser.
-- `@google/genai` runs server-side in the pipeline only, never in the client bundle.
+- `services/eventsLoader.ts` only loads static JSON in the browser.
 - GA4 in `utils/analytics.ts` sends search terms to analytics. The measurement ID is public; tune retention in GA4 if needed.
 - Pipeline deps (`cheerio`, `node-ical`, etc.) are in `dependencies` for CI script runs but are not bundled into the frontend.

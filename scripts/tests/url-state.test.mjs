@@ -25,7 +25,6 @@ const OPTIONS = {
     "All",
     "livewhale",
     "ehub",
-    "gemini",
     "cal_performances",
     "bampfa",
     "calbears",

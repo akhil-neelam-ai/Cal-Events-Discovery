@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { ALL_SOURCES, SOURCE_LABELS } from "../appConfig";
 import type { SourceOption } from "../appConfig";
-import { fetchEventsFromGemini } from "../services/geminiService";
+import { fetchEventArtifacts } from "../services/eventsLoader";
 import { CalEvent, IngestionStatus, LoadingState } from "../types";
 import type { SearchIndex } from "../utils/textUtils";
 
@@ -44,7 +44,7 @@ async function fetchOptionalSearchIndex(
 }
 
 function assertValidEventsPayload(
-  data: Awaited<ReturnType<typeof fetchEventsFromGemini>>,
+  data: Awaited<ReturnType<typeof fetchEventArtifacts>>,
 ): void {
   if (!Array.isArray(data.events)) {
     throw new Error("Invalid events payload: events must be an array");
@@ -68,7 +68,7 @@ export function useEventFeed(): EventFeedState {
 
     try {
       const [data, nextSearchIndex] = await Promise.all([
-        fetchEventsFromGemini(),
+        fetchEventArtifacts(),
         fetchOptionalSearchIndex(),
       ]);
 

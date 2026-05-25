@@ -18,7 +18,6 @@ import {
   parseAddeventatcDate,
 } from "../../scripts/sources/cal_performances.ts";
 import { inferEhubDate } from "../../scripts/sources/ehub.ts";
-import { extractJsonArray } from "../../scripts/sources/gemini.ts";
 import { unitFromSlug } from "../../scripts/sources/livewhale.ts";
 
 test("BAMPFA parser reads Google Calendar links", () => {
@@ -151,17 +150,6 @@ test("canonical URLs only allow HTTP(S) protocols", () => {
   assert.equal(
     HttpUrlSchema.safeParse("data:text/html,<script>alert(1)</script>").success,
     false,
-  );
-});
-
-test("Gemini JSON extraction does not repair truncated arrays", () => {
-  assert.deepEqual(
-    extractJsonArray('Here are events: [{"title":"Complete"}]'),
-    [{ title: "Complete" }],
-  );
-  assert.equal(
-    extractJsonArray('[{"title":"Complete"},{"title":"Truncated"'),
-    null,
   );
 });
 

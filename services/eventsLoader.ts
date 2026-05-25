@@ -2,10 +2,7 @@ import { IngestionStatus, SearchResponse } from "../types";
 
 /**
  * Loads the pre-generated static artifacts published by scripts/updateEvents.ts.
- *
- * This module keeps the legacy `fetchEventsFromGemini` name for compatibility
- * with App.tsx, but it does not call Gemini at runtime. The browser only reads
- * `public/events.json` and `public/status.json`.
+ * The browser only reads `public/events.json` and `public/status.json`.
  */
 type EventsPayload = SearchResponse & { lastUpdated?: number };
 
@@ -28,7 +25,7 @@ async function fetchJson<T>(path: string, timeoutMs = 8000): Promise<T> {
   }
 }
 
-export const fetchStaticArtifacts = async (
+export const fetchEventArtifacts = async (
   _forceRefresh: boolean = false,
 ): Promise<
   SearchResponse & { lastUpdated: number; status?: IngestionStatus }
@@ -65,5 +62,3 @@ export const fetchStaticArtifacts = async (
     throw error;
   }
 };
-
-export const fetchEventsFromGemini = fetchStaticArtifacts;
