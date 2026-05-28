@@ -352,7 +352,8 @@ function markRecovery(
 
 /**
  * Run an adapter with a hard timeout, returning a failed AdapterRun (never
- * rejecting) so Promise.all can be used and the source name is always preserved.
+ * rejecting) so the orchestrator's Promise.allSettled can map each result
+ * back to its source name by index and one timeout cannot cancel the others.
  */
 function runAdapterWithTimeout(
   name: SourceName,

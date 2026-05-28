@@ -58,6 +58,14 @@ const ORGANIZER_MAP: Array<[RegExp, FrontendCategory]> = [
     /\b(public health|epidemiology|social welfare|education|public policy|goldman school)\b/i,
     "Academic",
   ],
+  // Student-services orgs. These reliably run community/social/sustainability
+  // programming, not academic events, but their names contain generic words
+  // ("center", "program") that would otherwise score as Academic. Listed last
+  // so academic-discipline matches above still take priority.
+  [
+    /\b(serc|asuc|student (environmental|life|affairs|union|government|services|resource|advocate)|residential life|public service center|cal corps|basic needs|recreational? sports center|student learning center)\b/i,
+    "Student Life",
+  ],
 ];
 
 // ─── Keyword lists per category ─────────────────────────────────────────────
@@ -236,6 +244,14 @@ const KEYWORDS: Array<[FrontendCategory, string[]]> = [
       "gsa",
       "asa",
       "dsp",
+      "recycling",
+      "reuse",
+      "zero waste",
+      "donation drive",
+      "food pantry",
+      "basic needs",
+      "mutual aid",
+      "move-out",
     ],
   ],
 ];
