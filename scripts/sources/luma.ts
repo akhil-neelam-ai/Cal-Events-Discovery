@@ -167,7 +167,12 @@ async function fetchCalendar(
   todayIso: string,
   fetched_at: string,
   options: FetchOptions,
-): Promise<{ events: CanonicalEvent[]; rawCount: number; filteredPast: number; invalid: number }> {
+): Promise<{
+  events: CanonicalEvent[];
+  rawCount: number;
+  filteredPast: number;
+  invalid: number;
+}> {
   const logPrefix = `[luma:${cal.slug}]`;
   const events: CanonicalEvent[] = [];
   let rawCount = 0;
