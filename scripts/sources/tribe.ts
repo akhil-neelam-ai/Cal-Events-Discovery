@@ -358,3 +358,17 @@ export function fetchBerkeleyLaw(
     options,
   );
 }
+
+export function fetchBegin(options: FetchOptions = {}): Promise<FetchResult> {
+  return fetchTribe(
+    {
+      sourceName: "begin",
+      baseUrl: "https://begin.berkeley.edu",
+      defaultOrganizer: "Berkeley Gateway to Innovation",
+      defaultOrganizerUnit: "BEGIN",
+      defaultAddress: "UC Berkeley, Berkeley, CA 94720",
+      defaultCategory: "Entrepreneurship",
+    },
+    options,
+  );
+}

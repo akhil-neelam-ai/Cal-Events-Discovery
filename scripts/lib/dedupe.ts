@@ -24,6 +24,7 @@ const SOURCE_PRIORITY: Record<SourceName, number> = {
   simons: 3,
   ehub: 2,
   luma: 3,
+  begin: 3,
 };
 
 export interface DedupeResult {

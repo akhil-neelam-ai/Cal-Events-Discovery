@@ -16,6 +16,7 @@ export const SOURCE_EXPECTED_MIN_COUNTS = {
   simons: 10,
   ehub: 1,
   luma: 1,
+  begin: 1,
 };
 
 /**
