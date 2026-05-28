@@ -11,6 +11,7 @@ export const SOURCE_LABELS: Record<string, string> = {
   berkeley_law: "Berkeley Law",
   simons: "Simons Institute",
   luma: "Luma",
+  begin: "Berkeley BEGIN",
 };
 
 export const SOURCE_URLS: Record<string, string> = {
@@ -24,6 +25,7 @@ export const SOURCE_URLS: Record<string, string> = {
   berkeley_law: "https://www.law.berkeley.edu/events/",
   simons: "https://simons.berkeley.edu/programs-events",
   luma: "https://luma.com/discover",
+  begin: "https://begin.berkeley.edu/events/",
 };
 
 export interface SourceOption {
@@ -60,6 +62,7 @@ export const ALL_SOURCES = [
   "berkeley_law",
   "simons",
   "luma",
+  "begin",
 ];
 export const DateRanges = [
   { label: "Today", value: "today" },

@@ -108,6 +108,30 @@ const BERKELEY_LUMA_CALENDARS: LumaCalendarConfig[] = [
     defaultAddress: "Wurster Hall, UC Berkeley, Berkeley, CA",
     defaultCategory: "Arts",
   },
+  {
+    calId: "cal-5PR1bGQ6VjXuIIU",
+    slug: "berchainev",
+    organizer: "BerChain",
+    organizerUnit: "BerChain Blockchain Community",
+    defaultAddress: "Berkeley, CA",
+    defaultCategory: "Science & Tech",
+  },
+  {
+    calId: "cal-iqggsuizvbXSxoO",
+    slug: "deeptech",
+    organizer: "Deep Tech Innovation Lab",
+    organizerUnit: "Berkeley Deep Tech Innovation Lab",
+    defaultAddress: "UC Berkeley, Berkeley, CA",
+    defaultCategory: "Science & Tech",
+  },
+  {
+    calId: "cal-ECgZMptWPGOsxtE",
+    slug: "sbc",
+    organizer: "Science of Blockchain Conference",
+    organizerUnit: "Stanford Center for Blockchain Research / Berkeley",
+    defaultAddress: "UC Berkeley, Berkeley, CA",
+    defaultCategory: "Science & Tech",
+  },
 ];
 
 interface LumaGeoInfo {
