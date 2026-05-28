@@ -23,6 +23,7 @@ const SOURCE_PRIORITY: Record<SourceName, number> = {
   berkeley_law: 3,
   simons: 3,
   ehub: 2,
+  luma: 3,
 };
 
 export interface DedupeResult {

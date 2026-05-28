@@ -18,6 +18,7 @@ export const SourceNameSchema = z.enum([
   "berkeley_law",
   "simons",
   "ehub",
+  "luma",
 ]);
 export type SourceName = z.infer<typeof SourceNameSchema>;
 

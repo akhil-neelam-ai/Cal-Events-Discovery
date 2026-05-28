@@ -44,6 +44,7 @@ import { fetchBampfa } from "./sources/bampfa.js";
 import { fetchHaas, fetchBerkeleyLaw } from "./sources/tribe.js";
 import { fetchSimons } from "./sources/simons.js";
 import { fetchEHub } from "./sources/ehub.js";
+import { fetchLuma } from "./sources/luma.js";
 import { buildSearchIndex } from "./lib/buildIndex.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -79,6 +80,7 @@ const ALL_SOURCE_NAMES: SourceName[] = [
   "berkeley_law",
   "simons",
   "ehub",
+  "luma",
 ];
 const CRITICAL_SOURCES = new Set<SourceName>(ALL_SOURCE_NAMES);
 
@@ -165,6 +167,7 @@ const FALLBACK_POLICIES: Partial<Record<SourceName, RecoveryPolicy>> = {
   },
   simons: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
   ehub: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
+  luma: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
 };
 
 async function runAdapter<
@@ -458,6 +461,7 @@ async function main(): Promise<void> {
       },
       { name: "simons", promise: runAdapterWithTimeout("simons", fetchSimons) },
       { name: "ehub", promise: runAdapterWithTimeout("ehub", fetchEHub) },
+      { name: "luma", promise: runAdapterWithTimeout("luma", fetchLuma) },
     ];
 
   const settledRuns = await Promise.allSettled(
@@ -557,6 +561,7 @@ async function main(): Promise<void> {
       title: "Berkeley E-Hub Events",
       uri: "https://ehub.berkeley.edu/events/",
     },
+    { title: "Luma Berkeley Events", uri: "https://luma.com/discover" },
     ...groundingSources,
   ];
   const uniqueSources = Array.from(
