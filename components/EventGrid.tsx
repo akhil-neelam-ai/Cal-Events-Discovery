@@ -13,7 +13,7 @@ export function EventGrid({
   visibleEventsCount,
   hiddenEventCount,
   shouldAnimateCards,
-  effectiveDateRange: _effectiveDateRange,
+  effectiveDateRange,
   onEventClick,
   onLoadMore,
 }: {
@@ -146,7 +146,11 @@ export function EventGrid({
                               />
                             </svg>
                             <span className="font-medium text-slate-700">
-                              {formatRelativeEventDate(event)}
+                              {formatRelativeEventDate(
+                                event,
+                                undefined,
+                                effectiveDateRange,
+                              )}
                             </span>
                             {event.location && (
                               <>

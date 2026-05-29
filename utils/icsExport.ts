@@ -1,4 +1,5 @@
 import { CalEvent } from "../types";
+import { addDaysToDateKey, isContiguousRun } from "./eventDates";
 
 const PT_TIME_ZONE = "America/Los_Angeles";
 
@@ -17,15 +18,17 @@ function formatIcsUtc(date: Date): string {
     .replace(/\.\d{3}Z$/, "Z");
 }
 
-function parseWallClock(event: CalEvent): {
+interface TimeWindow {
   allDay: boolean;
   startLocal: string;
   endLocal: string;
-} {
-  const dateKey = event.date.slice(0, 10);
+}
+
+/** Compute the iCal DTSTART/DTEND for a single occurrence on `dateKey`. */
+function timeWindow(time: string, dateKey: string): TimeWindow {
   const compactDate = dateKey.replace(/-/g, "");
 
-  if (/all\s*day/i.test(event.time)) {
+  if (/all\s*day/i.test(time)) {
     const endDate = new Date(`${dateKey}T00:00:00Z`);
     endDate.setUTCDate(endDate.getUTCDate() + 1);
     return {
@@ -35,7 +38,7 @@ function parseWallClock(event: CalEvent): {
     };
   }
 
-  const match = event.time.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
+  const match = time.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
   if (!match) {
     return {
       allDay: false,
@@ -60,26 +63,24 @@ function parseWallClock(event: CalEvent): {
   };
 }
 
-export function buildEventIcs(event: CalEvent): string {
-  const uid = `${event.id}@cal-events.com`;
-  const { allDay, startLocal, endLocal } = parseWallClock(event);
+/** Build a single VEVENT block (array of lines). */
+function veventLines(
+  uid: string,
+  window: TimeWindow,
+  event: CalEvent,
+): string[] {
   const lines = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//Cal Events Discovery//EN",
-    "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
     "BEGIN:VEVENT",
     `UID:${uid}`,
     `DTSTAMP:${formatIcsUtc(new Date())}`,
   ];
 
-  if (allDay) {
-    lines.push(`DTSTART;VALUE=DATE:${startLocal}`);
-    lines.push(`DTEND;VALUE=DATE:${endLocal}`);
+  if (window.allDay) {
+    lines.push(`DTSTART;VALUE=DATE:${window.startLocal}`);
+    lines.push(`DTEND;VALUE=DATE:${window.endLocal}`);
   } else {
-    lines.push(`DTSTART;TZID=${PT_TIME_ZONE}:${startLocal}`);
-    lines.push(`DTEND;TZID=${PT_TIME_ZONE}:${endLocal}`);
+    lines.push(`DTSTART;TZID=${PT_TIME_ZONE}:${window.startLocal}`);
+    lines.push(`DTEND;TZID=${PT_TIME_ZONE}:${window.endLocal}`);
   }
 
   lines.push(`SUMMARY:${escapeIcsText(event.title)}`);
@@ -90,7 +91,62 @@ export function buildEventIcs(event: CalEvent): string {
   if (event.url) {
     lines.push(`URL:${event.url}`);
   }
-  lines.push("END:VEVENT", "END:VCALENDAR");
+  lines.push("END:VEVENT");
+  return lines;
+}
+
+/**
+ * VEVENT blocks for an event. Multi-day events (set by collapseMultiDay):
+ *   - a continuous all-day run becomes one spanning all-day VEVENT;
+ *   - a gappy/recurring run becomes one VEVENT per occurrence date, so the
+ *     calendar shows exactly the days it happens (no phantom gap days).
+ */
+function buildVevents(event: CalEvent): string[] {
+  const dates = event.dates && event.dates.length > 1 ? event.dates : null;
+
+  if (dates) {
+    const allDay = /all\s*day/i.test(event.time);
+
+    if (allDay && isContiguousRun(dates)) {
+      const start = dates[0].replace(/-/g, "");
+      const endExclusive = addDaysToDateKey(dates[dates.length - 1], 1).replace(
+        /-/g,
+        "",
+      );
+      return veventLines(
+        `${event.id}@cal-events.com`,
+        { allDay: true, startLocal: start, endLocal: endExclusive },
+        event,
+      );
+    }
+
+    // Gappy run (or timed recurrence): one VEVENT per occurrence.
+    return dates.flatMap((dateKey) =>
+      veventLines(
+        `${event.id}-${dateKey}@cal-events.com`,
+        timeWindow(event.time, dateKey),
+        event,
+      ),
+    );
+  }
+
+  return veventLines(
+    `${event.id}@cal-events.com`,
+    timeWindow(event.time, event.date.slice(0, 10)),
+    event,
+  );
+}
+
+export function buildEventIcs(event: CalEvent): string {
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Cal Events Discovery//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    ...buildVevents(event),
+    "END:VCALENDAR",
+  ];
   return `${lines.join("\r\n")}\r\n`;
 }
 
