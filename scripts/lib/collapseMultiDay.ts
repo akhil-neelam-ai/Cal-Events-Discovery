@@ -20,14 +20,26 @@ import type { CanonicalEvent } from "./schema.js";
 import { isoDateInPT } from "./normalize.js";
 
 const LIVEWHALE_DATESTAMP_PREFIX = /^\d{8}T\d{6}Z-/;
+// Trailing per-occurrence date some sources append to the id, e.g. BAMPFA's
+// "<slug>::2026-06-04".
+const TRAILING_OCCURRENCE_DATE = /::\d{4}-\d{2}-\d{2}$/;
+// Month-specific slug suffix BAMPFA uses for recurring programs, e.g.
+// "open-art-lab-june-2026" — stripped so every month of the same program groups.
+const TRAILING_MONTH_SLUG =
+  /-(january|february|march|april|may|june|july|august|september|october|november|december)-\d{4}$/i;
 
-/** Stable per-event identity used to group per-day rows. */
+/** Stable per-event identity used to group per-day rows of the same event. */
 export function stableEventKey(event: CanonicalEvent): string {
   if (event.source_name === "livewhale") {
     const stable = event.source_id.replace(LIVEWHALE_DATESTAMP_PREFIX, "");
     return `livewhale::${stable}`;
   }
-  return `${event.source_name}::${event.source_id}`;
+  // Other sources embed the occurrence date (and sometimes a month) in the id;
+  // strip both so a recurring program's per-day rows collapse into one event.
+  const stable = event.source_id
+    .replace(TRAILING_OCCURRENCE_DATE, "")
+    .replace(TRAILING_MONTH_SLUG, "");
+  return `${event.source_name}::${stable}`;
 }
 
 export interface CollapseResult {
