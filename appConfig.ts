@@ -89,12 +89,6 @@ export const DESKTOP_HERO_PRESETS: QuickFilterPreset[] = [
     searchQuery: "tonight",
   },
   {
-    label: "Free food this week",
-    dateRange: "week",
-    category: "All",
-    searchQuery: "free food",
-  },
-  {
     label: "AI talks",
     dateRange: "week",
     category: "Science & Tech",
