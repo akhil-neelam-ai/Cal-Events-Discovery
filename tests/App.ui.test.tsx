@@ -548,9 +548,10 @@ describe("App UI regressions", () => {
 
     render(<App />);
 
+    // The whole card is a single button labeled by the event title.
     await user.click(
       screen.getByRole("button", {
-        name: /open details for primary card action/i,
+        name: /primary card action/i,
       }),
     );
 
@@ -573,7 +574,9 @@ describe("App UI regressions", () => {
 
     render(<App />);
 
-    await user.click(screen.getByRole("button", { name: /view details/i }));
+    await user.click(
+      screen.getByRole("button", { name: /design review night/i }),
+    );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(
@@ -610,7 +613,7 @@ describe("App UI regressions", () => {
 
     await user.click(
       screen.getByRole("button", {
-        name: /open details for gallery detail event/i,
+        name: /gallery detail event/i,
       }),
     );
 

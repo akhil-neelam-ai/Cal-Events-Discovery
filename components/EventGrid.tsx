@@ -3,7 +3,11 @@ import React from "react";
 import { trackExternalLink } from "../utils/analytics";
 import type { EventGroup } from "../utils/eventDates";
 import { formatRelativeEventDate } from "../utils/eventDates";
-import { getCategoryStyle, isHomeGame } from "../utils/eventPresentation";
+import {
+  getCategoryStyle,
+  isHomeGame,
+  shortenVenue,
+} from "../utils/eventPresentation";
 import { CalEvent, SearchFilters } from "../types";
 import { SourceBadge } from "./SourceBadge";
 
@@ -28,7 +32,7 @@ export function EventGrid({
 }) {
   return (
     <>
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 lg:grid-cols-3">
         {(() => {
           let globalIdx = 0;
           return eventGroups.map((group) => (
@@ -53,7 +57,16 @@ export function EventGrid({
                   <article
                     key={event.id || idx}
                     aria-label={event.title}
-                    className={`group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,50,98,0.06),0_4px_16px_rgba(0,50,98,0.05)] transition-[transform,box-shadow] duration-150 ease-[cubic-bezier(0.32,0.72,0,1)] select-none will-change-transform motion-reduce:transition-none motion-safe:hover:translate-y-[-3px] motion-safe:hover:shadow-[0_8px_32px_rgba(0,50,98,0.13),0_1px_4px_rgba(0,50,98,0.06)] motion-safe:active:scale-[0.985] ${shouldAnimateCards ? "animate-card-in opacity-0" : ""}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => onEventClick(event)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onEventClick(event);
+                      }
+                    }}
+                    className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,50,98,0.06),0_4px_16px_rgba(0,50,98,0.05)] transition-[transform,box-shadow] duration-150 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2 motion-reduce:transition-none motion-safe:hover:translate-y-[-3px] motion-safe:hover:shadow-[0_8px_32px_rgba(0,50,98,0.13),0_1px_4px_rgba(0,50,98,0.06)] motion-safe:active:scale-[0.985] ${shouldAnimateCards ? "animate-card-in opacity-0" : ""}`}
                     style={{
                       ...(shouldAnimateCards
                         ? {
@@ -70,7 +83,7 @@ export function EventGrid({
                       }}
                     />
 
-                    <div className={`grow p-5 pl-6 ${categoryStyle.tintBg}`}>
+                    <div className="p-5 pl-6">
                       <div className="mb-3 flex items-start justify-between gap-2">
                         <span
                           className={`inline-flex rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${categoryStyle.badge}`}
@@ -116,14 +129,9 @@ export function EventGrid({
                         )}
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => onEventClick(event)}
-                        aria-label={`Open details for ${event.title}`}
-                        className="block w-full rounded-xl text-left focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-                      >
+                      <div className="text-left">
                         <h3
-                          className="mb-4 text-[1.05rem] font-semibold leading-snug text-berkeley-blue transition-colors group-hover:text-berkeley-medblue md:font-serif"
+                          className="mb-4 font-serif text-[1.05rem] font-semibold leading-snug text-berkeley-blue transition-colors group-hover:text-berkeley-medblue"
                           style={{ letterSpacing: "-0.01em" }}
                         >
                           {event.title}
@@ -156,7 +164,7 @@ export function EventGrid({
                               <>
                                 <span className="text-slate-300">·</span>
                                 <span className="truncate">
-                                  {event.location}
+                                  {shortenVenue(event.location)}
                                 </span>
                               </>
                             )}
@@ -184,7 +192,7 @@ export function EventGrid({
                             </span>
                           </div>
                         </div>
-                      </button>
+                      </div>
                     </div>
 
                     <div
@@ -192,16 +200,12 @@ export function EventGrid({
                       style={{ borderTop: "1px solid rgba(0,50,98,0.06)" }}
                     >
                       <SourceBadge source={event.source} linked={false} />
-                      <button
-                        type="button"
-                        onClick={() => onEventClick(event)}
-                        aria-label={`View details for ${event.title}`}
-                        className="inline-flex items-center gap-1 text-sm font-semibold text-berkeley-blue transition-colors hover:text-berkeley-medblue focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/60"
+                      <span
+                        aria-hidden="true"
+                        className="text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-berkeley-medblue"
                       >
-                        View details
                         <svg
-                          aria-hidden="true"
-                          className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+                          className="h-3.5 w-3.5"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -213,7 +217,7 @@ export function EventGrid({
                             d="M9 5l7 7-7 7"
                           />
                         </svg>
-                      </button>
+                      </span>
                     </div>
                   </article>
                 );

@@ -337,7 +337,10 @@ export function sortEventsChronologically(events: CalEvent[]): CalEvent[] {
 
 function timeSortValue(time: string | undefined): number {
   if (!time || /all\s*day/i.test(time)) {
-    return 0;
+    // Sink all-day / ongoing items below timed events within the same day, so a
+    // months-long exhibit doesn't bury the day's lectures, games, and films.
+    // MAX_SAFE_INTEGER - 1 keeps genuinely unparseable times (below) last.
+    return Number.MAX_SAFE_INTEGER - 1;
   }
 
   const match = time.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
