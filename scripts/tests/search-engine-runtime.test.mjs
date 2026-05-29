@@ -576,3 +576,55 @@ test("date fallback clears this-weekend hard filters when relaxing to upcoming",
   assert.equal(output.plan.filters.weekend, undefined);
   assert.equal(output.results[0]?.id, "evt-future-hackathon");
 });
+
+test("fuzzy fallback recovers a typo when the index has no exact hit", () => {
+  // The index intentionally contains the event id but none of its tokens, so
+  // the inverted-index phase finds nothing and the Fuse.js phase must recover
+  // the match from the raw title. This mirrors production, where the fuzzy
+  // phase only fires for query tokens that are absent from the index.
+  const events = [SYNTHETIC_EVENTS[1]]; // "Southside Robotics Talk"
+  const emptyIndex = {
+    ids: ["evt-south"],
+    t: {},
+    g: {},
+    o: {},
+    d: {},
+    l: {},
+    buildAt: "test",
+    eventCount: 1,
+  };
+
+  const output = searchEvents(events, "robotcs", emptyIndex);
+
+  assert.ok(
+    output.results.some((event) => event.id === "evt-south"),
+    "expected the fuzzy fallback to recover the misspelled robotics match",
+  );
+});
+
+test("category-drop fallback surfaces cross-category matches when the filtered category is empty", () => {
+  // "film screening" interprets to an Arts category filter, but the only
+  // keyword match here is tagged Academic. The Arts-filtered pool is empty,
+  // so the engine must drop the category and explain the broadening.
+  const futureDate = addDaysToDateKey(getCurrentPacificDateKey(), 5);
+  const events = [
+    {
+      ...SYNTHETIC_EVENTS[4],
+      id: "evt-doc-academic",
+      title: "Documentary Screening Workshop",
+      organizer: "History Department",
+      date: futureDate,
+      location: "Dwinelle Hall",
+      description: "A documentary screening and panel discussion.",
+      tags: ["Academic"],
+      source: "livewhale",
+    },
+  ];
+
+  const output = searchEvents(events, "film screening", null);
+
+  assert.equal(output.plan.filters.category, "Arts");
+  assert.equal(output.fallbackUsed, true);
+  assert.match(output.fallbackMessage, /all categories/i);
+  assert.ok(output.results.some((event) => event.id === "evt-doc-academic"));
+});

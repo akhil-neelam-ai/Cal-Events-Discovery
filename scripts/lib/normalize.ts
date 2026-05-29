@@ -58,6 +58,14 @@ const ORGANIZER_MAP: Array<[RegExp, FrontendCategory]> = [
     /\b(public health|epidemiology|social welfare|education|public policy|goldman school)\b/i,
     "Academic",
   ],
+  // Student-services orgs. These reliably run community/social/sustainability
+  // programming, not academic events, but their names contain generic words
+  // ("center", "program") that would otherwise score as Academic. Listed last
+  // so academic-discipline matches above still take priority.
+  [
+    /\b(serc|asuc|student (environmental|life|affairs|union|government|services|resource|advocate)|residential life|public service center|cal corps|basic needs|recreational? sports center|student learning center)\b/i,
+    "Student Life",
+  ],
 ];
 
 // ─── Keyword lists per category ─────────────────────────────────────────────
@@ -236,6 +244,14 @@ const KEYWORDS: Array<[FrontendCategory, string[]]> = [
       "gsa",
       "asa",
       "dsp",
+      "recycling",
+      "reuse",
+      "zero waste",
+      "donation drive",
+      "food pantry",
+      "basic needs",
+      "mutual aid",
+      "move-out",
     ],
   ],
 ];
@@ -409,7 +425,7 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
       ? dedupeOrderedTags(event.tags as FrontendCategory[])
       : deriveFrontendTags(event);
   const id = `${event.source_name}_${event.source_id}`;
-  return {
+  const legacy: LegacyCalEvent = {
     id,
     title: cleanTitle(event.title),
     organizer: event.organizer || event.organizer_unit || "UC Berkeley",
@@ -421,6 +437,18 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
     url: event.canonical_url || event.source_url,
     source: event.source_name,
   };
+
+  // Multi-day events carry their full upcoming occurrence list (set by
+  // collapseMultiDay). `date` is the earliest of those; `end_date` is the last.
+  if (event.occurrence_dates && event.occurrence_dates.length > 1) {
+    const dates = [...event.occurrence_dates].sort();
+    legacy.dates = dates;
+    legacy.end_date = event.end_at
+      ? isoDateInPT(event.end_at)
+      : dates[dates.length - 1];
+  }
+
+  return legacy;
 }
 
 const STOPWORDS = new Set([

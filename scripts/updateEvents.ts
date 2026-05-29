@@ -32,6 +32,7 @@ import type {
 } from "./lib/schema.js";
 import type { FetchOptions } from "./lib/abort.js";
 import { dedupeEvents } from "./lib/dedupe.js";
+import { collapseMultiDay } from "./lib/collapseMultiDay.js";
 import { projectToLegacy } from "./lib/normalize.js";
 import { atomicWriteJsonSync } from "./lib/atomicWrite.js";
 import { fetchLiveWhale } from "./sources/livewhale.js";
@@ -352,7 +353,8 @@ function markRecovery(
 
 /**
  * Run an adapter with a hard timeout, returning a failed AdapterRun (never
- * rejecting) so Promise.all can be used and the source name is always preserved.
+ * rejecting) so the orchestrator's Promise.allSettled can map each result
+ * back to its source name by index and one timeout cannot cancel the others.
  */
 function runAdapterWithTimeout(
   name: SourceName,
@@ -505,7 +507,20 @@ async function main(): Promise<void> {
     `\n[orchestrator] collected ${allCanonical.length} events across ${runs.length} sources`,
   );
 
-  const { events: deduped, duplicatesRemoved } = dedupeEvents(allCanonical);
+  // Collapse per-day rows (e.g. LiveWhale exhibits published one VEVENT per day)
+  // into single multi-day events before deduping across sources.
+  const {
+    events: collapsed,
+    rowsEliminated,
+    multiDayEvents,
+  } = collapseMultiDay(allCanonical);
+  if (rowsEliminated > 0) {
+    console.log(
+      `[orchestrator] collapsed ${rowsEliminated} per-day rows into ${multiDayEvents} multi-day events`,
+    );
+  }
+
+  const { events: deduped, duplicatesRemoved } = dedupeEvents(collapsed);
   console.log(
     `[orchestrator] dedupe removed ${duplicatesRemoved}, ${deduped.length} unique`,
   );

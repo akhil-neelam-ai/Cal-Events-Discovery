@@ -1,13 +1,35 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { trackExternalLink } from "../utils/analytics";
-import { formatEventDate } from "../utils/eventDates";
+import {
+  formatEventDate,
+  formatMultiDayWhen,
+  isContiguousRun,
+} from "../utils/eventDates";
 import { downloadEventIcs } from "../utils/icsExport";
 import { getCategoryStyle, getDirectionsUrl } from "../utils/eventPresentation";
 import { useDialogAccessibility } from "../hooks/useDialogAccessibility";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 import { CalEvent } from "../types";
 import { SourceBadge } from "./SourceBadge";
+
+/** Bold date line for the detail panel: a span for multi-day events, else the date. */
+function detailWhenPrimary(event: CalEvent): string {
+  return formatMultiDayWhen(event) ?? formatEventDate(event.date);
+}
+
+/** Secondary line: recurrence descriptor for multi-day events, else the time. */
+function detailWhenSecondary(event: CalEvent): string {
+  if (event.dates && event.dates.length > 1) {
+    if (isContiguousRun(event.dates)) {
+      return event.time === "All day"
+        ? "Daily · all day"
+        : `Daily · ${event.time}`;
+    }
+    return `${event.dates.length} dates`;
+  }
+  return event.time;
+}
 
 function DetailActions({
   event,
@@ -406,9 +428,11 @@ function BottomSheet({
               </div>
               <div>
                 <div className="font-bold text-gray-800">
-                  {formatEventDate(event.date)}
+                  {detailWhenPrimary(event)}
                 </div>
-                <div className="text-gray-500">{event.time}</div>
+                <div className="text-gray-500">
+                  {detailWhenSecondary(event)}
+                </div>
               </div>
             </div>
 
