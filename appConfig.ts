@@ -36,8 +36,6 @@ export interface SourceOption {
 
 export interface QuickFilterPreset {
   label: string;
-  /** Short secondary descriptor shown beside the label in the quick-start row. */
-  hint: string;
   dateRange: SearchFilters["dateRange"];
   category: string;
   searchQuery: string;
@@ -81,34 +79,44 @@ export const DEFAULT_FILTERS: SearchFilters = {
 
 export const VISIBLE_EVENT_BATCH_SIZE = 72;
 
+// Natural-language example queries shown as chips below the hero search bar.
+// Each sets a sensible scope plus a query the client search engine interprets.
 export const DESKTOP_HERO_PRESETS: QuickFilterPreset[] = [
   {
-    label: "Tonight",
-    hint: "After 5pm",
+    label: "What's on tonight?",
     dateRange: "today",
     category: "All",
     searchQuery: "tonight",
   },
   {
-    label: "This Week",
-    hint: "Next 7 days",
+    label: "Free food this week",
     dateRange: "week",
     category: "All",
-    searchQuery: "",
+    searchQuery: "free food",
   },
   {
     label: "AI talks",
-    hint: "Science & tech",
     dateRange: "week",
     category: "Science & Tech",
     searchQuery: "ai",
   },
   {
-    label: "Cal games",
-    hint: "Sports",
+    label: "A film at BAMPFA",
+    dateRange: "upcoming",
+    category: "Arts",
+    searchQuery: "bampfa film",
+  },
+  {
+    label: "Something this weekend",
+    dateRange: "week",
+    category: "All",
+    searchQuery: "this weekend",
+  },
+  {
+    label: "A Cal game",
     dateRange: "week",
     category: "Sports",
-    searchQuery: "",
+    searchQuery: "cal game",
   },
 ];
 
