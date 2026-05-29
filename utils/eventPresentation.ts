@@ -105,6 +105,22 @@ export function getDirectionsUrl(location: string): string | null {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
 }
 
+// Long official venue names truncate mid-word on cards ("…Pacific Film Arc…").
+// Map them to the name people actually use. The BAMPFA pattern also absorbs a
+// "Berkley" misspelling that appears in upstream source data.
+const VENUE_ALIASES: Array<[RegExp, string]> = [
+  [/\bberkl?ey art museum (and|&) pacific film archive\b/i, "BAMPFA"],
+];
+
+/** Shorten a known long venue name to its common short form for display. */
+export function shortenVenue(location: string): string {
+  if (!location) return location;
+  for (const [pattern, alias] of VENUE_ALIASES) {
+    if (pattern.test(location)) return alias;
+  }
+  return location;
+}
+
 export function getCategoryStyle(tag?: string): CategoryStyle {
   if (!tag) {
     return CATEGORY_STYLES.Event;
