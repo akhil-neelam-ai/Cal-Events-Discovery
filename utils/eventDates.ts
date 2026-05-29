@@ -159,10 +159,55 @@ function weekdayLabel(dateKey: string): string {
   });
 }
 
+/** True when the sorted date keys are every consecutive day (no gaps). */
+export function isContiguousRun(dateKeys: string[]): boolean {
+  for (let i = 1; i < dateKeys.length; i++) {
+    if (addDaysToDateKey(dateKeys[i - 1], 1) !== dateKeys[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function shortMonthDay(dateKey: string): string {
+  const [, month, day] = dateKey.split("-").map(Number);
+  if (!month || !day) return dateKey;
+  return `${MONTHS[month - 1]} ${day}`;
+}
+
+/**
+ * Label for a multi-day / recurring event (set by collapseMultiDay). A
+ * continuous run reads "Through Aug 31"; a gappy series reads "12 dates ·
+ * through Nov 27". Future-starting runs read "Jun 11 – Aug 19".
+ */
+export function formatMultiDayWhen(
+  event: Pick<CalEvent, "date" | "end_date" | "dates">,
+  now = new Date(),
+): string | null {
+  const dates = event.dates;
+  if (!dates || dates.length < 2) return null;
+
+  const startKey = getPacificDateKey(event.date) || dates[0];
+  const endKey =
+    (event.end_date && getPacificDateKey(event.end_date)) ||
+    event.end_date ||
+    dates[dates.length - 1];
+  const todayKey = getCurrentPacificDateKey(now);
+  const prefix = isContiguousRun(dates) ? "" : `${dates.length} dates · `;
+
+  if (startKey <= todayKey) {
+    return `${prefix}Through ${shortMonthDay(endKey)}`;
+  }
+  return `${prefix}${shortMonthDay(startKey)} – ${shortMonthDay(endKey)}`;
+}
+
 export function formatRelativeEventDate(
-  event: Pick<CalEvent, "date" | "time">,
+  event: Pick<CalEvent, "date" | "time" | "end_date" | "dates">,
   now = new Date(),
 ): string {
+  const multiDay = formatMultiDayWhen(event, now);
+  if (multiDay) return multiDay;
+
   const dateKey = getPacificDateKey(event.date);
   if (!dateKey) {
     return formatEventDate(event.date);

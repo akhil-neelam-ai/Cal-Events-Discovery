@@ -425,7 +425,7 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
       ? dedupeOrderedTags(event.tags as FrontendCategory[])
       : deriveFrontendTags(event);
   const id = `${event.source_name}_${event.source_id}`;
-  return {
+  const legacy: LegacyCalEvent = {
     id,
     title: cleanTitle(event.title),
     organizer: event.organizer || event.organizer_unit || "UC Berkeley",
@@ -437,6 +437,18 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
     url: event.canonical_url || event.source_url,
     source: event.source_name,
   };
+
+  // Multi-day events carry their full upcoming occurrence list (set by
+  // collapseMultiDay). `date` is the earliest of those; `end_date` is the last.
+  if (event.occurrence_dates && event.occurrence_dates.length > 1) {
+    const dates = [...event.occurrence_dates].sort();
+    legacy.dates = dates;
+    legacy.end_date = event.end_at
+      ? isoDateInPT(event.end_at)
+      : dates[dates.length - 1];
+  }
+
+  return legacy;
 }
 
 const STOPWORDS = new Set([
