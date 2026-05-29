@@ -78,6 +78,18 @@ export function DesktopHero({
     blurTimerRef.current = setTimeout(() => closeSuggestions(), 150);
   };
 
+  const submitSearch = () => {
+    const trimmed = searchQuery.trim();
+    if (trimmed) {
+      onSearchChange(trimmed);
+      addRecentSearch(trimmed);
+      setRecents(getRecentSearches());
+      closeSuggestions();
+    } else {
+      document.getElementById(inputId)?.focus();
+    }
+  };
+
   return (
     <header
       className="relative hidden border-b-4 border-[#FDB515] text-white shadow-md md:block"
@@ -221,20 +233,48 @@ export function DesktopHero({
               )}
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center justify-center gap-3 border-t border-slate-100 pt-3">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
+            <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-3">
+              <span className="hidden shrink-0 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400 lg:inline">
                 Quick Start
               </span>
-              {DESKTOP_HERO_PRESETS.map((preset) => (
-                <button
-                  key={preset.label}
-                  type="button"
-                  onClick={() => onPresetSelect(preset)}
-                  className="rounded-full border border-[rgba(253,181,21,0.5)] bg-[rgba(253,181,21,0.08)] px-4 py-2 text-sm font-medium text-berkeley-blue transition hover:border-[#FDB515] hover:bg-[rgba(253,181,21,0.18)] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+              <div className="flex flex-1 flex-wrap items-center gap-1">
+                {DESKTOP_HERO_PRESETS.map((preset) => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => onPresetSelect(preset)}
+                    className="inline-flex items-baseline gap-1.5 rounded-full px-3.5 py-2 transition hover:bg-slate-100 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+                  >
+                    <span className="text-sm font-semibold text-berkeley-blue">
+                      {preset.label}
+                    </span>
+                    <span className="text-xs font-normal text-slate-400">
+                      {preset.hint}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={submitSearch}
+                aria-label="Search"
+                className="ml-auto inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-berkeley-gold text-berkeley-blue shadow-sm transition hover:brightness-105 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2 motion-safe:active:scale-95"
+              >
+                <svg
+                  aria-hidden="true"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  {preset.label}
-                </button>
-              ))}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M5 12h14M13 6l6 6-6 6"
+                  />
+                </svg>
+              </button>
             </div>
           </div>
         </div>

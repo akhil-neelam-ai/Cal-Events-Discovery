@@ -378,7 +378,8 @@ describe("App UI regressions", () => {
 
     render(<App />);
 
-    await user.click(screen.getByRole("button", { name: "Tonight" }));
+    // The quick-start preset's accessible name now includes its hint ("After 5pm").
+    await user.click(screen.getByRole("button", { name: /tonight/i }));
 
     expect(
       screen.getByRole("combobox", { name: /search campus events/i }),
