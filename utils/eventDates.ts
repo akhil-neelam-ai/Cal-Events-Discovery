@@ -183,16 +183,29 @@ function shortMonthDay(dateKey: string): string {
 export function formatMultiDayWhen(
   event: Pick<CalEvent, "date" | "end_date" | "dates">,
   now = new Date(),
+  dateRange?: string,
 ): string | null {
   const dates = event.dates;
   if (!dates || dates.length < 2) return null;
+
+  const todayKey = getCurrentPacificDateKey(now);
+
+  // In the "This Week" view, a gappy/recurring run is most useful framed as how
+  // many days it actually occurs within the next 7 days. Continuous runs keep
+  // the span label below ("Through Aug 31"), which reads better for an exhibit.
+  if (dateRange === "week" && !isContiguousRun(dates)) {
+    const weekEnd = addDaysToDateKey(todayKey, 6);
+    const inWeek = dates.filter((d) => d >= todayKey && d <= weekEnd).length;
+    if (inWeek > 0) {
+      return `${inWeek} ${inWeek === 1 ? "date" : "dates"} this week`;
+    }
+  }
 
   const startKey = getPacificDateKey(event.date) || dates[0];
   const endKey =
     (event.end_date && getPacificDateKey(event.end_date)) ||
     event.end_date ||
     dates[dates.length - 1];
-  const todayKey = getCurrentPacificDateKey(now);
   const prefix = isContiguousRun(dates) ? "" : `${dates.length} dates · `;
 
   if (startKey <= todayKey) {
@@ -204,8 +217,9 @@ export function formatMultiDayWhen(
 export function formatRelativeEventDate(
   event: Pick<CalEvent, "date" | "time" | "end_date" | "dates">,
   now = new Date(),
+  dateRange?: string,
 ): string {
-  const multiDay = formatMultiDayWhen(event, now);
+  const multiDay = formatMultiDayWhen(event, now, dateRange);
   if (multiDay) return multiDay;
 
   const dateKey = getPacificDateKey(event.date);

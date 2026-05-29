@@ -120,6 +120,35 @@ test("formatMultiDayWhen prefixes gappy/recurring runs with a date count", () =>
   assert.equal(label, "3 dates · Through Jun 6");
 });
 
+test("formatMultiDayWhen counts gappy occurrences in the This Week view", () => {
+  const now = new Date("2026-05-23T12:00:00-07:00"); // today = 2026-05-23 PT
+  // Two of these three dates fall within today..+6 (May 23–29).
+  const label = formatMultiDayWhen(
+    {
+      date: "2026-05-23",
+      end_date: "2026-06-06",
+      dates: ["2026-05-23", "2026-05-27", "2026-06-06"],
+    },
+    now,
+    "week",
+  );
+  assert.equal(label, "2 dates this week");
+});
+
+test("formatMultiDayWhen keeps the span label for a continuous run in This Week", () => {
+  const now = new Date("2026-05-23T12:00:00-07:00");
+  const label = formatMultiDayWhen(
+    {
+      date: "2026-05-23",
+      end_date: "2026-08-31",
+      dates: ["2026-05-23", "2026-05-24", "2026-05-25"],
+    },
+    now,
+    "week",
+  );
+  assert.equal(label, "Through Aug 31");
+});
+
 test("formatMultiDayWhen returns null for single-day events", () => {
   assert.equal(formatMultiDayWhen({ date: "2026-05-23" }), null);
   assert.equal(

@@ -40,3 +40,38 @@ test("buildEventIcs emits VALUE=DATE for all-day events", () => {
   assert.match(ics, /DTSTART;VALUE=DATE:20260530/);
   assert.match(ics, /DTEND;VALUE=DATE:20260531/);
 });
+
+test("buildEventIcs spans a contiguous multi-day all-day run as one VEVENT", () => {
+  const ics = buildEventIcs({
+    ...ALL_DAY_EVENT,
+    id: "evt-exhibit",
+    end_date: "2026-06-02",
+    dates: ["2026-05-30", "2026-05-31", "2026-06-01", "2026-06-02"],
+  });
+
+  // exactly one VEVENT, spanning start..(end+1) exclusive
+  assert.equal(ics.match(/BEGIN:VEVENT/g).length, 1);
+  assert.match(ics, /DTSTART;VALUE=DATE:20260530/);
+  assert.match(ics, /DTEND;VALUE=DATE:20260603/);
+});
+
+test("buildEventIcs emits one VEVENT per occurrence for a gappy run", () => {
+  const ics = buildEventIcs({
+    ...ALL_DAY_EVENT,
+    id: "evt-recurring",
+    end_date: "2026-06-08",
+    dates: ["2026-06-01", "2026-06-03", "2026-06-08"],
+  });
+
+  assert.equal(ics.match(/BEGIN:VEVENT/g).length, 3);
+  assert.match(ics, /UID:evt-recurring-2026-06-01@cal-events\.com/);
+  assert.match(ics, /UID:evt-recurring-2026-06-08@cal-events\.com/);
+  // each occurrence is its own single all-day day
+  assert.match(ics, /DTSTART;VALUE=DATE:20260603/);
+  assert.match(ics, /DTEND;VALUE=DATE:20260604/);
+});
+
+test("buildEventIcs leaves single-day events as one VEVENT", () => {
+  const ics = buildEventIcs(TIMED_EVENT);
+  assert.equal(ics.match(/BEGIN:VEVENT/g).length, 1);
+});
