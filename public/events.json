@@ -592,7 +592,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-may-2026::2026-05-29",
+      "id": "bampfa_open-art-lab",
       "title": "Open: Art Lab",
       "organizer": "BAMPFA",
       "date": "2026-05-29",
@@ -603,7 +603,55 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/open-art-lab-may-2026",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-05-29",
+        "2026-05-30",
+        "2026-05-31",
+        "2026-06-04",
+        "2026-06-05",
+        "2026-06-06",
+        "2026-06-07",
+        "2026-06-12",
+        "2026-06-13",
+        "2026-06-14",
+        "2026-06-19",
+        "2026-06-20",
+        "2026-06-21",
+        "2026-06-26",
+        "2026-06-27",
+        "2026-06-28",
+        "2026-07-02",
+        "2026-07-03",
+        "2026-07-04",
+        "2026-07-05",
+        "2026-07-10",
+        "2026-07-11",
+        "2026-07-12",
+        "2026-07-17",
+        "2026-07-18",
+        "2026-07-19",
+        "2026-07-24",
+        "2026-07-25",
+        "2026-07-26",
+        "2026-07-31",
+        "2026-08-01",
+        "2026-08-02",
+        "2026-08-06",
+        "2026-08-07",
+        "2026-08-08",
+        "2026-08-09",
+        "2026-08-14",
+        "2026-08-15",
+        "2026-08-16",
+        "2026-08-21",
+        "2026-08-22",
+        "2026-08-23",
+        "2026-08-28",
+        "2026-08-29",
+        "2026-08-30"
+      ],
+      "end_date": "2026-08-30"
     },
     {
       "id": "livewhale_20260530T013000Z-321942@events.berkeley.edu",
@@ -677,20 +725,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-may-2026::2026-05-30",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-05-30",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-may-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260530T200000Z-322006@events.berkeley.edu",
       "title": "Good Fire: Tending Native Lands",
       "organizer": "CAA",
@@ -760,20 +794,6 @@
       ],
       "url": "https://events.berkeley.edu/sports/event/315293-california-womens-rowing-vs-ncaa-championships",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_open-art-lab-may-2026::2026-05-31",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-05-31",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-may-2026",
-      "source": "bampfa"
     },
     {
       "id": "haas_3290259",
@@ -1069,7 +1089,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_free-first-thursdays::2026-06-04",
+      "id": "bampfa_free-first-thursdays",
       "title": "Free First Thursday",
       "organizer": "BAMPFA",
       "date": "2026-06-04",
@@ -1080,7 +1100,14 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/free-first-thursdays",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-04",
+        "2026-07-02",
+        "2026-08-06",
+        "2026-09-03"
+      ],
+      "end_date": "2026-09-03"
     },
     {
       "id": "livewhale_20260604T080000Z-322287@events.berkeley.edu",
@@ -1170,20 +1197,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-june-2026::2026-06-04",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-06-04",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-june-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260604T190000Z-321402@events.berkeley.edu",
       "title": "Berkeley Art, Law, and Finance Symposium at SFMOMA",
       "organizer": "UC Berkeley",
@@ -1227,7 +1240,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_bob-flambeur::2026-06-04",
+      "id": "bampfa_bob-flambeur",
       "title": "Bob le flambeur",
       "organizer": "BAMPFA",
       "date": "2026-06-04",
@@ -1238,7 +1251,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/bob-flambeur",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-04",
+        "2026-08-19"
+      ],
+      "end_date": "2026-08-19"
     },
     {
       "id": "livewhale_20260605T020000Z-321403@events.berkeley.edu",
@@ -1312,20 +1330,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-june-2026::2026-06-05",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-06-05",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-june-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260606T020000Z-321300@events.berkeley.edu",
       "title": "Film Screening – \"Two Prosecutors\"",
       "organizer": "BAMPFA",
@@ -1340,7 +1344,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_two-prosecutors::2026-06-05",
+      "id": "bampfa_two-prosecutors",
       "title": "Two Prosecutors",
       "organizer": "BAMPFA",
       "date": "2026-06-05",
@@ -1351,7 +1355,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/two-prosecutors",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-05",
+        "2026-06-28"
+      ],
+      "end_date": "2026-06-28"
     },
     {
       "id": "haas_3293593",
@@ -1459,21 +1468,7 @@
       "source": "bampfa"
     },
     {
-      "id": "bampfa_open-art-lab-june-2026::2026-06-06",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-06-06",
-      "time": "1:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-june-2026",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_elevator-gallows::2026-06-06",
+      "id": "bampfa_elevator-gallows",
       "title": "Elevator to the Gallows",
       "organizer": "BAMPFA",
       "date": "2026-06-06",
@@ -1484,7 +1479,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/elevator-gallows",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-06",
+        "2026-08-28"
+      ],
+      "end_date": "2026-08-28"
     },
     {
       "id": "livewhale_20260607T013000Z-321577@events.berkeley.edu",
@@ -1515,20 +1515,6 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/321311-free-community-day-maren-hassinger-living-moving",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_open-art-lab-june-2026::2026-06-07",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-06-07",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-june-2026",
-      "source": "bampfa"
     },
     {
       "id": "bampfa_community-day-art-making-hassinger::2026-06-07",
@@ -1847,7 +1833,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing::2026-06-11",
+      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing",
       "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
       "organizer": "BAMPFA",
       "date": "2026-06-11",
@@ -1858,7 +1844,22 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-11",
+        "2026-06-14",
+        "2026-06-21",
+        "2026-06-24",
+        "2026-06-28",
+        "2026-07-02",
+        "2026-07-08",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-07-29",
+        "2026-08-09",
+        "2026-08-19"
+      ],
+      "end_date": "2026-08-19"
     },
     {
       "id": "livewhale_20260612T003000Z-322040@events.berkeley.edu",
@@ -1903,7 +1904,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_lavventura::2026-06-11",
+      "id": "bampfa_lavventura",
       "title": "L’avventura",
       "organizer": "BAMPFA",
       "date": "2026-06-11",
@@ -1914,7 +1915,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/lavventura",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-11",
+        "2026-07-30"
+      ],
+      "end_date": "2026-07-30"
     },
     {
       "id": "livewhale_20260612T070000Z-314585@events.berkeley.edu",
@@ -1974,20 +1980,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-june-2026::2026-06-12",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-06-12",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-june-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260613T010000Z-321418@events.berkeley.edu",
       "title": "Who Counts: The Long History of Data and Power (Roopika Risam)",
       "organizer": "DH",
@@ -2005,7 +1997,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_2001-space-odyssey::2026-06-12",
+      "id": "bampfa_2001-space-odyssey",
       "title": "2001: A Space Odyssey",
       "organizer": "BAMPFA",
       "date": "2026-06-12",
@@ -2016,7 +2008,13 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/2001-space-odyssey",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-12",
+        "2026-08-16",
+        "2026-08-23"
+      ],
+      "end_date": "2026-08-23"
     },
     {
       "id": "livewhale_20260613T020000Z-321765@events.berkeley.edu",
@@ -2074,20 +2072,6 @@
       ],
       "url": "https://events.berkeley.edu/CAA/event/322039-june-2026-culture-club-trolley-museum",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_open-art-lab-june-2026::2026-06-13",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-06-13",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-june-2026",
-      "source": "bampfa"
     },
     {
       "id": "haas_3296973",
@@ -2178,7 +2162,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_la-notte::2026-06-13",
+      "id": "bampfa_la-notte",
       "title": "La notte",
       "organizer": "BAMPFA",
       "date": "2026-06-13",
@@ -2189,7 +2173,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/la-notte",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-13",
+        "2026-08-02"
+      ],
+      "end_date": "2026-08-02"
     },
     {
       "id": "livewhale_20260614T070000Z-319332@events.berkeley.edu",
@@ -2206,20 +2195,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-june-2026::2026-06-14",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-06-14",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-june-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260614T190000Z-309029@events.berkeley.edu",
       "title": "BIPOC Support Group",
       "organizer": "Equity And Inclusion",
@@ -2234,21 +2209,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing::2026-06-14",
-      "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-06-14",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_barry-lyndon::2026-06-14",
+      "id": "bampfa_barry-lyndon",
       "title": "Barry Lyndon",
       "organizer": "BAMPFA",
       "date": "2026-06-14",
@@ -2259,7 +2220,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/barry-lyndon",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-14",
+        "2026-08-22"
+      ],
+      "end_date": "2026-08-22"
     },
     {
       "id": "livewhale_20260615T000000Z-321762@events.berkeley.edu",
@@ -2588,7 +2554,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_leclisse::2026-06-18",
+      "id": "bampfa_leclisse",
       "title": "L’eclisse",
       "organizer": "BAMPFA",
       "date": "2026-06-18",
@@ -2599,7 +2565,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/leclisse",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-18",
+        "2026-08-08"
+      ],
+      "end_date": "2026-08-08"
     },
     {
       "id": "livewhale_20260619T070000Z-320909@events.berkeley.edu",
@@ -2614,20 +2585,6 @@
       ],
       "url": "https://events.berkeley.edu/calparents/event/320909-academic-and-administrative-holiday-juneteenth",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_open-art-lab-june-2026::2026-06-19",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-06-19",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-june-2026",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260619T233000Z-321939@events.berkeley.edu",
@@ -2689,20 +2646,6 @@
       "source": "haas"
     },
     {
-      "id": "bampfa_open-art-lab-june-2026::2026-06-20",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-06-20",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-june-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "bampfa_fear-and-desire::2026-06-20",
       "title": "Fear and Desire",
       "organizer": "BAMPFA",
@@ -2759,34 +2702,6 @@
       "source": "bampfa"
     },
     {
-      "id": "bampfa_open-art-lab-june-2026::2026-06-21",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-06-21",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-june-2026",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing::2026-06-21",
-      "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-06-21",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
-      "source": "bampfa"
-    },
-    {
       "id": "bampfa_acting-women::2026-06-21",
       "title": "Acting Like Women",
       "organizer": "BAMPFA",
@@ -2829,7 +2744,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_red-desert::2026-06-21",
+      "id": "bampfa_red-desert",
       "title": "Red Desert",
       "organizer": "BAMPFA",
       "date": "2026-06-21",
@@ -2840,7 +2755,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/red-desert",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-21",
+        "2026-08-13"
+      ],
+      "end_date": "2026-08-13"
     },
     {
       "id": "livewhale_20260622T070000Z-320910@events.berkeley.edu",
@@ -2940,20 +2860,6 @@
       ],
       "url": "https://www.law.berkeley.edu/event/billing-basics/",
       "source": "berkeley_law"
-    },
-    {
-      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing::2026-06-24",
-      "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-06-24",
-      "time": "12:15 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260625T020000Z-322330@events.berkeley.edu",
@@ -3113,20 +3019,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-june-2026::2026-06-26",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-06-26",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-june-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260627T020000Z-322332@events.berkeley.edu",
       "title": "Film Screening – \"Mary Oliver: Saved by the Beauty of the World\"",
       "organizer": "BAMPFA",
@@ -3168,20 +3060,6 @@
       ],
       "url": "https://events.berkeley.edu/CAA/event/322036-2026-bkaa-friends-golf-outing",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_open-art-lab-june-2026::2026-06-27",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-06-27",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-june-2026",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260627T230000Z-322333@events.berkeley.edu",
@@ -3254,20 +3132,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-june-2026::2026-06-28",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-06-28",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-june-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260628T200000Z-322341@events.berkeley.edu",
       "title": "Swap Circle at BAMPFA: Clothing Swap",
       "organizer": "BAMPFA",
@@ -3280,20 +3144,6 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322341-swap-circle-at-bampfa-clothing-swap",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing::2026-06-28",
-      "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-06-28",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260628T230000Z-322342@events.berkeley.edu",
@@ -3310,20 +3160,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_two-prosecutors::2026-06-28",
-      "title": "Two Prosecutors",
-      "organizer": "BAMPFA",
-      "date": "2026-06-28",
-      "time": "4:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Two Prosecutors",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/two-prosecutors",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260629T013000Z-322343@events.berkeley.edu",
       "title": "Film Screening – \"The Killing\"",
       "organizer": "BAMPFA",
@@ -3338,7 +3174,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_killing::2026-06-28",
+      "id": "bampfa_killing",
       "title": "The Killing",
       "organizer": "BAMPFA",
       "date": "2026-06-28",
@@ -3349,7 +3185,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/killing",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-28",
+        "2026-08-05"
+      ],
+      "end_date": "2026-08-05"
     },
     {
       "id": "livewhale_20260630T000000Z-322035@events.berkeley.edu",
@@ -3424,20 +3265,6 @@
       "source": "bampfa"
     },
     {
-      "id": "bampfa_free-first-thursdays::2026-07-02",
-      "title": "Free First Thursday",
-      "organizer": "BAMPFA",
-      "date": "2026-07-02",
-      "time": "12:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Free First Thursday",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/free-first-thursdays",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260702T070000Z-320911@events.berkeley.edu",
       "title": "Summer Session A Ends",
       "organizer": "Cal Parents",
@@ -3466,20 +3293,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-02",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-02",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260702T200000Z-322356@events.berkeley.edu",
       "title": "Professional Program in Project Management Information Session",
       "organizer": "UC Berkeley Extension",
@@ -3492,20 +3305,6 @@
       ],
       "url": "https://events.berkeley.edu/extension/event/322356-professional-program-in-project-management-informatio",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing::2026-07-02",
-      "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-07-02",
-      "time": "1:15 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260703T020000Z-322345@events.berkeley.edu",
@@ -3522,7 +3321,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_only-yesterday::2026-07-02",
+      "id": "bampfa_only-yesterday",
       "title": "Only Yesterday",
       "organizer": "BAMPFA",
       "date": "2026-07-02",
@@ -3533,7 +3332,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/only-yesterday",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-07-02",
+        "2026-07-05"
+      ],
+      "end_date": "2026-07-05"
     },
     {
       "id": "livewhale_20260703T070000Z-320914@events.berkeley.edu",
@@ -3548,20 +3352,6 @@
       ],
       "url": "https://events.berkeley.edu/calparents/event/320914-academic-and-administrative-holiday-independence",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-03",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-03",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260704T020000Z-322346@events.berkeley.edu",
@@ -3592,21 +3382,7 @@
       "source": "bampfa"
     },
     {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-04",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-04",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_dr-strangelove-or-how-i-learned-stop-worrying-and-love-bomb::2026-07-04",
+      "id": "bampfa_dr-strangelove-or-how-i-learned-stop-worrying-and-love-bomb",
       "title": "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
       "organizer": "BAMPFA",
       "date": "2026-07-04",
@@ -3617,7 +3393,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/dr-strangelove-or-how-i-learned-stop-worrying-and-love-bomb",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-07-04",
+        "2026-08-15"
+      ],
+      "end_date": "2026-08-15"
     },
     {
       "id": "livewhale_20260705T000000Z-322347@events.berkeley.edu",
@@ -3634,20 +3415,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-05",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-05",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260705T230000Z-322348@events.berkeley.edu",
       "title": "Film Screening – \"Only Yesterday\"",
       "organizer": "BAMPFA",
@@ -3660,20 +3427,6 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322348-film-screening-only-yesterday",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_only-yesterday::2026-07-05",
-      "title": "Only Yesterday",
-      "organizer": "BAMPFA",
-      "date": "2026-07-05",
-      "time": "4:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Only Yesterday",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/only-yesterday",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260706T020000Z-322349@events.berkeley.edu",
@@ -3758,20 +3511,6 @@
       ],
       "url": "https://events.berkeley.edu/extension/event/321642-nursing-preparatory-program-online-information-sessio",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing::2026-07-08",
-      "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-07-08",
-      "time": "12:15 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260709T020000Z-322350@events.berkeley.edu",
@@ -3872,20 +3611,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-10",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-10",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260711T020000Z-322392@events.berkeley.edu",
       "title": "Film Screening – \"The Times of Harvey Milk\"",
       "organizer": "BAMPFA",
@@ -3914,20 +3639,6 @@
       "source": "bampfa"
     },
     {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-11",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-11",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260711T203000Z-322391@events.berkeley.edu",
       "title": "Film Screening – \"Grave of the Fireflies\"",
       "organizer": "BAMPFA",
@@ -3942,7 +3653,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_grave-fireflies::2026-07-11",
+      "id": "bampfa_grave-fireflies",
       "title": "Grave of the Fireflies",
       "organizer": "BAMPFA",
       "date": "2026-07-11",
@@ -3953,7 +3664,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/grave-fireflies",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-07-11",
+        "2026-08-23"
+      ],
+      "end_date": "2026-08-23"
     },
     {
       "id": "livewhale_20260711T220000Z-322087@events.berkeley.edu",
@@ -4040,20 +3756,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-12",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-12",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260712T200000Z-321322@events.berkeley.edu",
       "title": "Art Workshop: The Future of Present Tense",
       "organizer": "BAMPFA",
@@ -4081,20 +3783,6 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/future-present-tense-workshop",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing::2026-07-12",
-      "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-07-12",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
       "source": "bampfa"
     },
     {
@@ -4337,20 +4025,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-17",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-17",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260718T020000Z-322361@events.berkeley.edu",
       "title": "Film Screening – \"Lolita\"",
       "organizer": "BAMPFA",
@@ -4393,20 +4067,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-18",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-18",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260718T223000Z-322362@events.berkeley.edu",
       "title": "Film Screening – \"The Tale of The Princess Kaguya\"",
       "organizer": "BAMPFA",
@@ -4421,7 +4081,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_tale-princess-kaguya::2026-07-18",
+      "id": "bampfa_tale-princess-kaguya",
       "title": "The Tale of The Princess Kaguya",
       "organizer": "BAMPFA",
       "date": "2026-07-18",
@@ -4432,7 +4092,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/tale-princess-kaguya",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-07-18",
+        "2026-08-28"
+      ],
+      "end_date": "2026-08-28"
     },
     {
       "id": "livewhale_20260719T013000Z-322363@events.berkeley.edu",
@@ -4460,20 +4125,6 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/shoot-piano-player",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-19",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-19",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
       "source": "bampfa"
     },
     {
@@ -4649,7 +4300,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_eyes-wide-shut::2026-07-23",
+      "id": "bampfa_eyes-wide-shut",
       "title": "Eyes Wide Shut",
       "organizer": "BAMPFA",
       "date": "2026-07-23",
@@ -4660,7 +4311,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/eyes-wide-shut",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-07-23",
+        "2026-08-30"
+      ],
+      "end_date": "2026-08-30"
     },
     {
       "id": "livewhale_20260724T020000Z-322379@events.berkeley.edu",
@@ -4703,20 +4359,6 @@
       ],
       "url": "https://events.berkeley.edu/bot/event/320853-integral-taiji-and-qigong",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-24",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-24",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260725T020000Z-322378@events.berkeley.edu",
@@ -4773,20 +4415,6 @@
       ],
       "url": "https://events.berkeley.edu/CAA/event/322075-summer-welcome-party",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-25",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-25",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260725T220000Z-322377@events.berkeley.edu",
@@ -4846,20 +4474,6 @@
       "source": "bampfa"
     },
     {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-26",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-26",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260726T180000Z-322070@events.berkeley.edu",
       "title": "Summer Welcome Party",
       "organizer": "CAA",
@@ -4888,20 +4502,6 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/321341-cyanotype-animation-with-lije",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing::2026-07-26",
-      "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-07-26",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260726T220000Z-322375@events.berkeley.edu",
@@ -4996,20 +4596,6 @@
       "end_date": "2026-07-31"
     },
     {
-      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing::2026-07-29",
-      "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-07-29",
-      "time": "12:15 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
-      "source": "bampfa"
-    },
-    {
       "id": "bampfa_panique::2026-07-29",
       "title": "Panique",
       "organizer": "BAMPFA",
@@ -5052,34 +4638,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_lavventura::2026-07-30",
-      "title": "L’avventura",
-      "organizer": "BAMPFA",
-      "date": "2026-07-30",
-      "time": "7:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "L’avventura",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/lavventura",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_open-art-lab-july-2026::2026-07-31",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-31",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260801T020000Z-322459@events.berkeley.edu",
       "title": "Film Screening – \"The Shining\"",
       "organizer": "BAMPFA",
@@ -5105,20 +4663,6 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/shining",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-01",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-01",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
       "source": "bampfa"
     },
     {
@@ -5192,20 +4736,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-02",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-02",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260802T180000Z-322291@events.berkeley.edu",
       "title": "Summer Welcome Party",
       "organizer": "CAA",
@@ -5274,20 +4804,6 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322412-film-screening-la-notte",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_la-notte::2026-08-02",
-      "title": "La notte",
-      "organizer": "BAMPFA",
-      "date": "2026-08-02",
-      "time": "7:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "La notte",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/la-notte",
-      "source": "bampfa"
     },
     {
       "id": "simons_workshops-diffusion-generative-modeling-progress-next-steps::2026-08-03",
@@ -5377,34 +4893,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_killing::2026-08-05",
-      "title": "The Killing",
-      "organizer": "BAMPFA",
-      "date": "2026-08-05",
-      "time": "7:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "The Killing",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/killing",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_free-first-thursdays::2026-08-06",
-      "title": "Free First Thursday",
-      "organizer": "BAMPFA",
-      "date": "2026-08-06",
-      "time": "12:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Free First Thursday",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/free-first-thursdays",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260806T070000Z-321678@events.berkeley.edu",
       "title": "Results: Foundational Skills",
       "organizer": "CRLP",
@@ -5431,20 +4919,6 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/321359-free-first-thursday-to-bampfa",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-06",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-06",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260806T190000Z-322218@events.berkeley.edu",
@@ -5504,20 +4978,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-07",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-07",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260808T020000Z-322415@events.berkeley.edu",
       "title": "Film Screening – \"White Light/Black Rain\"",
       "organizer": "BAMPFA",
@@ -5561,20 +5021,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-08",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-08",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260808T213000Z-322416@events.berkeley.edu",
       "title": "Film Screening – \"Spartacus\"",
       "organizer": "BAMPFA",
@@ -5615,48 +5061,6 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322417-film-screening-leclisse",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_leclisse::2026-08-08",
-      "title": "L’eclisse",
-      "organizer": "BAMPFA",
-      "date": "2026-08-08",
-      "time": "7:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "L’eclisse",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/leclisse",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-09",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-09",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing::2026-08-09",
-      "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-08-09",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260809T210000Z-322449@events.berkeley.edu",
@@ -5786,20 +5190,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_red-desert::2026-08-13",
-      "title": "Red Desert",
-      "organizer": "BAMPFA",
-      "date": "2026-08-13",
-      "time": "7:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Red Desert",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/red-desert",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260814T070000Z-320919@events.berkeley.edu",
       "title": "Summer Sessions B, C, D, and E End",
       "organizer": "Cal Parents",
@@ -5826,20 +5216,6 @@
       ],
       "url": "https://events.berkeley.edu/extension/event/321504-start-anytime-online-science-courses-online-informati",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-14",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-14",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260815T020000Z-322445@events.berkeley.edu",
@@ -5882,20 +5258,6 @@
       ],
       "url": "https://events.berkeley.edu/calparents/event/322280-deadline-to-waive-ship-with-a-75-fee",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-15",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-15",
-      "time": "12:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260815T220000Z-321348@events.berkeley.edu",
@@ -5941,20 +5303,6 @@
       "source": "bampfa"
     },
     {
-      "id": "bampfa_dr-strangelove-or-how-i-learned-stop-worrying-and-love-bomb::2026-08-15",
-      "title": "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
-      "organizer": "BAMPFA",
-      "date": "2026-08-15",
-      "time": "6:30 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/dr-strangelove-or-how-i-learned-stop-worrying-and-love-bomb",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260816T013000Z-322424@events.berkeley.edu",
       "title": "Film Screening – \"Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb\"",
       "organizer": "BAMPFA",
@@ -5967,20 +5315,6 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322424-film-screening-dr-strangelove-or-how-i-learned-to",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-16",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-16",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260816T200000Z-321370@events.berkeley.edu",
@@ -6027,20 +5361,6 @@
       "source": "bampfa"
     },
     {
-      "id": "bampfa_2001-space-odyssey::2026-08-16",
-      "title": "2001: A Space Odyssey",
-      "organizer": "BAMPFA",
-      "date": "2026-08-16",
-      "time": "5:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "2001: A Space Odyssey",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/2001-space-odyssey",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260817T000000Z-322441@events.berkeley.edu",
       "title": "Film Screening – \"2001: A Space Odyssey\"",
       "organizer": "BAMPFA",
@@ -6070,18 +5390,18 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing::2026-08-19",
-      "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
+      "id": "berkeley_law_758867",
+      "title": "2026 Law & Technology New Student Orientation",
+      "organizer": "BCLT",
       "date": "2026-08-19",
-      "time": "12:15 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
+      "time": "1:00 PM",
+      "location": "Booth Auditorium",
+      "description": "Join BCLT for a law and technology new student orientation on August 19 from 1-2 PM in Booth Auditorium. This lunch will give you insight into the practice area of all things related to technology law.",
       "tags": [
-        "Arts"
+        "Student Life"
       ],
-      "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
-      "source": "bampfa"
+      "url": "https://www.law.berkeley.edu/event/2026-law-technology-new-student-orientation/",
+      "source": "berkeley_law"
     },
     {
       "id": "livewhale_20260819T210000Z-320858@events.berkeley.edu",
@@ -6096,20 +5416,6 @@
       ],
       "url": "https://events.berkeley.edu/bot/event/320858-august-butterfly-walk",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_bob-flambeur::2026-08-19",
-      "title": "Bob le flambeur",
-      "organizer": "BAMPFA",
-      "date": "2026-08-19",
-      "time": "7:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Bob le flambeur",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/bob-flambeur",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260820T020000Z-322440@events.berkeley.edu",
@@ -6182,20 +5488,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-21",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-21",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260822T020000Z-322429@events.berkeley.edu",
       "title": "Film Screening – \"Four Films by Jerome Hiler\"",
       "organizer": "BAMPFA",
@@ -6221,20 +5513,6 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/four-films-jerome-hiler",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-22",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-22",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
       "source": "bampfa"
     },
     {
@@ -6295,34 +5573,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_barry-lyndon::2026-08-22",
-      "title": "Barry Lyndon",
-      "organizer": "BAMPFA",
-      "date": "2026-08-22",
-      "time": "6:30 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Barry Lyndon",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/barry-lyndon",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-23",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-23",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260823T210000Z-322432@events.berkeley.edu",
       "title": "Film Screening – \"My Neighbor Totoro\"",
       "organizer": "BAMPFA",
@@ -6365,34 +5615,6 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_grave-fireflies::2026-08-23",
-      "title": "Grave of the Fireflies",
-      "organizer": "BAMPFA",
-      "date": "2026-08-23",
-      "time": "4:30 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Grave of the Fireflies",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/grave-fireflies",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_2001-space-odyssey::2026-08-23",
-      "title": "2001: A Space Odyssey",
-      "organizer": "BAMPFA",
-      "date": "2026-08-23",
-      "time": "7:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "2001: A Space Odyssey",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/2001-space-odyssey",
-      "source": "bampfa"
-    },
-    {
       "id": "livewhale_20260824T020000Z-322461@events.berkeley.edu",
       "title": "Film Screening – \"2001: A Space Odyssey\"",
       "organizer": "BAMPFA",
@@ -6413,7 +5635,7 @@
       "date": "2026-08-24",
       "time": "9:00 AM",
       "location": "Calvin Lab Auditorium — Calvin Lab",
-      "description": "Spectral Theory Beyond Graphs",
+      "description": "Pseudorandomness & High-Dimensional Expansion",
       "tags": [
         "Science & Tech"
       ],
@@ -6534,62 +5756,6 @@
       "source": "bampfa"
     },
     {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-28",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-28",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_tale-princess-kaguya::2026-08-28",
-      "title": "The Tale of The Princess Kaguya",
-      "organizer": "BAMPFA",
-      "date": "2026-08-28",
-      "time": "4:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "The Tale of The Princess Kaguya",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/tale-princess-kaguya",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_elevator-gallows::2026-08-28",
-      "title": "Elevator to the Gallows",
-      "organizer": "BAMPFA",
-      "date": "2026-08-28",
-      "time": "7:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Elevator to the Gallows",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/elevator-gallows",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-29",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-29",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "bampfa_arboretum-cycle::2026-08-29",
       "title": "Arboretum Cycle",
       "organizer": "BAMPFA",
@@ -6618,20 +5784,6 @@
       "source": "bampfa"
     },
     {
-      "id": "bampfa_open-art-lab-august-2026::2026-08-30",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-08-30",
-      "time": "11:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-august-2026",
-      "source": "bampfa"
-    },
-    {
       "id": "bampfa_skin-glass::2026-08-30",
       "title": "Skin of Glass",
       "organizer": "BAMPFA",
@@ -6646,27 +5798,13 @@
       "source": "bampfa"
     },
     {
-      "id": "bampfa_eyes-wide-shut::2026-08-30",
-      "title": "Eyes Wide Shut",
-      "organizer": "BAMPFA",
-      "date": "2026-08-30",
-      "time": "7:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Eyes Wide Shut",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/eyes-wide-shut",
-      "source": "bampfa"
-    },
-    {
       "id": "simons_workshops-joint-spectral-theory-beyond-graphs-pseudorandomness-high-dimensional-expansion-boot-camp::2026-08-31",
       "title": "Joint Spectral Theory Beyond Graphs and Pseudorandomness & High-Dimensional Expansion Boot Camp",
       "organizer": "Simons Institute",
       "date": "2026-08-31",
       "time": "9:00 AM",
       "location": "Calvin Lab Auditorium — Calvin Lab",
-      "description": "Pseudorandomness & High-Dimensional Expansion",
+      "description": "Spectral Theory Beyond Graphs",
       "tags": [
         "Science & Tech"
       ],
@@ -6714,20 +5852,6 @@
       ],
       "url": "https://events.berkeley.edu/hr/event/310834-bpm-201-employee-engagement",
       "source": "livewhale"
-    },
-    {
-      "id": "bampfa_free-first-thursdays::2026-09-03",
-      "title": "Free First Thursday",
-      "organizer": "BAMPFA",
-      "date": "2026-09-03",
-      "time": "12:00 AM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Free First Thursday",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/free-first-thursdays",
-      "source": "bampfa"
     },
     {
       "id": "berkeley_law_758765",
@@ -6856,6 +5980,20 @@
         "Student Life"
       ],
       "url": "https://www.law.berkeley.edu/event/1l-career-prep-intro-to-firm-structures-biglaw-vs-high-end-boutiques/",
+      "source": "berkeley_law"
+    },
+    {
+      "id": "berkeley_law_758863",
+      "title": "1L Career Night: Intro to Firm Structures (BigLaw vs High-End Boutiques)",
+      "organizer": "BCLT",
+      "date": "2026-09-10",
+      "time": "6:00 PM",
+      "location": "Bancroft Hotel",
+      "description": "Join BCLT on September 10, 2026, from 6-8 PM at Bancroft Hotel for a 1L mixer focusing on firm structures, with several attorneys from various law offices who specialize in all things technology law. Light refreshments will be provided.",
+      "tags": [
+        "Student Life"
+      ],
+      "url": "https://www.law.berkeley.edu/event/1l-career-night-intro-to-firm-structures-biglaw-vs-high-end-boutiques/",
       "source": "berkeley_law"
     },
     {
@@ -7379,6 +6517,20 @@
       "source": "livewhale"
     },
     {
+      "id": "berkeley_law_758815",
+      "title": "Hot Topics in Patent Law",
+      "organizer": "BCLT",
+      "date": "2026-09-29",
+      "time": "1:00 PM",
+      "location": "100 Law Building",
+      "description": "Join BCLT for a dynamic lunch presentation on September 29 from 1-2 PM in 100 Law Building. This lunch will give you insight into the practice area of all things related to patent law.",
+      "tags": [
+        "Student Life"
+      ],
+      "url": "https://www.law.berkeley.edu/event/hot-topics-in-patent-law/",
+      "source": "berkeley_law"
+    },
+    {
       "id": "livewhale_20260929T223000Z-319064@events.berkeley.edu",
       "title": "Allan C. Wilson Memorial Lecture",
       "organizer": "Molecular & Cell Biology",
@@ -7435,6 +6587,34 @@
       ],
       "url": "https://events.berkeley.edu/hr/event/310833-bpm-110-foundational-finance",
       "source": "livewhale"
+    },
+    {
+      "id": "berkeley_law_758821",
+      "title": "1L Career Prep: Patent Law",
+      "organizer": "BCLT",
+      "date": "2026-10-01",
+      "time": "1:00 PM",
+      "location": "100 Law Building",
+      "description": "Join BCLT for a dynamic lunch presentation on October 1 from 1-2 PM in 100 Law Building. This lunch will give you insight into the practice area of all things related to patent law.",
+      "tags": [
+        "Student Life"
+      ],
+      "url": "https://www.law.berkeley.edu/event/1l-career-prep-patent-law/",
+      "source": "berkeley_law"
+    },
+    {
+      "id": "berkeley_law_758825",
+      "title": "1L Career Night: Patent Law",
+      "organizer": "BCLT",
+      "date": "2026-10-01",
+      "time": "6:00 PM",
+      "location": "Free House",
+      "description": "Join BCLT on October 1, 2026, from 6-8 PM at Freehouse Berkeley for a 1L mixer with several attorneys from various law offices who specialize in all things patent law. Light refreshments will be provided.",
+      "tags": [
+        "Student Life"
+      ],
+      "url": "https://www.law.berkeley.edu/event/1l-career-night-patent-law/",
+      "source": "berkeley_law"
     },
     {
       "id": "livewhale_20261002T163000Z-321505@events.berkeley.edu",
@@ -7525,6 +6705,20 @@
       "source": "livewhale"
     },
     {
+      "id": "berkeley_law_758829",
+      "title": "Hot Topics in Trade Secrets & Tech Litigation",
+      "organizer": "BCLT",
+      "date": "2026-10-06",
+      "time": "1:00 PM",
+      "location": "100 Law Building",
+      "description": "Join BCLT for a dynamic lunch presentation on October 6 from 1-2 PM in 100 Law Building. This lunch will give you insight into the practice area of all things related to trade secrets and tech litigation.",
+      "tags": [
+        "Student Life"
+      ],
+      "url": "https://www.law.berkeley.edu/event/hot-topics-in-trade-secrets-tech-litigation/",
+      "source": "berkeley_law"
+    },
+    {
       "id": "livewhale_20261007T223000Z-312656@events.berkeley.edu",
       "title": "Roger Y. Stanier Memorial Lecture",
       "organizer": "Molecular & Cell Biology",
@@ -7574,6 +6768,34 @@
       ],
       "url": "https://events.berkeley.edu/hr/event/310831-bpm-107-ada-and-fmla",
       "source": "livewhale"
+    },
+    {
+      "id": "berkeley_law_758833",
+      "title": "1L Career Prep: Trade Secrets & Tech Litigation",
+      "organizer": "BCLT",
+      "date": "2026-10-08",
+      "time": "1:00 PM",
+      "location": "100 Law Building",
+      "description": "Join BCLT for a dynamic lunch presentation on October 8 from 1-2 PM in 100 Law Building. This lunch will give you insight into the practice area of all things related to trade secrets and tech litigation.",
+      "tags": [
+        "Student Life"
+      ],
+      "url": "https://www.law.berkeley.edu/event/1l-career-prep-trade-secrets-tech-litigation/",
+      "source": "berkeley_law"
+    },
+    {
+      "id": "berkeley_law_758839",
+      "title": "1L Career Night: Trade Secrets & Tech Litigation",
+      "organizer": "BCLT",
+      "date": "2026-10-08",
+      "time": "6:00 PM",
+      "location": "Free House",
+      "description": "Join BCLT on October 8, 2026, from 6-8 PM at Freehouse Berkeley for a 1L mixer with several attorneys from various law offices who specialize in all things trade secrets and tech litigation. Light refreshments will be provided.",
+      "tags": [
+        "Student Life"
+      ],
+      "url": "https://www.law.berkeley.edu/event/1l-career-night-trade-secrets-tech-litigation/",
+      "source": "berkeley_law"
     },
     {
       "id": "livewhale_20261010T070000Z-315726@events.berkeley.edu",
@@ -7647,6 +6869,20 @@
       "source": "livewhale"
     },
     {
+      "id": "berkeley_law_758843",
+      "title": "Hot Topics in Privacy, Data Regulation & AI",
+      "organizer": "BCLT",
+      "date": "2026-10-13",
+      "time": "1:00 PM",
+      "location": "100 Law Building",
+      "description": "Join BCLT for a dynamic lunch presentation on October 13 from 1-2 PM in 100 Law Building. This lunch will give you insight into the practice area of all things related to privacy, data regulation, and AI.",
+      "tags": [
+        "Science & Tech"
+      ],
+      "url": "https://www.law.berkeley.edu/event/hot-topics-in-privacy-data-regulation-ai/",
+      "source": "berkeley_law"
+    },
+    {
       "id": "livewhale_20261014T230000Z-312091@events.berkeley.edu",
       "title": "CEE Community Highlights Event",
       "organizer": "Civil & Environmental Engineering",
@@ -7700,6 +6936,20 @@
       "source": "livewhale"
     },
     {
+      "id": "berkeley_law_758847",
+      "title": "1L Career Prep: Privacy, Data Regulation & AI",
+      "organizer": "BCLT",
+      "date": "2026-10-15",
+      "time": "1:00 PM",
+      "location": "100 Law Building",
+      "description": "Join BCLT for a dynamic lunch presentation on October 15 from 1-2 PM in 100 Law Building. This lunch will give you insight into the practice area of all things related to privacy, data regulation, and AI.",
+      "tags": [
+        "Science & Tech"
+      ],
+      "url": "https://www.law.berkeley.edu/event/1l-career-prep-privacy-data-regulation-ai/",
+      "source": "berkeley_law"
+    },
+    {
       "id": "livewhale_20261016T000000Z-322069@events.berkeley.edu",
       "title": "The Dread Heights: Tribulation and Refuge after the Syrian Revolution",
       "organizer": "Rhetoric",
@@ -7712,6 +6962,21 @@
       ],
       "url": "https://events.berkeley.edu/rhetoric/event/322069-the-dread-heights-tribulation-and-refuge-after-the",
       "source": "livewhale"
+    },
+    {
+      "id": "berkeley_law_758852",
+      "title": "1L Career Night: Privacy, Data Regulation & AI",
+      "organizer": "BCLT",
+      "date": "2026-10-15",
+      "time": "6:00 PM",
+      "location": "Free House",
+      "description": "Join BCLT on October 15, 2026, from 6-8 PM at Freehouse Berkeley for a 1L mixer with several attorneys from various law offices who specialize in all things privacy, data regulation, and AI. Light refreshments will be provided.",
+      "tags": [
+        "Science & Tech",
+        "Student Life"
+      ],
+      "url": "https://www.law.berkeley.edu/event/1l-career-night-privacy-data-regulation-ai-2/",
+      "source": "berkeley_law"
     },
     {
       "id": "livewhale_20261017T070000Z-315725@events.berkeley.edu",
@@ -8928,7 +8193,7 @@
       "uri": "https://begin.berkeley.edu/events/"
     }
   ],
-  "lastUpdated": 1780063819620,
+  "lastUpdated": 1780075575381,
   "data_age_hours": 0,
   "degraded_sources": []
 }

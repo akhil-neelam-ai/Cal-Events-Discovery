@@ -46,6 +46,16 @@ function liveWhaleDay(eventNo, date) {
   });
 }
 
+// One BAMPFA per-day row: source_id is "<month-specific-slug>::<date>".
+function bampfaDay(slug, date) {
+  return ev({
+    source_name: "bampfa",
+    source_id: `${slug}::${date}`,
+    start_at: date,
+    title: "Open: Art Lab",
+  });
+}
+
 test("stableEventKey strips the LiveWhale per-day datestamp prefix", () => {
   assert.equal(
     stableEventKey(liveWhaleDay("309080", "2026-06-15")),
@@ -120,6 +130,33 @@ test("single-day and non-LiveWhale events pass through unchanged", () => {
   assert.equal(rowsEliminated, 0);
   assert.equal(multiDayEvents, 0);
   assert.ok(events.every((e) => e.occurrence_dates === undefined));
+});
+
+test("stableEventKey strips a BAMPFA occurrence date and month-specific slug", () => {
+  assert.equal(
+    stableEventKey(bampfaDay("open-art-lab-june-2026", "2026-06-04")),
+    "bampfa::open-art-lab",
+  );
+});
+
+test("BAMPFA recurring program collapses across months into one event", () => {
+  const days = [
+    bampfaDay("open-art-lab-may-2026", "2026-05-29"),
+    bampfaDay("open-art-lab-june-2026", "2026-06-04"),
+    bampfaDay("open-art-lab-june-2026", "2026-06-05"),
+    bampfaDay("open-art-lab-july-2026", "2026-07-02"),
+  ];
+  const { events, multiDayEvents } = collapseMultiDay(days);
+
+  assert.equal(events.length, 1);
+  assert.equal(multiDayEvents, 1);
+  assert.equal(events[0].source_id, "open-art-lab");
+  assert.deepEqual(events[0].occurrence_dates, [
+    "2026-05-29",
+    "2026-06-04",
+    "2026-06-05",
+    "2026-07-02",
+  ]);
 });
 
 test("projectToLegacy exposes date range for a collapsed multi-day event", () => {
