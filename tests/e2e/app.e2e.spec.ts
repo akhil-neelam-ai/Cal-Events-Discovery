@@ -171,7 +171,7 @@ test("preserves search and filter state across detail open and reload", async ({
   await searchInput.fill("dreams");
 
   await expect(
-    page.getByRole("heading", { level: 2, name: /arts · upcoming/i }),
+    page.getByRole("heading", { level: 2, name: /arts · all upcoming events/i }),
   ).toBeVisible();
   await expect(page.getByText("Dreams Are Colder Than Death")).toBeVisible();
   await expect(page.getByText("AI Research Forum")).toHaveCount(0);
@@ -196,7 +196,7 @@ test("preserves search and filter state across detail open and reload", async ({
     page.getByRole("combobox", { name: /search campus events/i }),
   ).toHaveValue("dreams");
   await expect(
-    page.getByRole("heading", { level: 2, name: /arts · upcoming/i }),
+    page.getByRole("heading", { level: 2, name: /arts · all upcoming events/i }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: /view official page/i }),
@@ -210,7 +210,7 @@ test("filters by primary category only", async ({ page }) => {
   await page.getByRole("button", { name: /^arts$/i }).click();
 
   await expect(
-    page.getByRole("heading", { level: 2, name: /arts · upcoming/i }),
+    page.getByRole("heading", { level: 2, name: /arts · all upcoming events/i }),
   ).toBeVisible();
   await expect(page.getByText("Dreams Are Colder Than Death")).toBeVisible();
   await expect(page.getByText("Cricket Archive Lecture")).toHaveCount(0);
