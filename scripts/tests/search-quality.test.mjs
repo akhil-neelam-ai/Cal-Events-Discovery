@@ -15,6 +15,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { searchEvents } from "../../utils/searchEngine.ts";
+import { tokenize } from "../../utils/textUtils.ts";
 
 const rootDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -31,70 +32,9 @@ const events = published.events;
 const indexIds = searchIndex.ids;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function stem(word) {
-  let w = word;
-  if (w.length <= 3) return w;
-  if (w.endsWith("sses") && w.length > 6) return w.slice(0, -2);
-  if (w.endsWith("ies") && w.length > 4) return w.slice(0, -3) + "i";
-  if (!w.endsWith("ss") && !w.endsWith("us") && w.endsWith("s") && w.length > 4)
-    w = w.slice(0, -1);
-  if (w.length <= 3) return w;
-  if (w.endsWith("ing") && w.length > 6) {
-    const base = w.slice(0, -3);
-    if (base.length >= 3)
-      return /([bcdfghjklmnpqrstvwxyz])\1$/.test(base) && base.length >= 4
-        ? base.slice(0, -1)
-        : base;
-  }
-  if (w.endsWith("ed") && w.length > 5) {
-    const base = w.slice(0, -2);
-    if (base.length >= 3)
-      return /([bcdfghjklmnpqrstvwxyz])\1$/.test(base) && base.length >= 4
-        ? base.slice(0, -1)
-        : base;
-  }
-  return w;
-}
-
-const STOP = new Set([
-  "a",
-  "an",
-  "the",
-  "and",
-  "or",
-  "in",
-  "on",
-  "at",
-  "to",
-  "for",
-  "of",
-  "with",
-  "by",
-  "from",
-  "is",
-  "are",
-  "this",
-  "that",
-  "it",
-]);
-
-function tokenize(text) {
-  const seen = new Set();
-  const out = [];
-  for (const raw of text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .split(/\s+/)) {
-    if (raw.length < 2 || STOP.has(raw)) continue;
-    const s = stem(raw);
-    if (s.length >= 2 && !seen.has(s)) {
-      seen.add(s);
-      out.push(s);
-    }
-  }
-  return out;
-}
+// `tokenize`/`stem` are imported from utils/textUtils.ts (the same functions the
+// production index builder and search engine use) so these golden-query tests
+// can never silently diverge from real tokenization behavior.
 
 /**
  * Simple index-based search that returns event IDs ranked by hit count.

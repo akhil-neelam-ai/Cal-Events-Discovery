@@ -93,23 +93,38 @@ try {
   );
 }
 
-if (issueNumber) {
-  gh(["issue", "comment", String(issueNumber), "--repo", REPO, "--body", body]);
-  console.log(
-    `[notifyPipelineFailure] commented on existing issue #${issueNumber}`,
+try {
+  if (issueNumber) {
+    gh([
+      "issue",
+      "comment",
+      String(issueNumber),
+      "--repo",
+      REPO,
+      "--body",
+      body,
+    ]);
+    console.log(
+      `[notifyPipelineFailure] commented on existing issue #${issueNumber}`,
+    );
+  } else {
+    const createdUrl = gh([
+      "issue",
+      "create",
+      "--repo",
+      REPO,
+      "--title",
+      title,
+      "--body",
+      body,
+      "--label",
+      "pipeline-failure",
+    ]);
+    console.log(`[notifyPipelineFailure] created ${createdUrl}`);
+  }
+} catch (notifyError) {
+  console.error(
+    `[notifyPipelineFailure] failed to deliver operator notification: ${notifyError instanceof Error ? notifyError.message : notifyError}`,
   );
-} else {
-  const createdUrl = gh([
-    "issue",
-    "create",
-    "--repo",
-    REPO,
-    "--title",
-    title,
-    "--body",
-    body,
-    "--label",
-    "pipeline-failure",
-  ]);
-  console.log(`[notifyPipelineFailure] created ${createdUrl}`);
+  process.exit(1);
 }

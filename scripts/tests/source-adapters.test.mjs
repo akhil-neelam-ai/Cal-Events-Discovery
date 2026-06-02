@@ -12,13 +12,14 @@ import {
   cleanSummary,
   parseGameFlags,
 } from "../../scripts/sources/calbears.ts";
-import { eventDateInPT, stripHtml } from "../../scripts/sources/callink.ts";
+import { stripHtml } from "../../scripts/sources/callink.ts";
 import {
   fetchCalPerformances,
   parseAddeventatcDate,
 } from "../../scripts/sources/cal_performances.ts";
 import { inferEhubDate } from "../../scripts/sources/ehub.ts";
 import { unitFromSlug } from "../../scripts/sources/livewhale.ts";
+import { isoDateInPT } from "../../scripts/lib/normalize.ts";
 
 test("BAMPFA parser reads Google Calendar links", () => {
   const parsed = parseGCalLink(
@@ -119,9 +120,9 @@ test("Cal Performances pagination stops after the first short page", async () =>
 });
 
 test("CalLink filters by Pacific event date instead of UTC date prefix", () => {
-  assert.equal(eventDateInPT("2026-04-28T06:30:00.000Z"), "2026-04-27");
-  assert.equal(eventDateInPT("2026-04-28T11:30:00.000Z"), "2026-04-28");
-  assert.equal(eventDateInPT("not-a-date"), "");
+  assert.equal(isoDateInPT("2026-04-28T06:30:00.000Z"), "2026-04-27");
+  assert.equal(isoDateInPT("2026-04-28T11:30:00.000Z"), "2026-04-28");
+  assert.equal(isoDateInPT("not-a-date"), "");
 });
 
 test("CalLink HTML extraction preserves comparison text", () => {

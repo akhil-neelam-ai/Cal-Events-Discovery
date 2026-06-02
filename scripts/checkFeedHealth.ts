@@ -4,14 +4,14 @@
  * When BLOCK_ON_DEGRADED=true (default in the daily pipeline), exits non-zero
  * on blocking feed-health violations so automation cannot merge stale data.
  *
- * Run: BLOCK_ON_DEGRADED=true node scripts/checkFeedHealth.mjs
+ * Run: BLOCK_ON_DEGRADED=true tsx scripts/checkFeedHealth.ts
  */
 
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { evaluateFeedHealth } from "./lib/feedHealthPolicy.mjs";
+import { evaluateFeedHealth } from "./lib/feedHealthPolicy.js";
 
 const rootDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -25,16 +25,16 @@ const BLOCK_ON_DEGRADED = /^(1|true|yes)$/i.test(
 const STALE_HOURS = Number(process.env.FEED_STALE_HOURS ?? 36);
 const MAX_FALLBACK_AGE_HOURS = Number(process.env.MAX_FALLBACK_AGE_HOURS ?? 48);
 
-function warn(message) {
+function warn(message: string): void {
   console.log(`::warning::${message}`);
 }
 
-function error(message) {
+function error(message: string): void {
   console.log(`::error::${message}`);
 }
 
 const raw = fs.readFileSync(statusPath, "utf8");
-const status = JSON.parse(raw);
+const status = JSON.parse(raw) as Record<string, unknown>;
 const { blocking, warnings } = evaluateFeedHealth(status, {
   staleHours: STALE_HOURS,
   maxFallbackAgeHours: MAX_FALLBACK_AGE_HOURS,

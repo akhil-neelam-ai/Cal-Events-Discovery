@@ -19,20 +19,14 @@
 import * as cheerio from "cheerio";
 import type { FetchOptions } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
-import type { CanonicalEvent } from "../lib/schema.js";
+import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
+import { todayPT } from "../lib/normalize.js";
 
 const WP_API_BASE = "https://calperformances.org/wp-json/wp/v2/cp_event";
 const PER_PAGE = 100;
 const FETCH_TIMEOUT_MS = 30_000;
 const SOURCE_URL = "https://calperformances.org/events/";
-
-export interface FetchResult {
-  events: CanonicalEvent[];
-  rawCount: number;
-  filteredPast: number;
-  invalid: number;
-}
 
 interface WpCpEvent {
   id: number;
@@ -40,15 +34,6 @@ interface WpCpEvent {
   link: string;
   title: { rendered: string };
   content: { rendered: string };
-}
-
-function todayPT(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Los_Angeles",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
 }
 
 function decodeHtmlEntities(text: string): string {

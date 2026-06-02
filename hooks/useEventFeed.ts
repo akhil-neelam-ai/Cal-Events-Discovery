@@ -66,28 +66,33 @@ export function useEventFeed(): EventFeedState {
     setLoading(LoadingState.LOADING);
     setStatusReport(null);
 
+    let data: Awaited<ReturnType<typeof fetchEventArtifacts>>;
     try {
-      const [data, nextSearchIndex] = await Promise.all([
-        fetchEventArtifacts(),
-        fetchOptionalSearchIndex(),
-      ]);
-
+      data = await fetchEventArtifacts();
       assertValidEventsPayload(data);
-      setSearchIndex(nextSearchIndex);
-      setAllEvents(data.events);
-      setLastUpdated(data.lastUpdated ?? null);
-      setDataAgeHours(
-        typeof data.data_age_hours === "number" ? data.data_age_hours : 0,
-      );
-      setDegradedSources(
-        Array.isArray(data.degraded_sources) ? data.degraded_sources : [],
-      );
-      setStatusReport(data.status || null);
-      setLoading(LoadingState.SUCCESS);
     } catch (error) {
       console.error(error);
       setLoading(LoadingState.ERROR);
+      return;
     }
+
+    // Render the list as soon as events.json resolves. First paint must not
+    // wait on the ~215KB search index, which is only needed once a query
+    // reaches 2+ characters.
+    setAllEvents(data.events);
+    setLastUpdated(data.lastUpdated ?? null);
+    setDataAgeHours(
+      typeof data.data_age_hours === "number" ? data.data_age_hours : 0,
+    );
+    setDegradedSources(
+      Array.isArray(data.degraded_sources) ? data.degraded_sources : [],
+    );
+    setStatusReport(data.status || null);
+    setLoading(LoadingState.SUCCESS);
+
+    // Set unconditionally (even on null) so a reload whose index fetch fails
+    // clears the now-stale index rather than serving outdated postings.
+    void fetchOptionalSearchIndex().then(setSearchIndex);
   }, []);
 
   useEffect(() => {

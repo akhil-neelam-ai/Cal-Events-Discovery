@@ -39,6 +39,15 @@
                     "lastUpdated": {
                       "type": "number",
                       "description": "Unix epoch milliseconds for the published snapshot."
+                    },
+                    "data_age_hours": {
+                      "type": "number",
+                      "description": "Hours since the underlying source data was fetched."
+                    },
+                    "degraded_sources": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "description": "Source ids that were degraded in this snapshot."
                     }
                   }
                 }
@@ -135,7 +144,10 @@
           "fetched_at": { "type": "string", "format": "date-time" },
           "error": { "type": "string" },
           "degraded": { "type": "boolean" },
-          "fallback_used": { "type": "boolean" }
+          "fallback_used": { "type": "boolean" },
+          "fallback_count": { "type": "integer" },
+          "fallback_age_hours": { "type": "number" },
+          "degraded_reason": { "type": "string" }
         }
       }
     }

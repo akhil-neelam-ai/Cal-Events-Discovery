@@ -53,13 +53,18 @@ function timeWindow(time: string, dateKey: string): TimeWindow {
   if (meridiem === "am" && hour === 12) hour = 0;
   if (meridiem === "pm" && hour !== 12) hour += 12;
 
-  const endHour = hour + 1;
+  let endHour = hour + 1;
+  let endDateCompact = compactDate;
+  if (endHour >= 24) {
+    endHour -= 24;
+    endDateCompact = addDaysToDateKey(dateKey, 1).replace(/-/g, "");
+  }
   const pad = (value: number) => String(value).padStart(2, "0");
 
   return {
     allDay: false,
     startLocal: `${compactDate}T${pad(hour)}${pad(minute)}00`,
-    endLocal: `${compactDate}T${pad(endHour)}${pad(minute)}00`,
+    endLocal: `${endDateCompact}T${pad(endHour)}${pad(minute)}00`,
   };
 }
 

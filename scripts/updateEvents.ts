@@ -33,8 +33,12 @@ import type {
 import type { FetchOptions } from "./lib/abort.js";
 import { dedupeEvents } from "./lib/dedupe.js";
 import { collapseMultiDay } from "./lib/collapseMultiDay.js";
-import { projectToLegacy } from "./lib/normalize.js";
+import { projectToLegacy, todayPT } from "./lib/normalize.js";
 import { atomicWriteJsonSync } from "./lib/atomicWrite.js";
+import {
+  CRITICAL_SOURCES,
+  parseMaxFallbackAgeHours,
+} from "./lib/feedHealthPolicy.js";
 import { fetchLiveWhale } from "./sources/livewhale.js";
 
 const LIVEWHALE_HEALTHY_THRESHOLD = 100;
@@ -55,15 +59,11 @@ const eventsOutPath = path.join(__dirname, "..", "public", "events.json");
 const statusOutPath = path.join(__dirname, "..", "public", "status.json");
 const indexOutPath = path.join(__dirname, "..", "public", "search-index.json");
 const ADAPTER_TIMEOUT_MS = 60_000;
-function parseMaxFallbackAgeHours(value: string | undefined): number {
-  const parsed = Number(value ?? 48);
-  if (!Number.isFinite(parsed) || parsed < 0) {
-    throw new Error(
-      `MAX_FALLBACK_AGE_HOURS must be a non-negative number, got ${JSON.stringify(value)}`,
-    );
-  }
-  return parsed;
-}
+// Per-source hard ceiling. A flooding or broken source must not starve the
+// search index or balloon committed artifacts. livewhale legitimately returns
+// ~1.3k events, so this is generous headroom; truncation marks the source
+// degraded so the overflow is visible in status.json.
+const MAX_EVENTS_PER_SOURCE = 5000;
 
 const MAX_FALLBACK_AGE_HOURS = parseMaxFallbackAgeHours(
   process.env.MAX_FALLBACK_AGE_HOURS,
@@ -71,21 +71,6 @@ const MAX_FALLBACK_AGE_HOURS = parseMaxFallbackAgeHours(
 const STRICT_DATA_QUALITY = /^(1|true|yes)$/i.test(
   process.env.STRICT_DATA_QUALITY ?? "",
 );
-const ALL_SOURCE_NAMES: SourceName[] = [
-  "livewhale",
-  "callink",
-  "cal_performances",
-  "calbears",
-  "bampfa",
-  "haas",
-  "berkeley_law",
-  "simons",
-  "ehub",
-  "luma",
-  "begin",
-];
-const CRITICAL_SOURCES = new Set<SourceName>(ALL_SOURCE_NAMES);
-
 function legacyTimeSortValue(time: string | undefined): number {
   if (!time || /all\s*day/i.test(time)) {
     return 0;
@@ -234,15 +219,6 @@ function loadExistingEvents(): {
   } catch {
     return { events: [], sources: [] };
   }
-}
-
-function todayPT(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Los_Angeles",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
 }
 
 function isValidDateKey(dateKey: string): boolean {
@@ -398,7 +374,38 @@ function runAdapterWithTimeout(
     });
 }
 
+/**
+ * Truncate any source whose event count exceeds the per-source ceiling and
+ * mark it degraded. Returns the reason per capped source so the orchestrator
+ * can surface it in the top-level degraded_sources list.
+ */
+function capSourceEvents(runs: AdapterRun[]): Map<SourceName, string> {
+  const cappedReasons = new Map<SourceName, string>();
+  for (const run of runs) {
+    if (run.events.length > MAX_EVENTS_PER_SOURCE) {
+      const original = run.events.length;
+      run.events = run.events.slice(0, MAX_EVENTS_PER_SOURCE);
+      const reason = `${run.status.name} returned ${original} events, capped at ${MAX_EVENTS_PER_SOURCE} (dropped ${original - MAX_EVENTS_PER_SOURCE})`;
+      run.status.degraded = true;
+      run.status.degraded_reason = reason;
+      run.status.count = MAX_EVENTS_PER_SOURCE;
+      cappedReasons.set(run.status.name, reason);
+      console.warn(`[orchestrator] ${reason}`);
+    }
+  }
+  return cappedReasons;
+}
+
 function dataQualityFailure(recovery: RecoveryState): string | null {
+  // Stale fallback data must block publishing even when STRICT_DATA_QUALITY is
+  // unset, so the default deployment never ships days-old fallback as if fresh.
+  if (
+    typeof recovery.fallbackAgeHours === "number" &&
+    recovery.fallbackAgeHours > MAX_FALLBACK_AGE_HOURS
+  ) {
+    return `fallback data is ${recovery.fallbackAgeHours}h old, exceeding ${MAX_FALLBACK_AGE_HOURS}h`;
+  }
+
   if (!STRICT_DATA_QUALITY) return null;
 
   const criticalDegraded = Array.from(recovery.degradedSources).filter(
@@ -418,13 +425,6 @@ function dataQualityFailure(recovery: RecoveryState): string | null {
     typeof recovery.fallbackAgeHours !== "number"
   ) {
     return "fallback data age is unknown";
-  }
-
-  if (
-    typeof recovery.fallbackAgeHours === "number" &&
-    recovery.fallbackAgeHours > MAX_FALLBACK_AGE_HOURS
-  ) {
-    return `fallback data is ${recovery.fallbackAgeHours}h old, exceeding ${MAX_FALLBACK_AGE_HOURS}h`;
   }
 
   return null;
@@ -477,7 +477,15 @@ async function main(): Promise<void> {
       return result.value;
     }
 
-    const name = adapterRuns[index]?.name ?? "ehub";
+    const entry = adapterRuns[index];
+    if (!entry) {
+      // settledRuns is 1:1 with adapterRuns, so this cannot happen. Fail loudly
+      // rather than silently mislabel a rejection to the wrong source.
+      throw new Error(
+        `[orchestrator] settled run at index ${index} has no matching adapter entry`,
+      );
+    }
+    const name = entry.name;
     const message =
       result.reason instanceof Error
         ? result.reason.message
@@ -497,6 +505,8 @@ async function main(): Promise<void> {
       invalid: 0,
     };
   });
+
+  const cappedReasons = capSourceEvents(runs);
 
   const allCanonical: CanonicalEvent[] = runs.flatMap((r) => r.events);
   const groundingSources: PublishedSource[] = runs.flatMap(
@@ -550,6 +560,10 @@ async function main(): Promise<void> {
 
   for (const run of runs) {
     markRecovery(run, legacy, existing, recovery);
+  }
+  for (const [name, reason] of cappedReasons) {
+    recovery.degradedSources.add(name);
+    recovery.degradedReasons.add(reason);
   }
   legacy.sort(compareLegacyEvents);
 

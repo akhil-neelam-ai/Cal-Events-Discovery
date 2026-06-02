@@ -4,7 +4,14 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { isoDateInPT } from "../../scripts/lib/normalize.ts";
+import {
+  FRONTEND_CATEGORIES,
+  isoDateInPT,
+} from "../../scripts/lib/normalize.ts";
+import { SourceNameSchema } from "../../scripts/lib/schema.ts";
+
+const KNOWN_SOURCES = new Set(SourceNameSchema.options);
+const FRONTEND_CATEGORY_SET = new Set(FRONTEND_CATEGORIES);
 
 const rootDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -101,14 +108,33 @@ test("published events artifact is internally consistent", () => {
       `event ${index} must be an object`,
     );
     assert.equal(typeof event.id, "string");
+    assert.ok(event.id.length > 0, `event ${index} has an empty id`);
     assert.equal(typeof event.title, "string");
+    assert.ok(
+      event.title.length >= 2,
+      `event ${event.id} has too-short title ${JSON.stringify(event.title)}`,
+    );
     assert.equal(typeof event.organizer, "string");
     assert.equal(typeof event.date, "string");
     assert.equal(typeof event.time, "string");
     assert.equal(typeof event.location, "string");
     assert.equal(typeof event.description, "string");
     assert.equal(typeof event.url, "string");
+    assert.ok(
+      /^https?:\/\//.test(event.url),
+      `event ${event.id} has non-http url ${JSON.stringify(event.url)}`,
+    );
+    assert.equal(typeof event.source, "string");
+    assert.ok(
+      KNOWN_SOURCES.has(event.source),
+      `event ${event.id} has unknown source ${JSON.stringify(event.source)}`,
+    );
     assert.ok(Array.isArray(event.tags), "tags must be an array");
+    assert.ok(event.tags.length > 0, `event ${event.id} has no tags`);
+    assert.ok(
+      FRONTEND_CATEGORY_SET.has(event.tags[0]),
+      `event ${event.id} has non-canonical primary tag ${JSON.stringify(event.tags[0])}`,
+    );
     assert.ok(
       isValidIsoDate(event.date),
       `event ${event.id} has invalid date ${event.date}`,

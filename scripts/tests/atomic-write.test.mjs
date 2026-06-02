@@ -16,7 +16,7 @@ test("atomicWriteJsonSync writes valid JSON via rename", async () => {
   assert.equal(fs.readdirSync(dir).length, 1);
 });
 
-test("atomic write leaves the original file intact when rename fails", async () => {
+test("atomic write leaves the original file intact and cleans up tmp when rename fails", async () => {
   const { atomicWriteFileSync, __setRenameSyncImplForTests } =
     await import("../lib/atomicWrite.ts");
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "atomic-write-"));
@@ -41,8 +41,9 @@ test("atomic write leaves the original file intact when rename fails", async () 
   const leftovers = fs
     .readdirSync(dir)
     .filter((name) => name.includes(".tmp-"));
-  assert.ok(
-    leftovers.length >= 1,
-    "expected a leftover temp file after failed rename",
+  assert.equal(
+    leftovers.length,
+    0,
+    "temp file must be cleaned up after a failed rename, not leaked",
   );
 });

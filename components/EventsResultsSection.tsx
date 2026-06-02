@@ -11,7 +11,9 @@ function rangeLabel(dateRange: SearchFilters["dateRange"]) {
   if (dateRange === "today") return "Today";
   if (dateRange === "tomorrow") return "Tomorrow";
   if (dateRange === "week") return "This Week";
-  return "Upcoming";
+  // Match the "All Events" filter pill so the heading and the active filter
+  // agree, instead of the ambiguous standalone "Upcoming".
+  return "All Upcoming Events";
 }
 
 export function EventsResultsSection({
@@ -20,6 +22,7 @@ export function EventsResultsSection({
   onDismissChip,
   category,
   effectiveDateRange,
+  todayKey,
   filteredEvents,
   lastUpdated,
   searchFallbackMessage,
@@ -36,6 +39,7 @@ export function EventsResultsSection({
   onDismissChip: (key: string) => void;
   category: string;
   effectiveDateRange: SearchFilters["dateRange"];
+  todayKey: string;
   filteredEvents: CalEvent[];
   lastUpdated: number | null;
   searchFallbackMessage?: string;
@@ -104,6 +108,7 @@ export function EventsResultsSection({
           hiddenEventCount={hiddenEventCount}
           shouldAnimateCards={shouldAnimateCards}
           effectiveDateRange={effectiveDateRange}
+          todayKey={todayKey}
           onEventClick={onEventClick}
           onLoadMore={onLoadMore}
         />

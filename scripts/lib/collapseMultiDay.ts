@@ -12,7 +12,10 @@
  *   - LiveWhale UIDs look like "<YYYYMMDD>T<HHMMSS>Z-<eventNo>@events.berkeley.edu".
  *     The "<eventNo>@..." suffix is the stable identity; the datestamp prefix is
  *     just the per-day discriminator. We strip the prefix to group days together.
- *   - Every other source uses a unique source_id per logical event, so groups are
+ *   - BAMPFA and Simons embed a per-occurrence date (::YYYY-MM-DD) in their IDs;
+ *     BAMPFA also appends a month slug (-month-YYYY). Both are stripped to form
+ *     the stable key so recurring program rows collapse into one event.
+ *   - All other sources use a unique source_id per logical event, so groups are
  *     size 1 and pass through untouched.
  */
 
@@ -20,13 +23,21 @@ import type { CanonicalEvent } from "./schema.js";
 import { isoDateInPT } from "./normalize.js";
 
 const LIVEWHALE_DATESTAMP_PREFIX = /^\d{8}T\d{6}Z-/;
-// Trailing per-occurrence date some sources append to the id, e.g. BAMPFA's
-// "<slug>::2026-06-04".
+// Trailing per-occurrence date appended to source_id by BAMPFA and Simons,
+// e.g. "open-art-lab-june-2026::2026-06-04" or "events-tea-time-talks::2026-06-05".
 const TRAILING_OCCURRENCE_DATE = /::\d{4}-\d{2}-\d{2}$/;
 // Month-specific slug suffix BAMPFA uses for recurring programs, e.g.
-// "open-art-lab-june-2026" — stripped so every month of the same program groups.
+// "open-art-lab-june-2026" → "open-art-lab" so all months of the same program group.
 const TRAILING_MONTH_SLUG =
   /-(january|february|march|april|may|june|july|august|september|october|november|december)-\d{4}$/i;
+
+// Per-source strip rules. Add a source here to opt it into collapse.
+// BAMPFA: strips occurrence date + month slug.
+// Simons: strips occurrence date only (slugs are URL-path-derived, no month suffix).
+const ID_STRIP_RULES: Partial<Record<string, RegExp[]>> = {
+  bampfa: [TRAILING_OCCURRENCE_DATE, TRAILING_MONTH_SLUG],
+  simons: [TRAILING_OCCURRENCE_DATE],
+};
 
 /** Stable per-event identity used to group per-day rows of the same event. */
 export function stableEventKey(event: CanonicalEvent): string {
@@ -34,11 +45,8 @@ export function stableEventKey(event: CanonicalEvent): string {
     const stable = event.source_id.replace(LIVEWHALE_DATESTAMP_PREFIX, "");
     return `livewhale::${stable}`;
   }
-  // Other sources embed the occurrence date (and sometimes a month) in the id;
-  // strip both so a recurring program's per-day rows collapse into one event.
-  const stable = event.source_id
-    .replace(TRAILING_OCCURRENCE_DATE, "")
-    .replace(TRAILING_MONTH_SLUG, "");
+  const rules = ID_STRIP_RULES[event.source_name] ?? [];
+  const stable = rules.reduce((id, re) => id.replace(re, ""), event.source_id);
   return `${event.source_name}::${stable}`;
 }
 

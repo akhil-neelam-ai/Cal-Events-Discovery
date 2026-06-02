@@ -24,6 +24,10 @@ export function AppFooter() {
             akhil_neelam@berkeley.edu
           </a>
         </p>
+        <p className="mt-3 text-xs text-white/50">
+          This site uses Google Analytics for anonymous usage stats, including
+          search terms entered, to improve event discovery.
+        </p>
       </div>
     </footer>
   );

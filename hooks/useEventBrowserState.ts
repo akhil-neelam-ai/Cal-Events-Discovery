@@ -8,7 +8,6 @@ import {
   getFallbackBannerCopy,
 } from "../utils/emptyState";
 import {
-  filterEventsByDateRange,
   getPacificDateKey,
   sortEventsChronologically,
 } from "../utils/eventDates";
@@ -35,11 +34,6 @@ interface UseEventBrowserStateParams {
 interface UseEventBrowserStateResult {
   activeChips: InterpretedChip[];
   searchFallbackMessage?: string;
-  todayEvents: CalEvent[];
-  tomorrowEvents: CalEvent[];
-  weekEvents: CalEvent[];
-  upcomingEvents: CalEvent[];
-  derivedDateRange: SearchFilters["dateRange"];
   effectiveDateRange: SearchFilters["dateRange"];
   filteredEvents: CalEvent[];
   visibleSelectedEventId: string | null;
@@ -173,58 +167,28 @@ export function useEventBrowserState({
 
   const baseFilteredEvents = searchOutput.results;
 
-  const todayEvents = useMemo(
-    () =>
-      sortEventsChronologically(
-        filterEventsByDateRange(
-          baseFilteredEvents,
-          "today",
-          todayKey,
-          nextWeekKey,
-        ),
-      ),
-    [baseFilteredEvents, todayKey, nextWeekKey],
-  );
+  // Partition the base pool into the four (overlapping) date buckets in a
+  // single pass. Buckets stay in base order here; only the bucket actually
+  // shown is sorted chronologically below, so we avoid four filter+sort passes.
+  const dateBuckets = useMemo(() => {
+    const today: CalEvent[] = [];
+    const tomorrow: CalEvent[] = [];
+    const week: CalEvent[] = [];
+    const upcoming: CalEvent[] = [];
 
-  const tomorrowEvents = useMemo(
-    () =>
-      sortEventsChronologically(
-        filterEventsByDateRange(
-          baseFilteredEvents,
-          "tomorrow",
-          todayKey,
-          nextWeekKey,
-          tomorrowKey,
-        ),
-      ),
-    [baseFilteredEvents, todayKey, nextWeekKey, tomorrowKey],
-  );
+    for (const event of baseFilteredEvents) {
+      const key = getPacificDateKey(event.date);
+      if (!key || key < todayKey) {
+        continue;
+      }
+      upcoming.push(event);
+      if (key === todayKey) today.push(event);
+      if (key === tomorrowKey) tomorrow.push(event);
+      if (key <= nextWeekKey) week.push(event);
+    }
 
-  const weekEvents = useMemo(
-    () =>
-      sortEventsChronologically(
-        filterEventsByDateRange(
-          baseFilteredEvents,
-          "week",
-          todayKey,
-          nextWeekKey,
-        ),
-      ),
-    [baseFilteredEvents, todayKey, nextWeekKey],
-  );
-
-  const upcomingEvents = useMemo(
-    () =>
-      sortEventsChronologically(
-        filterEventsByDateRange(
-          baseFilteredEvents,
-          "upcoming",
-          todayKey,
-          nextWeekKey,
-        ),
-      ),
-    [baseFilteredEvents, todayKey, nextWeekKey],
-  );
+    return { today, tomorrow, week, upcoming };
+  }, [baseFilteredEvents, todayKey, tomorrowKey, nextWeekKey]);
 
   const derivedDateRange = useMemo<SearchFilters["dateRange"]>(() => {
     if (userSetDateRange) {
@@ -251,16 +215,16 @@ export function useEventBrowserState({
   const effectiveDateRange = useMemo<SearchFilters["dateRange"]>(() => {
     if (
       derivedDateRange === "today" &&
-      todayEvents.length === 0 &&
-      weekEvents.length > 0
+      dateBuckets.today.length === 0 &&
+      dateBuckets.week.length > 0
     ) {
       return "week";
     }
 
     if (
       derivedDateRange === "tomorrow" &&
-      tomorrowEvents.length === 0 &&
-      weekEvents.length > 0
+      dateBuckets.tomorrow.length === 0 &&
+      dateBuckets.week.length > 0
     ) {
       return "week";
     }
@@ -268,32 +232,23 @@ export function useEventBrowserState({
     return derivedDateRange;
   }, [
     derivedDateRange,
-    todayEvents.length,
-    tomorrowEvents.length,
-    weekEvents.length,
+    dateBuckets.today.length,
+    dateBuckets.tomorrow.length,
+    dateBuckets.week.length,
   ]);
 
   const filteredEvents = useMemo(() => {
-    if (effectiveDateRange === "today") {
-      return todayEvents;
-    }
+    const activeBucket =
+      effectiveDateRange === "today"
+        ? dateBuckets.today
+        : effectiveDateRange === "tomorrow"
+          ? dateBuckets.tomorrow
+          : effectiveDateRange === "week"
+            ? dateBuckets.week
+            : dateBuckets.upcoming;
 
-    if (effectiveDateRange === "tomorrow") {
-      return tomorrowEvents;
-    }
-
-    if (effectiveDateRange === "week") {
-      return weekEvents;
-    }
-
-    return upcomingEvents;
-  }, [
-    effectiveDateRange,
-    todayEvents,
-    tomorrowEvents,
-    weekEvents,
-    upcomingEvents,
-  ]);
+    return sortEventsChronologically(activeBucket);
+  }, [effectiveDateRange, dateBuckets]);
 
   const visibleSelectedEventId = useMemo(() => {
     if (!selectedEventId) {
@@ -323,9 +278,9 @@ export function useEventBrowserState({
       getFallbackBannerCopy({
         derivedDateRange,
         effectiveDateRange,
-        weekEventsCount: weekEvents.length,
+        weekEventsCount: dateBuckets.week.length,
       }),
-    [derivedDateRange, effectiveDateRange, weekEvents.length],
+    [derivedDateRange, effectiveDateRange, dateBuckets.week.length],
   );
 
   const emptyState = useMemo(
@@ -334,8 +289,8 @@ export function useEventBrowserState({
         filters,
         effectiveDateRange,
         derivedDateRange,
-        upcomingEventsCount: upcomingEvents.length,
-        weekEventsCount: weekEvents.length,
+        upcomingEventsCount: dateBuckets.upcoming.length,
+        weekEventsCount: dateBuckets.week.length,
         actions: emptyStateActions,
       }),
     [
@@ -343,19 +298,14 @@ export function useEventBrowserState({
       effectiveDateRange,
       emptyStateActions,
       filters,
-      upcomingEvents.length,
-      weekEvents.length,
+      dateBuckets.upcoming.length,
+      dateBuckets.week.length,
     ],
   );
 
   return {
     activeChips,
     searchFallbackMessage: searchOutput.fallbackMessage,
-    todayEvents,
-    tomorrowEvents,
-    weekEvents,
-    upcomingEvents,
-    derivedDateRange,
     effectiveDateRange,
     filteredEvents,
     visibleSelectedEventId,

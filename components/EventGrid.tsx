@@ -18,6 +18,7 @@ export function EventGrid({
   hiddenEventCount,
   shouldAnimateCards,
   effectiveDateRange,
+  todayKey,
   onEventClick,
   onLoadMore,
 }: {
@@ -27,6 +28,7 @@ export function EventGrid({
   hiddenEventCount: number;
   shouldAnimateCards: boolean;
   effectiveDateRange: SearchFilters["dateRange"];
+  todayKey: string;
   onEventClick: (event: CalEvent) => void;
   onLoadMore: () => void;
 }) {
@@ -158,6 +160,7 @@ export function EventGrid({
                                 event,
                                 undefined,
                                 effectiveDateRange,
+                                todayKey,
                               )}
                             </span>
                             {event.location && (

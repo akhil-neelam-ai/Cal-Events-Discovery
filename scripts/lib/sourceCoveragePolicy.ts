@@ -4,8 +4,7 @@
  * because some sources are platform-capped or naturally sparse.
  */
 
-/** @type {Record<string, number>} */
-export const SOURCE_EXPECTED_MIN_COUNTS = {
+export const SOURCE_EXPECTED_MIN_COUNTS: Record<string, number> = {
   livewhale: 100,
   callink: 5,
   cal_performances: 10,
@@ -19,18 +18,20 @@ export const SOURCE_EXPECTED_MIN_COUNTS = {
   begin: 1,
 };
 
-/**
- * @param {Array<{ name?: string, ok?: boolean, count?: number }>} sources
- * @returns {string[]}
- */
-export function evaluateSourceCoverageWarnings(sources) {
+interface CoverageSource {
+  name?: string;
+  ok?: boolean;
+  count?: number;
+}
+
+export function evaluateSourceCoverageWarnings(sources: unknown): string[] {
   if (!Array.isArray(sources)) {
     return [];
   }
 
-  const warnings = [];
+  const warnings: string[] = [];
 
-  for (const source of sources) {
+  for (const source of sources as CoverageSource[]) {
     const name = String(source.name ?? "");
     const expectedMin = SOURCE_EXPECTED_MIN_COUNTS[name];
     const count = Number(source.count ?? 0);

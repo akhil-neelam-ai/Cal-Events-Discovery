@@ -5,6 +5,14 @@ import type { SourceOption } from "../appConfig";
 import { SearchFilters } from "../types";
 import { SourceDropdown } from "./SourceDropdown";
 
+// Plain-language tooltips so the date pills (especially "All Events") are not
+// ambiguous about the window they cover.
+const DATE_RANGE_DESCRIPTIONS: Record<string, string> = {
+  today: "Events happening today",
+  week: "Events in the next 7 days",
+  upcoming: "Every upcoming event on the calendar",
+};
+
 export function DesktopFiltersBar({
   filters,
   activeDateRange,
@@ -33,6 +41,7 @@ export function DesktopFiltersBar({
               <button
                 key={range.value}
                 type="button"
+                title={DATE_RANGE_DESCRIPTIONS[range.value]}
                 onClick={() =>
                   onDateChange(range.value as SearchFilters["dateRange"])
                 }
@@ -114,13 +123,14 @@ export function MobileFiltersBar({
 
   return (
     <div className="border-b border-slate-200/80 bg-white/95 shadow-xs backdrop-blur-md">
-      <div className="container mx-auto flex items-center gap-2 overflow-x-auto whitespace-nowrap px-4 py-2.5 no-scrollbar">
+      <div className="container mx-auto flex items-center gap-2 overflow-x-auto whitespace-nowrap px-4 py-2.5 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-300">
         {DateRanges.map((range) => {
           const active = activeDateRange === range.value;
           return (
             <button
               key={range.value}
               type="button"
+              title={DATE_RANGE_DESCRIPTIONS[range.value]}
               onClick={() =>
                 handleDateSelect(range.value as SearchFilters["dateRange"])
               }

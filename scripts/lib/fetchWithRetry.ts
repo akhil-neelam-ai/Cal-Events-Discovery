@@ -15,7 +15,9 @@ export interface FetchWithRetryOptions extends FetchOptions {
 }
 
 /**
- * Fetch with linear backoff retries. Throws after the final failed attempt.
+ * Fetch with exponential backoff and jitter. Throws after the final failed
+ * attempt. Jitter (±20%) keeps the 11 adapters from synchronizing into retry
+ * storms when a shared dependency blips.
  */
 export async function fetchWithRetry(
   url: string,
@@ -60,7 +62,10 @@ export async function fetchWithRetry(
     }
 
     if (attempt < maxAttempts) {
-      await abortableDelay(retryDelayMs * attempt, signal);
+      const backoff = Math.floor(
+        retryDelayMs * 2 ** (attempt - 1) * (0.8 + Math.random() * 0.4),
+      );
+      await abortableDelay(backoff, signal);
     }
   }
 

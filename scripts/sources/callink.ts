@@ -13,33 +13,36 @@
  *   visibility ("Public"), status ("Approved"), latitude, longitude.
  */
 
-import * as cheerio from "cheerio";
-import type { CanonicalEvent } from "../lib/schema.js";
+import he from "he";
+
+import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
 import type { FetchOptions } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
+import { isoDateInPT, todayPT } from "../lib/normalize.js";
+
+/**
+ * CalLink-specific HTML cleaner. Unlike the shared `sanitizePlainText`
+ * (which strips every `<`/`>` as XSS defense-in-depth), this preserves literal
+ * comparison operators such as "GPA > 3.0" that appear in org descriptions,
+ * while still removing tags and `<script>`/`<style>` blocks. React escapes the
+ * rendered output, so keeping bare operators is safe here.
+ */
+export function stripHtml(html: string): string {
+  return he
+    .decode(
+      html
+        .replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, " ")
+        .replace(/<[^>]+>/g, " "),
+    )
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 const BASE_URL = "https://callink.berkeley.edu";
 const DISCOVERY_API = `${BASE_URL}/api/discovery/event/search`;
 const FETCH_TIMEOUT_MS = 30_000;
 const MAX_EVENTS = 200;
-
-export interface FetchResult {
-  events: CanonicalEvent[];
-  rawCount: number;
-  filteredPast: number;
-  invalid: number;
-}
-
-/** Convert CampusGroups rich-text fields to text without regex tag stripping. */
-export function stripHtml(html: string): string {
-  const $ = cheerio.load(html);
-  $("script, style").remove();
-  $("br").replaceWith(" ");
-  $("p, div, li").append(" ");
-
-  return $.root().text().replace(/\s+/g, " ").trim();
-}
 
 /** Map CampusGroups "theme" values to frontend-friendly category labels. */
 const THEME_MAP: Record<string, string> = {
@@ -95,31 +98,6 @@ function categorizeCampusGroups(
 
   if (cats.size === 0) cats.add("Student Life");
   return Array.from(cats);
-}
-
-function todayPT(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Los_Angeles",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-}
-
-const PT_DATE_FORMATTER = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "America/Los_Angeles",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-});
-
-export function eventDateInPT(startAt: string): string {
-  const parsed = new Date(startAt);
-  if (Number.isNaN(parsed.getTime())) {
-    return "";
-  }
-
-  return PT_DATE_FORMATTER.format(parsed);
 }
 
 interface RawCampusGroupsEvent {
@@ -213,7 +191,7 @@ export async function fetchCallink(
         continue;
       }
 
-      const eventDate = eventDateInPT(start_at);
+      const eventDate = isoDateInPT(start_at);
       if (!eventDate) {
         invalid++;
         continue;
