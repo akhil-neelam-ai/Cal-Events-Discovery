@@ -75,3 +75,38 @@ test("buildEventIcs leaves single-day events as one VEVENT", () => {
   const ics = buildEventIcs(TIMED_EVENT);
   assert.equal(ics.match(/BEGIN:VEVENT/g).length, 1);
 });
+
+test("buildEventIcs rolls a late-evening DTEND into the next day", () => {
+  const ics = buildEventIcs({
+    ...TIMED_EVENT,
+    id: "evt-late",
+    date: "2026-05-30",
+    time: "11:00 PM",
+  });
+
+  assert.match(ics, /DTSTART;TZID=America\/Los_Angeles:20260530T230000/);
+  // 11 PM + 1h must advance the date and use a valid 00 hour, not T240000.
+  assert.match(ics, /DTEND;TZID=America\/Los_Angeles:20260531T000000/);
+  assert.doesNotMatch(ics, /T24\d{4}/);
+});
+
+test("buildEventIcs escapes ICS control characters in text fields", () => {
+  const ics = buildEventIcs({
+    ...TIMED_EVENT,
+    id: "evt-escape",
+    title: "Jazz; Blues, and \\Soul",
+    description: "Line one\nLine two; with, commas\\and slashes",
+    location: "Room 1; Bldg, A",
+  });
+
+  assert.match(ics, /SUMMARY:Jazz\\; Blues\\, and \\\\Soul/);
+  assert.match(
+    ics,
+    /DESCRIPTION:Line one\\nLine two\\; with\\, commas\\\\and slashes/,
+  );
+  assert.match(ics, /LOCATION:Room 1\\; Bldg\\, A/);
+  // No raw newline must break a property line: every line ends with \r.
+  for (const line of ics.split("\r\n")) {
+    assert.doesNotMatch(line, /\n/);
+  }
+});

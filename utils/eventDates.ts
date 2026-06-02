@@ -75,6 +75,24 @@ export function getCurrentPacificDateKey(now = new Date()): string {
   return formatDateKeyInTimeZone(now);
 }
 
+/**
+ * Integer day difference between two `YYYY-MM-DD` keys (`toKey - fromKey`).
+ * Returns `null` when either key is malformed. Computed on UTC-midnight
+ * anchors so it is immune to DST and local-timezone drift.
+ */
+export function daysBetweenDateKeys(
+  fromKey: string,
+  toKey: string,
+): number | null {
+  const from = fromKey.split("-").map(Number);
+  const to = toKey.split("-").map(Number);
+  if (from.length !== 3 || to.length !== 3) return null;
+  if (from.some((n) => !n) || to.some((n) => !n)) return null;
+  const fromMs = Date.UTC(from[0], from[1] - 1, from[2]);
+  const toMs = Date.UTC(to[0], to[1] - 1, to[2]);
+  return Math.round((toMs - fromMs) / 86_400_000);
+}
+
 export function addDaysToDateKey(dateKey: string, days: number): string {
   const [year, month, day] = dateKey.split("-").map(Number);
   if (!year || !month || !day) {
@@ -218,6 +236,10 @@ export function formatRelativeEventDate(
   event: Pick<CalEvent, "date" | "time" | "end_date" | "dates">,
   now = new Date(),
   dateRange?: string,
+  // Pass the synced key from usePacificDateKeys so "Today"/"Tomorrow" labels
+  // agree with the date-range filter that selected the event. Falls back to
+  // real time for callers (and tests) that don't thread it.
+  syncedTodayKey?: string,
 ): string {
   const multiDay = formatMultiDayWhen(event, now, dateRange);
   if (multiDay) return multiDay;
@@ -227,7 +249,7 @@ export function formatRelativeEventDate(
     return formatEventDate(event.date);
   }
 
-  const todayKey = getCurrentPacificDateKey(now);
+  const todayKey = syncedTodayKey ?? getCurrentPacificDateKey(now);
   const tomorrowKey = addDaysToDateKey(todayKey, 1);
   const weekOutKey = addDaysToDateKey(todayKey, 7);
   const timeLabel = formatCardTime(event.time);
@@ -252,8 +274,11 @@ export function formatRelativeEventDate(
   return `${MONTHS[month - 1]} ${day}, ${timeLabel}`;
 }
 
-export function dateGroupLabel(dateKey: string): string {
-  const todayKey = getCurrentPacificDateKey();
+export function dateGroupLabel(
+  dateKey: string,
+  syncedTodayKey?: string,
+): string {
+  const todayKey = syncedTodayKey ?? getCurrentPacificDateKey();
   const tomorrowKey = addDaysToDateKey(todayKey, 1);
   const [year, month, day] = dateKey.split("-").map(Number);
   if (!year || !month || !day) return dateKey;
@@ -365,7 +390,10 @@ function timeSortValue(time: string | undefined): number {
   return hour * 60 + minute;
 }
 
-export function buildEventGroups(events: CalEvent[]): EventGroup[] {
+export function buildEventGroups(
+  events: CalEvent[],
+  syncedTodayKey?: string,
+): EventGroup[] {
   const groups: EventGroup[] = [];
 
   for (const event of sortEventsChronologically(events)) {
@@ -375,7 +403,11 @@ export function buildEventGroups(events: CalEvent[]): EventGroup[] {
     if (last && last.dateKey === dateKey) {
       last.events.push(event);
     } else {
-      groups.push({ dateKey, label: dateGroupLabel(dateKey), events: [event] });
+      groups.push({
+        dateKey,
+        label: dateGroupLabel(dateKey, syncedTodayKey),
+        events: [event],
+      });
     }
   }
 

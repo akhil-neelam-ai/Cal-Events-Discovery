@@ -9,8 +9,9 @@
 import * as cheerio from "cheerio";
 import type { FetchOptions } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
-import type { CanonicalEvent } from "../lib/schema.js";
+import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
+import { todayPT } from "../lib/normalize.js";
 
 const EHUB_URL = "https://ehub.berkeley.edu/events/";
 const FETCH_TIMEOUT_MS = 30_000;
@@ -28,22 +29,6 @@ const MONTHS: Record<string, string> = {
   nov: "11",
   dec: "12",
 };
-
-export interface FetchResult {
-  events: CanonicalEvent[];
-  rawCount: number;
-  filteredPast: number;
-  invalid: number;
-}
-
-function todayPT(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Los_Angeles",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-}
 
 export function inferEhubDate(
   dateText: string,

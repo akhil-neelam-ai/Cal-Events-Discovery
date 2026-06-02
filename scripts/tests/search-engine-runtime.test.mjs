@@ -353,6 +353,58 @@ test("invalid event dates do not drop indexed text matches", () => {
   );
 });
 
+test("recency bonus ranks a today event above an identical future event", () => {
+  // Two semantically identical events differing only by date. The recency
+  // bonus must favor today (day diff 0) over ~25 days out, so the today event
+  // ranks first. Uses the synced Pacific day key as the clock anchor.
+  const todayKey = getCurrentPacificDateKey();
+  const futureKey = addDaysToDateKey(todayKey, 25);
+  const events = [
+    {
+      id: "evt-future-symposium",
+      title: "Quantum Symposium",
+      organizer: "Physics",
+      date: futureKey,
+      time: "5:00 PM",
+      location: "LeConte Hall",
+      description: "A quantum physics symposium.",
+      tags: ["Science & Tech"],
+      url: "https://example.com/future",
+      source: "livewhale",
+    },
+    {
+      id: "evt-today-symposium",
+      title: "Quantum Symposium",
+      organizer: "Physics",
+      date: todayKey,
+      time: "5:00 PM",
+      location: "LeConte Hall",
+      description: "A quantum physics symposium.",
+      tags: ["Science & Tech"],
+      url: "https://example.com/today",
+      source: "livewhale",
+    },
+  ];
+  const index = {
+    ids: events.map((event) => event.id),
+    t: { quantum: [0, 1], symposium: [0, 1] },
+    g: {},
+    o: {},
+    d: {},
+    l: {},
+    buildAt: "test",
+    eventCount: events.length,
+  };
+
+  const output = searchEvents(events, "quantum symposium", index);
+
+  assert.equal(
+    output.results[0]?.id,
+    "evt-today-symposium",
+    "today's event should outrank the otherwise-identical future event",
+  );
+});
+
 test('natural-language query "artificial intelligence" applies science and tech intent', () => {
   const output = searchEvents(
     SYNTHETIC_EVENTS,

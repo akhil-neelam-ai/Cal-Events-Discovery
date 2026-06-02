@@ -8,6 +8,7 @@ import {
 } from "./textUtils";
 import {
   addDaysToDateKey,
+  daysBetweenDateKeys,
   getCurrentPacificDateKey,
   getPacificDateKey,
 } from "./eventDates";
@@ -421,11 +422,10 @@ const W = {
 } as const;
 
 function recencyBonus(dateStr: string): number {
-  const time = new Date(dateStr).getTime();
-  if (Number.isNaN(time)) return 0;
-  const ms = time - Date.now();
-  const days = ms / 86_400_000;
-  if (days < 0 || days > 30) return 0;
+  const eventKey = getPacificDateKey(dateStr);
+  if (!eventKey) return 0;
+  const days = daysBetweenDateKeys(getCurrentPacificDateKey(), eventKey);
+  if (days === null || days < 0 || days > 30) return 0;
   return Math.round(W.recency * (1 - days / 30));
 }
 
@@ -496,12 +496,8 @@ function phraseBoost(ev: CalEvent, plan: SearchPlan): number {
   return score;
 }
 
-function eventHasAnyExpandedToken(ev: CalEvent, plan: SearchPlan): boolean {
-  if (plan.expandedTokens.length === 0) {
-    return true;
-  }
-
-  const tokens = new Set(
+function tokenizeEvent(ev: CalEvent): Set<string> {
+  return new Set(
     tokenize(
       [
         ev.title,
@@ -512,14 +508,35 @@ function eventHasAnyExpandedToken(ev: CalEvent, plan: SearchPlan): boolean {
       ].join(" "),
     ),
   );
+}
 
+function eventHasAnyExpandedToken(
+  ev: CalEvent,
+  plan: SearchPlan,
+  tokensFor: (e: CalEvent) => Set<string>,
+): boolean {
+  if (plan.expandedTokens.length === 0) {
+    return true;
+  }
+
+  const tokens = tokensFor(ev);
   return plan.expandedTokens.some((token) => tokens.has(token));
+}
+
+/** Per-token posting-list membership sets, hoisted out of the candidate loop. */
+interface TokenFieldSets {
+  t: Set<number>;
+  g: Set<number>;
+  o: Set<number>;
+  l: Set<number>;
+  d: Set<number>;
 }
 
 function scoreEvent(
   pos: number,
   plan: SearchPlan,
-  index: SearchIndex,
+  fieldSets: Map<string, TokenFieldSets>,
+  multipliers: Map<string, number>,
   eventByPos: (p: number) => CalEvent | undefined,
 ): number {
   const ev = eventByPos(pos);
@@ -537,10 +554,12 @@ function scoreEvent(
 
   // Field-weighted token scoring
   for (const qt of plan.expandedTokens) {
+    const sets = fieldSets.get(qt);
+    if (!sets) continue;
     const isCore = plan.keywords.includes(qt);
     const mult =
       (isCore ? W.coreMultiplier : W.synMultiplier) *
-      tokenFrequencyMultiplier(qt, index);
+      (multipliers.get(qt) ?? 1);
 
     const markMatched = () => {
       matched++;
@@ -550,23 +569,23 @@ function scoreEvent(
       }
     };
 
-    if (index.t[qt]?.includes(pos)) {
+    if (sets.t.has(pos)) {
       score += W.title * mult;
       markMatched();
     }
-    if (index.g[qt]?.includes(pos)) {
+    if (sets.g.has(pos)) {
       score += W.tag * mult;
       markMatched();
     }
-    if (index.o[qt]?.includes(pos)) {
+    if (sets.o.has(pos)) {
       score += W.org * mult;
       markMatched();
     }
-    if (index.l[qt]?.includes(pos)) {
+    if (sets.l.has(pos)) {
       score += W.location * mult;
       markMatched();
     }
-    if (index.d[qt]?.includes(pos)) {
+    if (sets.d.has(pos)) {
       score += W.desc * mult;
       markMatched();
     }
@@ -692,8 +711,7 @@ function runScoring(
     return pool;
 
   const eventMap = new Map(pool.map((e) => [e.id, e]));
-  const scored: Array<{ event: CalEvent; score: number }> = [];
-  const scoredIds = new Set<string>();
+  const scored = new Map<string, { event: CalEvent; score: number }>();
 
   const eventByPos = (pos: number): CalEvent | undefined => {
     const id = index?.ids[pos];
@@ -702,21 +720,35 @@ function runScoring(
 
   // Phase 1: inverted index
   if (index && plan.expandedTokens.length > 0) {
-    const candidatePos = new Set<number>();
+    // Hoist per-token posting-list Sets and frequency multipliers out of the
+    // candidate loop — both depend only on (token, index), never the candidate.
+    const fieldSets = new Map<string, TokenFieldSets>();
+    const multipliers = new Map<string, number>();
     for (const token of plan.expandedTokens) {
-      for (const pos of index.t[token] ?? []) candidatePos.add(pos);
-      for (const pos of index.g[token] ?? []) candidatePos.add(pos);
-      for (const pos of index.o[token] ?? []) candidatePos.add(pos);
-      for (const pos of index.l[token] ?? []) candidatePos.add(pos);
-      for (const pos of index.d[token] ?? []) candidatePos.add(pos);
+      fieldSets.set(token, {
+        t: new Set(index.t[token] ?? []),
+        g: new Set(index.g[token] ?? []),
+        o: new Set(index.o[token] ?? []),
+        l: new Set(index.l[token] ?? []),
+        d: new Set(index.d[token] ?? []),
+      });
+      multipliers.set(token, tokenFrequencyMultiplier(token, index));
+    }
+
+    const candidatePos = new Set<number>();
+    for (const sets of fieldSets.values()) {
+      for (const pos of sets.t) candidatePos.add(pos);
+      for (const pos of sets.g) candidatePos.add(pos);
+      for (const pos of sets.o) candidatePos.add(pos);
+      for (const pos of sets.l) candidatePos.add(pos);
+      for (const pos of sets.d) candidatePos.add(pos);
     }
     for (const pos of candidatePos) {
       const ev = eventByPos(pos);
       if (!ev) continue;
-      const score = scoreEvent(pos, plan, index, eventByPos);
+      const score = scoreEvent(pos, plan, fieldSets, multipliers, eventByPos);
       if (score > 0) {
-        scored.push({ event: ev, score });
-        scoredIds.add(ev.id);
+        scored.set(ev.id, { event: ev, score });
       }
     }
   }
@@ -741,7 +773,7 @@ function runScoring(
 
   if (!hasMissingStrictToken && fuzzyTokens.length > 0) {
     const fuzzyPool =
-      scored.length === 0 ? pool : pool.filter((e) => !scoredIds.has(e.id));
+      scored.size === 0 ? pool : pool.filter((e) => !scored.has(e.id));
     const fuse = new Fuse(fuzzyPool, {
       keys: [
         { name: "title", weight: 4 },
@@ -766,11 +798,26 @@ function runScoring(
     addFuseQuery(fuzzyTokens.length > 0 ? fuzzyTokens.join(" ") : "", false);
     addFuseQuery(plan.raw, true);
 
+    // Memoize event tokenization so a candidate returned by multiple Fuse
+    // queries is tokenized at most once across the fallback phase.
+    const fuzzyTokenCache = new Map<string, Set<string>>();
+    const tokensFor = (ev: CalEvent): Set<string> => {
+      let tokens = fuzzyTokenCache.get(ev.id);
+      if (!tokens) {
+        tokens = tokenizeEvent(ev);
+        fuzzyTokenCache.set(ev.id, tokens);
+      }
+      return tokens;
+    };
+
     for (const { query: fuseQuery, requireTokenMatch } of fuseQueries) {
       for (const { item, score: fs } of fuse.search(fuseQuery, {
         limit: 100,
       })) {
-        if (requireTokenMatch && !eventHasAnyExpandedToken(item, plan)) {
+        if (
+          requireTokenMatch &&
+          !eventHasAnyExpandedToken(item, plan, tokensFor)
+        ) {
           continue;
         }
 
@@ -778,18 +825,19 @@ function runScoring(
           Math.round((1 - (fs ?? 1)) * 40) +
           phraseBoost(item, plan) +
           recencyBonus(item.date);
-        const existing = scored.find((r) => r.event.id === item.id);
+        const existing = scored.get(item.id);
         if (existing) {
           existing.score += relevance;
         } else {
-          scored.push({ event: item, score: relevance });
+          scored.set(item.id, { event: item, score: relevance });
         }
       }
     }
   }
 
-  scored.sort((a, b) => b.score - a.score);
-  return scored.map((r) => r.event);
+  return [...scored.values()]
+    .sort((a, b) => b.score - a.score)
+    .map((r) => r.event);
 }
 
 // ─── Main search function ─────────────────────────────────────────────────────
@@ -941,21 +989,3 @@ export function searchEvents(
 // ─── Legacy exports ───────────────────────────────────────────────────────────
 
 export { stem, tokenize };
-
-/** @deprecated Use buildSearchPlan instead */
-export function parseQuery(query: string) {
-  const plan = buildSearchPlan(query);
-  return {
-    raw: plan.raw,
-    cleaned: plan.cleaned,
-    tokens: plan.keywords,
-    intents: {
-      dateRange: plan.filters.dateRange,
-      category: plan.filters.category,
-    },
-  };
-}
-
-export function expandTokens(query: string): string[] {
-  return buildSearchPlan(query).expandedTokens;
-}

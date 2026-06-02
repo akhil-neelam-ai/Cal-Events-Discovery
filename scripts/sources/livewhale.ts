@@ -15,9 +15,9 @@ import {
   type FetchOptions,
 } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
-import type { CanonicalEvent } from "../lib/schema.js";
+import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { deriveFrontendTags, isoDateInPT } from "../lib/normalize.js";
+import { deriveFrontendTags, isoDateInPT, todayPT } from "../lib/normalize.js";
 
 const FEED_URL = "https://events.berkeley.edu/live/ical/events";
 const GROUP_BASE = "https://events.berkeley.edu/live/ical/events/group";
@@ -310,11 +310,17 @@ function asString(value: unknown): string {
   return "";
 }
 
+// node-ical types uid/datetype/status/categories on VEvent already; only
+// LiveWhale's non-standard X-LIVEWHALE-ID is missing. Extend once rather than
+// double-casting at each access site.
+interface ExtendedVEvent extends VEvent {
+  "x-livewhale-id"?: unknown;
+}
+
 function isAllDay(component: VEvent): boolean {
   // node-ical sets datetype to 'date' for VALUE=DATE entries
   // (it leaves it as 'date-time' for TZID-anchored timestamps)
-  const datetype = (component as unknown as { datetype?: string }).datetype;
-  return datetype === "date";
+  return component.datetype === "date";
 }
 
 function isoDateUTC(d: Date): string {
@@ -323,15 +329,6 @@ function isoDateUTC(d: Date): string {
   const m = String(d.getUTCMonth() + 1).padStart(2, "0");
   const day = String(d.getUTCDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
-}
-
-function todayPT(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Los_Angeles",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
 }
 
 function decodeIcalText(text: string): string {
@@ -345,13 +342,6 @@ function decodeIcalText(text: string): string {
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
-}
-
-export interface FetchResult {
-  events: CanonicalEvent[];
-  rawCount: number;
-  filteredPast: number;
-  invalid: number;
 }
 
 async function fetchFeed(
@@ -487,10 +477,9 @@ export async function fetchLiveWhale(
   for (const key of Object.keys(parsed)) {
     const component = parsed[key] as { type?: string };
     if (!component || component.type !== "VEVENT") continue;
-    const ve = component as unknown as VEvent;
+    const ve = component as unknown as ExtendedVEvent;
     const url =
-      asString(ve.url) ||
-      `https://events.berkeley.edu/live/events/${(ve as unknown as { uid?: string }).uid}`;
+      asString(ve.url) || `https://events.berkeley.edu/live/events/${ve.uid}`;
     urlsToPrewarm.push(url);
   }
   await prewarmRedirectCache(urlsToPrewarm, options);
@@ -498,7 +487,7 @@ export async function fetchLiveWhale(
   for (const key of Object.keys(parsed)) {
     const component = parsed[key] as { type?: string };
     if (!component || component.type !== "VEVENT") continue;
-    const ve = component as unknown as VEvent;
+    const ve = component as unknown as ExtendedVEvent;
     rawCount++;
 
     try {
@@ -526,9 +515,7 @@ export async function fetchLiveWhale(
       }
 
       // Skip canceled/postponed events — check iCal STATUS field and title prefix.
-      const icalStatus = asString(
-        (ve as unknown as { status?: unknown }).status,
-      ).toUpperCase();
+      const icalStatus = asString(ve.status).toUpperCase();
       if (icalStatus === "CANCELLED" || icalStatus === "CANCELED") {
         invalid++;
         continue;
@@ -541,25 +528,19 @@ export async function fetchLiveWhale(
       }
 
       const url =
-        asString(ve.url) ||
-        `https://events.berkeley.edu/live/events/${(ve as unknown as { uid?: string }).uid}`;
+        asString(ve.url) || `https://events.berkeley.edu/live/events/${ve.uid}`;
       const { slug, unit } = await unitFromUrl(url, options);
 
       const description = decodeIcalText(asString(ve.description));
       const location = decodeIcalText(asString(ve.location));
-      const categoriesRaw = (
-        ve as unknown as { categories?: string[] | string }
-      ).categories;
+      const categoriesRaw: string[] | string | undefined = ve.categories;
       const categories = Array.isArray(categoriesRaw)
         ? categoriesRaw
         : typeof categoriesRaw === "string"
           ? [categoriesRaw]
           : [];
 
-      const liveWhaleId =
-        asString(
-          (ve as unknown as { ["x-livewhale-id"]?: unknown })["x-livewhale-id"],
-        ) || asString((ve as unknown as { uid?: unknown }).uid);
+      const liveWhaleId = asString(ve["x-livewhale-id"]) || asString(ve.uid);
 
       const candidate: CanonicalEvent = {
         source_name: "livewhale",

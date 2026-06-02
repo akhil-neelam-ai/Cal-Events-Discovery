@@ -12,9 +12,9 @@
  * page source, and append an entry to BERKELEY_LUMA_CALENDARS below.
  */
 
-import type { CanonicalEvent, SourceName } from "../lib/schema.js";
+import type { CanonicalEvent, FetchResult, SourceName } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { deriveFrontendTags } from "../lib/normalize.js";
+import { deriveFrontendTags, todayPT } from "../lib/normalize.js";
 import type { FetchOptions } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 
@@ -160,22 +160,6 @@ interface LumaApiResponse {
   entries?: LumaEntry[];
   has_more?: boolean;
   next_cursor?: string;
-}
-
-export interface FetchResult {
-  events: CanonicalEvent[];
-  rawCount: number;
-  filteredPast: number;
-  invalid: number;
-}
-
-function todayPT(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Los_Angeles",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
 }
 
 function resolveModality(

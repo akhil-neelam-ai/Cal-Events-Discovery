@@ -24,8 +24,9 @@ import {
   throwIfAborted,
   type FetchOptions,
 } from "../lib/abort.js";
-import type { CanonicalEvent } from "../lib/schema.js";
+import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
+import { todayPT } from "../lib/normalize.js";
 
 const BASE_URL = "https://bampfa.org";
 const CALENDAR_URL = `${BASE_URL}/visit/calendar`;
@@ -49,22 +50,6 @@ const PT_WALL_TIME_FORMATTER = new Intl.DateTimeFormat("en-CA", {
   minute: "2-digit",
   second: "2-digit",
 });
-
-export interface FetchResult {
-  events: CanonicalEvent[];
-  rawCount: number;
-  filteredPast: number;
-  invalid: number;
-}
-
-function todayPT(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: PT_TIME_ZONE,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-}
 
 function pad2(value: number): string {
   return String(value).padStart(2, "0");

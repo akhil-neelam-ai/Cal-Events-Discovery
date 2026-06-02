@@ -49,13 +49,14 @@ export const HttpUrlSchema = z
 export const CanonicalEventSchema = z.object({
   // Provenance
   source_name: SourceNameSchema,
-  source_id: z.string().min(1),
+  source_id: z.string().min(1).max(512),
   source_url: HttpUrlSchema,
   evidence_url: HttpUrlSchema.optional(),
 
-  // Identity
-  title: z.string().min(2),
-  description: z.string().default(""),
+  // Identity. Bounded so a broken or hostile feed cannot publish a
+  // multi-megabyte field that bloats events.json / search-index.json.
+  title: z.string().min(2).max(300),
+  description: z.string().max(20000).default(""),
 
   // Time (ISO 8601 with offset, OR YYYY-MM-DD when all_day)
   start_at: z.string().min(8),
@@ -72,15 +73,15 @@ export const CanonicalEventSchema = z.object({
   occurrence_dates: z.array(z.string()).optional(),
 
   // Place
-  venue: z.string().default(""),
-  building: z.string().default(""),
-  address: z.string().default(""),
+  venue: z.string().max(500).default(""),
+  building: z.string().max(500).default(""),
+  address: z.string().max(500).default(""),
   modality: ModalitySchema.default("in_person"),
 
   // People / unit
-  organizer: z.string().default(""),
-  organizer_unit: z.string().default(""),
-  audience: z.string().default(""),
+  organizer: z.string().max(500).default(""),
+  organizer_unit: z.string().max(500).default(""),
+  audience: z.string().max(500).default(""),
 
   // Engagement
   cost: z.string().default(""),
@@ -99,6 +100,14 @@ export const CanonicalEventSchema = z.object({
 
 export type CanonicalEvent = z.infer<typeof CanonicalEventSchema>;
 
+/** Standard return shape for every source adapter's fetch function. */
+export interface FetchResult {
+  events: CanonicalEvent[];
+  rawCount: number;
+  filteredPast: number;
+  invalid: number;
+}
+
 /**
  * Legacy event shape — what public/events.json publishes and App.tsx reads.
  * Kept stable to avoid frontend churn during the source-adapter migration.
@@ -113,7 +122,10 @@ export interface LegacyCalEvent {
   description: string;
   tags: string[];
   url: string;
-  source?: string;
+  // Always set by projectToLegacy and required by the webmcp source filter.
+  // The fallback-restore path reuses already-published events, which also
+  // carry source, so every published LegacyCalEvent has it.
+  source: string;
   // Multi-day events only (set by collapseMultiDay). `date` is the earliest
   // upcoming occurrence; `end_date` is the last; `dates` lists every upcoming
   // occurrence day (PT YYYY-MM-DD). Single-day events omit both.

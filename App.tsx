@@ -30,12 +30,21 @@ import { addRecentSearch } from "./utils/recentSearches";
 import type { StatusBannerData } from "./utils/statusUi";
 
 const STATUS_BANNER_DISMISS_PREFIX = "statusBannerDismissed:";
+const STALE_BANNER_DISMISS_PREFIX = "staleBannerDismissed:";
 
 function getStatusBannerDismissalKey(banner: StatusBannerData): string {
   return `${STATUS_BANNER_DISMISS_PREFIX}${banner.tone}:${banner.title}:${banner.message}`;
 }
 
-function readStatusBannerDismissed(key: string | null): boolean {
+// Key the stale banner by the degraded-source set so dismissing it stays
+// dismissed for that degradation through the session, rather than re-appearing
+// every load as the (fluctuating) data-age changes.
+function getStaleBannerDismissalKey(degradedSources: string[]): string {
+  const sources = degradedSources.slice().sort().join(",");
+  return `${STALE_BANNER_DISMISS_PREFIX}${sources || "stale-only"}`;
+}
+
+function readBannerDismissed(key: string | null): boolean {
   if (!key) {
     return false;
   }
@@ -50,7 +59,7 @@ function readStatusBannerDismissed(key: string | null): boolean {
   }
 }
 
-function persistStatusBannerDismissed(key: string): void {
+function persistBannerDismissed(key: string): void {
   try {
     sessionStorage.setItem(key, "1");
   } catch {
@@ -83,8 +92,6 @@ export default function App() {
     useState<Set<string>>(new Set());
   const isMobile = useIsMobile();
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const historyModeRef = useRef<"push" | "replace">("replace");
-  const isApplyingHistoryRef = useRef(false);
   const [userSetDateRange, setUserSetDateRange] = useState(
     initialUrlState.hasExplicitDateRange,
   );
@@ -128,14 +135,28 @@ export default function App() {
   >(null);
   const bannerDismissed =
     dismissedStatusBannerKey === statusBannerDismissalKey ||
-    readStatusBannerDismissed(statusBannerDismissalKey);
+    readBannerDismissed(statusBannerDismissalKey);
   const dismissBanner = () => {
     if (!statusBannerDismissalKey) {
       return;
     }
 
     setDismissedStatusBannerKey(statusBannerDismissalKey);
-    persistStatusBannerDismissed(statusBannerDismissalKey);
+    persistBannerDismissed(statusBannerDismissalKey);
+  };
+
+  const staleBannerDismissalKey = getStaleBannerDismissalKey(
+    degradedSources ?? [],
+  );
+  const [dismissedStaleBannerKey, setDismissedStaleBannerKey] = useState<
+    string | null
+  >(null);
+  const staleBannerDismissed =
+    dismissedStaleBannerKey === staleBannerDismissalKey ||
+    readBannerDismissed(staleBannerDismissalKey);
+  const dismissStaleBanner = () => {
+    setDismissedStaleBannerKey(staleBannerDismissalKey);
+    persistBannerDismissed(staleBannerDismissalKey);
   };
 
   const { todayKey, tomorrowKey, nextWeekKey } = usePacificDateKeys();
@@ -228,6 +249,15 @@ export default function App() {
     filteredEvents,
     effectiveDateRange,
     prefersReducedMotion,
+    todayKey,
+  });
+
+  const { onHistoryIntent } = useUrlStateSync({
+    filters,
+    selectedEventId: visibleSelectedEventId,
+    setFilters,
+    setSelectedEventId,
+    setUserSetDateRange,
   });
 
   const {
@@ -244,18 +274,8 @@ export default function App() {
     setSelectedEventId,
     setUserSetDateRange,
     setDismissedInterpretationKeys,
-    historyModeRef,
+    onHistoryIntent,
     searchTimeoutRef,
-  });
-
-  useUrlStateSync({
-    filters,
-    selectedEventId: visibleSelectedEventId,
-    setFilters,
-    setSelectedEventId,
-    setUserSetDateRange,
-    historyModeRef,
-    isApplyingHistoryRef,
   });
   const mainContentId = "main-content";
 
@@ -281,6 +301,8 @@ export default function App() {
         onDismissBanner={dismissBanner}
         dataAgeHours={dataAgeHours}
         degradedSources={degradedSources}
+        staleBannerDismissed={staleBannerDismissed}
+        onDismissStaleBanner={dismissStaleBanner}
       />
 
       {/* Main Content */}
@@ -298,6 +320,7 @@ export default function App() {
             onDismissChip={handleDismissChip}
             category={filters.category}
             effectiveDateRange={effectiveDateRange}
+            todayKey={todayKey}
             filteredEvents={filteredEvents}
             lastUpdated={lastUpdated}
             searchFallbackMessage={searchFallbackMessage}

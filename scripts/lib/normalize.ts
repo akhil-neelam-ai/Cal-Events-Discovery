@@ -9,7 +9,7 @@ import he from "he";
 
 import type { CanonicalEvent, LegacyCalEvent } from "./schema.js";
 
-const FRONTEND_CATEGORIES = [
+export const FRONTEND_CATEGORIES = [
   "Academic",
   "Arts",
   "Sports",
@@ -398,6 +398,16 @@ export function isoDateInPT(start_at: string): string {
     day: "2-digit",
   });
   return fmt.format(d); // en-CA gives YYYY-MM-DD
+}
+
+/** Today's date in Pacific time as a `YYYY-MM-DD` key (DST-aware). */
+export function todayPT(): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
 }
 
 export function displayTime(start_at: string, all_day: boolean): string {

@@ -12,7 +12,18 @@ export function atomicWriteFileSync(filePath: string, contents: string): void {
   fs.mkdirSync(dir, { recursive: true });
   const tmpPath = `${filePath}.tmp-${process.pid}-${Date.now()}`;
   fs.writeFileSync(tmpPath, contents, "utf8");
-  renameSyncImpl(tmpPath, filePath);
+  try {
+    renameSyncImpl(tmpPath, filePath);
+  } catch (err) {
+    // e.g. EXDEV on a cross-device mount. Don't leak the temp file across
+    // repeated cron failures; best-effort cleanup, then surface the error.
+    try {
+      fs.unlinkSync(tmpPath);
+    } catch {
+      // tmp file already gone or unremovable — nothing more we can do.
+    }
+    throw err;
+  }
 }
 
 export function __setRenameSyncImplForTests(

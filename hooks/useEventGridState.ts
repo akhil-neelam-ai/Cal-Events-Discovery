@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { VISIBLE_EVENT_BATCH_SIZE } from "../appConfig";
 import { LoadingState } from "../types";
@@ -10,6 +10,7 @@ interface UseEventGridStateParams {
   filteredEvents: CalEvent[];
   effectiveDateRange: SearchFilters["dateRange"];
   prefersReducedMotion: boolean;
+  todayKey: string;
 }
 
 export function useEventGridState({
@@ -17,6 +18,7 @@ export function useEventGridState({
   filteredEvents,
   effectiveDateRange,
   prefersReducedMotion,
+  todayKey,
 }: UseEventGridStateParams) {
   const [shouldAnimateCards, setShouldAnimateCards] =
     useState(!prefersReducedMotion);
@@ -26,10 +28,6 @@ export function useEventGridState({
   const previousDateRangeRef = useRef(effectiveDateRange);
   const previousFilteredEventIdsRef = useRef<Set<string> | null>(null);
   const previousPrefersReducedMotionRef = useRef(prefersReducedMotion);
-  const filteredEventsSignature = useMemo(
-    () => filteredEvents.map((event) => event.id).join("\u0000"),
-    [filteredEvents],
-  );
 
   useEffect(() => {
     if (
@@ -46,18 +44,18 @@ export function useEventGridState({
   }, [filteredEvents.length, loading, shouldAnimateCards]);
 
   useEffect(() => {
-    const nextIds = filteredEventsSignature
-      ? filteredEventsSignature.split("\u0000")
-      : [];
+    // `filteredEvents` is reference-memoized upstream, so its identity is the
+    // change signal. Build the id Set once for the subset check, not on render.
+    const nextIds = new Set(filteredEvents.map((event) => event.id));
     const previousIds = previousFilteredEventIdsRef.current;
     const nextIsSubset =
       previousIds !== null &&
-      nextIds.length <= previousIds.size &&
-      nextIds.every((id) => previousIds.has(id));
+      nextIds.size <= previousIds.size &&
+      [...nextIds].every((id) => previousIds.has(id));
     const motionChanged =
       previousPrefersReducedMotionRef.current !== prefersReducedMotion;
 
-    previousFilteredEventIdsRef.current = new Set(nextIds);
+    previousFilteredEventIdsRef.current = nextIds;
     previousPrefersReducedMotionRef.current = prefersReducedMotion;
 
     const frame = window.requestAnimationFrame(() => {
@@ -71,7 +69,7 @@ export function useEventGridState({
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [filteredEventsSignature, prefersReducedMotion]);
+  }, [filteredEvents, prefersReducedMotion]);
 
   useEffect(() => {
     if (previousDateRangeRef.current === effectiveDateRange) {
@@ -94,7 +92,7 @@ export function useEventGridState({
     filteredEvents.length - visibleEvents.length,
     0,
   );
-  const eventGroups = buildEventGroups(visibleEvents);
+  const eventGroups = buildEventGroups(visibleEvents, todayKey);
 
   return {
     shouldAnimateCards,

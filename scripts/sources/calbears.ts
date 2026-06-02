@@ -16,9 +16,9 @@ import {
   signalWithTimeout,
   type FetchOptions,
 } from "../lib/abort.js";
-import type { CanonicalEvent } from "../lib/schema.js";
+import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { isoDateInPT } from "../lib/normalize.js";
+import { isoDateInPT, todayPT } from "../lib/normalize.js";
 
 const FEED_URL = "https://calbears.com/calendar.ashx/calendar.ics";
 const FETCH_TIMEOUT_MS = 30_000;
@@ -26,13 +26,6 @@ const MAX_FETCH_ATTEMPTS = 3;
 const RETRY_DELAY_MS = 1_500;
 // Sidearm feeds for a full athletic program typically have 100+ games per season.
 const MIN_HEALTHY_EVENT_COUNT = 20;
-
-export interface FetchResult {
-  events: CanonicalEvent[];
-  rawCount: number;
-  filteredPast: number;
-  invalid: number;
-}
 
 function asString(value: unknown): string {
   if (typeof value === "string") return value;
@@ -43,8 +36,7 @@ function asString(value: unknown): string {
 }
 
 function isAllDay(component: VEvent): boolean {
-  const datetype = (component as unknown as { datetype?: string }).datetype;
-  return datetype === "date";
+  return component.datetype === "date";
 }
 
 function isoDateUTC(d: Date): string {
@@ -52,15 +44,6 @@ function isoDateUTC(d: Date): string {
   const m = String(d.getUTCMonth() + 1).padStart(2, "0");
   const day = String(d.getUTCDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
-}
-
-function todayPT(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Los_Angeles",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
 }
 
 function decodeIcalText(text: string): string {
@@ -210,7 +193,7 @@ export async function fetchCalBears(
           : rawLocation;
 
       const rawUrl = asString(ve.url).replace(/&amp;/g, "&");
-      const uid = asString((ve as unknown as { uid?: unknown }).uid);
+      const uid = asString(ve.uid);
       const url = rawUrl || `https://calbears.com/calendar.aspx#${uid}`;
 
       const quality_flags: string[] = [];

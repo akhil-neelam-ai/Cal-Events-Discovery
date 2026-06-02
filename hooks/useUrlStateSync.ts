@@ -1,11 +1,11 @@
-import { useEffect } from "react";
-import type { Dispatch, MutableRefObject, SetStateAction } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import type { Dispatch, SetStateAction } from "react";
 
 import { ALL_SOURCES, Categories, DEFAULT_FILTERS } from "../appConfig";
 import type { SearchFilters } from "../types";
 import { buildUrlStateSearch, parseUrlState } from "../utils/urlState";
 
-type HistoryMode = "push" | "replace";
+export type HistoryMode = "push" | "replace";
 
 interface UseUrlStateSyncParams {
   filters: SearchFilters;
@@ -13,8 +13,11 @@ interface UseUrlStateSyncParams {
   setFilters: Dispatch<SetStateAction<SearchFilters>>;
   setSelectedEventId: Dispatch<SetStateAction<string | null>>;
   setUserSetDateRange: Dispatch<SetStateAction<boolean>>;
-  historyModeRef: MutableRefObject<HistoryMode>;
-  isApplyingHistoryRef: MutableRefObject<boolean>;
+}
+
+export interface UseUrlStateSyncResult {
+  /** Signal whether the next URL update should push or replace history. */
+  onHistoryIntent: (mode: HistoryMode) => void;
 }
 
 export function readAppUrlState() {
@@ -34,9 +37,14 @@ export function useUrlStateSync({
   setFilters,
   setSelectedEventId,
   setUserSetDateRange,
-  historyModeRef,
-  isApplyingHistoryRef,
-}: UseUrlStateSyncParams) {
+}: UseUrlStateSyncParams): UseUrlStateSyncResult {
+  const historyModeRef = useRef<HistoryMode>("replace");
+  const isApplyingHistoryRef = useRef(false);
+
+  const onHistoryIntent = useCallback((mode: HistoryMode) => {
+    historyModeRef.current = mode;
+  }, []);
+
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
@@ -87,4 +95,6 @@ export function useUrlStateSync({
     setSelectedEventId,
     setUserSetDateRange,
   ]);
+
+  return { onHistoryIntent };
 }

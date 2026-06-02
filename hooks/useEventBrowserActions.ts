@@ -9,8 +9,7 @@ import {
   trackFilter,
   trackSearch,
 } from "../utils/analytics";
-
-type HistoryMode = "push" | "replace";
+import type { HistoryMode } from "./useUrlStateSync";
 
 interface UseEventBrowserActionsParams {
   filteredEventsCount: number;
@@ -19,7 +18,7 @@ interface UseEventBrowserActionsParams {
   setSelectedEventId: Dispatch<SetStateAction<string | null>>;
   setUserSetDateRange: Dispatch<SetStateAction<boolean>>;
   setDismissedInterpretationKeys: Dispatch<SetStateAction<Set<string>>>;
-  historyModeRef: MutableRefObject<HistoryMode>;
+  onHistoryIntent: (mode: HistoryMode) => void;
   searchTimeoutRef: MutableRefObject<ReturnType<typeof setTimeout> | null>;
 }
 
@@ -30,7 +29,7 @@ export function useEventBrowserActions({
   setSelectedEventId,
   setUserSetDateRange,
   setDismissedInterpretationKeys,
-  historyModeRef,
+  onHistoryIntent,
   searchTimeoutRef,
 }: UseEventBrowserActionsParams) {
   const prevSearchQueryRef = useRef<string>(initialSearchQuery);
@@ -50,7 +49,7 @@ export function useEventBrowserActions({
 
   const handleSearchChange = useCallback(
     (query: string) => {
-      historyModeRef.current = "replace";
+      onHistoryIntent("replace");
       setFilters((prev) => ({ ...prev, searchQuery: query }));
       setSelectedEventId(null);
 
@@ -82,7 +81,7 @@ export function useEventBrowserActions({
       }
     },
     [
-      historyModeRef,
+      onHistoryIntent,
       searchTimeoutRef,
       setDismissedInterpretationKeys,
       setFilters,
@@ -101,14 +100,14 @@ export function useEventBrowserActions({
 
   const handleDateRangeChange = useCallback(
     (dateRange: SearchFilters["dateRange"]) => {
-      historyModeRef.current = "push";
+      onHistoryIntent("push");
       setUserSetDateRange(true);
       setFilters((prev) => ({ ...prev, dateRange }));
       setDismissedInterpretationKeys(new Set());
       trackDateFilter(dateRange);
     },
     [
-      historyModeRef,
+      onHistoryIntent,
       setDismissedInterpretationKeys,
       setFilters,
       setUserSetDateRange,
@@ -117,22 +116,22 @@ export function useEventBrowserActions({
 
   const handleCategoryChange = useCallback(
     (category: string) => {
-      historyModeRef.current = "push";
+      onHistoryIntent("push");
       setFilters((prev) => ({ ...prev, category }));
       setDismissedInterpretationKeys(new Set());
       trackCategoryFilter(category);
     },
-    [historyModeRef, setDismissedInterpretationKeys, setFilters],
+    [onHistoryIntent, setDismissedInterpretationKeys, setFilters],
   );
 
   const handleSourceChange = useCallback(
     (source: string) => {
-      historyModeRef.current = "push";
+      onHistoryIntent("push");
       setFilters((prev) => ({ ...prev, source }));
       setDismissedInterpretationKeys(new Set());
       trackFilter({ filter_type: "source", filter_value: source });
     },
-    [historyModeRef, setDismissedInterpretationKeys, setFilters],
+    [onHistoryIntent, setDismissedInterpretationKeys, setFilters],
   );
 
   const handleQuickPreset = useCallback(
@@ -141,7 +140,7 @@ export function useEventBrowserActions({
         clearTimeout(searchTimeoutRef.current);
       }
 
-      historyModeRef.current = "push";
+      onHistoryIntent("push");
       setUserSetDateRange(true);
       setFilters((prev) => ({
         ...prev,
@@ -157,7 +156,7 @@ export function useEventBrowserActions({
       }
     },
     [
-      historyModeRef,
+      onHistoryIntent,
       searchTimeoutRef,
       setDismissedInterpretationKeys,
       setFilters,

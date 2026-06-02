@@ -14,8 +14,9 @@
  * events.berkeley.edu — the Simons Institute does not cross-publish to it.
  */
 
-import type { CanonicalEvent } from "../lib/schema.js";
+import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
+import { todayPT } from "../lib/normalize.js";
 import type { FetchOptions } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 
@@ -29,13 +30,6 @@ const PT_DATE_FORMATTER = new Intl.DateTimeFormat("en-CA", {
   day: "2-digit",
 });
 
-export interface FetchResult {
-  events: CanonicalEvent[];
-  rawCount: number;
-  filteredPast: number;
-  invalid: number;
-}
-
 interface RawSimonsEvent {
   start?: string;
   end?: string;
@@ -46,10 +40,6 @@ interface RawSimonsEvent {
   speakers?: string;
   location?: string;
   program?: string;
-}
-
-function todayPT(): string {
-  return PT_DATE_FORMATTER.format(new Date());
 }
 
 function ptDateOf(utcIso: string): string {

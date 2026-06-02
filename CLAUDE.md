@@ -74,12 +74,12 @@ Loads `events.json` and `search-index.json` at startup. Search is entirely clien
 | `scripts/lib/buildIndex.ts` | Inverted index generator with venue alias expansion |
 | `utils/searchEngine.ts` | `buildSearchPlan` + `searchEvents` — entire client search logic |
 | `utils/textUtils.ts` | Porter-lite stemmer, tokenizer, `DOMAIN_SYNONYMS`, venue alias map |
-| `App.tsx` | Monolithic React component (~1,700 lines): all UI, state, event handlers |
+| `App.tsx` | Top-level React component (~330 lines): composes hooks + UI sections |
 | `types.ts` | Frontend-facing types: `CalEvent`, `SearchFilters`, `IngestionStatus` |
 | `public/events.json` | Published events (committed to repo, served statically) |
 | `public/status.json` | Per-source health + degradation flags (committed to repo) |
 | `public/search-index.json` | Inverted index (~215 KB, committed to repo) |
-| `.github/workflows/update-events.yml` | Daily cron at 11:25 UTC (4:25 AM PDT) |
+| `.github/workflows/update-events.yml` | Daily run — dual cron at 11:00 and 12:00 UTC, gated to 4:00 AM Pacific for the active DST offset |
 
 ## Non-Obvious Details
 

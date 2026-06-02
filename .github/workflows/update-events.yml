@@ -102,7 +102,7 @@ jobs:
           BLOCK_ON_DEGRADED: "true"
           FEED_STALE_HOURS: "36"
           MAX_FALLBACK_AGE_HOURS: "48"
-        run: node scripts/checkFeedHealth.mjs
+        run: npx tsx scripts/checkFeedHealth.ts
 
       - name: Validate published artifacts
         run: npm run validate

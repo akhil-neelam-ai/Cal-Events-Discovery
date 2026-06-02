@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { evaluateFeedHealth } from "../lib/feedHealthPolicy.mjs";
+import {
+  CRITICAL_SOURCES,
+  evaluateFeedHealth,
+} from "../lib/feedHealthPolicy.ts";
 
 const healthyStatus = {
   generated_at: new Date().toISOString(),
@@ -68,6 +71,33 @@ test("evaluateFeedHealth blocks stale fallback data", () => {
   );
 
   assert.match(result.blocking.join(" "), /fallback data is 72h old/);
+});
+
+test("CRITICAL_SOURCES treats luma and begin as critical (shared by both gates)", () => {
+  // The publish gate (scripts/updateEvents.ts) imports this exact set, so the
+  // CI health check and the publish gate cannot disagree on what is critical.
+  assert.ok(CRITICAL_SOURCES.has("luma"));
+  assert.ok(CRITICAL_SOURCES.has("begin"));
+
+  for (const source of ["luma", "begin"]) {
+    const result = evaluateFeedHealth(
+      {
+        ...healthyStatus,
+        degraded: true,
+        degraded_sources: [source],
+        degraded_reason: `${source} failed: timeout`,
+        fallback_sources: [],
+      },
+      { staleHours: 36, maxFallbackAgeHours: 48 },
+    );
+
+    assert.match(
+      result.blocking.join(" "),
+      /critical source\(s\) degraded/,
+      `${source} degradation should block`,
+    );
+    assert.match(result.blocking.join(" "), new RegExp(source));
+  }
 });
 
 test("evaluateFeedHealth warns on thin source coverage", () => {

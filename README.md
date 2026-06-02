@@ -1,6 +1,6 @@
 # Cal Events Discovery
 
-UC Berkeley campus events in one searchable feed. The site ships a static snapshot (~900+ upcoming events) built from 10 Berkeley sources, updated daily by GitHub Actions, hosted on Vercel at [cal-events.com](https://cal-events.com).
+UC Berkeley campus events in one searchable feed. The site ships a static snapshot (~900+ upcoming events) built from 11 Berkeley sources, updated daily by GitHub Actions, hosted on Vercel at [cal-events.com](https://cal-events.com).
 
 ## Quick start
 
@@ -47,7 +47,7 @@ React app loads JSON client-side, search runs in-browser
 Vercel CDN → cal-events.com
 ```
 
-1. **Ingestion** — `scripts/updateEvents.ts` runs 10 source adapters in parallel (60s timeout each), dedupes, writes three JSON files.
+1. **Ingestion** — `scripts/updateEvents.ts` runs 11 source adapters in parallel (60s timeout each), dedupes, writes three JSON files.
 2. **Automation** — Daily cron opens a PR on `automation/update-events` with updated artifacts.
 3. **Merge** — PR runs validate + E2E, auto-merges to `main` if green.
 4. **Deploy** — Vercel deploys `main`. Production smoke test hits live URLs.
@@ -108,7 +108,7 @@ After every pipeline run, check `public/status.json` (or `https://cal-events.com
 | `fallback_age_hours` | How old the fallback data is |
 | `data_quality_blocked` | Pipeline refused to publish (strict mode in CI) |
 
-**Thin coverage warnings** (non-blocking): CalLink returning 1 event when ≥5 is expected, etc. Surfaced as `::warning::` in CI via `scripts/lib/sourceCoveragePolicy.mjs`.
+**Thin coverage warnings** (non-blocking): CalLink returning 1 event when ≥5 is expected, etc. Surfaced as `::warning::` in CI via `scripts/lib/sourceCoveragePolicy.ts`.
 
 ## Troubleshooting
 
@@ -138,7 +138,7 @@ Re-run manually: **Actions → Update Events Daily → Run workflow**.
 ### Local health check
 
 ```bash
-node scripts/checkFeedHealth.mjs          # exits 1 on blocking issues
+npx tsx scripts/checkFeedHealth.ts        # exits 1 on blocking issues
 node scripts/runSourceContracts.mjs       # live endpoint smoke
 npm run validate                            # full test suite
 ```

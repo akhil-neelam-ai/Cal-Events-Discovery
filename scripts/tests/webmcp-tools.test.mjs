@@ -100,3 +100,83 @@ test("WebMCP event search sorts matches chronologically before applying limit", 
     ["may", "june", "later-june"],
   );
 });
+
+test("WebMCP get_event_by_id returns the matching event or null", async () => {
+  const tools = loadTools(
+    makePayload([
+      event({ id: "alpha", title: "Alpha Talk" }),
+      event({ id: "beta", title: "Beta Talk" }),
+    ]),
+  );
+
+  const getById = tools.get("get_event_by_id");
+  assert.ok(getById, "get_event_by_id should register");
+
+  const found = await getById.execute({ id: "beta" });
+  assert.equal(found.event?.id, "beta");
+  assert.equal(found.event?.title, "Beta Talk");
+
+  const missing = await getById.execute({ id: "nope" });
+  assert.equal(missing.event, null);
+
+  const noId = await getById.execute({});
+  assert.equal(noId.event, null);
+  assert.match(noId.error, /id is required/);
+});
+
+test("WebMCP generate_event_ics escapes text and rolls a late-evening DTEND", async () => {
+  const tools = loadTools(
+    makePayload([
+      event({
+        id: "late",
+        title: "Jazz; Blues, Night",
+        date: "2026-05-30",
+        time: "11:00 PM",
+        description: "Line one\nLine two",
+      }),
+    ]),
+  );
+
+  const icsTool = tools.get("generate_event_ics");
+  assert.ok(icsTool, "generate_event_ics should register");
+
+  const result = await icsTool.execute({ id: "late" });
+  assert.match(result.ics, /BEGIN:VCALENDAR/);
+  assert.match(result.ics, /SUMMARY:Jazz\\; Blues\\, Night/);
+  assert.match(result.ics, /DESCRIPTION:Line one\\nLine two/);
+  assert.match(result.ics, /DTSTART;TZID=America\/Los_Angeles:20260530T230000/);
+  assert.match(result.ics, /DTEND;TZID=America\/Los_Angeles:20260531T000000/);
+  assert.doesNotMatch(result.ics, /T24\d{4}/);
+  assert.equal(result.filename, "event-late.ics");
+
+  const missing = await icsTool.execute({ id: "ghost" });
+  assert.equal(missing.ics, null);
+  assert.match(missing.error, /no event found/);
+});
+
+test("WebMCP datePreset 'today' resolves Pacific bounds to today's events", async () => {
+  const todayKey = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+  const [y, m, d] = todayKey.split("-").map(Number);
+  const tomorrow = new Date(Date.UTC(y, m - 1, d));
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  const tomorrowKey = tomorrow.toISOString().slice(0, 10);
+
+  const tools = loadTools(
+    makePayload([
+      event({ id: "today-evt", title: "Today AI", date: todayKey }),
+      event({ id: "tomorrow-evt", title: "Tomorrow AI", date: tomorrowKey }),
+    ]),
+  );
+
+  const searchTool = tools.get("search_berkeley_events");
+  const output = await searchTool.execute({ datePreset: "today" });
+  assert.deepEqual(
+    output.events.map((item) => item.id),
+    ["today-evt"],
+  );
+});

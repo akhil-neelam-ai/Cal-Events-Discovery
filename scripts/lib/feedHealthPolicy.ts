@@ -2,9 +2,13 @@
  * Shared feed-health rules for CI blocking and operator alerts.
  */
 
-import { evaluateSourceCoverageWarnings } from "./sourceCoveragePolicy.mjs";
+import { evaluateSourceCoverageWarnings } from "./sourceCoveragePolicy.js";
 
-export const CRITICAL_SOURCES = new Set([
+// Authoritative critical-source set, shared by the publish gate
+// (scripts/updateEvents.ts) and the CI health check (scripts/checkFeedHealth.ts).
+// All 11 ingested sources are treated as critical. Typed as ReadonlySet<string>
+// so both a SourceName-keyed and a raw-string-keyed caller can query it.
+export const CRITICAL_SOURCES: ReadonlySet<string> = new Set([
   "livewhale",
   "callink",
   "cal_performances",
@@ -14,9 +18,13 @@ export const CRITICAL_SOURCES = new Set([
   "berkeley_law",
   "simons",
   "ehub",
+  "luma",
+  "begin",
 ]);
 
-export function parseMaxFallbackAgeHours(value) {
+export function parseMaxFallbackAgeHours(
+  value: string | number | undefined,
+): number {
   const parsed = Number(value ?? 48);
   if (!Number.isFinite(parsed) || parsed < 0) {
     throw new Error(
@@ -26,18 +34,26 @@ export function parseMaxFallbackAgeHours(value) {
   return parsed;
 }
 
-/**
- * @param {Record<string, unknown>} status
- * @param {{ staleHours?: number, maxFallbackAgeHours?: number }} options
- * @returns {{ blocking: string[], warnings: string[] }}
- */
-export function evaluateFeedHealth(status, options = {}) {
+export interface FeedHealthOptions {
+  staleHours?: number;
+  maxFallbackAgeHours?: number;
+}
+
+export interface FeedHealthResult {
+  blocking: string[];
+  warnings: string[];
+}
+
+export function evaluateFeedHealth(
+  status: Record<string, unknown>,
+  options: FeedHealthOptions = {},
+): FeedHealthResult {
   const staleHours = Number(options.staleHours ?? 36);
   const maxFallbackAgeHours = parseMaxFallbackAgeHours(
     options.maxFallbackAgeHours,
   );
-  const blocking = [];
-  const warnings = [];
+  const blocking: string[] = [];
+  const warnings: string[] = [];
 
   if (status.data_quality_blocked === true) {
     blocking.push("data quality gate blocked publishing fresh events");
@@ -51,7 +67,7 @@ export function evaluateFeedHealth(status, options = {}) {
   const degradedSources = Array.isArray(status.degraded_sources)
     ? status.degraded_sources.map(String)
     : [];
-  const fallbackSources = new Set(
+  const fallbackSources = new Set<string>(
     Array.isArray(status.fallback_sources)
       ? status.fallback_sources.map(String)
       : [],

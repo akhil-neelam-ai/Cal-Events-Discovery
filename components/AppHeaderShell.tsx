@@ -32,6 +32,8 @@ export function AppHeaderShell({
   onDismissBanner,
   dataAgeHours,
   degradedSources,
+  staleBannerDismissed,
+  onDismissStaleBanner,
 }: {
   mainContentId: string;
   isMobile: boolean;
@@ -52,6 +54,8 @@ export function AppHeaderShell({
   onDismissBanner: () => void;
   dataAgeHours?: number;
   degradedSources?: string[];
+  staleBannerDismissed: boolean;
+  onDismissStaleBanner: () => void;
 }) {
   const desktopSearchInputId = useId();
   const liveSyncCopy = useSyncStatusCopy(lastUpdated);
@@ -125,10 +129,11 @@ export function AppHeaderShell({
         <StatusBanner banner={statusBanner} onDismiss={onDismissBanner} />
       )}
 
-      {showStaleBanner && (
+      {showStaleBanner && !staleBannerDismissed && (
         <StaleDataBanner
           dataAgeHours={dataAgeHours ?? 0}
           degradedSources={degradedSources ?? []}
+          onDismiss={onDismissStaleBanner}
         />
       )}
     </>

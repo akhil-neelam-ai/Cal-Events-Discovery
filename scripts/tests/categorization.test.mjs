@@ -87,3 +87,18 @@ test("source-provided category tags still contribute", () => {
 
   assert.ok(deriveFrontendTags(event).includes("Arts"));
 });
+
+test("a zero-signal event falls back to Student Life", () => {
+  // Gibberish tokens guarantee no keyword, organizer-map, or category-tag hit,
+  // so deriveFrontendTags scores nothing and inferCategory must use the
+  // "Student Life" catch-all rather than returning undefined.
+  const event = {
+    title: "Flarn Glorptide",
+    organizer: "Mlemco Bureau",
+    description: "Vorbish quibnar throzzle.",
+    categories: [],
+  };
+
+  assert.deepEqual(deriveFrontendTags(event), []);
+  assert.equal(inferCategory(event), "Student Life");
+});
