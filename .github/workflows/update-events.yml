@@ -5,8 +5,12 @@ on:
     # GitHub cron is UTC-only, so run at both 11:00 and 12:00 UTC.
     # schedule-gate maps the triggering cron to the active Pacific offset
     # so delayed runs still execute on the intended local 4:00 AM schedule.
-    - cron: "0 11 * * *"
-    - cron: "0 12 * * *"
+    #
+    # Summer cadence (2026-06): Mon/Wed/Fri at 4:00 AM Pacific. Berkeley
+    # event volume is low between terms. Revisit ~2026-08-17 (before fall
+    # semester) and restore daily runs.
+    - cron: "0 11 * * 1,3,5"
+    - cron: "0 12 * * 1,3,5"
   workflow_dispatch:
 
 concurrency:
