@@ -6,11 +6,15 @@ import { evaluateSourceCoverageWarnings } from "./sourceCoveragePolicy.js";
 
 // Authoritative critical-source set, shared by the publish gate
 // (scripts/updateEvents.ts) and the CI health check (scripts/checkFeedHealth.ts).
-// All 11 ingested sources are treated as critical. Typed as ReadonlySet<string>
-// so both a SourceName-keyed and a raw-string-keyed caller can query it.
+// Typed as ReadonlySet<string> so both a SourceName-keyed and a raw-string-keyed
+// caller can query it.
+//
+// callink is intentionally excluded during summer (2026-06): the CampusGroups
+// feed is "platform-capped at ~16 featured" and frequently returns zero
+// upcoming events between terms, which would otherwise block the entire
+// publish. Revisit ~2026-08-17 (before fall semester) and restore.
 export const CRITICAL_SOURCES: ReadonlySet<string> = new Set([
   "livewhale",
-  "callink",
   "cal_performances",
   "calbears",
   "bampfa",

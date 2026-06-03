@@ -1,92 +1,97 @@
 {
-  "generated_at": "2026-06-01T16:39:32.392Z",
-  "total_events": 534,
-  "duplicates_removed": 168,
-  "past_events_filtered": 3202,
+  "generated_at": "2026-06-03T16:07:17.089Z",
+  "total_events": 543,
+  "duplicates_removed": 170,
+  "past_events_filtered": 3081,
   "invalid_events_filtered": 9,
   "sources": [
     {
       "name": "livewhale",
       "ok": true,
-      "count": 1338,
-      "duration_ms": 3605,
-      "fetched_at": "2026-06-01T16:39:06.236Z"
+      "count": 1346,
+      "duration_ms": 11281,
+      "fetched_at": "2026-06-03T16:06:50.580Z"
     },
     {
       "name": "callink",
       "ok": true,
-      "count": 1,
-      "duration_ms": 788,
-      "fetched_at": "2026-06-01T16:39:06.273Z"
+      "count": 0,
+      "duration_ms": 2203,
+      "fetched_at": "2026-06-03T16:06:50.598Z",
+      "degraded": true,
+      "degraded_reason": "callink returned 0 events (below healthy threshold 1)"
     },
     {
       "name": "cal_performances",
       "ok": true,
       "count": 53,
-      "duration_ms": 25246,
-      "fetched_at": "2026-06-01T16:39:06.274Z"
+      "duration_ms": 26393,
+      "fetched_at": "2026-06-03T16:06:50.598Z"
     },
     {
       "name": "calbears",
       "ok": true,
-      "count": 16,
-      "duration_ms": 730,
-      "fetched_at": "2026-06-01T16:39:06.275Z"
+      "count": 14,
+      "duration_ms": 2143,
+      "fetched_at": "2026-06-03T16:06:50.598Z"
     },
     {
       "name": "bampfa",
       "ok": true,
       "count": 164,
-      "duration_ms": 25415,
-      "fetched_at": "2026-06-01T16:39:06.276Z"
+      "duration_ms": 2368,
+      "fetched_at": "2026-06-03T16:06:50.599Z"
     },
     {
       "name": "haas",
       "ok": true,
-      "count": 12,
-      "duration_ms": 3586,
-      "fetched_at": "2026-06-01T16:39:06.278Z"
+      "count": 16,
+      "duration_ms": 2659,
+      "fetched_at": "2026-06-03T16:06:50.599Z"
     },
     {
       "name": "berkeley_law",
       "ok": true,
-      "count": 30,
-      "duration_ms": 1663,
-      "fetched_at": "2026-06-01T16:39:06.280Z"
+      "count": 31,
+      "duration_ms": 3237,
+      "fetched_at": "2026-06-03T16:06:50.600Z"
     },
     {
       "name": "simons",
       "ok": true,
       "count": 21,
-      "duration_ms": 25860,
-      "fetched_at": "2026-06-01T16:39:06.281Z"
+      "duration_ms": 2703,
+      "fetched_at": "2026-06-03T16:06:50.600Z"
     },
     {
       "name": "ehub",
       "ok": true,
       "count": 1,
-      "duration_ms": 980,
-      "fetched_at": "2026-06-01T16:39:06.282Z"
+      "duration_ms": 2668,
+      "fetched_at": "2026-06-03T16:06:50.600Z"
     },
     {
       "name": "luma",
       "ok": true,
-      "count": 2,
-      "duration_ms": 1734,
-      "fetched_at": "2026-06-01T16:39:06.283Z"
+      "count": 4,
+      "duration_ms": 4703,
+      "fetched_at": "2026-06-03T16:06:50.601Z"
     },
     {
       "name": "begin",
       "ok": true,
       "count": 1,
-      "duration_ms": 1655,
-      "fetched_at": "2026-06-01T16:39:06.290Z"
+      "duration_ms": 3397,
+      "fetched_at": "2026-06-03T16:06:50.603Z"
     }
   ],
   "fallback_used": false,
-  "degraded": false,
+  "degraded": true,
+  "degraded_reason": "callink returned 0 events (below healthy threshold 1)",
   "last_good_used": 0,
   "data_quality_blocked": false,
   "fallback_sources": [],
-  "degraded_sources": []
+  "degraded_sources": [
+    "callink"
+  ]
 }
