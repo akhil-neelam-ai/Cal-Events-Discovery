@@ -95,21 +95,21 @@
     {
       "src": "^/events\\.json$",
       "headers": {
-        "Cache-Control": "public, max-age=1800, stale-while-revalidate=3600"
+        "Cache-Control": "public, max-age=60, stale-while-revalidate=600"
       },
       "continue": true
     },
     {
       "src": "^/search-index\\.json$",
       "headers": {
-        "Cache-Control": "public, max-age=1800, stale-while-revalidate=3600"
+        "Cache-Control": "public, max-age=60, stale-while-revalidate=600"
       },
       "continue": true
     },
     {
       "src": "^/status\\.json$",
       "headers": {
-        "Cache-Control": "public, max-age=1800, stale-while-revalidate=3600"
+        "Cache-Control": "public, max-age=60, stale-while-revalidate=600"
       },
       "continue": true
     },
