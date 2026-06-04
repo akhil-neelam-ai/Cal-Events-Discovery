@@ -39,9 +39,11 @@ jobs:
           pacific_offset="$(TZ=America/Los_Angeles date +%z)"
           should_run=false
 
+          # Match the cron strings configured above. Update both this case
+          # and the cron list together when switching summer/fall cadence.
           case "${pacific_offset}:${trigger_cron}" in
-            -0700:"0 11 * * *"|\
-            -0800:"0 12 * * *")
+            -0700:"0 11 * * 1,3,5"|\
+            -0800:"0 12 * * 1,3,5")
               should_run=true
               ;;
           esac

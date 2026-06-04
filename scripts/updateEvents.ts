@@ -138,7 +138,12 @@ const FALLBACK_POLICIES: Partial<Record<SourceName, RecoveryPolicy>> = {
     degradeOnFailure: true,
     minHealthyCount: LIVEWHALE_HEALTHY_THRESHOLD,
   },
-  callink: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
+  // Summer (2026-06): minHealthyCount lowered to 0 so a successful fetch that
+  // returns zero upcoming events (common between terms — CampusGroups is
+  // platform-capped) does not mark callink degraded and trigger UI banners.
+  // A real adapter failure (ok: false) still flags it. Revisit ~2026-08-17
+  // and restore minHealthyCount: 1 with fall semester.
+  callink: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 0 },
   cal_performances: {
     allowLastGood: true,
     degradeOnFailure: true,
