@@ -117,9 +117,9 @@
       "end_date": "2026-06-30"
     },
     {
-      "id": "livewhale_309080@events.berkeley.edu",
+      "id": "livewhale_309712@events.berkeley.edu",
       "title": "Exhibit | Divestment Now! Student Activism and the Anti-Apartheid Movement at UC Berkeley",
-      "organizer": "UC Berkeley",
+      "organizer": "Arts + Culture at Berkeley",
       "date": "2026-06-04",
       "time": "All day",
       "location": "The Rowell Exhibition Cases, Doe Library, 2nd floor",
@@ -127,7 +127,7 @@
       "tags": [
         "Arts"
       ],
-      "url": "https://events.berkeley.edu/live/events/309073-exhibit-divestment-now-student-activism-and-the-anti-",
+      "url": "https://events.berkeley.edu/AC/event/309712-exhibit-divestment-now-student-activism-and-the",
       "source": "livewhale",
       "dates": [
         "2026-06-04",
@@ -418,6 +418,7 @@
       "dates": [
         "2026-06-04",
         "2026-07-02",
+        "2026-08-06",
         "2026-09-03",
         "2026-10-01"
       ],
@@ -481,9 +482,9 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260604T180000Z-321387@events.berkeley.edu",
+      "id": "livewhale_20260604T180000Z-321354@events.berkeley.edu",
       "title": "Free First Thursday to BAMPFA",
-      "organizer": "Townsend",
+      "organizer": "BAMPFA",
       "date": "2026-06-04",
       "time": "11:00 AM",
       "location": "2155 Center Street Berkeley, CA",
@@ -491,7 +492,7 @@
       "tags": [
         "Arts"
       ],
-      "url": "https://events.berkeley.edu/townsend/event/321387-free-first-thursday-to-bampfa",
+      "url": "https://events.berkeley.edu/BAMPFA/event/321354-free-first-thursday-to-bampfa",
       "source": "livewhale"
     },
     {
@@ -536,6 +537,19 @@
         "2026-07-26",
         "2026-07-31",
         "2026-08-01",
+        "2026-08-02",
+        "2026-08-06",
+        "2026-08-07",
+        "2026-08-08",
+        "2026-08-09",
+        "2026-08-14",
+        "2026-08-15",
+        "2026-08-16",
+        "2026-08-21",
+        "2026-08-22",
+        "2026-08-23",
+        "2026-08-28",
+        "2026-08-29",
         "2026-08-30"
       ],
       "end_date": "2026-08-30"
@@ -600,7 +614,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_bob-flambeur::2026-06-04",
+      "id": "bampfa_bob-flambeur",
       "title": "Bob le flambeur",
       "organizer": "BAMPFA",
       "date": "2026-06-04",
@@ -611,12 +625,17 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/bob-flambeur",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-04",
+        "2026-08-19"
+      ],
+      "end_date": "2026-08-19"
     },
     {
-      "id": "livewhale_20260605T020000Z-321403@events.berkeley.edu",
+      "id": "livewhale_20260605T020000Z-321299@events.berkeley.edu",
       "title": "Screening – \"Bob le flambeur\"",
-      "organizer": "Townsend",
+      "organizer": "BAMPFA",
       "date": "2026-06-04",
       "time": "7:00 PM",
       "location": "2155 Center Street Berkeley, CA",
@@ -624,7 +643,7 @@
       "tags": [
         "Arts"
       ],
-      "url": "https://events.berkeley.edu/townsend/event/321403-screening-bob-le-flambeur",
+      "url": "https://events.berkeley.edu/BAMPFA/event/321299-screening-bob-le-flambeur",
       "source": "livewhale"
     },
     {
@@ -699,13 +718,13 @@
       "source": "simons"
     },
     {
-      "id": "livewhale_20260606T020000Z-321300@events.berkeley.edu",
+      "id": "livewhale_20260606T020000Z-321337@events.berkeley.edu",
       "title": "Film Screening – \"Two Prosecutors\"",
       "organizer": "BAMPFA",
       "date": "2026-06-05",
       "time": "7:00 PM",
       "location": "2155 Center Street Berkeley, CA",
-      "description": "\"Set in the Stalinist purges in the Soviet Union in 1937, though clearly as much about Putin's Russia as Stalin's. . . . Sergei Loznitsa holds you rapt with brutal faces, restless camera work, meticulous filmmaking\" (Manohla Dargis, New York Times). \"Summoned with a blood-written note smuggled out of a prison block, an idealistic state lawyer (Alexander Kuznetsov) pushes past the prison's leery authorities to interview an elderly, broken-down Bolshevik (Aleksandr Filippenko). The young attorney, determined to expose the miscarriages of justice that landed the man in confinement, finds the eye of the state turned on him instead\" (Janus Films).",
+      "description": "\"Set in the Stalinist purges in the Soviet Union in 1937, though clearly as much about Putin's Russia as Stalin's… . Sergei Loznitsa holds you rapt with brutal faces, restless camera work, meticulous filmmaking\" (Manohla Dargis, New York Times). \"Summoned with a blood-written note smuggled out of a prison block, an idealistic state lawyer (Alexander Kuznetsov) pushes past the prison's leery authorities to interview an elderly, broken-down Bolshevik (Aleksandr Filippenko). The young attorney, determined to expose the miscarriages of justice that landed the man in confinement, finds the eye of the state turned on him instead\" (Janus Films).",
       "tags": [
         "Arts"
       ],
@@ -748,7 +767,7 @@
       "source": "haas"
     },
     {
-      "id": "livewhale_20260606T070000Z-321298@events.berkeley.edu",
+      "id": "livewhale_20260606T070000Z-321336@events.berkeley.edu",
       "title": "Monument (Pyramid) at UC Botanical Garden",
       "organizer": "BAMPFA",
       "date": "2026-06-06",
@@ -792,18 +811,19 @@
       "source": "haas"
     },
     {
-      "id": "livewhale_20260606T200000Z-321404@events.berkeley.edu",
+      "id": "livewhale_20260606T200000Z-321334@events.berkeley.edu",
       "title": "Collaborative Comics Workshop",
-      "organizer": "Townsend",
+      "organizer": "BAMPFA",
       "date": "2026-06-06",
       "time": "1:00 PM",
       "location": "2155 Center Street Berkeley, CA",
       "description": "Come and bring a friend to the Art Lab for a collaborative comics workshop hosted by multimedia artist and photographer Karo Yagjian and independent comic Artist, Scott Longo (Sonatina Comics). Working in small groups we will create short free-form comics with a simple \"call and response\" style. Build wacky storylines with unexpected results using a variety of collage and drawing materials provided by the Art Lab! Perfect for breaking through creative blocks and letting go of results.",
       "tags": [
+        "Arts",
         "Academic",
         "Science & Tech"
       ],
-      "url": "https://events.berkeley.edu/townsend/event/321404-collaborative-comics-workshop",
+      "url": "https://events.berkeley.edu/BAMPFA/event/321306-collaborative-comics-workshop",
       "source": "livewhale"
     },
     {
@@ -836,7 +856,7 @@
       "source": "bampfa"
     },
     {
-      "id": "bampfa_elevator-gallows::2026-06-06",
+      "id": "bampfa_elevator-gallows",
       "title": "Elevator to the Gallows",
       "organizer": "BAMPFA",
       "date": "2026-06-06",
@@ -847,10 +867,15 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/elevator-gallows",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-06",
+        "2026-08-28"
+      ],
+      "end_date": "2026-08-28"
     },
     {
-      "id": "livewhale_20260607T013000Z-321307@events.berkeley.edu",
+      "id": "livewhale_20260607T013000Z-321333@events.berkeley.edu",
       "title": "Film Screening – \"Elevator to the Gallows\"",
       "organizer": "BAMPFA",
       "date": "2026-06-06",
@@ -937,7 +962,7 @@
       "source": "bampfa"
     },
     {
-      "id": "livewhale_20260608T000000Z-321330@events.berkeley.edu",
+      "id": "livewhale_20260608T000000Z-321317@events.berkeley.edu",
       "title": "Film Screening – \"Breathless\"",
       "organizer": "BAMPFA",
       "date": "2026-06-07",
@@ -1096,17 +1121,17 @@
     },
     {
       "id": "livewhale_20260610T190000Z-322820@events.berkeley.edu",
-      "title": "On the Ability of Deep Networks to Learn Symmetries from Data: A Neural Kernel Theory AND A method to automatically discover symbolic local learning rules",
+      "title": "A method to automatically discover symbolic local learning rules",
       "organizer": "HWNI",
       "date": "2026-06-10",
       "time": "12:00 PM",
       "location": "Warren Hall 205A and Zoom",
-      "description": "This seminar will have two parts: Part 1:On the Ability of Deep Networks to Learn Symmetries from Data: A Neural Kernel Theory Symmetries (transformations by group actions) are present in many datasets, and leveraging them holds considerable promise for improving predictions in machine learning. In this work, we aim to understand when and how deep networks – with standard architectures trained in a standard, supervised way – learn symmetries from data. Inspired by real-world scenarios, we study a classification paradigm where data symmetries are only partially observed during training: some classes include all transformations of a cyclic group, while others – only a subset. In the infinite-width limit, where kernel analogies apply, we derive a neural kernel theory of symmetry learning. The group-cyclic nature of the dataset allows us to analyze the Gram matrix of neural kernels in the Fourier domain; here we find a simple characterization of the generalization error as a function of class separation (signal) and class-orbit density (noise). This characterization reveals that generalization can only be successful when the local structure of the data prevails over its non-local, symmetry-induced structure, in the kernel space defined by the architecture. We extend our theoretical treatment to any finite group, including non-abelian groups. Our framework also applies to equivariant architectures (e.g., CNNs), and recovers their success in the special case where the architecture matches the inherent symmetry of the data. Empirically, our theory reproduces the generalization failure of finite-width networks (MLP, CNN, ViT) trained on partially observed versions of rotated-MNIST. We conclude that conventional deep networks lack a mechanism to learn symmetries that have not been explicitly embedded in their architecture a priori. Our framework could be extended to guide the design of architectures and training procedures able to learn symmetries from data. Part 2:A method to automatically discover symbolic local learning rules We present a general method for discovering symbolic local learning rules that can replace backpropagation, applicable, in principle, to any deep learning architecture and task. The method automatically discovers local loss functions specific to each layer by (1) constructing a dictionary of monomials of local tensor variables, inspired by Penrose diagram notation, (2) regressing over coefficients weighting these monomials to build layerwise polynomial losses whose gradients together minimize a target global loss. We test the method on reconstruction, self-supervised learning, and classification tasks using small multilayer networks on minimal datasets. Across all tasks, the discovered rules induce non-trivial interactions between layers that lead to significant reductions in the corresponding global losses, e.g., reaching classification accuracies comparable to backpropagation. Furthermore, the method selects sparse combinations of trace monomials, finding local rules that are more interpretable than those generated by MLP-based alternatives. The potential implications of our method range from energy-efficient deep learning, to the discovery of biologically plausible learning mechanisms.",
+      "description": "We present a general method for discovering symbolic local learning rules that can replace backpropagation, applicable, in principle, to any deep learning architecture and task. The method automatically discovers local loss functions specific to each layer by (1) constructing a dictionary of monomials of local tensor variables, inspired by Penrose diagram notation, (2) regressing over coefficients weighting these monomials to build layerwise polynomial losses whose gradients together minimize a target global loss. We test the method on reconstruction, self-supervised learning, and classification tasks using small multilayer networks on minimal datasets. Across all tasks, the discovered rules induce non-trivial interactions between layers that lead to significant reductions in the corresponding global losses, e.g., reaching classification accuracies comparable to backpropagation. Furthermore, the method selects sparse combinations of trace monomials, finding local rules that are more interpretable than those generated by MLP-based alternatives. The potential implications of our method range from energy-efficient deep learning, to the discovery of biologically plausible learning mechanisms.",
       "tags": [
-        "Science & Tech",
-        "Academic"
+        "Academic",
+        "Science & Tech"
       ],
-      "url": "https://events.berkeley.edu/HWNI/event/322820-on-the-ability-of-deep-networks-to-learn",
+      "url": "https://events.berkeley.edu/HWNI/event/322820-a-method-to-automatically-discover-symbolic-local-lea",
       "source": "livewhale"
     },
     {
@@ -1154,13 +1179,13 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260611T020000Z-321736@events.berkeley.edu",
+      "id": "livewhale_20260611T020000Z-321735@events.berkeley.edu",
       "title": "Film Screening – \"The Rules of the Game\"",
       "organizer": "BAMPFA",
       "date": "2026-06-10",
       "time": "7:00 PM",
       "location": "2155 Center Street Berkeley, CA",
-      "description": "In Jean Renoir's masterpiece of ruthless grace, made between the Munich Agreement and the outbreak of World War II, history plays as both tragedy and farce. This self-declared \"dramatic fantasy\" à la Pierre Augustin de Beaumarchais and Alfred de Musset etches, in the director's words, \"a rich, complex society … dancing on a volcano.\" It uses the construct of a country-house gathering, with its shooting party and masquerade, its shifting romantic allegiances and upstairs-downstairs micro-melodramas, to frame a portrait of respectable civilization that is both seductive and monstrous. The Rules of the Game is considered one of the greatest films ever made. The film will be screened in a 4K Digital Restoration. An introduction and post-screening discussion will be provided by notable film critic and historian, David Thomson.",
+      "description": "In Jean Renoir's masterpiece of ruthless grace, made between the Munich Agreement and the outbreak of World War II, history plays as both tragedy and farce. This self-declared \"dramatic fantasy\" à la Pierre Augustin de Beaumarchais and Alfred de Musset etches, in the director's words, \"a rich, complex society . . . dancing on a volcano.\" It uses the construct of a country-house gathering, with its shooting party and masquerade, its shifting romantic allegiances and upstairs-downstairs micro-melodramas, to frame a portrait of respectable civilization that is both seductive and monstrous. The Rules of the Game is considered one of the greatest films ever made. The film will be screened in a 4K Digital Restoration. An introduction and post-screening discussion will be provided by notable film critic and historian, David Thomson.",
       "tags": [
         "Arts"
       ],
@@ -1232,9 +1257,11 @@
         "2026-07-08",
         "2026-07-12",
         "2026-07-26",
-        "2026-07-29"
+        "2026-07-29",
+        "2026-08-09",
+        "2026-08-19"
       ],
-      "end_date": "2026-07-29"
+      "end_date": "2026-08-19"
     },
     {
       "id": "livewhale_20260611T210000Z-322561@events.berkeley.edu",
@@ -1297,7 +1324,7 @@
       "source": "haas"
     },
     {
-      "id": "livewhale_20260612T020000Z-321766@events.berkeley.edu",
+      "id": "livewhale_20260612T020000Z-321738@events.berkeley.edu",
       "title": "Film Screening – \"L'avventura\"",
       "organizer": "BAMPFA",
       "date": "2026-06-11",
@@ -1390,7 +1417,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_2001-space-odyssey::2026-06-12",
+      "id": "bampfa_2001-space-odyssey",
       "title": "2001: A Space Odyssey",
       "organizer": "BAMPFA",
       "date": "2026-06-12",
@@ -1401,10 +1428,16 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/2001-space-odyssey",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-12",
+        "2026-08-16",
+        "2026-08-23"
+      ],
+      "end_date": "2026-08-23"
     },
     {
-      "id": "livewhale_20260613T020000Z-321765@events.berkeley.edu",
+      "id": "livewhale_20260613T020000Z-321741@events.berkeley.edu",
       "title": "Film Screening – \"2001: A Space Odyssey\"",
       "organizer": "BAMPFA",
       "date": "2026-06-12",
@@ -1493,7 +1526,7 @@
       "source": "haas"
     },
     {
-      "id": "livewhale_20260613T233000Z-321764@events.berkeley.edu",
+      "id": "livewhale_20260613T233000Z-321745@events.berkeley.edu",
       "title": "Film Screening – \"Le doulos\"",
       "organizer": "BAMPFA",
       "date": "2026-06-13",
@@ -1521,7 +1554,7 @@
       "source": "bampfa"
     },
     {
-      "id": "livewhale_20260614T020000Z-321763@events.berkeley.edu",
+      "id": "livewhale_20260614T020000Z-321746@events.berkeley.edu",
       "title": "Film Screening – \"La notte\"",
       "organizer": "BAMPFA",
       "date": "2026-06-13",
@@ -1535,7 +1568,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_la-notte::2026-06-13",
+      "id": "bampfa_la-notte",
       "title": "La notte",
       "organizer": "BAMPFA",
       "date": "2026-06-13",
@@ -1546,7 +1579,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/la-notte",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-13",
+        "2026-08-02"
+      ],
+      "end_date": "2026-08-02"
     },
     {
       "id": "livewhale_20260614T070000Z-319332@events.berkeley.edu",
@@ -1577,7 +1615,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_barry-lyndon::2026-06-14",
+      "id": "bampfa_barry-lyndon",
       "title": "Barry Lyndon",
       "organizer": "BAMPFA",
       "date": "2026-06-14",
@@ -1588,10 +1626,15 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/barry-lyndon",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-14",
+        "2026-08-22"
+      ],
+      "end_date": "2026-08-22"
     },
     {
-      "id": "livewhale_20260615T000000Z-321762@events.berkeley.edu",
+      "id": "livewhale_20260615T000000Z-321747@events.berkeley.edu",
       "title": "Film Screening – \" Barry Lyndon\"",
       "organizer": "BAMPFA",
       "date": "2026-06-14",
@@ -1692,17 +1735,17 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260616T070000Z-313141@events.berkeley.edu",
+      "id": "livewhale_20260616T070000Z-319334@events.berkeley.edu",
       "title": "Learning How English Works",
       "organizer": "CRLP",
       "date": "2026-06-16",
       "time": "All day",
-      "location": "2121 Berkeley Way, Berkeley CA 94720",
-      "description": "CRLP at UC Berkeley is proud to offer this Open Institute of CRLP's Learning How English Works to all TK-5th Grade Teachers, Special Educators, and Administrators. This professional development institute is designed to help unpack and implement Part II of the California ELD Standards. Learning How English Works deepens understanding of the California ELD Standards and guides teachers in planning language lessons for Designated ELD instruction.",
+      "location": "Long Beach",
+      "description": "CRLP at UC Berkeley is proud to launch a collaboration with Gear Up to offer CRLP's Learning How English Works to all TK-5th Grade Teachers, Special Educators, and Administrators. This professional development institute is designed to help unpack and implement Part II of the California ELD Standards. Learning How English Works deepens understanding of the California ELD Standards and guides teachers in planning language lessons for Designated ELD instruction.",
       "tags": [
         "Academic"
       ],
-      "url": "https://events.berkeley.edu/live/events/313132-learning-how-english-works",
+      "url": "https://events.berkeley.edu/live/events/319324-learning-how-english-works",
       "source": "livewhale"
     },
     {
@@ -1849,7 +1892,7 @@
       "source": "haas"
     },
     {
-      "id": "livewhale_20260618T020000Z-321748@events.berkeley.edu",
+      "id": "livewhale_20260618T020000Z-321761@events.berkeley.edu",
       "title": "Film Screening – \"Le samouraï\"",
       "organizer": "BAMPFA",
       "date": "2026-06-17",
@@ -1949,7 +1992,7 @@
       "source": "haas"
     },
     {
-      "id": "livewhale_20260619T020000Z-321760@events.berkeley.edu",
+      "id": "livewhale_20260619T020000Z-321749@events.berkeley.edu",
       "title": "Film Screening – \"L'eclisse\"",
       "organizer": "BAMPFA",
       "date": "2026-06-18",
@@ -1963,7 +2006,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_leclisse::2026-06-18",
+      "id": "bampfa_leclisse",
       "title": "L’eclisse",
       "organizer": "BAMPFA",
       "date": "2026-06-18",
@@ -1974,7 +2017,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/leclisse",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-18",
+        "2026-08-08"
+      ],
+      "end_date": "2026-08-08"
     },
     {
       "id": "livewhale_20260619T070000Z-320909@events.berkeley.edu",
@@ -2080,7 +2128,7 @@
       "source": "bampfa"
     },
     {
-      "id": "livewhale_20260620T233000Z-321758@events.berkeley.edu",
+      "id": "livewhale_20260620T233000Z-321751@events.berkeley.edu",
       "title": "Film Screening – \"Fear and Desire\"",
       "organizer": "BAMPFA",
       "date": "2026-06-20",
@@ -2150,7 +2198,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260622T013000Z-321755@events.berkeley.edu",
+      "id": "livewhale_20260622T013000Z-321754@events.berkeley.edu",
       "title": "Film Screening – \"Red Desert\"",
       "organizer": "BAMPFA",
       "date": "2026-06-21",
@@ -2164,7 +2212,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_red-desert::2026-06-21",
+      "id": "bampfa_red-desert",
       "title": "Red Desert",
       "organizer": "BAMPFA",
       "date": "2026-06-21",
@@ -2175,7 +2223,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/red-desert",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-21",
+        "2026-08-13"
+      ],
+      "end_date": "2026-08-13"
     },
     {
       "id": "livewhale_20260622T070000Z-322824@events.berkeley.edu",
@@ -2321,6 +2374,20 @@
       "source": "berkeley_law"
     },
     {
+      "id": "livewhale_20260624T170000Z-322847@events.berkeley.edu",
+      "title": "Consciousness & Reality (C&R) 2025-26 Series",
+      "organizer": "UC Berkeley",
+      "date": "2026-06-24",
+      "time": "10:00 AM",
+      "location": "Online event only. https://zoom.us/j/99505485799?pwd=fYOUh2gCTEuDgP8JlEq3ey2dvTr9Ip.1",
+      "description": "Arguments based on Gödel's incompleteness theorems demonstrate that our conscious understanding of mathematical truth is not simply computational. However, current AI is not based on precise mathematical systems, but on examining large bodies of data, to provide standpoints on various issues. It is argued that such procedures do not resemble the effects of human understanding, but are much more akin to the actions of the cerebellum which, despite having the majority of neurons in the brain, appear to be entirely unconscious, providing nothing directly relevant to human consciousness and understanding. Suggestions are made regarding relevant new physics.",
+      "tags": [
+        "Science & Tech"
+      ],
+      "url": "https://events.berkeley.edu/event/322847-consciousness-reality-campr-2025-26-series",
+      "source": "livewhale"
+    },
+    {
       "id": "bampfa_curator-tour-margot-norton-maren-hassinger::2026-06-24",
       "title": "Curator’s Tour: Margot Norton on Maren Hassinger: Living Moving Growing",
       "organizer": "BAMPFA",
@@ -2391,7 +2458,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260626T000000Z-321318@events.berkeley.edu",
+      "id": "livewhale_20260626T000000Z-321329@events.berkeley.edu",
       "title": "Black Life: Transition as Miracle",
       "organizer": "BAMPFA",
       "date": "2026-06-25",
@@ -2421,7 +2488,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260626T020000Z-322331@events.berkeley.edu",
+      "id": "livewhale_20260626T020000Z-322336@events.berkeley.edu",
       "title": "Film Screening – \"West Coast Estonian Days: Rolling Papers\"",
       "organizer": "BAMPFA",
       "date": "2026-06-25",
@@ -2563,7 +2630,7 @@
       "source": "bampfa"
     },
     {
-      "id": "livewhale_20260628T020000Z-322338@events.berkeley.edu",
+      "id": "livewhale_20260628T020000Z-322404@events.berkeley.edu",
       "title": "Film Screening – \"Killer's Kiss\"",
       "organizer": "BAMPFA",
       "date": "2026-06-27",
@@ -2605,7 +2672,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260628T200000Z-322341@events.berkeley.edu",
+      "id": "livewhale_20260628T200000Z-322403@events.berkeley.edu",
       "title": "Swap Circle at BAMPFA: Clothing Swap",
       "organizer": "BAMPFA",
       "date": "2026-06-28",
@@ -2633,7 +2700,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260629T013000Z-322343@events.berkeley.edu",
+      "id": "livewhale_20260629T013000Z-322401@events.berkeley.edu",
       "title": "Film Screening – \"The Killing\"",
       "organizer": "BAMPFA",
       "date": "2026-06-28",
@@ -2647,7 +2714,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_killing::2026-06-28",
+      "id": "bampfa_killing",
       "title": "The Killing",
       "organizer": "BAMPFA",
       "date": "2026-06-28",
@@ -2658,7 +2725,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/killing",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-06-28",
+        "2026-08-05"
+      ],
+      "end_date": "2026-08-05"
     },
     {
       "id": "livewhale_20260629T150000Z-322520@events.berkeley.edu",
@@ -2673,6 +2745,20 @@
         "Science & Tech"
       ],
       "url": "https://events.berkeley.edu/ttp/event/322520-traffic-control-for-safer-work-zones",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260629T210000Z-322861@events.berkeley.edu",
+      "title": "ITS Retirement Drop In",
+      "organizer": "Institute of Transportation Studies",
+      "date": "2026-06-29",
+      "time": "2:00 PM",
+      "location": "410 McLaughlin Hall",
+      "description": "Join ITS Berkeley for a drop in visit with retiring ITS staff on Monday, June 29⋅2:00 – 5:00 pm in 410 McLaughlin Hall. Retiring staff: Helen Bassham, ITS Berkeley Lisa Peterson, SafeTREC Afsaneh Yavari, SafeTREC/TechTransfer",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/its/event/322861-its-retirement-drop-in",
       "source": "livewhale"
     },
     {
@@ -2881,7 +2967,7 @@
       "source": "bampfa"
     },
     {
-      "id": "bampfa_dr-strangelove-or-how-i-learned-stop-worrying-and-love-bomb::2026-07-04",
+      "id": "bampfa_dr-strangelove-or-how-i-learned-stop-worrying-and-love-bomb",
       "title": "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
       "organizer": "BAMPFA",
       "date": "2026-07-04",
@@ -2892,7 +2978,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/dr-strangelove-or-how-i-learned-stop-worrying-and-love-bomb",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-07-04",
+        "2026-08-15"
+      ],
+      "end_date": "2026-08-15"
     },
     {
       "id": "livewhale_20260705T000000Z-322347@events.berkeley.edu",
@@ -2909,7 +3000,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260705T230000Z-322348@events.berkeley.edu",
+      "id": "livewhale_20260705T230000Z-322396@events.berkeley.edu",
       "title": "Film Screening – \"Only Yesterday\"",
       "organizer": "BAMPFA",
       "date": "2026-07-05",
@@ -2923,7 +3014,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260706T020000Z-322395@events.berkeley.edu",
+      "id": "livewhale_20260706T020000Z-322349@events.berkeley.edu",
       "title": "Film Screening – \"The Girl with a Pistol\"",
       "organizer": "BAMPFA",
       "date": "2026-07-05",
@@ -2995,9 +3086,9 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260707T170000Z-318431@events.berkeley.edu",
+      "id": "livewhale_20260707T170000Z-321698@events.berkeley.edu",
       "title": "Botanical Illustration: Summer Flowers with Catherine Watters",
-      "organizer": "UC Botanical Garden",
+      "organizer": "Townsend",
       "date": "2026-07-07",
       "time": "10:00 AM",
       "location": "UC Botanical Garden at Berkeley",
@@ -3005,7 +3096,7 @@
       "tags": [
         "Science & Tech"
       ],
-      "url": "https://events.berkeley.edu/bot/event/318431-botanical-illustration-summer-flowers-with",
+      "url": "https://events.berkeley.edu/townsend/event/321698-botanical-illustration-summer-flowers-with",
       "source": "livewhale"
     },
     {
@@ -3055,7 +3146,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260709T020000Z-322350@events.berkeley.edu",
+      "id": "livewhale_20260709T020000Z-322394@events.berkeley.edu",
       "title": "Film Screening – \"Paths of Glory\"",
       "organizer": "BAMPFA",
       "date": "2026-07-08",
@@ -3097,7 +3188,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260710T020000Z-322351@events.berkeley.edu",
+      "id": "livewhale_20260710T020000Z-322393@events.berkeley.edu",
       "title": "Film Screening – \"Wanda\"",
       "organizer": "BAMPFA",
       "date": "2026-07-09",
@@ -3153,7 +3244,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260711T020000Z-322352@events.berkeley.edu",
+      "id": "livewhale_20260711T020000Z-322392@events.berkeley.edu",
       "title": "Film Screening – \"The Times of Harvey Milk\"",
       "organizer": "BAMPFA",
       "date": "2026-07-10",
@@ -3195,7 +3286,7 @@
       "source": "haas"
     },
     {
-      "id": "livewhale_20260711T203000Z-322355@events.berkeley.edu",
+      "id": "livewhale_20260711T203000Z-322391@events.berkeley.edu",
       "title": "Film Screening – \"Grave of the Fireflies\"",
       "organizer": "BAMPFA",
       "date": "2026-07-11",
@@ -3209,7 +3300,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_grave-fireflies::2026-07-11",
+      "id": "bampfa_grave-fireflies",
       "title": "Grave of the Fireflies",
       "organizer": "BAMPFA",
       "date": "2026-07-11",
@@ -3220,7 +3311,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/grave-fireflies",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-07-11",
+        "2026-08-23"
+      ],
+      "end_date": "2026-08-23"
     },
     {
       "id": "livewhale_20260711T220000Z-322087@events.berkeley.edu",
@@ -3251,7 +3347,7 @@
       "source": "bampfa"
     },
     {
-      "id": "livewhale_20260711T230000Z-322354@events.berkeley.edu",
+      "id": "livewhale_20260711T230000Z-322390@events.berkeley.edu",
       "title": "Film Screening – \"Crossroads and The Exploding Digital Inevitable\"",
       "organizer": "BAMPFA",
       "date": "2026-07-11",
@@ -3307,19 +3403,19 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260712T200000Z-321699@events.berkeley.edu",
+      "id": "livewhale_20260712T200000Z-321322@events.berkeley.edu",
       "title": "Art Workshop: The Future of Present Tense",
-      "organizer": "Townsend",
+      "organizer": "BAMPFA",
       "date": "2026-07-12",
       "time": "1:00 PM",
       "location": "2155 Center Street Berkeley, CA",
       "description": "Join us in the Art Lab to repurpose the printed materials freshly deinstalled from Stephanie Syjuco's recent epic wall installation Present Tense (Roll Call) (https://bampfa.org/program/art-wall-stephanie-syjuco-present-tense-roll-call). Expanding on the spirit of radical pedagogy central to her exhibition, Syjuco will offer examples of ways to transform this raw material into mini publications, encouraging participants to enjoy a free-form collage session with an exploded artwork.",
       "tags": [
-        "Academic",
         "Arts",
+        "Academic",
         "Science & Tech"
       ],
-      "url": "https://events.berkeley.edu/townsend/event/321699-art-workshop-the-future-of-present-tense",
+      "url": "https://events.berkeley.edu/BAMPFA/event/321322-art-workshop-the-future-of-present-tense",
       "source": "livewhale"
     },
     {
@@ -3478,7 +3574,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260716T020000Z-322359@events.berkeley.edu",
+      "id": "livewhale_20260716T020000Z-322387@events.berkeley.edu",
       "title": "Film Screening – \"Port of Shadows\"",
       "organizer": "BAMPFA",
       "date": "2026-07-15",
@@ -3520,7 +3616,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260717T020000Z-322386@events.berkeley.edu",
+      "id": "livewhale_20260717T020000Z-322360@events.berkeley.edu",
       "title": "Film Screening – \"Help Me, My Love\"",
       "organizer": "BAMPFA",
       "date": "2026-07-16",
@@ -3562,7 +3658,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260718T010000Z-322899@events.berkeley.edu",
+      "id": "livewhale_20260718T010000Z-322869@events.berkeley.edu",
       "title": "Data, Power and the Ethics of Knowledge - Lecture Series (Amanda Smith)",
       "organizer": "DH",
       "date": "2026-07-17",
@@ -3573,11 +3669,11 @@
         "Academic",
         "Arts"
       ],
-      "url": "https://events.berkeley.edu/live/events/322869-data-power-and-the-ethics-of-knowledge-lecture-series",
+      "url": "https://events.berkeley.edu/dh/event/322869-data-power-and-the-ethics-of-knowledge-lecture-series",
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260718T020000Z-322361@events.berkeley.edu",
+      "id": "livewhale_20260718T020000Z-322385@events.berkeley.edu",
       "title": "Film Screening – \"Lolita\"",
       "organizer": "BAMPFA",
       "date": "2026-07-17",
@@ -3633,7 +3729,7 @@
       "source": "livewhale"
     },
     {
-      "id": "bampfa_tale-princess-kaguya::2026-07-18",
+      "id": "bampfa_tale-princess-kaguya",
       "title": "The Tale of The Princess Kaguya",
       "organizer": "BAMPFA",
       "date": "2026-07-18",
@@ -3644,7 +3740,12 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/tale-princess-kaguya",
-      "source": "bampfa"
+      "source": "bampfa",
+      "dates": [
+        "2026-07-18",
+        "2026-08-28"
+      ],
+      "end_date": "2026-08-28"
     },
     {
       "id": "livewhale_20260719T013000Z-322363@events.berkeley.edu",
@@ -3689,7 +3790,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260719T200000Z-321340@events.berkeley.edu",
+      "id": "livewhale_20260719T200000Z-321376@events.berkeley.edu",
       "title": "Wrenching News Workshops",
       "organizer": "BAMPFA",
       "date": "2026-07-19",
@@ -3704,7 +3805,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260720T000000Z-322365@events.berkeley.edu",
+      "id": "livewhale_20260720T000000Z-322382@events.berkeley.edu",
       "title": "Film Screening – \"Gauche the Cellist\"",
       "organizer": "BAMPFA",
       "date": "2026-07-19",
@@ -3746,7 +3847,7 @@
       "source": "bampfa"
     },
     {
-      "id": "livewhale_20260720T020000Z-322366@events.berkeley.edu",
+      "id": "livewhale_20260720T020000Z-322381@events.berkeley.edu",
       "title": "Film Screening – \"A Clockwork Orange\"",
       "organizer": "BAMPFA",
       "date": "2026-07-19",
@@ -3775,7 +3876,7 @@
       "source": "berkeley_law"
     },
     {
-      "id": "livewhale_20260723T020000Z-322367@events.berkeley.edu",
+      "id": "livewhale_20260723T020000Z-322380@events.berkeley.edu",
       "title": "Film Screening – \"Teresa the Thief\"",
       "organizer": "BAMPFA",
       "date": "2026-07-22",
@@ -3922,13 +4023,13 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260725T020000Z-322369@events.berkeley.edu",
+      "id": "livewhale_20260725T020000Z-322378@events.berkeley.edu",
       "title": "Film Screening – \"Mississippi Mermaid\"",
       "organizer": "BAMPFA",
       "date": "2026-07-24",
       "time": "7:00 PM",
       "location": "2155 Center Street Berkeley, CA",
-      "description": "Jean-Paul Belmondo plays a wealthy industrialist living on the island of La Réunion (the locale changed from the New Orleans of the novel), who orders a bride by mail and receives, in place of his intended, Catherine Deneuve and a flimsy (but acceptable) explanation. \"The framework is pure film noirmaterial, but the sentiments it contains are worthy of Jean Renoir, to whom the film is dedicated. . . . [It] begins as a mystery, evolves into a Hitchcockian chase suspense, and ends as a Truffautesque love story—altogether the most ambitious mix of genres so far\" (James Monaco, New Wave). An introduction and post-screening discussion will be led by Laura Truffaut, the oldest daughter of director François Truffaut.",
+      "description": "Jean-Paul Belmondo plays a wealthy industrialist living on the island of La Réunion (the locale changed from the New Orleans of the novel), who orders a bride by mail and receives, in place of his intended, Catherine Deneuve and a flimsy (but acceptable) explanation. \"The framework is pure film noirmaterial, but the sentiments it contains are worthy of Jean Renoir, to whom the film is dedicated… . [It] begins as a mystery, evolves into a Hitchcockian chase suspense, and ends as a Truffautesque love story—altogether the most ambitious mix of genres so far\" (James Monaco, New Wave). An introduction and post-screening discussion will be led by Laura Truffaut, the oldest daughter of director François Truffaut.",
       "tags": [
         "Arts"
       ],
@@ -4049,7 +4150,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260726T200000Z-321375@events.berkeley.edu",
+      "id": "livewhale_20260726T200000Z-321341@events.berkeley.edu",
       "title": "Cyanotype Animation with Lije",
       "organizer": "BAMPFA",
       "date": "2026-07-26",
@@ -4065,7 +4166,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260726T220000Z-322375@events.berkeley.edu",
+      "id": "livewhale_20260726T220000Z-322372@events.berkeley.edu",
       "title": "Film Screening & Book Signing – \"The Shining\"",
       "organizer": "BAMPFA",
       "date": "2026-07-26",
@@ -4093,7 +4194,7 @@
       "source": "bampfa"
     },
     {
-      "id": "livewhale_20260727T020000Z-322374@events.berkeley.edu",
+      "id": "livewhale_20260727T020000Z-322373@events.berkeley.edu",
       "title": "Film Screening – \"Le corbeau\"",
       "organizer": "BAMPFA",
       "date": "2026-07-26",
@@ -4214,7 +4315,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260731T020000Z-322460@events.berkeley.edu",
+      "id": "livewhale_20260731T020000Z-322405@events.berkeley.edu",
       "title": "Film Screening – \"L'avventura\"",
       "organizer": "BAMPFA",
       "date": "2026-07-30",
@@ -4340,9 +4441,9 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260802T203000Z-321342@events.berkeley.edu",
+      "id": "livewhale_20260802T203000Z-322029@events.berkeley.edu",
       "title": "Reading and Book Signing: A Language of Stitches: The Radical Quilts of Rosie Lee Tompkins with Constance Moore",
-      "organizer": "BAMPFA",
+      "organizer": "Townsend",
       "date": "2026-08-02",
       "time": "1:30 PM",
       "location": "2155 Center Street Berkeley, CA",
@@ -4350,7 +4451,7 @@
       "tags": [
         "Arts"
       ],
-      "url": "https://events.berkeley.edu/BAMPFA/event/321342-reading-and-book-signing-a-language-of-stitches",
+      "url": "https://events.berkeley.edu/townsend/event/322029-reading-and-book-signing-a-language-of-stitches",
       "source": "livewhale"
     },
     {
@@ -4368,7 +4469,21 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260803T020000Z-322455@events.berkeley.edu",
+      "id": "bampfa_clockmaker-st-paul::2026-08-02",
+      "title": "The Clockmaker of St. Paul",
+      "organizer": "BAMPFA",
+      "date": "2026-08-02",
+      "time": "4:30 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "The Clockmaker of St. Paul",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/clockmaker-st-paul",
+      "source": "bampfa"
+    },
+    {
+      "id": "livewhale_20260803T020000Z-322412@events.berkeley.edu",
       "title": "Film Screening – \"La notte\"",
       "organizer": "BAMPFA",
       "date": "2026-08-02",
@@ -4455,7 +4570,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260806T020000Z-322413@events.berkeley.edu",
+      "id": "livewhale_20260806T020000Z-322454@events.berkeley.edu",
       "title": "Film Screening – \"The Killing\"",
       "organizer": "BAMPFA",
       "date": "2026-08-05",
@@ -4497,9 +4612,9 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260806T190000Z-321347@events.berkeley.edu",
+      "id": "livewhale_20260806T190000Z-322218@events.berkeley.edu",
       "title": "Curators' Tour: Elaine Yau and Tausif Noor on Some Particular Heaven",
-      "organizer": "BAMPFA",
+      "organizer": "Townsend",
       "date": "2026-08-06",
       "time": "12:00 PM",
       "location": "2155 Center Street Berkeley, CA",
@@ -4508,11 +4623,11 @@
         "Arts",
         "Student Life"
       ],
-      "url": "https://events.berkeley.edu/BAMPFA/event/321347-curators-tour-elaine-yau-and-tausif-noor-on-some",
+      "url": "https://events.berkeley.edu/townsend/event/322218-curators-tour-elaine-yau-and-tausif-noor-on-some",
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260807T020000Z-322453@events.berkeley.edu",
+      "id": "livewhale_20260807T020000Z-322414@events.berkeley.edu",
       "title": "Film Screening – \"Le trou\"",
       "organizer": "BAMPFA",
       "date": "2026-08-06",
@@ -4524,6 +4639,20 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322414-film-screening-le-trou",
       "source": "livewhale"
+    },
+    {
+      "id": "bampfa_le-trou::2026-08-06",
+      "title": "Le trou",
+      "organizer": "BAMPFA",
+      "date": "2026-08-06",
+      "time": "7:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Le trou",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/le-trou",
+      "source": "bampfa"
     },
     {
       "id": "livewhale_20260807T200000Z-311866@events.berkeley.edu",
@@ -4552,6 +4681,20 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322415-film-screening-white-lightblack-rain",
       "source": "livewhale"
+    },
+    {
+      "id": "bampfa_white-light-black-rain::2026-08-07",
+      "title": "White Light/Black Rain",
+      "organizer": "BAMPFA",
+      "date": "2026-08-07",
+      "time": "7:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "White Light/Black Rain",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/white-light-black-rain",
+      "source": "bampfa"
     },
     {
       "id": "livewhale_20260808T160000Z-321769@events.berkeley.edu",
@@ -4583,6 +4726,20 @@
       "source": "livewhale"
     },
     {
+      "id": "bampfa_spartacus::2026-08-08",
+      "title": "Spartacus",
+      "organizer": "BAMPFA",
+      "date": "2026-08-08",
+      "time": "2:30 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Spartacus",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/spartacus",
+      "source": "bampfa"
+    },
+    {
       "id": "livewhale_20260809T020000Z-322417@events.berkeley.edu",
       "title": "Film Screening – \"L'eclisse\"",
       "organizer": "BAMPFA",
@@ -4597,7 +4754,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260809T210000Z-322449@events.berkeley.edu",
+      "id": "livewhale_20260809T210000Z-322418@events.berkeley.edu",
       "title": "Film Screening – \"The Unbearable Lightness of Being\"",
       "organizer": "BAMPFA",
       "date": "2026-08-09",
@@ -4611,7 +4768,21 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260810T020000Z-322419@events.berkeley.edu",
+      "id": "bampfa_unbearable-lightness-being::2026-08-09",
+      "title": "The Unbearable Lightness of Being",
+      "organizer": "BAMPFA",
+      "date": "2026-08-09",
+      "time": "2:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "The Unbearable Lightness of Being",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/unbearable-lightness-being",
+      "source": "bampfa"
+    },
+    {
+      "id": "livewhale_20260810T020000Z-322448@events.berkeley.edu",
       "title": "Film Screening – \"The Seventh Juror\"",
       "organizer": "BAMPFA",
       "date": "2026-08-09",
@@ -4623,6 +4794,20 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322419-film-screening-the-seventh-juror",
       "source": "livewhale"
+    },
+    {
+      "id": "bampfa_seventh-juror::2026-08-09",
+      "title": "The Seventh Juror",
+      "organizer": "BAMPFA",
+      "date": "2026-08-09",
+      "time": "7:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "The Seventh Juror",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/seventh-juror",
+      "source": "bampfa"
     },
     {
       "id": "livewhale_20260810T200000Z-321251@events.berkeley.edu",
@@ -4668,6 +4853,20 @@
       "source": "livewhale"
     },
     {
+      "id": "bampfa_full-metal-jacket::2026-08-12",
+      "title": "Full Metal Jacket",
+      "organizer": "BAMPFA",
+      "date": "2026-08-12",
+      "time": "7:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Full Metal Jacket",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/full-metal-jacket",
+      "source": "bampfa"
+    },
+    {
       "id": "livewhale_20260814T000000Z-316695@events.berkeley.edu",
       "title": "Data Science Summer 2026 Capstone Project Showcase",
       "organizer": "UC Berkeley",
@@ -4683,7 +4882,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260814T020000Z-322421@events.berkeley.edu",
+      "id": "livewhale_20260814T020000Z-322446@events.berkeley.edu",
       "title": "Film Screening – \"Red Desert\"",
       "organizer": "BAMPFA",
       "date": "2026-08-13",
@@ -4739,6 +4938,20 @@
       "source": "livewhale"
     },
     {
+      "id": "bampfa_hours-jerome::2026-08-14",
+      "title": "Hours for Jerome, Parts 1",
+      "organizer": "BAMPFA",
+      "date": "2026-08-14",
+      "time": "7:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Hours for Jerome, Parts 1",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/hours-jerome",
+      "source": "bampfa"
+    },
+    {
       "id": "livewhale_20260815T070000Z-322280@events.berkeley.edu",
       "title": "Deadline to Waive SHIP with a $75 Fee",
       "organizer": "Cal Parents",
@@ -4753,7 +4966,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260815T220000Z-321348@events.berkeley.edu",
+      "id": "livewhale_20260815T220000Z-321371@events.berkeley.edu",
       "title": "Wrenching News Workshops",
       "organizer": "BAMPFA",
       "date": "2026-08-15",
@@ -4782,7 +4995,21 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260816T013000Z-322424@events.berkeley.edu",
+      "id": "bampfa_promises::2026-08-15",
+      "title": "Promises",
+      "organizer": "BAMPFA",
+      "date": "2026-08-15",
+      "time": "3:30 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Promises",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/promises",
+      "source": "bampfa"
+    },
+    {
+      "id": "livewhale_20260816T013000Z-322443@events.berkeley.edu",
       "title": "Film Screening – \"Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb\"",
       "organizer": "BAMPFA",
       "date": "2026-08-15",
@@ -4812,7 +5039,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260816T203000Z-322425@events.berkeley.edu",
+      "id": "livewhale_20260816T203000Z-322442@events.berkeley.edu",
       "title": "Film Screening – \"Five Films by Nathaniel Dorsky\"",
       "organizer": "BAMPFA",
       "date": "2026-08-16",
@@ -4824,6 +5051,20 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322425-film-screening-five-films-by-nathaniel-dorsky",
       "source": "livewhale"
+    },
+    {
+      "id": "bampfa_five-films-nathaniel-dorsky::2026-08-16",
+      "title": "Five Films by Nathaniel Dorsky",
+      "organizer": "BAMPFA",
+      "date": "2026-08-16",
+      "time": "1:30 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Five Films by Nathaniel Dorsky",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/five-films-nathaniel-dorsky",
+      "source": "bampfa"
     },
     {
       "id": "livewhale_20260817T000000Z-322441@events.berkeley.edu",
@@ -4942,6 +5183,20 @@
       "source": "berkeley_law"
     },
     {
+      "id": "bampfa_ai-artificial-intelligence::2026-08-20",
+      "title": "A.I. Artificial Intelligence",
+      "organizer": "BAMPFA",
+      "date": "2026-08-20",
+      "time": "7:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "A.I. Artificial Intelligence",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/ai-artificial-intelligence",
+      "source": "bampfa"
+    },
+    {
       "id": "livewhale_20260821T020000Z-322428@events.berkeley.edu",
       "title": "Film Screening – \"A.I. Artificial Intelligence\"",
       "organizer": "BAMPFA",
@@ -4984,7 +5239,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260822T020000Z-322438@events.berkeley.edu",
+      "id": "livewhale_20260822T020000Z-322429@events.berkeley.edu",
       "title": "Film Screening – \"Four Films by Jerome Hiler\"",
       "organizer": "BAMPFA",
       "date": "2026-08-21",
@@ -4996,6 +5251,20 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322429-film-screening-four-films-by-jerome-hiler",
       "source": "livewhale"
+    },
+    {
+      "id": "bampfa_four-films-jerome-hiler::2026-08-21",
+      "title": "Four Films by Jerome Hiler",
+      "organizer": "BAMPFA",
+      "date": "2026-08-21",
+      "time": "7:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Four Films by Jerome Hiler",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/four-films-jerome-hiler",
+      "source": "bampfa"
     },
     {
       "id": "livewhale_20260822T223000Z-322430@events.berkeley.edu",
@@ -5013,6 +5282,20 @@
       "source": "livewhale"
     },
     {
+      "id": "bampfa_pom-poko::2026-08-22",
+      "title": "Pom Poko",
+      "organizer": "BAMPFA",
+      "date": "2026-08-22",
+      "time": "3:30 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Pom Poko",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/pom-poko",
+      "source": "bampfa"
+    },
+    {
       "id": "livewhale_20260822T230000Z-322290@events.berkeley.edu",
       "title": "Summer Welcome Party",
       "organizer": "CAA",
@@ -5027,7 +5310,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260823T010000Z-322436@events.berkeley.edu",
+      "id": "livewhale_20260823T010000Z-322431@events.berkeley.edu",
       "title": "Film Screening – \"Barry Lyndon\"",
       "organizer": "BAMPFA",
       "date": "2026-08-22",
@@ -5053,6 +5336,20 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322432-film-screening-my-neighbor-totoro",
       "source": "livewhale"
+    },
+    {
+      "id": "bampfa_my-neighbor-totoro::2026-08-23",
+      "title": "My Neighbor Totoro",
+      "organizer": "BAMPFA",
+      "date": "2026-08-23",
+      "time": "2:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "My Neighbor Totoro",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/my-neighbor-totoro",
+      "source": "bampfa"
     },
     {
       "id": "livewhale_20260823T233000Z-322434@events.berkeley.edu",
@@ -5125,6 +5422,21 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260826T220000Z-322876@events.berkeley.edu",
+      "title": "Luke Gilbert: Repurposing CRISPR to turn genes on and off",
+      "organizer": "Molecular & Cell Biology",
+      "date": "2026-08-26",
+      "time": "3:00 PM",
+      "location": "100 Genetics & Plant Biology Building",
+      "description": "The ability to precisely manipulate gene expression enables exploration of gene function and establishment of causal relationships. I will discuss CRISPR tools for turning genes on and off from a research and therapeutics perspective. I will also describe advances in CRISPRi/a functional genomics technologies highlighting platforms that enable single cell functional genomics and mapping of genetic interactions (GI) in the context of environmental perturbations. Specifically, in five GI maps measuring ∼250,000 GIs or higher-order environmental interactions, we discover widespread rewiring of relationships between genes, complexes, and ontologies across conditions. Specific bioprocesses drive the rewiring signal in each environmental state, as highlighted in our findings that the TIP60 and PP2A complexes radically alter their interaction profiles after inhibition of ATR. This resource reveals numerous genetic relationships for the fields of DNA damage signaling, DNA repair, and cell-cycle control and explores their context specificity. Our work advances a framework for using GI maps to explore environmental rewiring.Division(s): Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & Development",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/mcb/event/322876-luke-gilbert-repurposing-crispr-to-turn-genes-on",
+      "source": "livewhale"
+    },
+    {
       "id": "luma_evt-KtxRvaYJlGdMQsG",
       "title": "Pad-13 End of Program Celebration (Batch 21)",
       "organizer": "Berkeley SkyDeck",
@@ -5141,7 +5453,7 @@
       "source": "luma"
     },
     {
-      "id": "livewhale_20260827T020000Z-322517@events.berkeley.edu",
+      "id": "livewhale_20260827T020000Z-322501@events.berkeley.edu",
       "title": "Film Screening – \"No Straight Lines\"",
       "organizer": "BAMPFA",
       "date": "2026-08-26",
@@ -5153,6 +5465,20 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322501-film-screening-no-straight-lines",
       "source": "livewhale"
+    },
+    {
+      "id": "bampfa_no-straight-lines::2026-08-26",
+      "title": "No Straight Lines",
+      "organizer": "BAMPFA",
+      "date": "2026-08-26",
+      "time": "7:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "No Straight Lines",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/no-straight-lines",
+      "source": "bampfa"
     },
     {
       "id": "ehub_20260827_1",
@@ -5226,6 +5552,20 @@
       "source": "livewhale"
     },
     {
+      "id": "bampfa_purple-noon::2026-08-27",
+      "title": "Purple Noon",
+      "organizer": "BAMPFA",
+      "date": "2026-08-27",
+      "time": "7:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Purple Noon",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/purple-noon",
+      "source": "bampfa"
+    },
+    {
       "id": "livewhale_20260828T230000Z-322515@events.berkeley.edu",
       "title": "Film Screening – \"The Tale of The Princess Kaguya\"",
       "organizer": "BAMPFA",
@@ -5240,7 +5580,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260829T020000Z-322514@events.berkeley.edu",
+      "id": "livewhale_20260829T020000Z-322504@events.berkeley.edu",
       "title": "Film Screening – \"Elevator to the Gallows\"",
       "organizer": "BAMPFA",
       "date": "2026-08-28",
@@ -5252,6 +5592,20 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322504-film-screening-elevator-to-the-gallows",
       "source": "livewhale"
+    },
+    {
+      "id": "bampfa_arboretum-cycle::2026-08-29",
+      "title": "Arboretum Cycle",
+      "organizer": "BAMPFA",
+      "date": "2026-08-29",
+      "time": "3:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Arboretum Cycle",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/arboretum-cycle",
+      "source": "bampfa"
     },
     {
       "id": "livewhale_20260829T220000Z-322513@events.berkeley.edu",
@@ -5280,6 +5634,20 @@
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322506-film-screening-tongues-untied",
       "source": "livewhale"
+    },
+    {
+      "id": "bampfa_tongues-untied::2026-08-29",
+      "title": "Tongues Untied",
+      "organizer": "BAMPFA",
+      "date": "2026-08-29",
+      "time": "7:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Tongues Untied",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/tongues-untied",
+      "source": "bampfa"
     },
     {
       "id": "livewhale_20260830T223000Z-322511@events.berkeley.edu",
@@ -5382,6 +5750,21 @@
       "source": "berkeley_law"
     },
     {
+      "id": "livewhale_20260901T223000Z-322875@events.berkeley.edu",
+      "title": "Samantha Lewis: Department of Molecular and Cell Biology",
+      "organizer": "Molecular & Cell Biology",
+      "date": "2026-09-01",
+      "time": "3:30 PM",
+      "location": "100 Genetics & Plant Biology Building",
+      "description": "Samantha Lewis: Department of Molecular & Cell BiologyDivision(s): Department of Molecular & Cell Biology",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/mcb/event/322875-samantha-lewis-department-of-molecular-and-cell",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260902T000000Z-321256@events.berkeley.edu",
       "title": "California Traffic Engineering License Exam Review",
       "organizer": "Technology Transfer Program",
@@ -5411,6 +5794,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260902T220000Z-322874@events.berkeley.edu",
+      "title": "James Nuñez: Divisions of Biochemistry, Biophysics and Structural Biology, Division of Cell Biology, Development and Physiology, and Genetics, Genomics, Evolution and Development",
+      "organizer": "Molecular & Cell Biology",
+      "date": "2026-09-02",
+      "time": "3:00 PM",
+      "location": "100 Genetics & Plant Biology Building",
+      "description": "James Nuñez: Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & DevelopmentDivision(s): Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & Development",
+      "tags": [
+        "Science & Tech"
+      ],
+      "url": "https://events.berkeley.edu/mcb/event/322874-james-nunez-divisions-of-biochemistry-biophysics",
+      "source": "livewhale"
+    },
+    {
       "id": "berkeley_law_758765",
       "title": "1L Career Prep: Life Sciences",
       "organizer": "BCLT",
@@ -5423,6 +5820,20 @@
       ],
       "url": "https://www.law.berkeley.edu/event/1l-career-prep-life-sciences/",
       "source": "berkeley_law"
+    },
+    {
+      "id": "livewhale_20260903T223000Z-322873@events.berkeley.edu",
+      "title": "Dipti Nayak: Divisions of Biochemistry, Biophysics and Structural Biology, Division of Cell Biology, Development and Physiology, and Genetics, Genomics, Evolution and Development",
+      "organizer": "Molecular & Cell Biology",
+      "date": "2026-09-03",
+      "time": "3:30 PM",
+      "location": "100 Genetics & Plant Biology Building",
+      "description": "Dipti Nayak: Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & DevelopmentDivision(s): Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & Development",
+      "tags": [
+        "Science & Tech"
+      ],
+      "url": "https://events.berkeley.edu/mcb/event/322873-dipti-nayak-divisions-of-biochemistry-biophysics",
+      "source": "livewhale"
     },
     {
       "id": "livewhale_20260903T230000Z-321503@events.berkeley.edu",
@@ -5657,6 +6068,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260916T220000Z-322872@events.berkeley.edu",
+      "title": "William Ludington: Divisions of Biochemistry, Biophysics and Structural Biology, Division of Cell Biology, Development and Physiology, and Genetics, Genomics, Evolution and Development",
+      "organizer": "Molecular & Cell Biology",
+      "date": "2026-09-16",
+      "time": "3:00 PM",
+      "location": "100 Genetics & Plant Biology Building",
+      "description": "William Ludington: Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & DevelopmentDivision(s): Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & Development",
+      "tags": [
+        "Science & Tech"
+      ],
+      "url": "https://events.berkeley.edu/mcb/event/322872-william-ludington-divisions-of-biochemistry",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260917T070000Z-218516@events.berkeley.edu",
       "title": "Berkeley celebrates Constitution Day",
       "organizer": "UC Berkeley",
@@ -5859,18 +6284,17 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260923T190000Z-318697@events.berkeley.edu",
-      "title": "Informal Seminar",
+      "id": "livewhale_20260923T220000Z-322883@events.berkeley.edu",
+      "title": "Naoka Mizuno: Molecular Neuroscience by cryo-EM",
       "organizer": "Molecular & Cell Biology",
       "date": "2026-09-23",
-      "time": "12:00 PM",
-      "location": "101 Weill Hall",
-      "description": "Informal SeminarDivision(s): INFORMAL SEMINAR",
+      "time": "3:00 PM",
+      "location": "100 Genetics & Plant Biology Building",
+      "description": "Naoka Mizuno: Molecular Neuroscience by cryo-EMDivision(s): Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & Development",
       "tags": [
-        "Academic",
         "Science & Tech"
       ],
-      "url": "https://events.berkeley.edu/mcb/event/318697-informal-seminar",
+      "url": "https://events.berkeley.edu/mcb/event/322883-naoka-mizuno-molecular-neuroscience-by-cryo-em",
       "source": "livewhale"
     },
     {
@@ -5944,6 +6368,22 @@
         "Student Life"
       ],
       "url": "https://events.berkeley.edu/gws/event/322016-gws-fall-reception",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260924T223000Z-318697@events.berkeley.edu",
+      "title": "Ned Wingreen: Collective dynamics in B cell affinity maturation",
+      "organizer": "Molecular & Cell Biology",
+      "date": "2026-09-24",
+      "time": "3:30 PM",
+      "location": "101 Weill Hall",
+      "description": "In the humoral immune response, B cells that produce high-affinity antibodies are generated through a Darwinian evolutionary process called affinity maturation. Affinity maturation, which takes place in germinal centers (GC), is driven by cycles of selection (mediated by T cells), division, and hypermutation of B cells. Recently, it was found that the T cells themselves also exhibit dynamic behavior throughout the course of the GC reaction, undergoing affinity-dependent proliferation. A model suggests that this reciprocal stimulation enforces a robust \"homeostatic\" regulation of the relative number of B cells and T cells in the GC, leading to a constant ratio of GC lymphocytes. But the model also points to a problem: the high mutation rate of GC B cells can lead to \"backsliding\" of affinity. The proposed solution – a fitness-dependent mutation rate – has been experimentally verified, and has implications beyond B cell affinity maturation.Division(s): INFORMAL SEMINAR",
+      "tags": [
+        "Science & Tech",
+        "Academic",
+        "Arts"
+      ],
+      "url": "https://events.berkeley.edu/mcb/event/318697-informal-seminar",
       "source": "livewhale"
     },
     {
@@ -6060,6 +6500,21 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260928T183000Z-322864@events.berkeley.edu",
+      "title": "Ashok Prasad: Informal Seminar",
+      "organizer": "Molecular & Cell Biology",
+      "date": "2026-09-28",
+      "time": "11:30 AM",
+      "location": "177 Weill Hall",
+      "description": "Ashok Prasad: Informal SeminarDivision(s): INFORMAL SEMINAR",
+      "tags": [
+        "Academic",
+        "Science & Tech"
+      ],
+      "url": "https://events.berkeley.edu/mcb/event/322864-ashok-prasad-informal-seminar",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260928T230000Z-321958@events.berkeley.edu",
       "title": "Tanja Kortemme: Structural & Quantitative Biology Seminar",
       "organizer": "Department of Chemistry",
@@ -6135,7 +6590,7 @@
     },
     {
       "id": "livewhale_20260929T223000Z-319064@events.berkeley.edu",
-      "title": "Allan C. Wilson Memorial Lecture",
+      "title": "Vamsi Mootha: Allan C. Wilson Memorial Lecture",
       "organizer": "Molecular & Cell Biology",
       "date": "2026-09-29",
       "time": "3:30 PM",
@@ -6150,7 +6605,7 @@
     },
     {
       "id": "livewhale_20260930T223000Z-319063@events.berkeley.edu",
-      "title": "Allan C. Wilson Memorial Lecture",
+      "title": "Vamsi Mootha: Allan C. Wilson Memorial Lecture",
       "organizer": "Molecular & Cell Biology",
       "date": "2026-09-30",
       "time": "3:30 PM",
@@ -6546,6 +7001,20 @@
       "source": "berkeley_law"
     },
     {
+      "id": "livewhale_20261014T220000Z-322882@events.berkeley.edu",
+      "title": "Daniele Canzio: Divisions of Biochemistry, Biophysics and Structural Biology, Division of Cell Biology, Development and Physiology, and Genetics, Genomics, Evolution and Development",
+      "organizer": "Molecular & Cell Biology",
+      "date": "2026-10-14",
+      "time": "3:00 PM",
+      "location": "100 Genetics & Plant Biology Building",
+      "description": "Daniele Canzio: Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & DevelopmentDivision(s): Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & Development",
+      "tags": [
+        "Science & Tech"
+      ],
+      "url": "https://events.berkeley.edu/mcb/event/322882-daniele-canzio-divisions-of-biochemistry",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261014T230000Z-312091@events.berkeley.edu",
       "title": "CEE Community Highlights Event",
       "organizer": "Civil & Environmental Engineering",
@@ -6728,12 +7197,12 @@
     },
     {
       "id": "livewhale_20261021T220000Z-318995@events.berkeley.edu",
-      "title": "Genetic regulation of growth and regeneration",
+      "title": "Iswar Hariharan: Genetic regulation of growth and regeneration",
       "organizer": "Molecular & Cell Biology",
       "date": "2026-10-21",
       "time": "3:00 PM",
       "location": "100 Genetics & Plant Biology Building",
-      "description": "Genetic regulation of growth and regenerationDivision(s): Department of Molecular & Cell Biology Annual Capstone Lecture",
+      "description": "Iswar Hariharan: Genetic regulation of growth and regenerationDivision(s): Department of Molecular & Cell Biology Annual Capstone Lecture",
       "tags": [
         "Science & Tech",
         "Academic"
@@ -6900,6 +7369,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261028T220000Z-322881@events.berkeley.edu",
+      "title": "Sergiu Pasca: Divisions of Biochemistry, Biophysics and Structural Biology, Division of Cell Biology, Development and Physiology, and Genetics, Genomics, Evolution and Development",
+      "organizer": "Molecular & Cell Biology",
+      "date": "2026-10-28",
+      "time": "3:00 PM",
+      "location": "100 Genetics & Plant Biology Building",
+      "description": "Sergiu Pasca: Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & DevelopmentDivision(s): Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & Development",
+      "tags": [
+        "Science & Tech"
+      ],
+      "url": "https://events.berkeley.edu/mcb/event/322881-sergiu-pasca-divisions-of-biochemistry-biophysics",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261029T180000Z-321987@events.berkeley.edu",
       "title": "Marius Wernig: MTx Seminar",
       "organizer": "Molecular & Cell Biology",
@@ -7040,6 +7523,20 @@
         "Academic"
       ],
       "url": "https://events.berkeley.edu/hr/event/310837-bpm-203-analyzing-resolving-conflict",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261104T230000Z-322880@events.berkeley.edu",
+      "title": "Hanna Martens: Divisions of Biochemistry, Biophysics and Structural Biology, Division of Cell Biology, Development and Physiology, and Genetics, Genomics, Evolution and Development",
+      "organizer": "Molecular & Cell Biology",
+      "date": "2026-11-04",
+      "time": "3:00 PM",
+      "location": "100 Genetics & Plant Biology Building",
+      "description": "Hanna Martens: Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & DevelopmentDivision(s): Divisions of Biochemistry, Biophysics & Structural Biology, Division of Cell Biology, Development & Physiology, and Genetics, Genomics, Evolution & Development",
+      "tags": [
+        "Science & Tech"
+      ],
+      "url": "https://events.berkeley.edu/mcb/event/322880-hanna-martens-divisions-of-biochemistry-biophysics",
       "source": "livewhale"
     },
     {
@@ -7960,7 +8457,7 @@
       "uri": "https://begin.berkeley.edu/events/"
     }
   ],
-  "lastUpdated": 1780599594846,
+  "lastUpdated": 1780599804052,
   "data_age_hours": 0,
   "degraded_sources": []
 }
