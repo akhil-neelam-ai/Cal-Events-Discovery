@@ -1,86 +1,86 @@
 {
-  "generated_at": "2026-06-08T14:46:32.435Z",
-  "total_events": 527,
-  "duplicates_removed": 154,
-  "past_events_filtered": 3121,
+  "generated_at": "2026-06-10T14:21:33.753Z",
+  "total_events": 562,
+  "duplicates_removed": 173,
+  "past_events_filtered": 3065,
   "invalid_events_filtered": 9,
   "sources": [
     {
       "name": "livewhale",
       "ok": true,
-      "count": 1288,
-      "duration_ms": 4655,
-      "fetched_at": "2026-06-08T14:46:08.477Z"
+      "count": 1345,
+      "duration_ms": 4256,
+      "fetched_at": "2026-06-10T14:21:08.880Z"
     },
     {
       "name": "callink",
       "ok": true,
       "count": 0,
-      "duration_ms": 403,
-      "fetched_at": "2026-06-08T14:46:08.518Z"
+      "duration_ms": 353,
+      "fetched_at": "2026-06-10T14:21:08.925Z"
     },
     {
       "name": "cal_performances",
       "ok": true,
       "count": 53,
-      "duration_ms": 23065,
-      "fetched_at": "2026-06-08T14:46:08.519Z"
+      "duration_ms": 24359,
+      "fetched_at": "2026-06-10T14:21:08.927Z"
     },
     {
       "name": "calbears",
       "ok": true,
       "count": 14,
-      "duration_ms": 714,
-      "fetched_at": "2026-06-08T14:46:08.520Z"
+      "duration_ms": 520,
+      "fetched_at": "2026-06-10T14:21:08.928Z"
     },
     {
       "name": "bampfa",
       "ok": true,
       "count": 148,
-      "duration_ms": 23610,
-      "fetched_at": "2026-06-08T14:46:08.521Z"
+      "duration_ms": 24547,
+      "fetched_at": "2026-06-10T14:21:08.929Z"
     },
     {
       "name": "haas",
       "ok": true,
-      "count": 14,
-      "duration_ms": 1891,
-      "fetched_at": "2026-06-08T14:46:08.524Z"
+      "count": 13,
+      "duration_ms": 3830,
+      "fetched_at": "2026-06-10T14:21:08.932Z"
     },
     {
       "name": "berkeley_law",
       "ok": true,
-      "count": 34,
-      "duration_ms": 1712,
-      "fetched_at": "2026-06-08T14:46:08.525Z"
+      "count": 33,
+      "duration_ms": 2466,
+      "fetched_at": "2026-06-10T14:21:08.934Z"
     },
     {
       "name": "simons",
       "ok": true,
       "count": 20,
-      "duration_ms": 17233,
-      "fetched_at": "2026-06-08T14:46:08.526Z"
+      "duration_ms": 17791,
+      "fetched_at": "2026-06-10T14:21:08.935Z"
     },
     {
       "name": "ehub",
       "ok": true,
       "count": 1,
-      "duration_ms": 1108,
-      "fetched_at": "2026-06-08T14:46:08.528Z"
+      "duration_ms": 1195,
+      "fetched_at": "2026-06-10T14:21:08.936Z"
     },
     {
       "name": "luma",
       "ok": true,
       "count": 4,
-      "duration_ms": 1295,
-      "fetched_at": "2026-06-08T14:46:08.529Z"
+      "duration_ms": 1621,
+      "fetched_at": "2026-06-10T14:21:08.938Z"
     },
     {
       "name": "begin",
       "ok": true,
       "count": 0,
-      "duration_ms": 2359,
-      "fetched_at": "2026-06-08T14:46:08.537Z"
+      "duration_ms": 2269,
+      "fetched_at": "2026-06-10T14:21:08.947Z"
     }
   ],
   "fallback_used": false,
