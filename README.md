@@ -58,11 +58,17 @@ Deep architecture: see [ARCHITECTURE.md](./ARCHITECTURE.md). Agent/adapter detai
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| **Validate** | PR + push to `main` (ignores artifact-only commits) | Lint, format, typecheck, 94+ tests, npm audit |
+| **Validate** | PR + push to `main` (ignores artifact-only commits) | Lint, format, typecheck, 94+ tests |
 | **Browser E2E** | PR + push to `main` (ignores artifacts) | Playwright against production build |
-| **Update Events Daily** | 4:00 AM Pacific (cron) + manual | Fetch sources, health check, open automation PR, auto-merge |
+| **Update Events Daily** | 4:00 AM Pacific (cron) + manual | Fetch sources, health check, open automation PR, merge when required checks pass |
+| **Security Audit** | Weekly Monday + manual | `npm audit` (prod deps); opens a `security-audit` issue on findings |
 | **Source Contracts** | Weekly Monday + manual | Live HTTP checks against all 9 Berkeley endpoints |
 | **Production Smoke** | Every push to `main` | Verify `cal-events.com` serves fresh events + status |
+
+The daily merge gates on the **data-relevant** checks only (`validate` and
+`browser-e2e`). Dependency auditing is deliberately *not* a merge gate: a newly
+published upstream CVE surfaces as a tracked issue via the Security Audit
+workflow instead of blocking the daily data PR.
 
 ```mermaid
 flowchart LR
@@ -118,8 +124,9 @@ After every pipeline run, check `public/status.json` (or `https://cal-events.com
 2. Check for an open issue labeled **`pipeline-failure`** (auto-created on failure).
 3. Common causes:
    - Missing `AUTOMATION_PR_TOKEN` on scheduled runs
-   - Critical source down with no fallback (`checkFeedHealth` blocks)
-   - `npm run validate` failed on the automation PR
+   - LiveWhale (the backbone source) down with no fallback (`checkFeedHealth`
+     blocks). Supplementary sources degrade to last-good data and only warn.
+   - A required PR check (`validate` or `browser-e2e`) failed on the automation PR
 
 Re-run manually: **Actions → Update Events Daily → Run workflow**.
 
