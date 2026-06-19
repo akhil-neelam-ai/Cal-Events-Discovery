@@ -153,33 +153,67 @@ jobs:
           echo "::warning::AUTOMATION_PR_TOKEN is not set."
           echo "::warning::The updater PR was created with GITHUB_TOKEN, so downstream pull_request workflows like browser-e2e will not run and auto-merge is skipped."
 
-      - name: Wait for checks and merge artifact update PR
+      - name: Wait for required checks and merge artifact update PR
         if: ${{ steps.create_pr.outputs.pull-request-number && env.AUTOMATION_PR_TOKEN != '' }}
+        # Gate the merge on the data-relevant checks ONLY. The old approach used
+        # `gh pr checks --watch --fail-fast`, which failed the whole cron when
+        # *any* check went red — including unrelated ones (e.g. a transient
+        # security advisory). A daily data refresh must merge whenever the data
+        # itself is validated, not when the entire repo posture is perfect.
+        env:
+          GH_TOKEN: ${{ env.AUTOMATION_PR_TOKEN }}
+          # Substring-matched (case-insensitive) against the PR's check names.
+          REQUIRED_CHECKS: "validate browser-e2e"
+          # Overall budget for required checks to appear and finish.
+          CHECK_TIMEOUT_SECONDS: "1200"
+          POLL_INTERVAL_SECONDS: "15"
         run: |
+          set -euo pipefail
           pr_number="${{ steps.create_pr.outputs.pull-request-number }}"
+          deadline=$(( $(date +%s) + CHECK_TIMEOUT_SECONDS ))
 
-          for attempt in {1..30}; do
-            if gh pr checks "${pr_number}" > /tmp/pr-checks.txt 2>&1; then
-              if [ -s /tmp/pr-checks.txt ]; then
-                cat /tmp/pr-checks.txt
-                break
-              fi
-            else
-              cat /tmp/pr-checks.txt || true
-            fi
+          while :; do
+            # `gh pr checks --json` prints the JSON array even when its exit code
+            # is non-zero (pending/failing), so capture output regardless.
+            checks="$(gh pr checks "${pr_number}" --json name,bucket 2>/dev/null || true)"
+            checks="${checks:-[]}"
 
-            if [ "${attempt}" = "30" ]; then
-              echo "::error::No PR checks appeared for #${pr_number}; refusing to merge automatically."
+            all_pass=true
+            any_fail=false
+            for req in ${REQUIRED_CHECKS}; do
+              bucket="$(echo "${checks}" | jq -r --arg n "${req}" \
+                '[.[] | select((.name | ascii_downcase) | contains($n))] | (.[0].bucket // "missing")')"
+              case "${bucket}" in
+                pass) ;;
+                fail|cancel)
+                  any_fail=true
+                  echo "::error::Required check '${req}' is ${bucket} on PR #${pr_number}."
+                  ;;
+                *) all_pass=false ;; # pending, skipping, or not yet registered
+              esac
+            done
+
+            if [ "${any_fail}" = "true" ]; then
+              echo "Required check(s) failed; refusing to merge PR #${pr_number}."
+              gh pr checks "${pr_number}" || true
               exit 1
             fi
 
-            sleep 10
+            if [ "${all_pass}" = "true" ]; then
+              echo "All required checks passed for PR #${pr_number}."
+              break
+            fi
+
+            if [ "$(date +%s)" -ge "${deadline}" ]; then
+              echo "::error::Timed out after ${CHECK_TIMEOUT_SECONDS}s waiting for required checks on PR #${pr_number}."
+              gh pr checks "${pr_number}" || true
+              exit 1
+            fi
+
+            sleep "${POLL_INTERVAL_SECONDS}"
           done
 
-          gh pr checks --watch --fail-fast "${pr_number}"
           gh pr merge --merge "${pr_number}"
-        env:
-          GH_TOKEN: ${{ env.AUTOMATION_PR_TOKEN }}
 
   notify-failure:
     needs: update-events

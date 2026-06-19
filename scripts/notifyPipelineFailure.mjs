@@ -11,12 +11,21 @@ const RUN_ID = process.env.GITHUB_RUN_ID;
 const SERVER_URL = process.env.GITHUB_SERVER_URL ?? "https://github.com";
 const WORKFLOW_NAME = process.env.WORKFLOW_NAME ?? "Events pipeline";
 const FAILURE_CONTEXT = process.env.FAILURE_CONTEXT ?? "unknown step";
+const ISSUE_LABEL = process.env.ISSUE_LABEL ?? "pipeline-failure";
+const ISSUE_LABEL_COLOR = process.env.ISSUE_LABEL_COLOR ?? "B60205";
+const ISSUE_LABEL_DESCRIPTION =
+  process.env.ISSUE_LABEL_DESCRIPTION ??
+  "Automated pipeline failure requiring operator attention";
 
+// This script is the safety net that tells operators a workflow broke. It must
+// never fail the workflow itself — a crashing failure-notifier means the team
+// gets no signal precisely when something is already wrong. Every exit path
+// below is exit(0); problems are logged as warnings only.
 if (!REPO || !RUN_ID) {
-  console.error(
-    "[notifyPipelineFailure] GITHUB_REPOSITORY and GITHUB_RUN_ID are required",
+  console.warn(
+    "[notifyPipelineFailure] GITHUB_REPOSITORY and GITHUB_RUN_ID are required; skipping notification",
   );
-  process.exit(1);
+  process.exit(0);
 }
 
 function gh(args) {
@@ -44,23 +53,23 @@ try {
     "--repo",
     REPO,
     "--search",
-    "pipeline-failure",
+    ISSUE_LABEL,
     "--json",
     "name",
   ]);
   const labels = JSON.parse(listed || "[]");
-  const exists = labels.some((l) => l.name === "pipeline-failure");
+  const exists = labels.some((l) => l.name === ISSUE_LABEL);
   if (!exists) {
     gh([
       "label",
       "create",
-      "pipeline-failure",
+      ISSUE_LABEL,
       "--repo",
       REPO,
       "--color",
-      "B60205",
+      ISSUE_LABEL_COLOR,
       "--description",
-      "Automated pipeline failure requiring operator attention",
+      ISSUE_LABEL_DESCRIPTION,
     ]);
   }
 } catch (labelError) {
@@ -77,7 +86,7 @@ try {
     "--repo",
     REPO,
     "--label",
-    "pipeline-failure",
+    ISSUE_LABEL,
     "--state",
     "open",
     "--limit",
@@ -118,13 +127,15 @@ try {
       "--body",
       body,
       "--label",
-      "pipeline-failure",
+      ISSUE_LABEL,
     ]);
     console.log(`[notifyPipelineFailure] created ${createdUrl}`);
   }
 } catch (notifyError) {
-  console.error(
+  // Best-effort: log but never fail the workflow. An undelivered notification
+  // is bad; a crashing notifier that hides the original failure is worse.
+  console.warn(
     `[notifyPipelineFailure] failed to deliver operator notification: ${notifyError instanceof Error ? notifyError.message : notifyError}`,
   );
-  process.exit(1);
+  process.exit(0);
 }

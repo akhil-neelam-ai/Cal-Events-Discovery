@@ -9,22 +9,17 @@ import { evaluateSourceCoverageWarnings } from "./sourceCoveragePolicy.js";
 // Typed as ReadonlySet<string> so both a SourceName-keyed and a raw-string-keyed
 // caller can query it.
 //
-// callink is intentionally excluded during summer (2026-06): the CampusGroups
-// feed is "platform-capped at ~16 featured" and frequently returns zero
-// upcoming events between terms, which would otherwise block the entire
-// publish. Revisit ~2026-08-17 (before fall semester) and restore.
-export const CRITICAL_SOURCES: ReadonlySet<string> = new Set([
-  "livewhale",
-  "cal_performances",
-  "calbears",
-  "bampfa",
-  "haas",
-  "berkeley_law",
-  "simons",
-  "ehub",
-  "luma",
-  "begin",
-]);
+// Only LiveWhale is critical. It is the official campus calendar and the backbone
+// of the feed (the large majority of events); if it degrades without fallback we
+// genuinely have nothing worth publishing. Every other source is supplementary:
+// they are platform-capped, scraped from fragile endpoints, or naturally sparse
+// between terms (e.g. callink returns zero upcoming events in summer). A single
+// supplementary source going down must NOT hard-fail the daily publish — those
+// degrade to last-good fallback and emit warnings instead. Correctness is still
+// protected for all sources by the zero-total-events and stale-fallback blocks
+// below. This replaces the previous source-by-source hotfix model (dropping
+// callink for summer, etc.) with a term-agnostic rule.
+export const CRITICAL_SOURCES: ReadonlySet<string> = new Set(["livewhale"]);
 
 export function parseMaxFallbackAgeHours(
   value: string | number | undefined,

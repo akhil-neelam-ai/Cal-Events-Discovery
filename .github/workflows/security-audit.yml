@@ -1,0 +1,53 @@
+name: Security Audit
+
+# Dependency auditing runs on its own weekly cadence so that a newly published
+# upstream CVE surfaces as a tracked issue instead of blocking the daily
+# data-update PR (which previously failed the cron whenever any advisory dropped).
+on:
+  schedule:
+    - cron: "0 16 * * 1" # Mondays, ~8-9 AM Pacific
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit production dependencies
+        run: npm run audit:security
+
+  notify-audit-failure:
+    needs: audit
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Open or update security audit issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_NAME: Security Audit
+          FAILURE_CONTEXT: npm audit (production dependencies)
+          ISSUE_LABEL: security-audit
+          ISSUE_LABEL_COLOR: D93F0B
+          ISSUE_LABEL_DESCRIPTION: Production dependency vulnerability requiring review
+        run: node scripts/notifyPipelineFailure.mjs

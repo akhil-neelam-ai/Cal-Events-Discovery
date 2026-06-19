@@ -26,20 +26,48 @@ test("evaluateFeedHealth passes a healthy status report", () => {
   assert.deepEqual(result.warnings, []);
 });
 
-test("evaluateFeedHealth blocks unrecovered critical source degradation", () => {
+test("evaluateFeedHealth blocks unrecovered critical (livewhale) degradation", () => {
   const result = evaluateFeedHealth(
     {
       ...healthyStatus,
       degraded: true,
-      degraded_sources: ["bampfa"],
-      degraded_reason: "bampfa failed: timeout",
+      degraded_sources: ["livewhale"],
+      degraded_reason: "livewhale failed: timeout",
       fallback_sources: [],
     },
     { staleHours: 36, maxFallbackAgeHours: 48 },
   );
 
   assert.match(result.blocking.join(" "), /critical source\(s\) degraded/);
-  assert.match(result.blocking.join(" "), /bampfa/);
+  assert.match(result.blocking.join(" "), /livewhale/);
+});
+
+test("evaluateFeedHealth warns (does not block) on supplementary source degradation", () => {
+  // Non-backbone sources are platform-capped, scraped from fragile endpoints, or
+  // sparse between terms. One going down must not hard-fail the daily publish.
+  for (const source of ["bampfa", "callink", "luma", "begin", "simons"]) {
+    const result = evaluateFeedHealth(
+      {
+        ...healthyStatus,
+        degraded: true,
+        degraded_sources: [source],
+        degraded_reason: `${source} failed: timeout`,
+        fallback_sources: [],
+      },
+      { staleHours: 36, maxFallbackAgeHours: 48 },
+    );
+
+    assert.deepEqual(
+      result.blocking,
+      [],
+      `${source} degradation should not block`,
+    );
+    assert.match(
+      result.warnings.join(" "),
+      new RegExp(`non-critical source\\(s\\) degraded.*${source}`),
+      `${source} degradation should warn`,
+    );
+  }
 });
 
 test("evaluateFeedHealth warns but does not block recovered critical fallback", () => {
@@ -73,30 +101,19 @@ test("evaluateFeedHealth blocks stale fallback data", () => {
   assert.match(result.blocking.join(" "), /fallback data is 72h old/);
 });
 
-test("CRITICAL_SOURCES treats luma and begin as critical (shared by both gates)", () => {
+test("CRITICAL_SOURCES is backbone-only and shared by both gates", () => {
   // The publish gate (scripts/updateEvents.ts) imports this exact set, so the
   // CI health check and the publish gate cannot disagree on what is critical.
-  assert.ok(CRITICAL_SOURCES.has("luma"));
-  assert.ok(CRITICAL_SOURCES.has("begin"));
+  // Only LiveWhale (the campus-calendar backbone) is critical; supplementary
+  // sources warn instead of blocking.
+  assert.ok(CRITICAL_SOURCES.has("livewhale"));
+  assert.equal(CRITICAL_SOURCES.size, 1);
 
-  for (const source of ["luma", "begin"]) {
-    const result = evaluateFeedHealth(
-      {
-        ...healthyStatus,
-        degraded: true,
-        degraded_sources: [source],
-        degraded_reason: `${source} failed: timeout`,
-        fallback_sources: [],
-      },
-      { staleHours: 36, maxFallbackAgeHours: 48 },
+  for (const source of ["luma", "begin", "callink", "bampfa"]) {
+    assert.ok(
+      !CRITICAL_SOURCES.has(source),
+      `${source} should be supplementary, not critical`,
     );
-
-    assert.match(
-      result.blocking.join(" "),
-      /critical source\(s\) degraded/,
-      `${source} degradation should block`,
-    );
-    assert.match(result.blocking.join(" "), new RegExp(source));
   }
 });
 
