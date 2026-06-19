@@ -33,8 +33,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Audit dependencies
-        run: npm run audit:security
+      # Dependency auditing intentionally lives in the standalone
+      # `security-audit` workflow, not here. A new upstream CVE must never block
+      # the daily data-update PR from merging; security findings surface as a
+      # tracked issue on their own cadence instead.
 
       - name: Run validation suite
         run: npm run validate
