@@ -19,7 +19,16 @@ jobs:
       - name: Verify production artifacts
         env:
           PRODUCTION_URL: https://cal-events.com
-          MAX_STATUS_AGE_HOURS: "36"
+          # Summer cadence (2026-06): MWF cron means Fri→Mon is ~72h between
+          # publishes; threshold must cover that plus Vercel deploy latency.
+          # Revert to 36 (or 30) on 2026-08-17 when daily cron is restored.
+          MAX_STATUS_AGE_HOURS: "80"
+          # Retry to absorb the Vercel deploy race. Push-to-main triggers both
+          # this smoke test and the production deploy concurrently, and a
+          # fresh fetch can see the previous build's status.json for up to
+          # ~2 minutes before the new artifacts go live.
+          MAX_RETRIES: "6"
+          RETRY_SLEEP_SECONDS: "30"
         run: |
           set -euo pipefail
 
@@ -29,18 +38,27 @@ jobs:
           curl -fsS "${PRODUCTION_URL}/events.json" | jq -e '.events | length > 0'
           curl -fsS "${PRODUCTION_URL}/status.json" | jq -e '.generated_at and (.total_events | tonumber) > 0'
 
-          generated_at="$(curl -fsS "${PRODUCTION_URL}/status.json" | jq -r '.generated_at')"
-          generated_epoch="$(date -u -d "${generated_at}" +%s)"
-          now_epoch="$(date -u +%s)"
-          age_hours="$(( (now_epoch - generated_epoch) / 3600 ))"
+          age_hours=""
+          for attempt in $(seq 1 "${MAX_RETRIES}"); do
+            generated_at="$(curl -fsS "${PRODUCTION_URL}/status.json" | jq -r '.generated_at')"
+            generated_epoch="$(date -u -d "${generated_at}" +%s)"
+            now_epoch="$(date -u +%s)"
+            age_hours="$(( (now_epoch - generated_epoch) / 3600 ))"
 
-          echo "Production status age: ${age_hours}h"
-          if [ "${age_hours}" -gt "${MAX_STATUS_AGE_HOURS}" ]; then
-            echo "::error::Production status.json is ${age_hours}h old (threshold ${MAX_STATUS_AGE_HOURS}h)"
-            exit 1
-          fi
+            echo "Attempt ${attempt}/${MAX_RETRIES}: production status age ${age_hours}h (threshold ${MAX_STATUS_AGE_HOURS}h)"
+            if [ "${age_hours}" -le "${MAX_STATUS_AGE_HOURS}" ]; then
+              echo "Production smoke test passed (attempt ${attempt}, age ${age_hours}h)"
+              exit 0
+            fi
 
-          echo "Production smoke test passed"
+            if [ "${attempt}" -lt "${MAX_RETRIES}" ]; then
+              echo "Waiting ${RETRY_SLEEP_SECONDS}s for Vercel deploy to land..."
+              sleep "${RETRY_SLEEP_SECONDS}"
+            fi
+          done
+
+          echo "::error::Production status.json still ${age_hours}h old after ${MAX_RETRIES} attempts (threshold ${MAX_STATUS_AGE_HOURS}h)"
+          exit 1
 
   notify-failure:
     needs: smoke
