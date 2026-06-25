@@ -5,6 +5,7 @@ import { HttpUrlSchema } from "../../scripts/lib/schema.ts";
 import {
   calendarUrlForMonth,
   gcalTokenToIso,
+  isValidGCalToken,
   parseGCalLink,
   targetMonths,
 } from "../../scripts/sources/bampfa.ts";
@@ -55,6 +56,48 @@ test("BAMPFA parser reads Google Calendar links", () => {
     calendarUrlForMonth("2027-01"),
     "https://bampfa.org/visit/calendar/2027-01",
   );
+});
+
+test("isValidGCalToken accepts the two real BAMPFA token shapes", () => {
+  // All-day token
+  assert.equal(isValidGCalToken("20260422"), true);
+  // Timed token
+  assert.equal(isValidGCalToken("20260422T190000"), true);
+});
+
+test("isValidGCalToken rejects future BAMPFA widget format drifts (regression: P2 #4)", () => {
+  // Scenario: BAMPFA upgrades their calendar widget to emit ISO 8601 or a
+  // different separator. Without validation, gcalTokenToIso's fixed-offset
+  // slice() calls would produce garbage ISO strings that still pass the
+  // schema's old min(8) check, corrupting published event dates.
+  const drifts = [
+    "2026-04-22T19:00:00", // ISO 8601 form (no separator change but slice() math is wrong)
+    "20260422-190000", // dash separator instead of T
+    "20260422t190000", // lowercase t
+    "2026042", // truncated
+    "20260422T1900", // truncated time
+    "20260422T1900000", // extra digit in time
+    "", // empty
+    "garbage-string", // arbitrary
+    "20260422 190000", // space separator
+  ];
+  for (const token of drifts) {
+    assert.equal(
+      isValidGCalToken(token),
+      false,
+      `isValidGCalToken must reject ${JSON.stringify(token)}`,
+    );
+  }
+});
+
+test("parseGCalLink rejects a link whose dates token is malformed", () => {
+  // The widget drifts and emits an ISO-formatted dates token. parseGCalLink
+  // must return null so the event is counted as invalid (no garbage event
+  // ever reaches the canonical schema validation step).
+  const parsed = parseGCalLink(
+    "https://calendar.google.com/calendar/r/eventedit?text=Film+Night&dates=2026-04-22T19:00:00/2026-04-22T21:00:00&details=https%3A%2F%2Fbampfa.org%2Fevent%2Ffilm-night&location=BAMPFA",
+  );
+  assert.equal(parsed, null);
 });
 
 test("E-Hub infers next-year dates for far-future announcements", () => {

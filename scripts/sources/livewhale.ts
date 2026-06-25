@@ -446,13 +446,44 @@ async function prewarmRedirectCache(
   await Promise.all(Array.from({ length: CONCURRENCY }, worker));
 }
 
+const GROUP_FEED_CONCURRENCY = 8;
+
+/**
+ * Fan out group-feed fetches through a bounded worker pool instead of opening
+ * 40+ simultaneous TCP connections to events.berkeley.edu. A wide
+ * `Promise.all` over LIVEWHALE_GROUPS is the most likely way to *cause*
+ * upstream rate-limiting, after which every fetchGroupFeed catches its own
+ * 429 and silently returns {} — so the published count looks normal while
+ * department-specific events that only post to group feeds quietly vanish.
+ */
+async function fetchAllGroupFeeds(
+  options: FetchOptions,
+): Promise<Record<string, unknown>[]> {
+  const results: Record<string, unknown>[] = new Array(LIVEWHALE_GROUPS.length);
+  let nextIdx = 0;
+  const worker = async (): Promise<void> => {
+    while (nextIdx < LIVEWHALE_GROUPS.length) {
+      const myIdx = nextIdx++;
+      results[myIdx] = await fetchGroupFeed(LIVEWHALE_GROUPS[myIdx], options);
+    }
+  };
+  await Promise.all(
+    Array.from(
+      { length: Math.min(GROUP_FEED_CONCURRENCY, LIVEWHALE_GROUPS.length) },
+      worker,
+    ),
+  );
+  return results;
+}
+
 export async function fetchLiveWhale(
   options: FetchOptions = {},
 ): Promise<FetchResult> {
-  // Fetch main feed + all group feeds in parallel
-  const [mainParsed, ...groupResults] = await Promise.all([
+  // The main feed runs in parallel with the bounded group-feed pool; the main
+  // feed is a single request so it doesn't contribute to the 41-way fan-out.
+  const [mainParsed, groupResults] = await Promise.all([
     fetchFeed(FEED_URL, MIN_HEALTHY_EVENT_COUNT, options),
-    ...LIVEWHALE_GROUPS.map((g) => fetchGroupFeed(g, options)),
+    fetchAllGroupFeeds(options),
   ]);
 
   // Merge all iCal records; deduplicate by UID (group feeds overlap with main)
