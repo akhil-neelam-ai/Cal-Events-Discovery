@@ -80,15 +80,15 @@ test("dedupe preserves source priority for normal title and date duplicates", ()
   assert.equal(result.events[0].source_id, "livewhale-lecture");
 });
 
-test("dedupe resolves same-priority collisions deterministically (first seen wins)", () => {
-  const first = event({
+test("dedupe resolves same-priority collisions with order-invariant tie-break (regression: P2 #3)", () => {
+  const callink = event({
     source_name: "callink",
     source_id: "callink-mixer",
     title: "Spring Mixer",
     source_url: "https://example.com/source/callink-mixer",
     canonical_url: "https://example.com/events/callink-mixer",
   });
-  const second = event({
+  const bampfa = event({
     source_name: "bampfa",
     source_id: "bampfa-mixer",
     title: "Spring Mixer",
@@ -96,15 +96,43 @@ test("dedupe resolves same-priority collisions deterministically (first seen win
     canonical_url: "https://example.com/events/bampfa-mixer",
   });
 
-  // Both callink and bampfa carry equal source priority. The winner must not
-  // depend on input order flipping the result — first seen is retained.
-  const forward = dedupeEvents([first, second]);
-  const reversed = dedupeEvents([second, first]);
+  // Both callink and bampfa carry equal source priority. Tie-break is
+  // alphabetical source_name, so bampfa wins regardless of input order — the
+  // published id stays stable across upstream re-sorts, keeping ?event=<id>
+  // deep links unbroken.
+  const forward = dedupeEvents([callink, bampfa]);
+  const reversed = dedupeEvents([bampfa, callink]);
 
   assert.equal(forward.duplicatesRemoved, 1);
-  assert.equal(forward.events[0].source_id, "callink-mixer");
+  assert.equal(forward.events[0].source_id, "bampfa-mixer");
   assert.equal(reversed.duplicatesRemoved, 1);
   assert.equal(reversed.events[0].source_id, "bampfa-mixer");
+});
+
+test("dedupe tie-break uses source_id as secondary sort within the same source", () => {
+  // Two priority-3 events from the same source with different source_ids
+  // (e.g. an event cross-listed under two CallLink subpaths). Tie-break must
+  // still be deterministic.
+  const a = event({
+    source_name: "callink",
+    source_id: "a-mixer",
+    title: "Spring Mixer",
+    source_url: "https://example.com/source/a-mixer",
+    canonical_url: "https://example.com/events/a-mixer",
+  });
+  const b = event({
+    source_name: "callink",
+    source_id: "b-mixer",
+    title: "Spring Mixer",
+    source_url: "https://example.com/source/b-mixer",
+    canonical_url: "https://example.com/events/b-mixer",
+  });
+
+  const forward = dedupeEvents([a, b]);
+  const reversed = dedupeEvents([b, a]);
+
+  assert.equal(forward.events[0].source_id, "a-mixer");
+  assert.equal(reversed.events[0].source_id, "a-mixer");
 });
 
 test("dedupe keeps same-title events on different dates distinct", () => {
