@@ -39,6 +39,10 @@ import {
   CRITICAL_SOURCES,
   parseMaxFallbackAgeHours,
 } from "./lib/feedHealthPolicy.js";
+import {
+  CANCELED_TITLE_PATTERN,
+  appendLastGoodEvents,
+} from "./lib/lastGoodFallback.js";
 import { fetchLiveWhale } from "./sources/livewhale.js";
 
 const LIVEWHALE_HEALTHY_THRESHOLD = 100;
@@ -226,52 +230,6 @@ function loadExistingEvents(): {
   }
 }
 
-function isValidDateKey(dateKey: string): boolean {
-  const match = dateKey.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!match) {
-    return false;
-  }
-
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const parsed = new Date(Date.UTC(year, month - 1, day));
-  return (
-    parsed.getUTCFullYear() === year &&
-    parsed.getUTCMonth() === month - 1 &&
-    parsed.getUTCDate() === day
-  );
-}
-
-/**
- * Pull last-good events for a given source from the previously-published
- * events.json, filtered to today-or-future PT dates.
- */
-function loadLastGoodForSource(
-  existing: LegacyCalEvent[],
-  source: SourceName,
-): LegacyCalEvent[] {
-  const today = todayPT();
-  return existing.filter(
-    (e) => e.source === source && isValidDateKey(e.date) && e.date >= today,
-  );
-}
-
-function appendLastGoodEvents(
-  legacy: LegacyCalEvent[],
-  existing: LegacyCalEvent[],
-  source: SourceName,
-): number {
-  const lastGood = loadLastGoodForSource(existing, source);
-  if (lastGood.length === 0) return 0;
-  const seenIds = new Set(legacy.map((e) => e.id));
-  const merged = lastGood.filter((e) => !seenIds.has(e.id));
-  if (merged.length === 0) return 0;
-  legacy.push(...merged);
-  legacy.sort(compareLegacyEvents);
-  return merged.length;
-}
-
 function fallbackAgeHours(lastUpdated: number | undefined): number | undefined {
   if (!lastUpdated) return undefined;
   const age = (Date.now() - lastUpdated) / 3_600_000;
@@ -285,6 +243,7 @@ function markRecovery(
   legacy: LegacyCalEvent[],
   existing: { events: LegacyCalEvent[]; lastUpdated?: number },
   recovery: RecoveryState,
+  today: string,
 ): void {
   const policy = FALLBACK_POLICIES[run.status.name];
   const belowHealthyThreshold =
@@ -312,6 +271,7 @@ function markRecovery(
     legacy,
     existing.events,
     run.status.name,
+    today,
   );
   if (restored > 0) {
     const ageHours = fallbackAgeHours(existing.lastUpdated);
@@ -540,10 +500,11 @@ async function main(): Promise<void> {
     `[orchestrator] dedupe removed ${duplicatesRemoved}, ${deduped.length} unique`,
   );
 
-  // Strip canceled/postponed/rescheduled events from all sources
-  const canceledPattern = /^(canceled|cancelled|postponed|rescheduled)[:\s]/i;
+  // Strip canceled/postponed/rescheduled events from all sources. The same
+  // pattern is applied inside loadLastGoodForSource so a cancellation can't
+  // resurface via the fallback path on the next day the source flakes.
   const beforeCancel = deduped.length;
-  const active = deduped.filter((e) => !canceledPattern.test(e.title));
+  const active = deduped.filter((e) => !CANCELED_TITLE_PATTERN.test(e.title));
   if (beforeCancel !== active.length) {
     console.log(
       `[orchestrator] removed ${beforeCancel - active.length} canceled/postponed events`,
@@ -563,8 +524,9 @@ async function main(): Promise<void> {
     lastGoodUsed: 0,
   };
 
+  const today = todayPT();
   for (const run of runs) {
-    markRecovery(run, legacy, existing, recovery);
+    markRecovery(run, legacy, existing, recovery, today);
   }
   for (const [name, reason] of cappedReasons) {
     recovery.degradedSources.add(name);
