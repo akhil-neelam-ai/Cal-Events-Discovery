@@ -30,3 +30,7 @@ dist-ssr
 .playwright-cli
 playwright-report
 test-results
+
+# Screenshots dropped at repo root by audit / demo-reel runs.
+# Real product images live under public/ and components/, never at root.
+/*.png

@@ -42,6 +42,21 @@ function dedupeKey(event: CanonicalEvent): string {
   return JSON.stringify([...identity, date]);
 }
 
+/**
+ * Same-priority tie-break: pick a stable winner that does not depend on which
+ * candidate arrived first in upstream API order. Otherwise the published event
+ * id (`${source_name}_${source_id}`) can silently flip whenever an upstream
+ * re-sorts its response, breaking yesterday's `?event=<id>` deep links.
+ *
+ * Order: alphabetical `source_name`, then alphabetical `source_id`.
+ */
+function tieBreak(a: CanonicalEvent, b: CanonicalEvent): CanonicalEvent {
+  const sourceCmp = a.source_name.localeCompare(b.source_name);
+  if (sourceCmp !== 0) return sourceCmp < 0 ? a : b;
+  const idCmp = a.source_id.localeCompare(b.source_id);
+  return idCmp <= 0 ? a : b;
+}
+
 export function dedupeEvents(events: CanonicalEvent[]): DedupeResult {
   const buckets = new Map<string, CanonicalEvent>();
 
@@ -52,10 +67,16 @@ export function dedupeEvents(events: CanonicalEvent[]): DedupeResult {
       buckets.set(key, event);
       continue;
     }
-    const winner =
-      SOURCE_PRIORITY[event.source_name] > SOURCE_PRIORITY[existing.source_name]
-        ? event
-        : existing;
+    const ep = SOURCE_PRIORITY[event.source_name];
+    const xp = SOURCE_PRIORITY[existing.source_name];
+    let winner: CanonicalEvent;
+    if (ep > xp) {
+      winner = event;
+    } else if (ep < xp) {
+      winner = existing;
+    } else {
+      winner = tieBreak(event, existing);
+    }
     buckets.set(key, winner);
   }
 
