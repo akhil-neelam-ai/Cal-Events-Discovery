@@ -38,5 +38,33 @@ jobs:
       # the daily data-update PR from merging; security findings surface as a
       # tracked issue on their own cadence instead.
 
+      - name: Enforce published-artifact size budgets
+        env:
+          # Current sizes are ~576 KB events.json and ~232 KB search-index.json.
+          # The budget is generous (~7x headroom) so seasonal growth is fine,
+          # but catches a regression where one source starts including base64
+          # PDFs or rich HTML in descriptions and balloons the committed file
+          # past the frontend's 8s parse timeout.
+          MAX_EVENTS_JSON_BYTES: "4194304" # 4 MiB
+          MAX_SEARCH_INDEX_BYTES: "2097152" # 2 MiB
+        run: |
+          set -euo pipefail
+          for entry in \
+            "public/events.json:${MAX_EVENTS_JSON_BYTES}" \
+            "public/search-index.json:${MAX_SEARCH_INDEX_BYTES}"; do
+            path="${entry%:*}"
+            budget="${entry##*:}"
+            if [ ! -f "${path}" ]; then
+              echo "::warning::${path} not present in this checkout, skipping size check"
+              continue
+            fi
+            size=$(stat -c %s "${path}" 2>/dev/null || stat -f %z "${path}")
+            echo "${path}: ${size} bytes (budget ${budget})"
+            if [ "${size}" -gt "${budget}" ]; then
+              echo "::error::${path} is ${size} bytes, exceeding the ${budget}-byte budget. A source is likely bloating its description payload — check the latest update-events output for the largest contributors."
+              exit 1
+            fi
+          done
+
       - name: Run validation suite
         run: npm run validate
