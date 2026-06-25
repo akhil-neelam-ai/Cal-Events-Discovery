@@ -109,6 +109,39 @@ const CONTRACTS = [
       }
     },
   },
+  {
+    // First calendar in BERKELEY_LUMA_CALENDARS (scripts/sources/luma.ts).
+    // We only verify the API shape (`entries` array present), not event count —
+    // calendars are intentionally allowed to be empty between terms.
+    name: "luma",
+    url: "https://api.lu.ma/calendar/get-items?calendar_api_id=cal-4TEeXLXVUtUqg91&pagination_limit=1",
+    validate(_response, body) {
+      const parsed = JSON.parse(body);
+      if (
+        !parsed ||
+        typeof parsed !== "object" ||
+        !Array.isArray(parsed.entries)
+      ) {
+        throw new Error("Luma response missing expected `entries` array");
+      }
+    },
+  },
+  {
+    // BEGIN (Berkeley Gateway to Innovation) — Tribe/WP REST endpoint per
+    // scripts/sources/tribe.ts fetchBegin config (baseUrl: begin.berkeley.edu).
+    name: "begin",
+    url: "https://begin.berkeley.edu/wp-json/tribe/events/v1/events?per_page=1",
+    validate(_response, body) {
+      const parsed = JSON.parse(body);
+      if (
+        !parsed ||
+        typeof parsed !== "object" ||
+        !Array.isArray(parsed.events)
+      ) {
+        throw new Error("BEGIN Tribe response missing expected `events` array");
+      }
+    },
+  },
 ];
 
 async function checkContract(contract) {
