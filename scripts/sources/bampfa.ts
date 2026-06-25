@@ -116,12 +116,27 @@ function ptOffsetFor(
 }
 
 /**
+ * Validate a compact Google Calendar token before slice()-based parsing.
+ * Accept only `YYYYMMDD` (all-day) or `YYYYMMDDTHHMMSS` (timed). Reject ISO
+ * 8601, separators other than `T`, or anything outside the [0-9] character
+ * set so a future BAMPFA widget format change fails loudly at parse time
+ * instead of silently producing garbage ISO strings.
+ */
+export function isValidGCalToken(token: string | undefined): boolean {
+  if (!token) return false;
+  return /^\d{8}(T\d{6})?$/.test(token);
+}
+
+/**
  * Convert the compact Google Calendar date token (YYYYMMDDTHHMMSS or
  * YYYYMMDD) to an ISO-8601 string suitable for CanonicalEvent.start_at.
  *
  * BAMPFA's GCal links carry naive Pacific-time tokens with no offset. We
  * append an explicit PT offset so downstream consumers (and `new Date(...)`
  * on UTC CI runners) interpret the moment correctly.
+ *
+ * Callers MUST pre-validate via isValidGCalToken — this function assumes
+ * the input shape.
  */
 export function gcalTokenToIso(token: string): {
   iso: string;
@@ -186,6 +201,16 @@ export function parseGCalLink(href: string): ParsedGCalLink | null {
     if (!text || !dates) return null;
 
     const [startToken, endToken] = dates.split("/");
+
+    // Validate the compact Google Calendar token shape (YYYYMMDD for all-day,
+    // YYYYMMDDTHHMMSS for timed). Without this guard, a future BAMPFA widget
+    // change that switches to ISO 8601 or a different separator would slip
+    // through gcalTokenToIso's fixed-offset slice() calls and produce garbage
+    // ISO strings like "2026--04-2T22T:1:00-08:00" — which would still pass
+    // the old CanonicalEvent.start_at min(8) check, corrupt the publish file,
+    // and silently shift events to wrong dates in the UI.
+    if (!isValidGCalToken(startToken)) return null;
+    if (endToken && !isValidGCalToken(endToken)) return null;
 
     // Extract canonical bampfa.org URL from the details string.
     // BAMPFA embeds it at the end: "... event details: https://bampfa.org/event/slug"

@@ -46,6 +46,21 @@ export const HttpUrlSchema = z
     { message: "URL must use http or https" },
   );
 
+/**
+ * Accepts either a bare PT calendar date (`YYYY-MM-DD`, used for all-day
+ * events) or a full ISO-8601 timestamp with an explicit offset or `Z`. This
+ * is the boundary check that catches a future upstream format change before
+ * it lands in events.json — see the start_at / end_at fields below.
+ */
+const ISO8601_LIKE_PATTERN =
+  /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:?\d{2}))?$/;
+const ISO8601_LIKE_REGEX = z
+  .string()
+  .regex(
+    ISO8601_LIKE_PATTERN,
+    "must be YYYY-MM-DD or ISO 8601 with an explicit offset / Z",
+  );
+
 export const CanonicalEventSchema = z.object({
   // Provenance
   source_name: SourceNameSchema,
@@ -58,9 +73,15 @@ export const CanonicalEventSchema = z.object({
   title: z.string().min(2).max(300),
   description: z.string().max(20000).default(""),
 
-  // Time (ISO 8601 with offset, OR YYYY-MM-DD when all_day)
-  start_at: z.string().min(8),
-  end_at: z.string().min(8).optional(),
+  // Time: either an ISO-8601 date-time with a numeric offset (preferred), or
+  // `YYYY-MM-DD` for all-day events. A loose min(8) check used to accept
+  // any string, which let garbage from a future BAMPFA widget format change
+  // (e.g. "2026--04-2T22T:1:00-08:00") slip into events.json and get
+  // lexicographically compared against today's date — silently shifting
+  // events to wrong dates in the UI. Adapters that emit anything else now
+  // fail Zod validation at the publish boundary instead.
+  start_at: ISO8601_LIKE_REGEX,
+  end_at: ISO8601_LIKE_REGEX.optional(),
   timezone: z.string().default("America/Los_Angeles"),
   all_day: z.boolean().default(false),
 
