@@ -1,24 +1,10 @@
 {
   "events": [
     {
-      "id": "livewhale_20260703T070000Z-320914@events.berkeley.edu",
-      "title": "Academic and Administrative Holiday - Independence Day",
-      "organizer": "Cal Parents",
-      "date": "2026-07-03",
-      "time": "All day",
-      "location": "UC Berkeley Campus",
-      "description": "Academic and Administrative Holiday - Independence Day",
-      "tags": [
-        "Student Life"
-      ],
-      "url": "https://events.berkeley.edu/calparents/event/320914-academic-and-administrative-holiday-independence",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_321554@events.berkeley.edu",
       "title": "Countermyths: 56th Annual UCB MFA Exhibition @ BAMPFA",
       "organizer": "Department of Art Practice",
-      "date": "2026-07-03",
+      "date": "2026-07-06",
       "time": "All day",
       "location": "Berkley Art Museum and Pacific Film Archive",
       "description": "For over fifty years, BAMPFA and the UC Berkeley Department of Art Practice have partnered to present an exhibition of works by the department's graduating class of MFA students. This year's exhibition showcases work from the six graduates— Zuhoor Al Sayegh, Eleni Berg, Kristiana Chan, Swaleha Masude, Héctor Muñoz-Guzmán, and Itzli OCIEL. Through painting, video, textile, ceramics, and installation, this cohort of artists explores varied approaches to traditions of mythmaking. The works on display contend with the limitations of how history has been written and offer alternative modes of collective memory. The artists look to coastal ecosystems, religious folklore, oral history, and the internet as sites from which to reconstruct the past and imagine new futures. What emerges across their works is an approach to remembering the past that embraces the possibilities held in fiction, abstraction, and the natural world to explore the richness of the present. As the contemporary digital landscape fractures a shared sense of history, the artists in the exhibition explore the potential for realigning our strategies of memory and mythmaking. - Berkeley Art Museum and Pacific Film Archive",
@@ -29,9 +15,6 @@
       "url": "https://events.berkeley.edu/art/event/321554-countermyths-56th-annual-ucb-mfa-exhibition-bampfa",
       "source": "livewhale",
       "dates": [
-        "2026-07-03",
-        "2026-07-04",
-        "2026-07-05",
         "2026-07-06",
         "2026-07-07",
         "2026-07-08",
@@ -60,7 +43,7 @@
       "id": "livewhale_309073@events.berkeley.edu",
       "title": "Exhibit | Divestment Now! Student Activism and the Anti-Apartheid Movement at UC Berkeley",
       "organizer": "UC Berkeley Library",
-      "date": "2026-07-03",
+      "date": "2026-07-06",
       "time": "All day",
       "location": "The Rowell Exhibition Cases, Doe Library, 2nd floor",
       "description": "In 1985, UC Berkeley students, with support from faculty, staff, and labor unions, transformed the campus into the heart of a powerful anti-apartheid divestment campaign. They organized rallies, teach-ins, and shantytown encampments to protest the university's financial ties to companies profiting from South Africa's system of racial segregation. Divestment Now! Student Activism and the Anti-Apartheid Movement at UC Berkeley highlights a movement that mobilized thousands, politicized a new generation, and laid the groundwork for ongoing struggles for racial and economic justice.",
@@ -70,9 +53,6 @@
       "url": "https://events.berkeley.edu/Library/event/309073-exhibit-divestment-now-student-activism-and-the-anti-",
       "source": "livewhale",
       "dates": [
-        "2026-07-03",
-        "2026-07-04",
-        "2026-07-05",
         "2026-07-06",
         "2026-07-07",
         "2026-07-08",
@@ -254,15 +234,18 @@
         "2026-12-31",
         "2027-01-01",
         "2027-01-02",
-        "2027-01-03"
+        "2027-01-03",
+        "2027-01-04",
+        "2027-01-05",
+        "2027-01-06"
       ],
-      "end_date": "2027-01-03"
+      "end_date": "2027-01-06"
     },
     {
       "id": "livewhale_316565@events.berkeley.edu",
       "title": "Exhibit | The Etruscans Uncovered: The Phoebe A. Hearst Collection at UC Berkeley",
       "organizer": "UC Berkeley Library",
-      "date": "2026-07-03",
+      "date": "2026-07-06",
       "time": "All day",
       "location": "Bernice Layne Brown Gallery, Doe Library, University of California, Berkeley",
       "description": "The Etruscans Uncovered is an exhibit in Doe Library's Bernice Layne Brown Gallery from March 9 until August 31, 2026. The Etruscans were the first builders of complex urban centers in ancient Italy, established elaborate religious practices, and crafted a wide range of artworks that decorated their homes, cities, and tombs. Although their writing (prose, poetry, and histories) has not survived, the Romans considered the Etruscans to be the \"people of the book.\" Their material culture allows us immediate entry into their public and private lives, whether through their tomb paintings, elaborate bronze and gold metalwork, or finely crafted clay objects. This exhibit presents a sampling of the large Etruscan collection housed at the Phoebe A. Hearst Museum of Anthropology at UC Berkeley, as well as complementary materials from The Bancroft Library. This exhibit complements two other Etruscan exhibitions in the Bay Area: Encountering the Etruscans at the Phoebe A. Hearst Museum (open Fridays, noon to 4:00 p.m., through May 2026) and The Etruscans: From the Heart of Ancient Italy at the Legion of Honor in San Francisco (May 2 through September 20, 2026). Exhibit Curators: Lynn Cunningham, Audrey Feist, Zidheni Hernandez Callejas, Sofia Huff, Iman Khan, Sophia Lavrov, Juan Lopera, Alejandra Lopez, Marianna Maciel, Katherine McGuirt, Haley Morrill, Jackie Page, Lisa Pieraccini, Bradley Pultz, Maddie Qualls, Victoria Ramirez, Xiaonan Ren, Lily Yagubyan",
@@ -273,9 +256,6 @@
       "url": "https://events.berkeley.edu/Library/event/316565-exhibit-the-etruscans-uncovered-the-phoebe-a-hearst-c",
       "source": "livewhale",
       "dates": [
-        "2026-07-03",
-        "2026-07-04",
-        "2026-07-05",
         "2026-07-06",
         "2026-07-07",
         "2026-07-08",
@@ -335,182 +315,6 @@
         "2026-08-31"
       ],
       "end_date": "2026-08-31"
-    },
-    {
-      "id": "bampfa_open-art-lab",
-      "title": "Open: Art Lab",
-      "organizer": "BAMPFA",
-      "date": "2026-07-03",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Open: Art Lab",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/open-art-lab-july-2026",
-      "source": "bampfa",
-      "dates": [
-        "2026-07-03",
-        "2026-07-04",
-        "2026-07-05",
-        "2026-07-10",
-        "2026-07-11",
-        "2026-07-12",
-        "2026-07-17",
-        "2026-07-18",
-        "2026-07-19",
-        "2026-07-24",
-        "2026-07-25",
-        "2026-07-26",
-        "2026-07-31",
-        "2026-08-01",
-        "2026-08-02",
-        "2026-08-06",
-        "2026-08-07",
-        "2026-08-08",
-        "2026-08-09",
-        "2026-08-14",
-        "2026-08-15",
-        "2026-08-16",
-        "2026-08-21",
-        "2026-08-22",
-        "2026-08-23",
-        "2026-08-28",
-        "2026-08-29",
-        "2026-08-30"
-      ],
-      "end_date": "2026-08-30"
-    },
-    {
-      "id": "livewhale_20260704T020000Z-322346@events.berkeley.edu",
-      "title": "Film Screening – \"Le jour se lève\"",
-      "organizer": "BAMPFA",
-      "date": "2026-07-03",
-      "time": "7:00 PM",
-      "location": "2155 Center Street Berkeley, CA",
-      "description": "One of the finest examples of French poetic realist cinema, Marcel Carné's fatalist classic offers up the dead ends, despair, and thwarted love of most American film noirs, with a mood-drenched romanticism contributed by poet Jacques Prévert and a sense of doom contributed by historical circumstances. (It was one of the last French films made before Germany's invasion of France.) Jean Gabin is an honest sod of a working man, barricaded in his boardinghouse hovel with only some cigarettes, a gun, a teddy bear, and a dream of love while he waits for daybreak—and an inevitable police assault. The film will be screened in a 4K Digital Restoration.",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://events.berkeley.edu/BAMPFA/event/322346-film-screening-le-jour-se-leve",
-      "source": "livewhale"
-    },
-    {
-      "id": "bampfa_jour-se-leve::2026-07-03",
-      "title": "Le jour se lève",
-      "organizer": "BAMPFA",
-      "date": "2026-07-03",
-      "time": "7:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Le jour se lève",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/jour-se-leve",
-      "source": "bampfa"
-    },
-    {
-      "id": "bampfa_dr-strangelove-or-how-i-learned-stop-worrying-and-love-bomb",
-      "title": "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
-      "organizer": "BAMPFA",
-      "date": "2026-07-04",
-      "time": "5:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/dr-strangelove-or-how-i-learned-stop-worrying-and-love-bomb",
-      "source": "bampfa",
-      "dates": [
-        "2026-07-04",
-        "2026-08-15"
-      ],
-      "end_date": "2026-08-15"
-    },
-    {
-      "id": "livewhale_20260705T000000Z-322347@events.berkeley.edu",
-      "title": "Film Screening – \"Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb\"",
-      "organizer": "BAMPFA",
-      "date": "2026-07-04",
-      "time": "5:00 PM",
-      "location": "2155 Center Street Berkeley, CA",
-      "description": "Believing that Commie-instigated water fluoridation has made him impotent, Gen. Jack D. Ripper (Sterling Hayden) launches an attack against the Soviet Union. Pretty soon President Merkin Muffley (Peter Sellers) is sitting around the war table with the Joint Chiefs of Staff, a gaggle of gimcrack generals led by Buck Turgidson (George C. Scott), fielding doomsday scenarios. Desperate, the prez turns to ex-Nazi physicist Dr. Strangelove (Sellers, again), who calculates that the gene pool can survive such a theoretical annihilation. Dr. Strangelove's look—tightly designed sets illuminated with expressive pools of light—created a militarized zone of otherworldliness for Kubrick's brilliant farce. The film will be screened in a 4K Digital Restoration.",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://events.berkeley.edu/BAMPFA/event/322347-film-screening-dr-strangelove-or-how-i-learned-to-sto",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260705T180000Z-323729@events.berkeley.edu",
-      "title": "Second Hand Stroll with RA Amy",
-      "organizer": "International House",
-      "date": "2026-07-05",
-      "time": "11:00 AM",
-      "location": "International House, 2299 Piedmont Ave Berkeley, CA",
-      "description": "This calendar shows events hosted by Robertson Center for Intercultural Leadership and Programs and Resident Support Services. Events are for I-House residents only, unless otherwise noted.",
-      "tags": [
-        "Academic"
-      ],
-      "url": "https://events.berkeley.edu/ihouse/event/323729-second-hand-stroll-with-ra-amy",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260705T230000Z-322348@events.berkeley.edu",
-      "title": "Film Screening – \"Only Yesterday\"",
-      "organizer": "BAMPFA",
-      "date": "2026-07-05",
-      "time": "4:00 PM",
-      "location": "2155 Center Street Berkeley, CA",
-      "description": "Only Yesterday is perhaps Takahata's purest work, daring to use Studio Ghibli's jewel-like color and superb command of technique not in the service of depicting fantasy, science fiction, or even war, but to show the infinite value of an ordinary life lived in ordinary times. Flashing between the 1966 youth and 1982 maturity of its protagonist, Taeko, Only Yesterday gives a rich and quiet voice to a Tokyo office worker who journeys into the countryside to commune with the ghost of her childhood.",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://events.berkeley.edu/BAMPFA/event/322348-film-screening-only-yesterday",
-      "source": "livewhale"
-    },
-    {
-      "id": "bampfa_only-yesterday::2026-07-05",
-      "title": "Only Yesterday",
-      "organizer": "BAMPFA",
-      "date": "2026-07-05",
-      "time": "4:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Only Yesterday",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/only-yesterday",
-      "source": "bampfa"
-    },
-    {
-      "id": "livewhale_20260706T020000Z-322349@events.berkeley.edu",
-      "title": "Film Screening – \"The Girl with a Pistol\"",
-      "organizer": "BAMPFA",
-      "date": "2026-07-05",
-      "time": "7:00 PM",
-      "location": "2155 Center Street Berkeley, CA",
-      "description": "One of Vitti's first comic vehicles was this proto-feminist comedy about a traditional Sicilian woman who travels to the United Kingdom seeking the man who dishonored her, and by extension her family. Vitti's mocking humor is perfect for the role, an ardent, and armed, avenger chasing her fleeing fiancé, as she gradually becomes aware of possibilities beyond her quest. In the tradition of Mario Monicelli's Big Deal on Madonna Street, this film cleverly satirizes old-world mores while also examining Italy's relationship to other countries, and the concomitant preoccupation with provincialism versus cosmopolitanism. The film will be screened in a 4K Digital Restoration.",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://events.berkeley.edu/BAMPFA/event/322349-film-screening-the-girl-with-a-pistol",
-      "source": "livewhale"
-    },
-    {
-      "id": "bampfa_girl-pistol::2026-07-05",
-      "title": "The Girl with a Pistol",
-      "organizer": "BAMPFA",
-      "date": "2026-07-05",
-      "time": "7:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "The Girl with a Pistol",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://bampfa.org/event/girl-pistol",
-      "source": "bampfa"
     },
     {
       "id": "livewhale_20260706T070000Z-320916@events.berkeley.edu",
@@ -897,6 +701,48 @@
       ],
       "url": "https://events.berkeley.edu/extension/event/313883-start-anytime-online-science-courses-online-informati",
       "source": "livewhale"
+    },
+    {
+      "id": "bampfa_open-art-lab",
+      "title": "Open: Art Lab",
+      "organizer": "BAMPFA",
+      "date": "2026-07-10",
+      "time": "2:00 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Open: Art Lab",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/open-art-lab-july-2026",
+      "source": "bampfa",
+      "dates": [
+        "2026-07-10",
+        "2026-07-11",
+        "2026-07-12",
+        "2026-07-17",
+        "2026-07-18",
+        "2026-07-19",
+        "2026-07-24",
+        "2026-07-25",
+        "2026-07-26",
+        "2026-07-31",
+        "2026-08-01",
+        "2026-08-02",
+        "2026-08-06",
+        "2026-08-07",
+        "2026-08-08",
+        "2026-08-09",
+        "2026-08-14",
+        "2026-08-15",
+        "2026-08-16",
+        "2026-08-21",
+        "2026-08-22",
+        "2026-08-23",
+        "2026-08-28",
+        "2026-08-29",
+        "2026-08-30"
+      ],
+      "end_date": "2026-08-30"
     },
     {
       "id": "livewhale_20260711T020000Z-322352@events.berkeley.edu",
@@ -3161,6 +3007,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260811T000000Z-324011@events.berkeley.edu",
+      "title": "California Men's Soccer at Saint Mary's",
+      "organizer": "Cal Athletics",
+      "date": "2026-08-10",
+      "time": "5:00 PM",
+      "location": "Moraga, CA",
+      "description": "California Men's Soccer at Saint Mary's",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/324011-california-mens-soccer-at-saint-marys",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260812T070000Z-323027@events.berkeley.edu",
       "title": "Results: Foundational Skills",
       "organizer": "CRLP",
@@ -3274,6 +3134,20 @@
       ],
       "url": "https://lu.ma/berkeley-ifel",
       "source": "luma"
+    },
+    {
+      "id": "livewhale_20260814T020000Z-324010@events.berkeley.edu",
+      "title": "California Men's Soccer at UC Davis",
+      "organizer": "Cal Athletics",
+      "date": "2026-08-13",
+      "time": "7:00 PM",
+      "location": "Davis, CA",
+      "description": "California Men's Soccer at UC Davis",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/324010-california-mens-soccer-at-uc-davis",
+      "source": "livewhale"
     },
     {
       "id": "livewhale_20260814T020000Z-322421@events.berkeley.edu",
@@ -3442,6 +3316,20 @@
         "Arts"
       ],
       "url": "https://bampfa.org/event/promises",
+      "source": "bampfa"
+    },
+    {
+      "id": "bampfa_dr-strangelove-or-how-i-learned-stop-worrying-and-love-bomb::2026-08-15",
+      "title": "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
+      "organizer": "BAMPFA",
+      "date": "2026-08-15",
+      "time": "6:30 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://bampfa.org/event/dr-strangelove-or-how-i-learned-stop-worrying-and-love-bomb",
       "source": "bampfa"
     },
     {
@@ -3837,6 +3725,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260822T020000Z-324009@events.berkeley.edu",
+      "title": "California Men's Soccer at Portland",
+      "organizer": "Cal Athletics",
+      "date": "2026-08-21",
+      "time": "7:00 PM",
+      "location": "Portland, OR",
+      "description": "California Men's Soccer at Portland",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/324009-california-mens-soccer-at-portland",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260822T020000Z-322429@events.berkeley.edu",
       "title": "Film Screening – \"Four Films by Jerome Hiler\"",
       "organizer": "BAMPFA",
@@ -4012,7 +3914,7 @@
       "date": "2026-08-24",
       "time": "9:00 AM",
       "location": "Calvin Lab auditorium — Calvin Lab",
-      "description": "Pseudorandomness & High-Dimensional Expansion",
+      "description": "Spectral Theory Beyond Graphs",
       "tags": [
         "Science & Tech"
       ],
@@ -4237,6 +4139,20 @@
       "source": "bampfa"
     },
     {
+      "id": "livewhale_20260828T023000Z-324008@events.berkeley.edu",
+      "title": "California Men's Soccer at Santa Clara",
+      "organizer": "Cal Athletics",
+      "date": "2026-08-27",
+      "time": "7:30 PM",
+      "location": "Santa Clara, CA",
+      "description": "California Men's Soccer at Santa Clara",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/324008-california-mens-soccer-at-santa-clara",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260828T070000Z-323756@events.berkeley.edu",
       "title": "California Men's Water Polo vs UCLA",
       "organizer": "Cal Athletics",
@@ -4453,7 +4369,7 @@
       "date": "2026-08-31",
       "time": "9:00 AM",
       "location": "Calvin Lab auditorium — Calvin Lab",
-      "description": "Spectral Theory Beyond Graphs",
+      "description": "Pseudorandomness & High-Dimensional Expansion",
       "tags": [
         "Science & Tech"
       ],
@@ -4560,6 +4476,20 @@
         "Academic"
       ],
       "url": "https://events.berkeley.edu/econ/event/323819-joint-seminar-237-macroeconomicsmonetary-economics-an",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260902T000000Z-324007@events.berkeley.edu",
+      "title": "California Men's Soccer vs UCLA",
+      "organizer": "Cal Athletics",
+      "date": "2026-09-01",
+      "time": "5:00 PM",
+      "location": ", Edwards Stadium",
+      "description": "California Men's Soccer vs UCLA",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/324007-california-mens-soccer-vs-ucla",
       "source": "livewhale"
     },
     {
@@ -4825,6 +4755,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260906T230000Z-324006@events.berkeley.edu",
+      "title": "California Men's Soccer vs North Carolina",
+      "organizer": "Cal Athletics",
+      "date": "2026-09-06",
+      "time": "4:00 PM",
+      "location": ", Edwards Stadium",
+      "description": "California Men's Soccer vs North Carolina",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/324006-california-mens-soccer-vs-north-carolina",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260907T070000Z-322283@events.berkeley.edu",
       "title": "Academic and Administrative Holiday - Labor Day",
       "organizer": "Cal Parents",
@@ -4880,6 +4824,20 @@
         "Student Life"
       ],
       "url": "https://events.berkeley.edu/music/event/323901-noon-concert-piano-recital",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260909T230000Z-324005@events.berkeley.edu",
+      "title": "California Men's Soccer vs Cal State Fullerton",
+      "organizer": "Cal Athletics",
+      "date": "2026-09-09",
+      "time": "4:00 PM",
+      "location": ", Edwards Stadium",
+      "description": "California Men's Soccer vs Cal State Fullerton",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/324005-california-mens-soccer-vs-cal-state-fullerton",
       "source": "livewhale"
     },
     {
@@ -5067,6 +5025,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260913T190000Z-324004@events.berkeley.edu",
+      "title": "California Men's Soccer at Louisville",
+      "organizer": "Cal Athletics",
+      "date": "2026-09-13",
+      "time": "12:00 PM",
+      "location": "Louisville, KY",
+      "description": "California Men's Soccer at Louisville",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/324004-california-mens-soccer-at-louisville",
+      "source": "livewhale"
+    },
+    {
       "id": "simons_workshops-algorithmic-foundations-emerging-computing-technologies-reunion::2026-09-14",
       "title": "Algorithmic Foundations for Emerging Computing Technologies Reunion",
       "organizer": "Simons Institute",
@@ -5241,6 +5213,20 @@
         "Science & Tech"
       ],
       "url": "https://events.berkeley.edu/mcb/event/322872-william-ludington-divisions-of-biochemistry",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260917T020000Z-324003@events.berkeley.edu",
+      "title": "California Men's Soccer at San Francisco",
+      "organizer": "Cal Athletics",
+      "date": "2026-09-16",
+      "time": "7:00 PM",
+      "location": "San Francisco, CA",
+      "description": "California Men's Soccer at San Francisco",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/324003-california-mens-soccer-at-san-francisco",
       "source": "livewhale"
     },
     {
@@ -5490,6 +5476,20 @@
         "Arts"
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/322270-pink-trash-at-crescent-lawn-uc-berkeley",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260920T220000Z-324002@events.berkeley.edu",
+      "title": "California Men's Soccer vs Pittsburgh",
+      "organizer": "Cal Athletics",
+      "date": "2026-09-20",
+      "time": "3:00 PM",
+      "location": ", Edwards Stadium",
+      "description": "California Men's Soccer vs Pittsburgh",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/324002-california-mens-soccer-vs-pittsburgh",
       "source": "livewhale"
     },
     {
@@ -5829,6 +5829,20 @@
       ],
       "url": "https://calbears.com/calendar.aspx?game_id=38715&sport_id=3",
       "source": "calbears"
+    },
+    {
+      "id": "livewhale_20260926T020000Z-324001@events.berkeley.edu",
+      "title": "California Men's Soccer at Pacific",
+      "organizer": "Cal Athletics",
+      "date": "2026-09-25",
+      "time": "7:00 PM",
+      "location": "Stockton, CA",
+      "description": "California Men's Soccer at Pacific",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/324001-california-mens-soccer-at-pacific",
+      "source": "livewhale"
     },
     {
       "id": "livewhale_20260926T023000Z-323104@events.berkeley.edu",
@@ -6297,6 +6311,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261003T230000Z-324000@events.berkeley.edu",
+      "title": "California Men's Soccer at Notre Dame",
+      "organizer": "Cal Athletics",
+      "date": "2026-10-03",
+      "time": "4:00 PM",
+      "location": "South Bend, Ind.",
+      "description": "California Men's Soccer at Notre Dame",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/324000-california-mens-soccer-at-notre-dame",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261004T000000Z-323788@events.berkeley.edu",
       "title": "California Women's Soccer at Duke",
       "organizer": "Cal Athletics",
@@ -6577,7 +6605,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261009T000000Z-323915@events.berkeley.edu",
+      "id": "livewhale_20261009T000000Z-323841@events.berkeley.edu",
       "title": "2026 Feldman Lecture | Reckoning with the Past in Germany and the United States: The Case for Thinking Comparatively about Reparative Justice",
       "organizer": "Institute of European Studies",
       "date": "2026-10-08",
@@ -6634,6 +6662,20 @@
       ],
       "url": "https://haas.berkeley.edu/event/alumni-and-parents-weekend-at-homecoming-2/",
       "source": "haas"
+    },
+    {
+      "id": "livewhale_20261009T070000Z-323999@events.berkeley.edu",
+      "title": "California Men's Soccer at Virginia",
+      "organizer": "Cal Athletics",
+      "date": "2026-10-09",
+      "time": "All day",
+      "location": "Charlottesville, VA",
+      "description": "California Men's Soccer at Virginia",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/323999-california-mens-soccer-at-virginia",
+      "source": "livewhale"
     },
     {
       "id": "livewhale_20261009T190000Z-323288@events.berkeley.edu",
@@ -6865,6 +6907,20 @@
       "source": "berkeley_law"
     },
     {
+      "id": "livewhale_20261013T223000Z-323998@events.berkeley.edu",
+      "title": "California Men's Soccer vs Saint Mary's",
+      "organizer": "Cal Athletics",
+      "date": "2026-10-13",
+      "time": "3:30 PM",
+      "location": ", Edwards Stadium",
+      "description": "California Men's Soccer vs Saint Mary's",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/323998-california-mens-soccer-vs-saint-marys",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261013T230000Z-323825@events.berkeley.edu",
       "title": "Seminar 237 - Macroeconomics/Monetary Economics: TBD",
       "organizer": "Department of Economics",
@@ -7088,6 +7144,20 @@
       ],
       "url": "https://calbears.com/calendar.aspx?game_id=38721&sport_id=3",
       "source": "calbears"
+    },
+    {
+      "id": "livewhale_20261018T210000Z-323997@events.berkeley.edu",
+      "title": "California Men's Soccer vs NC State",
+      "organizer": "Cal Athletics",
+      "date": "2026-10-18",
+      "time": "2:00 PM",
+      "location": ", Edwards Stadium",
+      "description": "California Men's Soccer vs NC State",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/323997-california-mens-soccer-vs-nc-state",
+      "source": "livewhale"
     },
     {
       "id": "livewhale_20261018T220000Z-323553@events.berkeley.edu",
@@ -7405,6 +7475,20 @@
         "Sports"
       ],
       "url": "https://events.berkeley.edu/sports/event/315724-california-football-at-smu",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261024T220000Z-323996@events.berkeley.edu",
+      "title": "California Men's Soccer vs Southern Methodist University",
+      "organizer": "Cal Athletics",
+      "date": "2026-10-24",
+      "time": "3:00 PM",
+      "location": ", Edwards Stadium",
+      "description": "California Men's Soccer vs Southern Methodist University",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/323996-california-mens-soccer-vs-southern-methodist",
       "source": "livewhale"
     },
     {
@@ -7754,6 +7838,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261031T010000Z-323995@events.berkeley.edu",
+      "title": "California Men's Soccer at Stanford",
+      "organizer": "Cal Athletics",
+      "date": "2026-10-30",
+      "time": "6:00 PM",
+      "location": "Stanford, CA",
+      "description": "California Men's Soccer at Stanford",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/323995-california-mens-soccer-at-stanford",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261031T070000Z-315723@events.berkeley.edu",
       "title": "California Football at NC State",
       "organizer": "Cal Athletics",
@@ -7830,9 +7928,10 @@
       "date": "2026-11-01",
       "time": "3:00 PM",
       "location": "Hertz Hall",
-      "description": "Mezzo-soprano Ema Nikolovska returns to Berkeley following her memorable 2024 debut—this time joined by acclaimed guitarist Sean Shibe—in an eclectic concert weaving together acoustic and electric music across genres and centuries. Orlando riffs on the character and energy of Virginia Woolf's groundbreaking novel, with echoes of the medieval Chanson de Roland and Ariosto's Orlando Furioso. Exploring love, conflict, and identity, the duo performs works by Schubert, Dowland, Bob Dylan, Laurie Anderson, and others alongside new commissions by Sasha Scott, Nahre Sol, and more. \"The experience felt like being awake in a vivid dream… their shared artistic purpose and daring made it gel\"—The Times, London",
+      "description": "Sunday, November 1, 3pmHertz Hall Recital Ema Nikolovska, mezzo-sopranoSean Shibe,guitarOrlando Variations Program: Mezzo-soprano Ema Nikolovska returns to Berkeley following her 2024 debut–��this time joined by acclaimed guitarist Sean Shibe––in an eclectic concert weaving together acoustic and electric music across genres and centuries. Orlando riffs on the character and energy of Virginia Woolf's groundbreaking novel of the same name, with echoes of the medieval Chanson de Roland and Ariosto's Orlando Furioso. Exploring love, conflict, and identity, the duo performs works by Schubert, Dowland, Bob Dylan, Laurie Anderson, and others alongside new commissions by Sasha Scott, Nahre Sol, and more.",
       "tags": [
-        "Arts"
+        "Arts",
+        "Academic"
       ],
       "url": "https://events.berkeley.edu/calperfs/event/323558-ema-nikolovska-mezzo-soprano-sean-shibe-guitar",
       "source": "livewhale"
@@ -8068,6 +8167,36 @@
       ],
       "url": "https://events.berkeley.edu/sports/event/323783-california-womens-soccer-at-syracuse",
       "source": "livewhale"
+    },
+    {
+      "id": "livewhale_323994@events.berkeley.edu",
+      "title": "California Men's Soccer at ACC Championship: TBA",
+      "organizer": "Cal Athletics",
+      "date": "2026-11-06",
+      "time": "All day",
+      "location": "Berkeley, CA",
+      "description": "California Men's Soccer at ACC Championship: TBA",
+      "tags": [
+        "Sports"
+      ],
+      "url": "https://events.berkeley.edu/sports/event/323994-california-mens-soccer-at-acc-championship-tba",
+      "source": "livewhale",
+      "dates": [
+        "2026-11-06",
+        "2026-11-07",
+        "2026-11-08",
+        "2026-11-09",
+        "2026-11-10",
+        "2026-11-11",
+        "2026-11-12",
+        "2026-11-13",
+        "2026-11-14",
+        "2026-11-15",
+        "2026-11-16",
+        "2026-11-17",
+        "2026-11-18"
+      ],
+      "end_date": "2026-11-18"
     },
     {
       "id": "livewhale_20261106T080000Z-322634@events.berkeley.edu",
@@ -8526,7 +8655,7 @@
       "date": "2026-11-19",
       "time": "7:30 PM",
       "location": "101 Zellerbach Hall, Berkeley, CA 94720",
-      "description": "Hailed by the Telegraph as \"the greatest soprano in the world,\" Lise Davidsen has listeners flocking to hear her wherever she sings��a following that has only grown since her memorable Cal Performances debut during the 2024–25 season. Her return to Berkeley arrives amid a remarkable year for this singular artist, including her long-awaited role debut as Isolde in Wagner's Tristan und Isolde at the Metropolitan Opera and Barcelona's Gran Teatre del Liceu in two stunning productions created expressly for her, each rapturously received. Here, she and recital partner James Baillieu—one of the leading song pianists of his generation—bring a program featuring works by Bach, Reger, and Richard Strauss alongside Wagner's Tristan-imbued Wesendonck Lieder, all capped off with a glorious selection of traditional Christmas favorites sung in English, German, Italian, and, of course, Davidsen's native Norwegian. \"The radiating, shimmering … overtones that halo her voice make [Davidsen] sound arrestingly powerful and visceral. You feel it as almost physical presence—pressing against your chest, raising the hairs on the back of your neck.\"—The New York TimesThis performance is made possible in part by Priscilla and Keith Geeslin and by the Norway House Foundation (https://calperformances.org/artists/norway-house-foundation/).",
+      "description": "Thursday, November 19, 7:30pmRecitalLise Davidsen, sopranoJames Baillieu, piano Program: Lise Davidsen returns to Cal Performances after her well-received debut recital in February 2025. The performance takes place on the heels of a remarkable year for this singular artist, including her long-awaited role debut as Isolde in Wagner's Tristan und Isolde at the Metropolitan Opera and at Barcelona's Gran Teatre del Liceu in two stunning productions created expressly for her. In this recital she is joined by James Baillieu––one of the leading song pianists of his generation––bring a program featuring works by Bach, Reger, and Richard Strauss alongside Wagner's Tristan-imbued Wesendonck Lieder, all capped off with a selection of traditional Christmas songs performed in English, German, Italian, and Davidsen's native Norwegian. Strauss/\"Wiegenlied,\" from 5 Lieder, Op. 41 Bach/Gounod/Ave Maria Reger/Mariä Wiegenlied Praetorius/Traditional Norwegian/Det hev ei rose sprunge Wagner/Wesendonck Lieder Traditional/Mendelssohn/arr. Douglas/Hark the Herald Angels Sing Traditional English/arr. Henderson/ The First Noel Gruber/Silent Night Bach/Jesu bleibet meine Freude Traditional/O Come, All Ye Faithful Brorson/Mitt hjerte alltid vanker Verdi/\"Ave Maria,\" from OtelloTraditional Norwegian/Deilig er jorden Traditional Scottish/Auld Lang Syne Adam/O Helga natt",
       "tags": [
         "Arts",
         "Academic"
@@ -8574,7 +8703,7 @@
       "date": "2026-11-20",
       "time": "7:30 PM",
       "location": "101 Zellerbach Hall, Berkeley, CA 94720",
-      "description": "Pianists to include Timo Andres, Aaron Diehl, Daniela Liebman, and Jason Moran Philip Glass' Piano Etudes, \"portals into Glass' world of whirling arpeggios, shocking rhythmic and harmonic turns, and meditative discipline\" (The New York Times), represent the composer's most personal body of work, a self-portrait of a life's practice representing some of his most intimate and inventive music. Cal Performances hosts a marathon tribute to the prolific and hugely influential composer during his 90th birthday year, inviting 10 accomplished pianists from all corners of the music world–both longtime Glass interpreters and special guests–to reflect on this remarkable music. \"It works best, therefore, to think about the Etudes… as sketches of a creative force whose work will outlast any single one of us, including the artist who made it\"—The GuardianPlease note: Philip Glass will not be present for this performance.This performance is made possible in part by Françoise Stone. Additional support is provided by the Estate of Anne Shortall.",
+      "description": "Friday, November 20, 7:30pmNew Music The Complete Philip Glass Piano Etudes Pianists to include Timo Andres, Aaron Diehl, Daniela Liebman, and Jason MoranProgram: Philip Glass' Piano Etudes represent the composer's most personal body of work, a self-portrait of a life's practice representing some of his most intimate and inventive music. Cal Performances hosts a tribute to the prolific and hugely influential composer during his 90th birthday year, inviting 10 accomplished pianists from all corners of the music world–both longtime Glass interpreters and special guests–to reflect on this remarkable music. Please note: Philip Glass will not be present for this performance.",
       "tags": [
         "Arts"
       ],
@@ -8602,7 +8731,7 @@
       "date": "2026-11-21",
       "time": "7:00 PM",
       "location": "101 Zellerbach Hall, Berkeley, CA 94720",
-      "description": "The Absence of Ruin is innovative jazz pianist and composer Jason Moran's multidisciplinary meditation on the life and legacy of James Reese Europe, the underrecognized Black American composer and bandleader who landed in France with the Harlem Hellfighters on New Year's Day 1918. The celebrated all-Black unit helped break the stalemate on the Western front during the First World War, while composer Europe's finely honed military music ensemble helped popularize the new spirit of jazz in a war-torn France fascinated with Black culture. Praised by the Washington Post as a \"beautiful, poignant, reverent\" tribute to Europe with a \"stark, sublime beauty,\" Moran's layered work explores the idea of memory in Black culture, augmenting his longstanding Bandwagon bandmates—bassist Tarus Mateen and drummer Nasheet Waits—with a seven-piece horn section and visuals by Oscar-nominated cinematographer Bradford Young. This event is part of Cal Performances' Illuminations: \"Innocence & Experience\" programming for the 2026–27 season.",
+      "description": "Saturday, November 21, 7:30pmJazzJason Moran and the Harlem HellfightersJames Reese Europe and the Absence of RuinProgram:The Absence of Ruin is jazz pianist and composer Jason Moran's multidisciplinary meditation on the life and legacy of James Reese Europe, the underrecognized Black American composer and bandleader who landed in France with the Harlem Hellfighters on New Year's Day 1918. The celebrated all-Black unit helped break the stalemate on the Western Front during the First World War, while composer Europe's finely honed military music ensemble popularized the new spirit of jazz in a war-torn France fascinated with Black culture. Moran's layered work explores the idea of memory in Black culture, augmenting his long-standing Bandwagon bandmates––bassist Tarus Mateen and drummer Nasheet Waits––with a seven-piece horn section and visuals by Oscar-nominated cinematographer Bradford Young. An Illuminations: \"Innocence & Experience\" event. Visit calperformances.org/illuminations for details.",
       "tags": [
         "Arts"
       ],
@@ -8685,23 +8814,34 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_323611@events.berkeley.edu",
+      "id": "livewhale_20261128T220000Z-323611@events.berkeley.edu",
       "title": "Cirque Kalabanté: WOW (World of Words)",
       "organizer": "Cal Performances",
       "date": "2026-11-28",
-      "time": "All day",
+      "time": "2:00 PM",
       "location": "101 Zellerbach Hall, Berkeley, CA 94720",
-      "description": "Saturday, November 28, 2pm Sunday, November 29, 3pm A high-energy visual spectacle for the whole family! Cirque Kalabanté brings traditional African movement and music into the Montreal circus arts tradition with WOW (World of Words) , a new production exploring the transmission of knowledge, the meeting of cultures, and the magic of shared respect. The troupe is led by Yamoussa Bangoura, a multidisciplinary artist of Guinean origin who realized his dream by founding a school of circus arts and directing a company specializing in African arts. \"Between explosive drumming and dance routines, the group delivered mind-blowing acrobatic sequences with extraordinary precision\"— VICE Magazine",
+      "description": "Saturday, November 28, 2pmSunday, November 29, 3pmFamily/Seasonal HolidaysCirque KalabantéWOW (World of Words) Program: Led by Yamoussa Bangoura—a multidisciplinary artist of Guinean origin who founded both a school of circus arts and a company specializing in African arts—Cirque Kalabanté brings together traditional African movement and music with the Montreal circus arts tradition in a work that communicates its story almost entirely through dance, acrobatics, contortion, music, and clever staging in place of dialogue. Their new production, WOW (World of Words), explores the transmission of knowledge, the meeting of cultures, and the magic of shared respect.",
       "tags": [
-        "Arts"
+        "Arts",
+        "Academic"
       ],
       "url": "https://events.berkeley.edu/calperfs/event/323611-cirque-kalabante-wow-world-of-words",
-      "source": "livewhale",
-      "dates": [
-        "2026-11-28",
-        "2026-11-29"
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261129T230000Z-323989@events.berkeley.edu",
+      "title": "Cirque Kalabanté: WOW (World of Words)",
+      "organizer": "Cal Performances",
+      "date": "2026-11-29",
+      "time": "3:00 PM",
+      "location": "101 Zellerbach Hall, Berkeley, CA 94720",
+      "description": "Saturday, November 28, 2pmSunday, November 29, 3pmFamily/Seasonal HolidaysCirque KalabantéWOW (World of Words) Program: Led by Yamoussa Bangoura—a multidisciplinary artist of Guinean origin who founded both a school of circus arts and a company specializing in African arts—Cirque Kalabanté brings together traditional African movement and music with the Montreal circus arts tradition in a work that communicates its story almost entirely through dance, acrobatics, contortion, music, and clever staging in place of dialogue. Their new production, WOW (World of Words), explores the transmission of knowledge, the meeting of cultures, and the magic of shared respect.",
+      "tags": [
+        "Arts",
+        "Academic"
       ],
-      "end_date": "2026-11-29"
+      "url": "https://events.berkeley.edu/calperfs/event/323989-cirque-kalabante-wow-world-of-words",
+      "source": "livewhale"
     },
     {
       "id": "simons_workshops-applications-pseudorandomness-high-dimensional-expansion::2026-11-30",
@@ -8936,17 +9076,19 @@
       "source": "simons"
     },
     {
-      "id": "livewhale_20261209T080000Z-322636@events.berkeley.edu",
-      "title": "Results: Foundational Skills",
-      "organizer": "CRLP",
+      "id": "livewhale_20261209T200000Z-323912@events.berkeley.edu",
+      "title": "Noon Concert: Piano Performance Lab Recital",
+      "organizer": "Department of Music",
       "date": "2026-12-09",
-      "time": "All day",
-      "location": "North Monterey County Unified School District",
-      "description": "CRLP at UC Berkeley is continuing a new collaboration with North Monterey County Unified School District to offer the CRLP Results: Word Recognition & Fluency signature program to all TK-5th Grade Teachers, Special Educators, and Administrators. Part 1 consists of Foundational Skills Assessments and is followed by Part 2 (Data Analysis, Instruction, and Intervention). The focus of the professional learning session is Assessment, Instruction, and Intervention: Supporting Implementation of the Common Core Reading Foundational Skills.",
+      "time": "12:00 PM",
+      "location": "Hertz Concert Hall",
+      "description": "Piano students from the studio class, Music 168CS, perform a variety of solo works Admission to all Noon Concerts is free. Registration helps us anticipate crowd size and is recommended at music.berkeley.edu/register (https://forms.gle/WUtczqGzrLpnjgKC6).Safety The UC Berkeley Department of Music is committed to the health and safety of our students, staff, and patrons. Measures to protect concertgoers and musicians will be informed by state, local, and UC Berkeley Public Health policies and are subject to change. Social distancing, masks, and proof of COVID 19 vaccination may be required. UC Berkeley does not promise or guarantee that all patrons or employees on site are vaccinated. Unvaccinated individuals may be present as a result of exemptions, exceptions, fraudulent verification, or checker error. None of these precautions eliminate the risk of exposure to COVID-19. Registration is strongly encouraged for noon concerts at music.berkeley.edu/register (https://forms.gle/WUtczqGzrLpnjgKC6).Accessibility If you require an accommodation for effective communication (ASL interpreting/CART captioning, alternative media formats, etc.) or information about campus mobility access features in order to fully participate in this event, please contact the Hertz Hall Manager at 510.642.4864 or hertzhallmgr@berkeley.edu (mailto:hertzhallmgr@berkeley.edu). with as much advance notice as possible and at least 7-10 days in advance of the event. Facebook: @ucbmusicdept (https://www.facebook.com/ucbmusicdept) Instagram: @ucberkeleymusic (https://www.instagram.com/ucberkeleymusic) Youtube: Berkeley Music YouTube channel (https://www.youtube.com/channel/UC-a586K2VwowyUPAwVO36Qw/featured)",
       "tags": [
-        "Academic"
+        "Arts",
+        "Academic",
+        "Student Life"
       ],
-      "url": "https://events.berkeley.edu/live/events/321673-results-foundational-skills",
+      "url": "https://events.berkeley.edu/music/event/323912-noon-concert-piano-performance-lab-recital",
       "source": "livewhale"
     },
     {
@@ -8962,6 +9104,20 @@
         "Academic"
       ],
       "url": "https://www.ischool.berkeley.edu/events/2026/cybersecurity-fall-2026-capstone-project-showcase",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261211T201000Z-322483@events.berkeley.edu",
+      "title": "Labor Lunch: Mark Borgschulte",
+      "organizer": "Department of Economics",
+      "date": "2026-12-11",
+      "time": "12:10 PM",
+      "location": "648 Evans Hall",
+      "description": "Labor Lunch",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/322483-labor-lunch-mark-borgschulte",
       "source": "livewhale"
     },
     {
@@ -9586,7 +9742,7 @@
       "uri": "https://begin.berkeley.edu/events/"
     }
   ],
-  "lastUpdated": 1783083275950,
+  "lastUpdated": 1783347749823,
   "data_age_hours": 0,
   "degraded_sources": []
 }
