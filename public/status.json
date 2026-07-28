@@ -1,104 +1,86 @@
 {
-  "generated_at": "2026-07-24T12:17:18.261Z",
-  "total_events": 773,
-  "duplicates_removed": 220,
+  "generated_at": "2026-07-28T16:23:29.268Z",
+  "total_events": 844,
+  "duplicates_removed": 215,
   "past_events_filtered": 2963,
-  "invalid_events_filtered": 8,
+  "invalid_events_filtered": 6,
   "sources": [
     {
       "name": "livewhale",
       "ok": true,
-      "count": 1310,
-      "duration_ms": 3047,
-      "fetched_at": "2026-07-24T12:16:53.797Z"
+      "count": 1311,
+      "duration_ms": 14793,
+      "fetched_at": "2026-07-28T16:23:03.665Z"
     },
     {
       "name": "callink",
       "ok": true,
       "count": 10,
-      "duration_ms": 394,
-      "fetched_at": "2026-07-24T12:16:53.820Z"
+      "duration_ms": 2316,
+      "fetched_at": "2026-07-28T16:23:03.673Z"
     },
     {
       "name": "cal_performances",
       "ok": true,
       "count": 53,
-      "duration_ms": 24048,
-      "fetched_at": "2026-07-24T12:16:53.822Z"
+      "duration_ms": 25478,
+      "fetched_at": "2026-07-28T16:23:03.674Z"
     },
     {
       "name": "calbears",
       "ok": true,
       "count": 118,
-      "duration_ms": 430,
-      "fetched_at": "2026-07-24T12:16:53.823Z"
+      "duration_ms": 1519,
+      "fetched_at": "2026-07-28T16:23:03.674Z"
     },
     {
       "name": "bampfa",
       "ok": true,
-      "count": 106,
-      "duration_ms": 757,
-      "fetched_at": "2026-07-24T12:16:53.825Z"
+      "count": 121,
+      "duration_ms": 1728,
+      "fetched_at": "2026-07-28T16:23:03.674Z"
     },
     {
       "name": "haas",
       "ok": true,
       "count": 13,
-      "duration_ms": 3045,
-      "fetched_at": "2026-07-24T12:16:53.827Z"
+      "duration_ms": 6540,
+      "fetched_at": "2026-07-28T16:23:03.675Z"
     },
     {
       "name": "berkeley_law",
       "ok": true,
-      "count": 46,
-      "duration_ms": 1850,
-      "fetched_at": "2026-07-24T12:16:53.829Z"
+      "count": 67,
+      "duration_ms": 4625,
+      "fetched_at": "2026-07-28T16:23:03.675Z"
     },
     {
       "name": "simons",
       "ok": true,
-      "count": 20,
-      "duration_ms": 15509,
-      "fetched_at": "2026-07-24T12:16:53.829Z"
-    },
-    {
-      "name": "ehub",
-      "ok": false,
-      "count": 0,
-      "duration_ms": 6530,
-      "error": "ehub fetch failed after 3 attempts: 404 Not Found",
-      "fetched_at": "2026-07-24T12:16:53.831Z",
-      "degraded": true,
-      "degraded_reason": "ehub failed: ehub fetch failed after 3 attempts: 404 Not Found",
-      "fallback_used": true,
-      "fallback_count": 1,
-      "fallback_age_hours": 47.9
+      "count": 19,
+      "duration_ms": 1734,
+      "fetched_at": "2026-07-28T16:23:03.676Z"
     },
     {
       "name": "luma",
       "ok": true,
-      "count": 7,
-      "duration_ms": 1193,
-      "fetched_at": "2026-07-24T12:16:53.832Z"
+      "count": 9,
+      "duration_ms": 1927,
+      "fetched_at": "2026-07-28T16:23:03.676Z"
     },
     {
       "name": "begin",
       "ok": true,
       "count": 0,
-      "duration_ms": 1940,
-      "fetched_at": "2026-07-24T12:16:53.839Z"
+      "duration_ms": 1760,
+      "fetched_at": "2026-07-28T16:23:03.679Z"
     }
   ],
-  "fallback_used": true,
-  "degraded": true,
-  "degraded_reason": "ehub failed: ehub fetch failed after 3 attempts: 404 Not Found",
-  "last_good_used": 1,
-  "fallback_age_hours": 47.9,
+  "fallback_used": false,
+  "degraded": false,
+  "last_good_used": 0,
   "data_quality_blocked": false,
-  "fallback_sources": [
-    "ehub"
-  ],
-  "degraded_sources": [
-    "ehub"
-  ]
+  "fallback_sources": [],
+  "degraded_sources": [],
+  "stale_fallback_sources": []
 }

@@ -2,7 +2,6 @@ import type { SearchFilters } from "./types";
 
 export const SOURCE_LABELS: Record<string, string> = {
   livewhale: "UC Berkeley Events",
-  ehub: "Berkeley E-Hub",
   cal_performances: "Cal Performances",
   bampfa: "BAMPFA",
   calbears: "Cal Bears",
@@ -16,7 +15,6 @@ export const SOURCE_LABELS: Record<string, string> = {
 
 export const SOURCE_URLS: Record<string, string> = {
   livewhale: "https://events.berkeley.edu",
-  ehub: "https://ehub.berkeley.edu/events/",
   cal_performances: "https://calperformances.org",
   bampfa: "https://bampfa.org/events",
   calbears: "https://calbears.com/calendar",
@@ -53,7 +51,6 @@ export const Categories = [
 export const ALL_SOURCES = [
   "All",
   "livewhale",
-  "ehub",
   "cal_performances",
   "bampfa",
   "calbears",

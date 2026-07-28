@@ -7,8 +7,7 @@
  *   callink          (CampusGroups JSON API, student org events) =
  *   cal_performances (WP REST API, arts presenter) =
  *   calbears         (athletics iCal) =
- *   bampfa           (HTML scraper, art museum & film archive) >
- *   ehub             (HTML scraper, entrepreneurship hub)
+ *   bampfa           (HTML scraper, art museum & film archive)
  *
  * Failure handling: each source is independent. If a source throws, we
  * record it in status.json and continue. We refuse to overwrite a healthy
@@ -52,7 +51,6 @@ import { fetchCalBears } from "./sources/calbears.js";
 import { fetchBampfa } from "./sources/bampfa.js";
 import { fetchHaas, fetchBerkeleyLaw, fetchBegin } from "./sources/tribe.js";
 import { fetchSimons } from "./sources/simons.js";
-import { fetchEHub } from "./sources/ehub.js";
 import { fetchLuma } from "./sources/luma.js";
 import { buildSearchIndex } from "./lib/buildIndex.js";
 
@@ -125,6 +123,8 @@ interface AdapterRun {
 interface RecoveryState {
   fallbackSources: Set<SourceName>;
   degradedSources: Set<SourceName>;
+  /** Sources whose last-good data was too old to republish, so it was dropped. */
+  staleFallbackSources: Set<SourceName>;
   degradedReasons: Set<string>;
   lastGoodUsed: number;
   fallbackAgeHours?: number;
@@ -162,7 +162,6 @@ const FALLBACK_POLICIES: Partial<Record<SourceName, RecoveryPolicy>> = {
     minHealthyCount: 1,
   },
   simons: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
-  ehub: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
   luma: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
   begin: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
 };
@@ -267,6 +266,24 @@ function markRecovery(
   recovery.degradedReasons.add(reason);
 
   if (!policy?.allowLastGood) return;
+
+  // Expired last-good data must never be republished as if it were fresh, but
+  // that is this source's problem alone. Drop its events and keep going: a
+  // supplementary feed sitting on stale fallback should cost us that feed, not
+  // the fresh events every other source just returned. Only a critical source
+  // in this state blocks the publish (see dataQualityFailure).
+  const ageHours = fallbackAgeHours(existing.lastUpdated);
+  if (typeof ageHours === "number" && ageHours > MAX_FALLBACK_AGE_HOURS) {
+    const staleReason = `${run.status.name} fallback expired (${ageHours}h old, exceeding ${MAX_FALLBACK_AGE_HOURS}h); last-good events dropped`;
+    run.status.fallback_expired = true;
+    run.status.fallback_age_hours = ageHours;
+    run.status.degraded_reason = `${reason}; ${staleReason}`;
+    recovery.staleFallbackSources.add(run.status.name);
+    recovery.degradedReasons.add(staleReason);
+    console.warn(`[orchestrator] ${staleReason}`);
+    return;
+  }
+
   const restored = appendLastGoodEvents(
     legacy,
     existing.events,
@@ -274,7 +291,6 @@ function markRecovery(
     today,
   );
   if (restored > 0) {
-    const ageHours = fallbackAgeHours(existing.lastUpdated);
     run.status.fallback_used = true;
     run.status.fallback_count = restored;
     run.status.fallback_age_hours = ageHours;
@@ -362,13 +378,16 @@ function capSourceEvents(runs: AdapterRun[]): Map<SourceName, string> {
 }
 
 function dataQualityFailure(recovery: RecoveryState): string | null {
-  // Stale fallback data must block publishing even when STRICT_DATA_QUALITY is
-  // unset, so the default deployment never ships days-old fallback as if fresh.
-  if (
-    typeof recovery.fallbackAgeHours === "number" &&
-    recovery.fallbackAgeHours > MAX_FALLBACK_AGE_HOURS
-  ) {
-    return `fallback data is ${recovery.fallbackAgeHours}h old, exceeding ${MAX_FALLBACK_AGE_HOURS}h`;
+  // Expired fallback on a CRITICAL source blocks publishing even when
+  // STRICT_DATA_QUALITY is unset: livewhale is the backbone of the feed, so
+  // losing it with no usable last-good copy leaves nothing worth shipping.
+  // Supplementary sources in the same state were already dropped individually
+  // in markRecovery — they must not veto the other sources' fresh events.
+  const criticalStale = Array.from(recovery.staleFallbackSources).filter(
+    (source) => CRITICAL_SOURCES.has(source),
+  );
+  if (criticalStale.length > 0) {
+    return `critical source(s) on fallback older than ${MAX_FALLBACK_AGE_HOURS}h: ${criticalStale.join(", ")}`;
   }
 
   if (!STRICT_DATA_QUALITY) return null;
@@ -429,7 +448,6 @@ async function main(): Promise<void> {
         promise: runAdapterWithTimeout("berkeley_law", fetchBerkeleyLaw),
       },
       { name: "simons", promise: runAdapterWithTimeout("simons", fetchSimons) },
-      { name: "ehub", promise: runAdapterWithTimeout("ehub", fetchEHub) },
       { name: "luma", promise: runAdapterWithTimeout("luma", fetchLuma) },
       { name: "begin", promise: runAdapterWithTimeout("begin", fetchBegin) },
     ];
@@ -520,6 +538,7 @@ async function main(): Promise<void> {
   const recovery: RecoveryState = {
     fallbackSources: new Set<SourceName>(),
     degradedSources: new Set<SourceName>(),
+    staleFallbackSources: new Set<SourceName>(),
     degradedReasons: new Set<string>(),
     lastGoodUsed: 0,
   };
@@ -555,10 +574,6 @@ async function main(): Promise<void> {
     {
       title: "Simons Institute Events",
       uri: "https://simons.berkeley.edu/programs-events",
-    },
-    {
-      title: "Berkeley E-Hub Events",
-      uri: "https://ehub.berkeley.edu/events/",
     },
     { title: "Luma Berkeley Events", uri: "https://luma.com/discover" },
     {
@@ -668,6 +683,7 @@ function writeStatus(
 ): void {
   const fallbackSources = Array.from(recovery.fallbackSources);
   const degradedSources = Array.from(recovery.degradedSources);
+  const staleFallbackSources = Array.from(recovery.staleFallbackSources);
   const degradedReasons = Array.from(recovery.degradedReasons);
   if (publishFallbackReason) degradedReasons.push(publishFallbackReason);
 
@@ -692,6 +708,7 @@ function writeStatus(
     data_quality_blocked: dataQualityBlocked,
     fallback_sources: fallbackSources,
     degraded_sources: degradedSources,
+    stale_fallback_sources: staleFallbackSources,
   };
   atomicWriteJsonSync(statusOutPath, report, 2);
   console.log(`[orchestrator] wrote status report → ${statusOutPath}`);

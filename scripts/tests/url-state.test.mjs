@@ -24,7 +24,6 @@ const OPTIONS = {
   allowedSources: [
     "All",
     "livewhale",
-    "ehub",
     "cal_performances",
     "bampfa",
     "calbears",

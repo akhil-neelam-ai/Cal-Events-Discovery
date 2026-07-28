@@ -18,7 +18,6 @@ import {
   fetchCalPerformances,
   parseAddeventatcDate,
 } from "../../scripts/sources/cal_performances.ts";
-import { inferEhubDate } from "../../scripts/sources/ehub.ts";
 import { unitFromSlug } from "../../scripts/sources/livewhale.ts";
 import { isoDateInPT } from "../../scripts/lib/normalize.ts";
 
@@ -98,14 +97,6 @@ test("parseGCalLink rejects a link whose dates token is malformed", () => {
     "https://calendar.google.com/calendar/r/eventedit?text=Film+Night&dates=2026-04-22T19:00:00/2026-04-22T21:00:00&details=https%3A%2F%2Fbampfa.org%2Fevent%2Ffilm-night&location=BAMPFA",
   );
   assert.equal(parsed, null);
-});
-
-test("E-Hub infers next-year dates for far-future announcements", () => {
-  assert.equal(inferEhubDate("Jan 8", "2026-12-15"), "2027-01-08");
-  assert.equal(inferEhubDate("Feb 3", "2026-12-15"), "2027-02-03");
-  assert.equal(inferEhubDate("Mar 3", "2026-10-15"), "2027-03-03");
-  assert.equal(inferEhubDate("Sep 3", "2026-10-15"), "2026-09-03");
-  assert.equal(inferEhubDate("Apr 3", "2026-04-01"), "2026-04-03");
 });
 
 test("Cal Performances date parser preserves Pacific offsets", () => {

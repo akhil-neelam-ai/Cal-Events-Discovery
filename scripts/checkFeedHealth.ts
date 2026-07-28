@@ -11,7 +11,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { evaluateFeedHealth } from "./lib/feedHealthPolicy.js";
+import {
+  evaluateFeedHealth,
+  parseMaxFallbackAgeHours,
+} from "./lib/feedHealthPolicy.js";
 
 const rootDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -23,7 +26,11 @@ const BLOCK_ON_DEGRADED = /^(1|true|yes)$/i.test(
   process.env.BLOCK_ON_DEGRADED ?? "true",
 );
 const STALE_HOURS = Number(process.env.FEED_STALE_HOURS ?? 36);
-const MAX_FALLBACK_AGE_HOURS = Number(process.env.MAX_FALLBACK_AGE_HOURS ?? 48);
+// Share the orchestrator's default so the publish gate and this check cannot
+// disagree about what counts as expired fallback.
+const MAX_FALLBACK_AGE_HOURS = parseMaxFallbackAgeHours(
+  process.env.MAX_FALLBACK_AGE_HOURS,
+);
 
 function warn(message: string): void {
   console.log(`::warning::${message}`);

@@ -7,6 +7,7 @@ on:
     paths:
       - "scripts/sources/**"
       - "scripts/lib/fetchWithRetry.ts"
+      - "scripts/lib/sourceContracts.mjs"
       - "scripts/runSourceContracts.mjs"
   workflow_dispatch:
 
@@ -18,17 +19,28 @@ jobs:
   source-contracts:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      has_failures: ${{ steps.contracts.outputs.has_failures }}
+      failed_sources: ${{ steps.contracts.outputs.failed_sources }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
 
       - name: Run live source contract checks
+        id: contracts
         run: node scripts/runSourceContracts.mjs
 
+  # Runs when the check fails outright (critical source down) AND when it passes
+  # with supplementary failures, so a dead secondary source still raises an issue
+  # instead of disappearing into a green run.
   notify-failure:
     needs: source-contracts
-    if: failure()
+    if: |
+      always() && (
+        failure() ||
+        needs.source-contracts.outputs.has_failures == 'true'
+      )
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -40,5 +52,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           WORKFLOW_NAME: Source Contracts
-          FAILURE_CONTEXT: live Berkeley source contract checks
+          FAILURE_CONTEXT:
+            "live Berkeley source contract checks (failed sources:
+            ${{ needs.source-contracts.outputs.failed_sources || 'unknown' }})"
         run: node scripts/notifyPipelineFailure.mjs

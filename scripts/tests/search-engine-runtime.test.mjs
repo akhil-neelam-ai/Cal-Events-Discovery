@@ -46,7 +46,7 @@ const SYNTHETIC_EVENTS = [
     description: "A startup meetup near BART.",
     tags: ["Entrepreneurship"],
     url: "https://example.com/downtown",
-    source: "ehub",
+    source: "begin",
   },
   {
     id: "evt-bampfa",
@@ -94,7 +94,7 @@ const SYNTHETIC_EVENTS = [
     description: "A startup founder talk for Berkeley students.",
     tags: ["Entrepreneurship"],
     url: "https://example.com/founder",
-    source: "ehub",
+    source: "begin",
   },
   {
     id: "evt-ai-science",
