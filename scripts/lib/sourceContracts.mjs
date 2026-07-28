@@ -10,6 +10,8 @@
  * loadable by bare Node with no loader and no dependencies.
  */
 
+import fs from "node:fs";
+
 const USER_AGENT = "Cal-Events-Discovery-Contract-Test";
 const TIMEOUT_MS = 30_000;
 
@@ -174,18 +176,45 @@ export async function checkContract(contract) {
   }
 }
 
+export function writeGithubOutputs(
+  outputs,
+  {
+    outputPath = process.env.GITHUB_OUTPUT,
+    appendFileSync = fs.appendFileSync,
+  } = {},
+) {
+  if (!outputPath) return { attempted: false, ok: true };
+
+  try {
+    const lines = Object.entries(outputs).map(
+      ([key, value]) => `${key}=${value}`,
+    );
+    appendFileSync(outputPath, `${lines.join("\n")}\n`);
+    return { attempted: true, ok: true };
+  } catch (error) {
+    return {
+      attempted: true,
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
 /**
  * Run every contract and partition the failures by severity.
  * Never throws — a contract that blows up is recorded, not propagated, so one
  * dead endpoint cannot abort the checks for the sources after it.
  */
-export async function runAllContracts(contracts = CONTRACTS) {
+export async function runAllContracts(
+  contracts = CONTRACTS,
+  check = checkContract,
+) {
   const criticalFailures = [];
   const supplementaryFailures = [];
 
   for (const contract of contracts) {
     try {
-      await checkContract(contract);
+      await check(contract);
       console.log(`[contracts] ok ${contract.name}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

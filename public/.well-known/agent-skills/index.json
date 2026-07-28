@@ -13,7 +13,7 @@
       "type": "skill-md",
       "description": "Inspect CalEvents ingestion freshness, source health, and fallback status.",
       "url": "/.well-known/agent-skills/event-feed-status/SKILL.md",
-      "digest": "sha256:0b5d05a8a177f4206061d726b6cb57871fabf99f0f8b364b5dd94865e69c82b1"
+      "digest": "sha256:70045cc7913643d2cff3dae5e59174dc646052207a19c21de643aac428c23e53"
     }
   ]
 }

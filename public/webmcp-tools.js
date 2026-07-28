@@ -307,7 +307,7 @@
         source: {
           type: "string",
           description:
-            "Optional source id: livewhale, callink, cal_performances, calbears, bampfa, haas, berkeley_law, simons, ehub, luma, or begin.",
+            "Optional source id: livewhale, callink, cal_performances, calbears, bampfa, haas, berkeley_law, simons, luma, or begin.",
         },
         startDate: {
           type: "string",

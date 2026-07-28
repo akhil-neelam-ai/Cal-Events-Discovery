@@ -71,9 +71,20 @@ export function evaluateFeedHealth(
     blocking.push("published event count is zero");
   }
 
-  const degradedSources = Array.isArray(status.degraded_sources)
+  const reportedDegradedSources = Array.isArray(status.degraded_sources)
     ? status.degraded_sources.map(String)
     : [];
+  const sourceStatuses = Array.isArray(status.sources) ? status.sources : [];
+  const failedSourceStatuses = sourceStatuses
+    .filter(
+      (source): source is Record<string, unknown> =>
+        !!source && typeof source === "object" && source.ok === false,
+    )
+    .map((source) => String(source.name ?? "unknown"))
+    .filter((source) => source !== "unknown");
+  const degradedSources = Array.from(
+    new Set([...reportedDegradedSources, ...failedSourceStatuses]),
+  );
   const fallbackSources = new Set<string>(
     Array.isArray(status.fallback_sources)
       ? status.fallback_sources.map(String)
@@ -110,8 +121,11 @@ export function evaluateFeedHealth(
   // Sources whose last-good data expired and was dropped by the orchestrator.
   // Only a critical source in this state is blocking — a supplementary feed
   // losing its stale copy costs us that feed, not the whole publish.
-  const staleFallbackSources = Array.isArray(status.stale_fallback_sources)
-    ? status.stale_fallback_sources.map(String)
+  const hasExplicitStaleFallbackSources = Array.isArray(
+    status.stale_fallback_sources,
+  );
+  const staleFallbackSources = hasExplicitStaleFallbackSources
+    ? (status.stale_fallback_sources as unknown[]).map(String)
     : [];
 
   const criticalStale = staleFallbackSources.filter((source) =>
@@ -133,13 +147,44 @@ export function evaluateFeedHealth(
   }
 
   if (status.fallback_used === true) {
-    const sources = Array.isArray(status.fallback_sources)
-      ? status.fallback_sources.join(", ")
-      : "unknown";
-    const age =
+    const fallbackSourceNames = Array.isArray(status.fallback_sources)
+      ? status.fallback_sources.map(String)
+      : [];
+    const sources =
+      fallbackSourceNames.length > 0
+        ? fallbackSourceNames.join(", ")
+        : "unknown";
+    const fallbackAgeHours =
       typeof status.fallback_age_hours === "number"
-        ? `${status.fallback_age_hours}h`
-        : "unknown age";
+        ? status.fallback_age_hours
+        : undefined;
+
+    if (
+      !hasExplicitStaleFallbackSources &&
+      typeof fallbackAgeHours === "number" &&
+      fallbackAgeHours > maxFallbackAgeHours
+    ) {
+      const criticalFallback = fallbackSourceNames.filter((source) =>
+        CRITICAL_SOURCES.has(source),
+      );
+      if (criticalFallback.length > 0) {
+        blocking.push(
+          `critical source(s) on fallback older than ${maxFallbackAgeHours}h: ${criticalFallback.join(", ")}`,
+        );
+      }
+
+      const nonCriticalFallback = fallbackSourceNames.filter(
+        (source) => !CRITICAL_SOURCES.has(source),
+      );
+      if (nonCriticalFallback.length > 0) {
+        warnings.push(
+          `expired fallback dropped for: ${nonCriticalFallback.join(", ")} (older than ${maxFallbackAgeHours}h)`,
+        );
+      }
+    }
+
+    const age =
+      typeof fallbackAgeHours === "number" ? `${fallbackAgeHours}h` : "unknown";
     warnings.push(`fallback data in use for: ${sources} (${age})`);
   }
 
@@ -163,7 +208,7 @@ export function evaluateFeedHealth(
     blocking.push("status.json missing a valid generated_at timestamp");
   }
 
-  for (const message of evaluateSourceCoverageWarnings(status.sources)) {
+  for (const message of evaluateSourceCoverageWarnings(sourceStatuses)) {
     warnings.push(message);
   }
 
