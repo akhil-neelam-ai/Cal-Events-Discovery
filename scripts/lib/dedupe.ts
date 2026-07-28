@@ -3,7 +3,7 @@
  *
  * Strategy: bucket by (normalized_title, date). Within a bucket, keep the
  * highest-priority source. Source priority reflects data quality:
- *   livewhale (structured iCal) > callink/cal_performances/calbears (JSON APIs) > ehub (parsed HTML)
+ *   livewhale (structured iCal) > callink/cal_performances/calbears (JSON APIs)
  */
 
 import type { CanonicalEvent, SourceName } from "./schema.js";
@@ -22,7 +22,6 @@ const SOURCE_PRIORITY: Record<SourceName, number> = {
   haas: 3,
   berkeley_law: 3,
   simons: 3,
-  ehub: 2,
   luma: 3,
   begin: 3,
 };

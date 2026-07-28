@@ -17,7 +17,6 @@ export const SourceNameSchema = z.enum([
   "haas",
   "berkeley_law",
   "simons",
-  "ehub",
   "luma",
   "begin",
 ]);
@@ -174,6 +173,12 @@ export interface SourceStatus {
   fallback_used?: boolean;
   fallback_count?: number;
   fallback_age_hours?: number;
+  /**
+   * Set when this source's last-good data was older than the fallback age
+   * ceiling, so its events were dropped rather than republished as fresh.
+   * Distinct from `fallback_used`, which means fallback was actually applied.
+   */
+  fallback_expired?: boolean;
   degraded_reason?: string;
 }
 
@@ -196,4 +201,6 @@ export interface StatusReport {
   data_quality_blocked?: boolean;
   fallback_sources?: SourceName[];
   degraded_sources?: SourceName[];
+  /** Sources whose expired last-good events were dropped from this publish. */
+  stale_fallback_sources?: SourceName[];
 }

@@ -13,7 +13,6 @@ export const SOURCE_EXPECTED_MIN_COUNTS: Record<string, number> = {
   haas: 5,
   berkeley_law: 3,
   simons: 10,
-  ehub: 1,
   luma: 1,
   begin: 1,
 };

@@ -6,7 +6,7 @@ import { normalizeForDedupe } from "../../scripts/lib/normalize.ts";
 
 function event(overrides) {
   return {
-    source_name: "ehub",
+    source_name: "simons",
     source_id: "event-1",
     source_url: "https://example.com/source/event-1",
     title: "Sample Event",
@@ -34,7 +34,7 @@ function event(overrides) {
 
 test("dedupe keeps empty normalized titles distinct by stable source identity", () => {
   const first = event({
-    source_name: "ehub",
+    source_name: "simons",
     source_id: "punctuation-1",
     title: "!!!",
     source_url: "https://example.com/source/punctuation-1",
@@ -59,11 +59,11 @@ test("dedupe keeps empty normalized titles distinct by stable source identity", 
 
 test("dedupe preserves source priority for normal title and date duplicates", () => {
   const lowerPriority = event({
-    source_name: "ehub",
-    source_id: "ehub-lecture",
+    source_name: "simons",
+    source_id: "simons-lecture",
     title: "The Spring Lecture",
-    source_url: "https://example.com/source/ehub-lecture",
-    canonical_url: "https://example.com/events/ehub-lecture",
+    source_url: "https://example.com/source/simons-lecture",
+    canonical_url: "https://example.com/events/simons-lecture",
   });
   const higherPriority = event({
     source_name: "livewhale",

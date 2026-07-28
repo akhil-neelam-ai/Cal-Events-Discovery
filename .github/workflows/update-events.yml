@@ -88,7 +88,10 @@ jobs:
       - name: Generate events snapshot
         env:
           STRICT_DATA_QUALITY: "true"
-          MAX_FALLBACK_AGE_HOURS: "48"
+          # Must exceed the longest gap between scheduled runs. The Mon/Wed/Fri
+          # summer cadence makes Fri -> Mon ~72h; drop back to 48 when this
+          # workflow returns to a daily schedule.
+          MAX_FALLBACK_AGE_HOURS: "80"
         run: |
           set -euo pipefail
           for attempt in 1 2; do
@@ -107,7 +110,7 @@ jobs:
         env:
           BLOCK_ON_DEGRADED: "true"
           FEED_STALE_HOURS: "36"
-          MAX_FALLBACK_AGE_HOURS: "48"
+          MAX_FALLBACK_AGE_HOURS: "80"
         run: npx tsx scripts/checkFeedHealth.ts
 
       - name: Validate published artifacts

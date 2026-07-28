@@ -109,11 +109,6 @@ const SOURCE_PATTERNS: Array<[string, RegExp, string]> = [
   ["berkeley_law", /\b(berkeley law|law school|bclt)\b/i, "Berkeley Law"],
   ["simons", /\b(simons|simons institute)\b/i, "Simons Institute"],
   ["livewhale", /\b(livewhale|uc berkeley events)\b/i, "UC Berkeley Events"],
-  [
-    "ehub",
-    /\b(e-?hub|entrepreneurship hub|berkeley e-?hub)\b/i,
-    "Berkeley E-Hub",
-  ],
 ];
 
 // Campus area patterns

@@ -21,10 +21,18 @@ import { evaluateSourceCoverageWarnings } from "./sourceCoveragePolicy.js";
 // callink for summer, etc.) with a term-agnostic rule.
 export const CRITICAL_SOURCES: ReadonlySet<string> = new Set(["livewhale"]);
 
+// Ceiling on how old a source's last-good data may be and still be republished.
+// Must exceed the longest gap between scheduled runs, or the first run after the
+// gap sees every fallback as expired. The summer cadence is Mon/Wed/Fri
+// (.github/workflows/update-events.yml), so the Fri -> Mon gap is ~72h; 80 leaves
+// headroom for run start-time drift. Revisit alongside the cadence itself: back
+// on a daily schedule the gap is ~24h and this can drop to 48.
+const DEFAULT_MAX_FALLBACK_AGE_HOURS = 80;
+
 export function parseMaxFallbackAgeHours(
   value: string | number | undefined,
 ): number {
-  const parsed = Number(value ?? 48);
+  const parsed = Number(value ?? DEFAULT_MAX_FALLBACK_AGE_HOURS);
   if (!Number.isFinite(parsed) || parsed < 0) {
     throw new Error(
       `MAX_FALLBACK_AGE_HOURS must be a non-negative number, got ${JSON.stringify(value)}`,
@@ -99,6 +107,31 @@ export function evaluateFeedHealth(
     );
   }
 
+  // Sources whose last-good data expired and was dropped by the orchestrator.
+  // Only a critical source in this state is blocking — a supplementary feed
+  // losing its stale copy costs us that feed, not the whole publish.
+  const staleFallbackSources = Array.isArray(status.stale_fallback_sources)
+    ? status.stale_fallback_sources.map(String)
+    : [];
+
+  const criticalStale = staleFallbackSources.filter((source) =>
+    CRITICAL_SOURCES.has(source),
+  );
+  if (criticalStale.length > 0) {
+    blocking.push(
+      `critical source(s) on fallback older than ${maxFallbackAgeHours}h: ${criticalStale.join(", ")}`,
+    );
+  }
+
+  const nonCriticalStale = staleFallbackSources.filter(
+    (source) => !CRITICAL_SOURCES.has(source),
+  );
+  if (nonCriticalStale.length > 0) {
+    warnings.push(
+      `expired fallback dropped for: ${nonCriticalStale.join(", ")} (older than ${maxFallbackAgeHours}h)`,
+    );
+  }
+
   if (status.fallback_used === true) {
     const sources = Array.isArray(status.fallback_sources)
       ? status.fallback_sources.join(", ")
@@ -107,17 +140,7 @@ export function evaluateFeedHealth(
       typeof status.fallback_age_hours === "number"
         ? `${status.fallback_age_hours}h`
         : "unknown age";
-
-    if (
-      typeof status.fallback_age_hours === "number" &&
-      status.fallback_age_hours > maxFallbackAgeHours
-    ) {
-      blocking.push(
-        `fallback data is ${status.fallback_age_hours}h old, exceeding ${maxFallbackAgeHours}h (${sources})`,
-      );
-    } else {
-      warnings.push(`fallback data in use for: ${sources} (${age})`);
-    }
+    warnings.push(`fallback data in use for: ${sources} (${age})`);
   }
 
   if (status.degraded === true && blocking.length === 0) {

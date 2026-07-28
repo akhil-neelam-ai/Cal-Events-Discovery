@@ -5,6 +5,10 @@ import {
   CRITICAL_SOURCES,
   evaluateFeedHealth,
 } from "../lib/feedHealthPolicy.ts";
+import {
+  CONTRACTS,
+  CRITICAL_CONTRACT_SOURCES,
+} from "../lib/sourceContracts.mjs";
 
 const healthyStatus = {
   generated_at: new Date().toISOString(),
@@ -87,18 +91,42 @@ test("evaluateFeedHealth warns but does not block recovered critical fallback", 
   assert.match(result.warnings.join(" "), /recovered via fallback/);
 });
 
-test("evaluateFeedHealth blocks stale fallback data", () => {
+test("evaluateFeedHealth blocks expired fallback on a critical source", () => {
   const result = evaluateFeedHealth(
     {
       ...healthyStatus,
-      fallback_used: true,
-      fallback_age_hours: 72,
-      fallback_sources: ["livewhale"],
+      degraded: true,
+      degraded_sources: ["livewhale"],
+      stale_fallback_sources: ["livewhale"],
     },
     { staleHours: 36, maxFallbackAgeHours: 48 },
   );
 
-  assert.match(result.blocking.join(" "), /fallback data is 72h old/);
+  assert.match(
+    result.blocking.join(" "),
+    /critical source\(s\) on fallback older than 48h.*livewhale/,
+  );
+});
+
+test("evaluateFeedHealth warns (does not block) on expired supplementary fallback", () => {
+  // A dead supplementary scraper losing its stale last-good copy costs us that
+  // one source. It must never discard the fresh events every other source
+  // returned — that regression took the whole publish down in July 2026.
+  const result = evaluateFeedHealth(
+    {
+      ...healthyStatus,
+      degraded: true,
+      degraded_sources: ["bampfa"],
+      stale_fallback_sources: ["bampfa"],
+    },
+    { staleHours: 36, maxFallbackAgeHours: 48 },
+  );
+
+  assert.deepEqual(result.blocking, []);
+  assert.match(
+    result.warnings.join(" "),
+    /expired fallback dropped for.*bampfa/,
+  );
 });
 
 test("CRITICAL_SOURCES is backbone-only and shared by both gates", () => {
@@ -115,6 +143,33 @@ test("CRITICAL_SOURCES is backbone-only and shared by both gates", () => {
       `${source} should be supplementary, not critical`,
     );
   }
+});
+
+test("contract runner's critical set matches the shared policy", () => {
+  // scripts/lib/sourceContracts.mjs must stay plain .mjs (bare Node, no loader)
+  // so it duplicates CRITICAL_SOURCES instead of importing it. This test is what
+  // keeps the copy honest: the Source Contracts workflow, the publish gate, and
+  // the CI health check must agree on which sources are allowed to fail a build.
+  assert.deepEqual(
+    [...CRITICAL_CONTRACT_SOURCES].sort(),
+    [...CRITICAL_SOURCES].sort(),
+  );
+});
+
+test("every contract source is a real, non-retired source", () => {
+  // A contract for a source the pipeline no longer fetches is pure false alarm:
+  // it can only ever fail the workflow for a feed nobody consumes.
+  const contractNames = CONTRACTS.map((contract) => contract.name);
+  assert.ok(contractNames.includes("livewhale"));
+  assert.ok(
+    !contractNames.includes("ehub"),
+    "ehub was retired (upstream page deleted 2026-07); its contract must go too",
+  );
+  assert.equal(
+    new Set(contractNames).size,
+    contractNames.length,
+    "contract names must be unique",
+  );
 });
 
 test("evaluateFeedHealth warns on thin source coverage", () => {
