@@ -161,7 +161,6 @@ npm run validate                            # full test suite
 | BAMPFA | `bampfa.ts` | HTML scraper |
 | Berkeley Haas / Law / BEGIN | `tribe.ts` | Tribe Events Calendar REST |
 | Simons Institute | `simons.ts` | JSON API |
-| Berkeley E-Hub | `ehub.ts` | HTML scraper |
 | Luma (Berkeley calendars) | `luma.ts` | Luma JSON API |
 
 ## Deploy

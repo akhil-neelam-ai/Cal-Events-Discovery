@@ -12,21 +12,11 @@
  * Run: node scripts/runSourceContracts.mjs
  */
 
-import fs from "node:fs";
-
-import { CONTRACTS, runAllContracts } from "./lib/sourceContracts.mjs";
-
-function setOutput(key, value) {
-  const outputPath = process.env.GITHUB_OUTPUT;
-  if (!outputPath) return;
-  try {
-    fs.appendFileSync(outputPath, `${key}=${value}\n`);
-  } catch (error) {
-    console.warn(
-      `[contracts] could not write GITHUB_OUTPUT: ${error instanceof Error ? error.message : error}`,
-    );
-  }
-}
+import {
+  CONTRACTS,
+  runAllContracts,
+  writeGithubOutputs,
+} from "./lib/sourceContracts.mjs";
 
 const { criticalFailures, supplementaryFailures, total } =
   await runAllContracts(CONTRACTS);
@@ -38,8 +28,15 @@ for (const { name, message } of supplementaryFailures) {
 }
 
 const failed = [...criticalFailures, ...supplementaryFailures];
-setOutput("failed_sources", failed.map((f) => f.name).join(","));
-setOutput("has_failures", failed.length > 0 ? "true" : "false");
+const outputResult = writeGithubOutputs({
+  failed_sources: failed.map((f) => f.name).join(","),
+  has_failures: failed.length > 0 ? "true" : "false",
+});
+if (!outputResult.ok) {
+  console.warn(
+    `[contracts] could not write GITHUB_OUTPUT: ${outputResult.error}`,
+  );
+}
 
 if (criticalFailures.length > 0) {
   for (const { name, message } of criticalFailures) {
@@ -51,6 +48,13 @@ if (criticalFailures.length > 0) {
     `[contracts] ${criticalFailures.length} critical source contract(s) failed: ${criticalFailures
       .map((f) => f.name)
       .join(", ")}`,
+  );
+  process.exit(1);
+}
+
+if (failed.length > 0 && outputResult.attempted && !outputResult.ok) {
+  console.log(
+    "::error::Source contract failures were detected, but workflow outputs could not be written for notification",
   );
   process.exit(1);
 }

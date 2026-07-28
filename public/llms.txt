@@ -25,7 +25,7 @@ Each event in `events.json` has:
 - `description`: event summary
 - `tags`: primary category first, with optional secondary tags
 - `url`: official source URL
-- `source`: normalized source id such as `livewhale`, `bampfa`, `callink`, `calbears`, `cal_performances`, `haas`, `berkeley_law`, `simons`, or `ehub`
+- `source`: normalized source id such as `livewhale`, `bampfa`, `callink`, `calbears`, `cal_performances`, `haas`, `berkeley_law`, `simons`, `luma`, or `begin`
 
 ## Categories
 

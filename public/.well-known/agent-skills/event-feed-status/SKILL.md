@@ -17,6 +17,8 @@ Accept: application/json
 - `total_events`: number of published events
 - `sources`: per-source health, count, duration, and errors
 - `fallback_used`: whether cached source data was reused
+- `fallback_sources`: sources whose cached events were reused
+- `stale_fallback_sources`: sources whose cached events were too old and were dropped
 - `last_good_used`: number of cached events restored
 - `data_quality_blocked`: whether the dataset should be considered materially incomplete
 
@@ -24,4 +26,6 @@ Accept: application/json
 
 - If `data_quality_blocked` is true, tell the user the feed may be incomplete.
 - If `fallback_used` is true but `data_quality_blocked` is not true, treat the feed as usable and avoid user-facing warnings.
+- If `stale_fallback_sources` includes `livewhale`, treat the feed as materially incomplete.
+- If `stale_fallback_sources` includes only supplementary sources, explain that those sources were dropped but the rest of the feed can still be used.
 - If a specific source is requested, inspect its entry in `sources`.

@@ -72,7 +72,21 @@
                     "generated_at": { "type": "string", "format": "date-time" },
                     "total_events": { "type": "integer" },
                     "fallback_used": { "type": "boolean" },
+                    "last_good_used": { "type": "integer" },
                     "data_quality_blocked": { "type": "boolean" },
+                    "fallback_sources": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "degraded_sources": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "stale_fallback_sources": {
+                      "type": "array",
+                      "items": { "type": "string" },
+                      "description": "Source ids whose expired last-good events were dropped from the publish."
+                    },
                     "sources": {
                       "type": "array",
                       "items": {
@@ -147,6 +161,7 @@
           "fallback_used": { "type": "boolean" },
           "fallback_count": { "type": "integer" },
           "fallback_age_hours": { "type": "number" },
+          "fallback_expired": { "type": "boolean" },
           "degraded_reason": { "type": "string" }
         }
       }

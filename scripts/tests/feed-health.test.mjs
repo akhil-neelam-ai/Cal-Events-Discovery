@@ -8,7 +8,10 @@ import {
 import {
   CONTRACTS,
   CRITICAL_CONTRACT_SOURCES,
+  runAllContracts,
+  writeGithubOutputs,
 } from "../lib/sourceContracts.mjs";
+import { SourceNameSchema } from "../lib/schema.ts";
 
 const healthyStatus = {
   generated_at: new Date().toISOString(),
@@ -129,6 +132,50 @@ test("evaluateFeedHealth warns (does not block) on expired supplementary fallbac
   );
 });
 
+test("evaluateFeedHealth keeps critical fallback-age block for legacy status reports", () => {
+  const result = evaluateFeedHealth(
+    {
+      ...healthyStatus,
+      degraded: true,
+      degraded_sources: ["livewhale"],
+      fallback_used: true,
+      fallback_sources: ["livewhale"],
+      fallback_age_hours: 96,
+    },
+    { staleHours: 36, maxFallbackAgeHours: 80 },
+  );
+
+  assert.match(
+    result.blocking.join(" "),
+    /critical source\(s\) on fallback older than 80h.*livewhale/,
+  );
+});
+
+test("evaluateFeedHealth warns on source failures missing from degraded_sources", () => {
+  const result = evaluateFeedHealth(
+    {
+      ...healthyStatus,
+      sources: [
+        {
+          name: "luma",
+          ok: false,
+          count: 0,
+          duration_ms: 60_000,
+          error: "timeout",
+          fetched_at: healthyStatus.generated_at,
+        },
+      ],
+    },
+    { staleHours: 36, maxFallbackAgeHours: 80 },
+  );
+
+  assert.deepEqual(result.blocking, []);
+  assert.match(
+    result.warnings.join(" "),
+    /non-critical source\(s\) degraded.*luma/,
+  );
+});
+
 test("CRITICAL_SOURCES is backbone-only and shared by both gates", () => {
   // The publish gate (scripts/updateEvents.ts) imports this exact set, so the
   // CI health check and the publish gate cannot disagree on what is critical.
@@ -160,7 +207,11 @@ test("every contract source is a real, non-retired source", () => {
   // A contract for a source the pipeline no longer fetches is pure false alarm:
   // it can only ever fail the workflow for a feed nobody consumes.
   const contractNames = CONTRACTS.map((contract) => contract.name);
-  assert.ok(contractNames.includes("livewhale"));
+  assert.deepEqual(
+    contractNames.toSorted(),
+    SourceNameSchema.options.toSorted(),
+    "live contracts must exactly match active source ids",
+  );
   assert.ok(
     !contractNames.includes("ehub"),
     "ehub was retired (upstream page deleted 2026-07); its contract must go too",
@@ -170,6 +221,45 @@ test("every contract source is a real, non-retired source", () => {
     contractNames.length,
     "contract names must be unique",
   );
+});
+
+test("runAllContracts partitions critical and supplementary failures", async () => {
+  const contracts = [
+    { name: "livewhale" },
+    { name: "luma" },
+    { name: "begin" },
+  ];
+  const result = await runAllContracts(contracts, async (contract) => {
+    if (contract.name !== "begin") {
+      throw new Error(`${contract.name} down`);
+    }
+  });
+
+  assert.deepEqual(
+    result.criticalFailures.map((failure) => failure.name),
+    ["livewhale"],
+  );
+  assert.deepEqual(
+    result.supplementaryFailures.map((failure) => failure.name).sort(),
+    ["luma"],
+  );
+  assert.equal(result.total, 3);
+});
+
+test("writeGithubOutputs reports output write failures", () => {
+  const result = writeGithubOutputs(
+    { has_failures: "true", failed_sources: "luma" },
+    {
+      outputPath: "/tmp/unwritable-github-output",
+      appendFileSync() {
+        throw new Error("disk full");
+      },
+    },
+  );
+
+  assert.equal(result.attempted, true);
+  assert.equal(result.ok, false);
+  assert.match(result.error, /disk full/);
 });
 
 test("evaluateFeedHealth warns on thin source coverage", () => {
