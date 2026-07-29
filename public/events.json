@@ -4,7 +4,7 @@
       "id": "livewhale_321704@events.berkeley.edu",
       "title": "Agentic AI for Science (AAI4Science) Developer Summit",
       "organizer": "Developer Summit",
-      "date": "2026-07-28",
+      "date": "2026-07-29",
       "time": "All day",
       "location": "AI Futures Lab @ WeWork 2120 University Ave, 7th Floor, Berkeley, CA 94704",
       "description": "Agentic AI for Science (AAI4Science) Developer Summit",
@@ -15,7 +15,6 @@
       "url": "https://lightconeresearch.org/developer-summit",
       "source": "livewhale",
       "dates": [
-        "2026-07-28",
         "2026-07-29",
         "2026-07-30",
         "2026-07-31"
@@ -26,7 +25,7 @@
       "id": "livewhale_309073@events.berkeley.edu",
       "title": "Exhibit | Divestment Now! Student Activism and the Anti-Apartheid Movement at UC Berkeley",
       "organizer": "UC Berkeley Library",
-      "date": "2026-07-28",
+      "date": "2026-07-29",
       "time": "All day",
       "location": "The Rowell Exhibition Cases, Doe Library, 2nd floor",
       "description": "In 1985, UC Berkeley students, with support from faculty, staff, and labor unions, transformed the campus into the heart of a powerful anti-apartheid divestment campaign. They organized rallies, teach-ins, and shantytown encampments to protest the university's financial ties to companies profiting from South Africa's system of racial segregation. Divestment Now! Student Activism and the Anti-Apartheid Movement at UC Berkeley highlights a movement that mobilized thousands, politicized a new generation, and laid the groundwork for ongoing struggles for racial and economic justice.",
@@ -36,7 +35,6 @@
       "url": "https://events.berkeley.edu/Library/event/309073-exhibit-divestment-now-student-activism-and-the-anti-",
       "source": "livewhale",
       "dates": [
-        "2026-07-28",
         "2026-07-29",
         "2026-07-30",
         "2026-07-31",
@@ -220,15 +218,16 @@
         "2027-01-25",
         "2027-01-26",
         "2027-01-27",
-        "2027-01-28"
+        "2027-01-28",
+        "2027-01-29"
       ],
-      "end_date": "2027-01-28"
+      "end_date": "2027-01-29"
     },
     {
       "id": "livewhale_316565@events.berkeley.edu",
       "title": "Exhibit | The Etruscans Uncovered: The Phoebe A. Hearst Collection at UC Berkeley",
       "organizer": "UC Berkeley Library",
-      "date": "2026-07-28",
+      "date": "2026-07-29",
       "time": "All day",
       "location": "Bernice Layne Brown Gallery, Doe Library, University of California, Berkeley",
       "description": "The Etruscans Uncovered is an exhibit in Doe Library's Bernice Layne Brown Gallery from March 9 until August 31, 2026. The Etruscans were the first builders of complex urban centers in ancient Italy, established elaborate religious practices, and crafted a wide range of artworks that decorated their homes, cities, and tombs. Although their writing (prose, poetry, and histories) has not survived, the Romans considered the Etruscans to be the \"people of the book.\" Their material culture allows us immediate entry into their public and private lives, whether through their tomb paintings, elaborate bronze and gold metalwork, or finely crafted clay objects. This exhibit presents a sampling of the large Etruscan collection housed at the Phoebe A. Hearst Museum of Anthropology at UC Berkeley, as well as complementary materials from The Bancroft Library. This exhibit complements two other Etruscan exhibitions in the Bay Area: Encountering the Etruscans at the Phoebe A. Hearst Museum (open Fridays, noon to 4:00 p.m., through May 2026) and The Etruscans: From the Heart of Ancient Italy at the Legion of Honor in San Francisco (May 2 through September 20, 2026). Exhibit Curators: Lynn Cunningham, Audrey Feist, Zidheni Hernandez Callejas, Sofia Huff, Iman Khan, Sophia Lavrov, Juan Lopera, Alejandra Lopez, Marianna Maciel, Katherine McGuirt, Haley Morrill, Jackie Page, Lisa Pieraccini, Bradley Pultz, Maddie Qualls, Victoria Ramirez, Xiaonan Ren, Lily Yagubyan",
@@ -239,7 +238,6 @@
       "url": "https://events.berkeley.edu/Library/event/316565-exhibit-the-etruscans-uncovered-the-phoebe-a-hearst-c",
       "source": "livewhale",
       "dates": [
-        "2026-07-28",
         "2026-07-29",
         "2026-07-30",
         "2026-07-31",
@@ -276,49 +274,6 @@
         "2026-08-31"
       ],
       "end_date": "2026-08-31"
-    },
-    {
-      "id": "livewhale_20260728T180000Z-324464@events.berkeley.edu",
-      "title": "Building Effective Unstructured Data Systems (and other PhD reflections)",
-      "organizer": "EECS",
-      "date": "2026-07-28",
-      "time": "11:00 AM",
-      "location": "Gateway 2133",
-      "description": "Databases and other data systems have successfully democratized data-oriented computation across domains, thanks to decades of research in system internals and end-user interfaces. However, such systems center on structured (i.e., tabular) data; unstructured data—the vast majority of data—has largely been ignored. Large language models (LLMs) now give us a building block for unstructured data analysis, and we face the same questions as in the early days of data systems—e.g., how should users author queries? How do we efficiently execute queries at scale?—but many well-established tenets from traditional data systems no longer hold. In my talk, I will present DocETL, a system I developed for unstructured data analysis. I will discuss how we had to rethink query optimization under these new assumptions, optimizing user-written pipelines for both accuracy and efficiency—as well as end-user interfaces for authoring, iterating on, and debugging pipelines. DocETL is open-source with 3.5k+ GitHub stars; our hosted interface has supported 4.1k+ pipelines across 30+ S&P-500 industries. Query optimization ideas from our work have been adopted in databases such as Snowflake and BigQuery, and our interface design principles have been adopted by companies like LangChain and OpenAI. The advent of LLMs was very serendipitous; it allowed me and colleagues to help develop a new subfield in our community and, in turn, get a job. I will conclude my talk with a brief retrospective, for those considering going on the faculty job market.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "url": "https://events.berkeley.edu/eecs/event/324464-building-effective-unstructured-data-systems-and",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260728T190000Z-322829@events.berkeley.edu",
-      "title": "Certificate Program in Business Administration Online Information Session",
-      "organizer": "UC Berkeley Extension",
-      "date": "2026-07-28",
-      "time": "12:00 PM",
-      "location": "Online via Zoom",
-      "description": "Our Certificate Program in Business Administration information session is ideal for professionals looking to transition from individual contributor roles into manager roles, as well as those seeking to enhance their skills for career advancement. Whether you're planning your next career move or simply exploring your options, we invite you to discover how this program can support your growth.",
-      "tags": [
-        "Academic"
-      ],
-      "url": "https://events.berkeley.edu/extension/event/322829-certificate-program-in-business-administration-online",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260729T023000Z-324423@events.berkeley.edu",
-      "title": "Korean Game Night",
-      "organizer": "International House",
-      "date": "2026-07-28",
-      "time": "7:30 PM",
-      "location": "International House, 2299 Piedmont Ave Berkeley, CA",
-      "description": "This calendar shows events hosted by Robertson Center for Intercultural Leadership and Programs and Resident Support Services. Events are for I-House residents only, unless otherwise noted.",
-      "tags": [
-        "Academic"
-      ],
-      "url": "https://events.berkeley.edu/ihouse/event/324423-korean-game-night",
-      "source": "livewhale"
     },
     {
       "id": "livewhale_20260729T163000Z-324536@events.berkeley.edu",
@@ -427,6 +382,21 @@
       "source": "bampfa"
     },
     {
+      "id": "livewhale_20260730T163000Z-324868@events.berkeley.edu",
+      "title": "Dissertation Talk: Resolving Information Asymmetry in Multi-Agent Systems",
+      "organizer": "EECS",
+      "date": "2026-07-30",
+      "time": "9:30 AM",
+      "location": "Gateway 4355",
+      "description": "Multi-agent systems, from marketplaces to systems of LLM agents, derive much of their richness from information asymmetry: different agents holding different pieces of private information. In this talk, I will draw on theoretical frameworks from economics and machine learning to study how agents' incentives and interaction dynamics shape the extent to which such gaps can be closed, and how systems might be designed to narrow them. I will show that misaligned incentives can make an information gap impossible to overcome through repeated interaction alone. Even without inherent misalignment, gaps can persist because preferences and rewards are too complex to specify directly. In these settings, carefully designed incentives and learning dynamics can help bridge the gap.",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/eecs/event/324868-dissertation-talk-resolving-information-asymmetry",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260730T170000Z-323649@events.berkeley.edu",
       "title": "Post-Baccalaureate Program in Psychology Online Information Session",
       "organizer": "UC Berkeley Extension",
@@ -455,6 +425,22 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260730T180000Z-324922@events.berkeley.edu",
+      "title": "Dissertation Talk: Reliable Causal Machine Learning for Public Sector Decisions",
+      "organizer": "EECS",
+      "date": "2026-07-30",
+      "time": "11:00 AM",
+      "location": "Gateway 4355",
+      "description": "Machine learning systems are shaping public life and increasingly used to decide who receives public services. The data they rely on is often missing, noisy, or biased, and the outcomes they optimize for are frequently imperfect proxies for what we actually care about. In high-stakes public-sector settings, this erodes the reliability and equity of the decisions that follow. Drawing on causal inference, machine learning, and economics—and on collaborations with nonprofits and government agencies—we develop methods that confront imperfect outcomes across three settings: (1) policy learning from noisy, multidimensional outcomes in cash transfer programs; (2) cost-efficient outcome annotation for treatment-effect estimation in homeless services; (3) and model evaluation under biased proxies and selective labels in healthcare. Across all three, we find that treating measurement as a design problem yields systems that are more reliable and better matched to the social contexts they operate in.",
+      "tags": [
+        "Science & Tech",
+        "Academic",
+        "Student Life"
+      ],
+      "url": "https://events.berkeley.edu/eecs/event/324922-dissertation-talk-reliable-causal-machine-learning",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260730T190000Z-322830@events.berkeley.edu",
       "title": "Certificate Program in Marketing Online Information Session",
       "organizer": "UC Berkeley Extension",
@@ -467,6 +453,21 @@
         "Student Life"
       ],
       "url": "https://events.berkeley.edu/extension/event/322830-certificate-program-in-marketing-online-information-s",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260730T190000Z-324927@events.berkeley.edu",
+      "title": "Dissertation Talk: Designing and Evaluating AI Algorithms in Human-Centered Settings",
+      "organizer": "EECS",
+      "date": "2026-07-30",
+      "time": "12:00 PM",
+      "location": "Gateway 3355",
+      "description": "As AI models are increasingly deployed in settings shaped by complex human behavior, there is a critical need for algorithmic principles that account for human values and strategic incentives. This dissertation develops theoretical foundations for designing and evaluating AI algorithms in human-centered settings, drawing on tools from algorithmic economics and learning theory. In this talk, I will present two central threads of this work. First, I will discuss incentive-aware evaluation, where I will introduce a framework for truthful sequential probability forecasting and algorithmic principles for designing calibration metrics that inherently incentivize high-quality predictions. Second, I will discuss how aligning AI with human preferences must account for preference heterogeneity, and introduce a framework called the distortion of AI alignment that characterizes information-theoretic limits of learning from heterogeneous human feedback and motivates robust, game-theoretic approaches to policy optimization. I will then discuss how these ideas extend to the design of pluralistic leaderboards for AI evaluation, which incorporate heterogeneous human preferences into model rankings.",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/eecs/event/324927-dissertation-talk-designing-and-evaluating-ai",
       "source": "livewhale"
     },
     {
@@ -553,6 +554,36 @@
       ],
       "url": "https://bampfa.org/event/lavventura",
       "source": "bampfa"
+    },
+    {
+      "id": "livewhale_20260731T170000Z-324899@events.berkeley.edu",
+      "title": "Dissertation Talk: Multi-Turn Reinforcement Learning for Real-World Dialogue Agents",
+      "organizer": "EECS",
+      "date": "2026-07-31",
+      "time": "10:00 AM",
+      "location": "Gateway 4355",
+      "description": "Large Language Models (LLMs) are increasingly deployed as agents in real world interactive settings such as teaching, negotiation, and mental health. However, standard LLMs are optimized for single-turn instruction following, and rarely pursue goal-directed behavior across extended interactions. In this talk, I introduce the tools needed to build such agents. Firstly, I present multi-turn RL as a framework for training LLMs to plan, gather information, and optimize goals in dialogue. Next, I will argue that consistent human simulations are essential as off-the-shelf LLMs often drift from their assigned personas, contradict earlier statements, or abandon role-appropriate behavior. Finally, I show how these tools come together in strategic dialogue tasks such as negotiation, where multi-turn RL enables safe outcomes and the ability for agents to reason hierarchically, generalize across unseen tasks, and adapt to diverse opponents towards cooperative, value-creating outcomes.",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/eecs/event/324899-dissertation-talk-multi-turn-reinforcement-learning-f",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260731T200000Z-324953@events.berkeley.edu",
+      "title": "Dissertation Talk: Closing the AI Accountability Gap : Audits & Evaluation in the Age of Artificial Intelligence",
+      "organizer": "EECS",
+      "date": "2026-07-31",
+      "time": "1:00 PM",
+      "location": "242 Sutardja Dai Hall",
+      "description": "Abstract: Despite great potential, there is a growing gap between what AI systems promise and what they deliver, with real human costs. AI auditing is the practice of independently evaluating deployed AI systems to determine how they behave, what risks they pose, and whether they meet their intended objectives. This interdisciplinary endeavor requires both a technical expansion of our current AI evaluation paradigm and a framework for ensuring that audit investigations are sufficiently material for downstream legal actions and normative debates. At the intersection of law and public policy, applied economics and computer science, we can advance AI auditing policy & practice in material ways — by anchoring notions of engineering responsibility in AI development, expanding our vocabulary of AI evaluation methods, and pushing to connect AI audit outcomes to organizational and legal consequences. We demonstrate how novel evaluation methods such as incident reporting, workflow simulations and pilot experiments can supplement standard practices like data benchmarking to more adequately inform AI governance, shaping a range of outcomes from documentation and procurement to regulatory enforcement and product safety compliance. As auditing makes its way into key policy proposals as a primary mechanism for AI accountability, we must think critically about the necessary technical and institutional infrastructure required for this form of oversight to successfully enable safe widespread AI adoption.",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/eecs/event/324953-dissertation-talk-closing-the-ai-accountability",
+      "source": "livewhale"
     },
     {
       "id": "livewhale_20260731T200000Z-324437@events.berkeley.edu",
@@ -829,7 +860,7 @@
     {
       "id": "livewhale_20260803T160000Z-323505@events.berkeley.edu",
       "title": "Geospatial Data Science and Simulation for Transportation",
-      "organizer": "UC Berkeley",
+      "organizer": "Technology Transfer Program",
       "date": "2026-08-03",
       "time": "9:00 AM",
       "location": "410 McLaughlin Hall",
@@ -854,6 +885,21 @@
         "Academic"
       ],
       "url": "https://events.berkeley.edu/extension/event/318093-professional-program-in-graphic-design-online-informa",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260803T210000Z-324897@events.berkeley.edu",
+      "title": "Dissertation Talk: Minimally Perturbative Electrical Injection for Scalable Photonic Crystal Surface-Emitting Lasers",
+      "organizer": "EECS",
+      "date": "2026-08-03",
+      "time": "2:00 PM",
+      "location": "In Person: Cory 299",
+      "description": "The rapid growth of artificial intelligence has driven a corresponding demand for high-bandwidth optical interconnects, making optoelectronics increasingly important for communication, computing, and emerging photonic systems. Semiconductor lasers are central to these applications as compact and efficient sources of coherent light, but scaling their aperture while maintaining stable single-mode operation has remained a fundamental challenge. The Berkeley Surface-Emitting Laser (BerkSEL) platform overcomes this limitation using an open-Dirac photonic crystal cavity that supports a scale-invariant mode. This scale-invariant behavior, however, relies on precise photonic band engineering and strong refractive-index contrast, making it challenging to introduce electrical carriers across the large aperture without perturbing the optical integrity of the cavity. This thesis addresses this challenge by developing a minimally perturbative electrical injection scheme for extended nanophotonic apertures. We first demonstrate a monolithic quasi-suspended photonic crystal architecture in which a periodic array of subwavelength nano-posts provides electrical and thermal connection between the nanophotonic aperture and the epitaxial substrate. The nano-posts are strategically placed at the electromagnetic field nodes to enable distributed carrier injection across hundreds of unit cells while minimizing perturbation to the optical mode. Coupled optical, electrical, and thermal modeling is used to investigate the effects of nano-post geometry and uniformity, followed by the experimental demonstration of room-temperature electrically pumped lasing at telecommunication wavelengths. Building on this approach, we develop electrical pumping architectures for BerkSEL based on substrate-compatible open-Dirac cavities and several current-injection and current-spreading schemes. Together, these results establish an optical-electrical co-design framework in which carrier delivery, optical confinement, thermal transport, and photonic band structure are treated as coupled design variables, providing a pathway toward electrically driven scalable photonic crystal surface-emitting lasers.",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/eecs/event/324897-dissertation-talk-minimally-perturbative",
       "source": "livewhale"
     },
     {
@@ -883,6 +929,21 @@
         "Science & Tech"
       ],
       "url": "https://events.berkeley.edu/lhs/event/318492-teaching-california-wildfires-in-high-school",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260804T170000Z-324855@events.berkeley.edu",
+      "title": "Dissertation Talk: Algebraic, Numerical, and Machine Learning Methods for Compiling to Fault-Tolerant Quantum Computers",
+      "organizer": "EECS",
+      "date": "2026-08-04",
+      "time": "10:00 AM",
+      "location": "Soda 306",
+      "description": "Quantum algorithms are written in terms of arbitrary unitary operations, but error-corrected quantum computers can only execute small sets of discrete instructions. Algorithms must be compiled into one of these restricted sets before they can run. On early fault-tolerant machines, where physical qubits are scarce and gate errors frequent, the quality of this compilation determines which computations are feasible. This dissertation develops compilation techniques from three domains: algebraic number theory, numerical methods, and machine learning. Algebraic methods represent gates exactly over rings of algebraic integers, yielding single-qubit synthesis with near-optimal gate counts and promising richer fault-tolerant gate sets as practical compilation targets. I introduce a novel integer-enumeration-based synthesis algorithm that compiles general single-qubit unitaries to the Clifford+√T gate set. This synthesizer produces circuits that pay less non-Clifford cost than their Clifford+T counterparts. Numerical methods leverage ideas from continuous optimization and linear algebra to synthesize multi-qubit unitaries that lack strict number-theoretic structure. The central technique is synthesis by diagonalization: rather than compiling a unitary outright, discrete search reduces it to a diagonal operator, allowing high-precision diagonal synthesis algorithms to capture the difficult non-Clifford components of wide unitaries. Machine learning methods decide how compiled operations are executed. I argue that early fault-tolerant computers will store logical qubits densely, leaving few qubits free for transporting information around the machine, and formulate gate scheduling on such devices as a sliding tile puzzle. Classical planners make dense machines practical, and planners based on neural Monte Carlo tree search find shorter schedules still. Together these methods span compilation from the synthesis of individual gates to the scheduling of programs across entire machines.",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/eecs/event/324855-dissertation-talk-algebraic-numerical-and-machine",
       "source": "livewhale"
     },
     {
@@ -1491,6 +1552,20 @@
         "Student Life"
       ],
       "url": "https://events.berkeley.edu/uhs/event/314142-monthly-bipoc-support-group",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260811T190000Z-324747@events.berkeley.edu",
+      "title": "When Home Becomes the Exposure Environment: A Multi-Layered Investigation to Minimize Airborne Molds",
+      "organizer": "Berkeley Public Health",
+      "date": "2026-08-11",
+      "time": "12:00 PM",
+      "location": "Online",
+      "description": "This webinar will present a case study examining indoor mold burden in a Cincinnati residence following respiratory complaints among occupants. Using a comprehensive multi-layered approach, we employed real-time aerosol monitoring alongside microscopic analysis to characterize fungal diversity and quantify exposure reductions. This case study demonstrates how layered controls and integrated monitoring can meaningfully reduce bioaerosol exposures in residential environments.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/bph/event/324747-when-home-becomes-the-exposure-environment-a",
       "source": "livewhale"
     },
     {
@@ -2432,6 +2507,21 @@
       "source": "livewhale"
     },
     {
+      "id": "berkeley_law_766443",
+      "title": "[BCLB] Business Law New Student Orientation",
+      "organizer": "Berkeley Center for Law and Business",
+      "date": "2026-08-20",
+      "time": "1:00 PM",
+      "location": "Law Building, Room 105",
+      "description": "Please join us for a conversation with Executive Director, Angeli Patel and Faculty Directors, Stavros Gadinis, Frank Partnoy, and Adam Badawi about what is the Berkeley Center for Law and Business (BCLB) and all of the resources we provide to Berkeley Law students interested in corporate law. BCLB and its various programs and initiatives are all designed to help students connect with legal professionals from law firms, government agencies, and private corporations. Registration is highly recommended. Lunch provided first come, first serve basis to students who register and stay for the entire program. Registration coming soon.",
+      "tags": [
+        "Academic",
+        "Student Life"
+      ],
+      "url": "https://www.law.berkeley.edu/event/bclb-business-law-new-student-orientation/",
+      "source": "berkeley_law"
+    },
+    {
       "id": "livewhale_20260820T220000Z-323798@events.berkeley.edu",
       "title": "California Women's Soccer at Pepperdine",
       "organizer": "Cal Athletics",
@@ -2875,18 +2965,18 @@
       "source": "berkeley_law"
     },
     {
-      "id": "berkeley_law_765982",
+      "id": "livewhale_20260825T230000Z-325000@events.berkeley.edu",
       "title": "From Dissent to Dialogue: The Bethesda Declaration and the Fight for Academic Freedom",
-      "organizer": "Berkeley Law",
+      "organizer": "Berkeley Public Health",
       "date": "2026-08-25",
       "time": "4:00 PM",
-      "location": "101 Weill Hall, UC Berkeley",
-      "description": "In June 2025, hundreds of NIH scientists signed an open letter – the Bethesda Declaration – refusing to stay silent about political interference in research. On August 25, one of the key authors, Dr. Wen-Ying Sylvia Chou (SPH, class of 2008), a former NIH program official and health communication scholar, is coming to Berkeley to discuss the perils facing research inside and outside the NIH. The conversation will highlight opportunities to resist censorship and anticipatory compliance, engage in honest conversations, and defend academic freedom. Dr. Chou will share personal reflections and lessons learned on building and growing a community in collaboration with media, legislative, and academic partners. Together with UC Berkeley’s Dr. Arthur Reingold, MD and Claudia Polsky, JD they will share lessons learned and opportunities to protect the integrity of academic research.",
+      "location": "Weill Hall 101",
+      "description": "In June 2025, hundreds of NIH scientists signed an open letter - the Bethesda Declaration - refusing to stay silent about political interference in research. On August 25, one of the key authors, Dr. Wen-Ying Sylvia Chou (SPH, class of 2008), a former NIH program official and health communication scholar, is coming to Berkeley to discuss the perils facing research inside and outside the NIH. The conversation will highlight opportunities to resist censorship and anticipatory compliance, engage in honest conversations, and defend academic freedom. Dr. Chou will share personal reflections and lessons learned on building and growing a community in collaboration with media, legislative, and academic partners. Together with UC Berkeley's Dr. Arthur Reingold, MD and Claudia Polsky, JD they will share lessons learned and opportunities to protect the integrity of academic research. If you require an accommodation for effective communication (ASL interpreting/CART captioning, alternative media formats, etc.) or information about campus mobility access features in order to fully participate in this event, please contact Martina at cend@berkeley.edu with as much advance notice as possible (at least 5 days in advance of the event).",
       "tags": [
         "Academic"
       ],
-      "url": "https://www.law.berkeley.edu/event/from-dissent-to-dialogue-the-bethesda-declaration-and-the-fight-for-academic-freedom/",
-      "source": "berkeley_law"
+      "url": "https://events.berkeley.edu/bph/event/325000-from-dissent-to-dialogue-the-bethesda-declaration",
+      "source": "livewhale"
     },
     {
       "id": "haas_3361348",
@@ -3063,6 +3153,22 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260827T190000Z-324970@events.berkeley.edu",
+      "title": "Book Talk: Thea Riofrancos, \"Extraction: The Frontiers of Green Capitalism\"",
+      "organizer": "ESPM",
+      "date": "2026-08-27",
+      "time": "12:00 PM",
+      "location": "Social Science Matrix, 8th Floor",
+      "description": "\"Clean\" technologies and renewable energy are certainly growing sites of capitalist investment, with government policies playing a key role in making these sectors profitable. But the supply chains that produce the technologies pose vexing dilemmas for the energy transition. These dilemmas are most dramatic at the extractive frontiers of green capitalism: where the natural resources needed to manufacture electric vehicles and build windmills are extracted. In this talk, we will unpack these challenges through the lens of lithium, a so-called \"critical mineral\" essential for its role in decarbonizing one of the most polluting sectors: transportation. With forecasters predicting an enormous surge in lithium demand, exceeding existing supplies, Global North governments and downstream firms scramble to \"secure\" lithium, resulting in a new state-corporate alliance and the return of vertical integration. Meanwhile, Global South governments are attempting to leverage critical mineral deposits into sustainable and sovereign economic development. And, across the world, environmental and Indigenous movements contest the rapid expansion of extraction, defending ecosystems, livelihoods, and waterways already under pressure from global warming from a new boom in mining. It is in the play of these forces, unfolding amidst geopolitical rivalry and economic turbulence, that the energy transition will be forged. To conclude, we will explore the possibility of a less mining-intensive pathway to zero carbon transportation. Thea Riofrancos is a Professor of Political Science at Providence College, a Strategic Co-Director of the Climate and Community Institute, and a fellow at the Transnational Institute. Her research focuses on resource extraction, renewable energy, climate change, the global lithium sector, green technologies, social movements, and the Latin American left.",
+      "tags": [
+        "Academic",
+        "Student Life",
+        "Entrepreneurship"
+      ],
+      "url": "https://events.berkeley.edu/ESPM/event/324970-book-talk-thea-riofrancos-extraction-the-frontiers",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260827T193000Z-324668@events.berkeley.edu",
       "title": "IB Fall Kick-off",
       "organizer": "Integrative Biology",
@@ -3074,6 +3180,21 @@
         "Science & Tech"
       ],
       "url": "https://events.berkeley.edu/ib/event/324668-ib-fall-kick-off",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260827T193000Z-324968@events.berkeley.edu",
+      "title": "OEW Seminar - Nathaniel Ver Steeg (Internal, BPP JM Candidate)",
+      "organizer": "Berkeley Haas",
+      "date": "2026-08-27",
+      "time": "12:30 PM",
+      "location": "Berkeley, CA",
+      "description": "Topic: TBD",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/324968-oew-seminar-nathaniel-ver-steeg-internal-bpp-jm",
       "source": "livewhale"
     },
     {
@@ -3403,6 +3524,20 @@
       "source": "livewhale"
     },
     {
+      "id": "haas_3369325",
+      "title": "Boston Alumni: 2026 Haas/CACNE Summer Pool Party",
+      "organizer": "Berkeley Haas",
+      "date": "2026-08-29",
+      "time": "1:00 PM",
+      "location": "Alumni’s House in Wellesley, MA",
+      "description": "Cal and Haas alumni and their families are invited to soak up the California vibe at a party hosted by Cal/Haas alumni Len Ho at his home in Wellesley, MA on Saturday, August 29, 4:00 to 7:00pm. Come enjoy meeting friends new and old by the saltwater pool and hot tub! Indulge in a friendly game of ping pong or cornhole, or simply relax poolside. We will have an Anna’s taco bar, adult and family-friendly drinks, and treats to satisfy your sweet tooth! Please bring a towel if you would like to enjoy the pool or hot tub, and sandals are recommended as the patio can be hot to walk on if the sun is blazing. Please RSVP by Sun, Aug 23 ($15/person) so we can get a good headcount for food and drink. No animals, please. Exact address and any last minute updates will be provided to the RSVP list. Questions? Contact Len Ho – lenho1@gmail.com Register",
+      "tags": [
+        "Entrepreneurship"
+      ],
+      "url": "https://haas.berkeley.edu/event/boston-alumni-2026-haas-cacne-summer-pool-party/",
+      "source": "haas"
+    },
+    {
       "id": "bampfa_arboretum-cycle::2026-08-29",
       "title": "Arboretum Cycle",
       "organizer": "BAMPFA",
@@ -3624,6 +3759,20 @@
         "Academic"
       ],
       "url": "https://events.berkeley.edu/crg/event/321867-crgs-writers-space",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260831T193000Z-324997@events.berkeley.edu",
+      "title": "PE Seminar - Jake Grumbach (Internal, no meetings/dinner)",
+      "organizer": "Department of Economics",
+      "date": "2026-08-31",
+      "time": "12:30 PM",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "The Robert Powell Political Economy Seminar focuses on formal and quantitative work in the political economy field, including formal political theory.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/324997-pe-seminar-jake-grumbach-internal-no",
       "source": "livewhale"
     },
     {
@@ -3970,20 +4119,49 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260903T190000Z-324810@events.berkeley.edu",
-      "title": "Transnational Black culture in Liverpool at the end of the twentieth century: anomalous legacies in the 'slaving capital of the world' aka 'the second city of Empire'",
+      "id": "livewhale_20260903T190000Z-324906@events.berkeley.edu",
+      "title": "Stephen Small | Transnational Black culture in Liverpool at the end of the twentieth century: anomalous legacies in the 'slaving capital of the world' aka 'the second city of Empire'",
       "organizer": "Institute of European Studies",
       "date": "2026-09-03",
       "time": "12:00 PM",
       "location": "201 Philosophy Hall, UC Berkeley",
-      "description": "In the 1950s the Black population (Afro-Caribbean and African) of England was estimated at no more than 21,000; by the 1970s it had increased to 400,000 and by 2001 the census reported it was over 1.1 million. Most research on Black Britain in this period is focused on the population at the center of this increase, the so-called 'Windrush Generation' – that is, West Indian settlers that arrived since the 1940s, developed family units with two West Indian parents, primarily in London, and with limited firsthand experience or collective memory of legacies of slavery and imperialism in England itself. This research is reflected in the work of scholars like Stuart Hall, Paul Gilory, Hazel Carby, Hedi Mirza and John Solomos. Hall highlighted how 'Black is not a question of pigmentation … [It] is a historical category, a political category, a cultural category'; and Mirza insisted that 'It is only by attention to situated localised accounts of 'marginalised lives' that we can reveal the ways of 'being and becoming' a gendered, sexed, raced and classed subject'. While Black Liverpool shared much in common with Black London and other cities in this period, Liverpool's assemblage of features - what I denote as a racialised anomaly - was markedly different. There were far more Africans than West Indians, more long-term citizens than recent immigrants, the highest proportion of inter-racial marriages and people of mixed racial origins in the nation, more extensive first-hand experiences, and a far more vivid collective memory of imperialism in West Africa. These differences arose from the city's distinctive involvement in slavery and imperialism, the settlement in imperial Liverpool of (overwhelmingly male) seamen from West Africa; and the forced concentration of Black and multi-racial families in one neighbourhood (Liverpool 8 - later known as Toxteth). The city historically also had a far greater reliance on port activities and consistently higher rates of unemployment than in any other English city. In this presentation, drawing in his recently published book – Black Liverpool: 'the real thing'- Professor Stephen Small will examine how the historical and structural features of Black Liverpool gave rise to unique configurations of Black cultural expression in that city in the final decades of the twentieth century. Specifically, how the Black community in Liverpool pursued, embraced and transformed of waves of transnational Black culture from West Africa, the West Indies and the United States in the final three decades of the twentieth century. The role of gender ideologies, institutional practices and the agency and experiences of Black women are closely examined. One implication of this study is that an analysis of Black Britain based on a London-centered account of the so-called 'Windrush Generation' is unrepresentative and misleading.Stephen Small is a Professor of the Graduate School in the Department of African American and African Diaspora Studies at the University of California, Berkeley, a position he began in January 2025 after he retired from 30 year's teaching on campus. He researches the history and sociology of Black people across the diaspora, with a primary focus on legacies of slavery and imperialism, public history and collective memory. He is a faculty member of the Black Europe Summer School (BESS) (since 2007) – a two-week program in Amsterdam, founded and directed for Dr. Kwame Nimako; and has held visiting positions at universities in Brazil, England, France, Japan, the Netherlands, Spain, and Zimbabwe. He was Guest Curator at the Merseyside Maritime Museum's Atlantic Slave Trade Gallery (now the International Slavery Museum) in Liverpool that opened in 1994. His most recent book is Black Liverpool: 'The real thing' West African, West Indian and Afro-American Culture at the end of the twentieth centurypublished by Liverpool University Press in June 2026. Recent publications include In the Shadows of the Big House: Twenty-First Century Antebellum SlaveCabins and Heritage Tourism in Louisiana (2023) and 1981- Black Liverpool, Past and Present (2022) (co-written with Jimi Jagne). He is also co-editor (with Darlene Clark Hine and Trica Danielle Keaton) of Black Europe and the African Diaspora(2009). Stephen earned his Ph.D. in Sociology at the University of California, Berkeley (1989); his MS.C in Social Sciences from the University of Bristol (1983); and his B.A. (honours) in Economics and Sociology from the University of Kent at Canterbury (1979). Stephen was born and raised in Liverpool, England – the city with the nation's longest-standing Black population. If you require an accommodation for effective communication (ASL interpreting/CART captioning, alternative media formats, etc.) or information about campus mobility access features in order to fully participate in this event, please contact ies@berkeley.edu with as much advance notice as possible and at least 7-10 days before the event.",
+      "description": "In the 1950s the Black population (Afro-Caribbean and African) of England was estimated at no more than 21,000; by the 1970s it had increased to 400,000 and by 2001 the census reported it was over 1.1 million. Most research on Black Britain in this period is focused on the population at the center of this increase, the so-called 'Windrush Generation' – that is, West Indian settlers that arrived since the 1940s, developed family units with two West Indian parents, primarily in London, and with limited firsthand experience or collective memory of legacies of slavery and imperialism in England itself. This research is reflected in the work of scholars like Stuart Hall, Paul Gilory, Hazel Carby, Hedi Mirza and John Solomos. Hall highlighted how 'Black is not a question of pigmentation … [It] is a historical category, a political category, a cultural category'; and Mirza insisted that 'It is only by attention to situated localised accounts of 'marginalised lives' that we can reveal the ways of 'being and becoming' a gendered, sexed, raced and classed subject'. While Black Liverpool shared much in common with Black London and other cities in this period, Liverpool's assemblage of features - what I denote as a racialised anomaly - was markedly different. There were far more Africans than West Indians, more long-term citizens than recent immigrants, the highest proportion of inter-racial marriages and people of mixed racial origins in the nation, more extensive first-hand experiences, and a far more vivid collective memory of imperialism in West Africa. These differences arose from the city's distinctive involvement in slavery and imperialism, the settlement in imperial Liverpool of (overwhelmingly male) seamen from West Africa; and the forced concentration of Black and multi-racial families in one neighbourhood (Liverpool 8 - later known as Toxteth). The city historically also had a far greater reliance on port activities and consistently higher rates of unemployment than in any other English city. In this presentation, drawing in his recently published book – Black Liverpool: 'the real thing' - Professor Stephen Small will examine how the historical and structural features of Black Liverpool gave rise to unique configurations of Black cultural expression in that city in the final decades of the twentieth century. Specifically, how the Black community in Liverpool pursued, embraced and transformed of waves of transnational Black culture from West Africa, the West Indies and the United States in the final three decades of the twentieth century. The role of gender ideologies, institutional practices and the agency and experiences of Black women are closely examined. One implication of this study is that an analysis of Black Britain based on a London-centered account of the so-called 'Windrush Generation' is unrepresentative and misleading.Stephen Small is a Professor of the Graduate School in the Department of African American and African Diaspora Studies at the University of California, Berkeley, a position he began in January 2025 after he retired from 30 year's teaching on campus. He researches the history and sociology of Black people across the diaspora, with a primary focus on legacies of slavery and imperialism, public history and collective memory. He is a faculty member of the Black Europe Summer School (BESS) (since 2007) – a two-week program in Amsterdam, founded and directed for Dr. Kwame Nimako; and has held visiting positions at universities in Brazil, England, France, Japan, the Netherlands, Spain, and Zimbabwe. He was Guest Curator at the Merseyside Maritime Museum's Atlantic Slave Trade Gallery (now the International Slavery Museum) in Liverpool that opened in 1994. His most recent book is Black Liverpool: 'The real thing' West African, West Indian and Afro-American Culture at the end of the twentieth century published by Liverpool University Press in June 2026. Recent publications include In the Shadows of the Big House: Twenty-First Century Antebellum SlaveCabins and Heritage Tourism in Louisiana (2023) and 1981- Black Liverpool, Past and Present (2022) (co-written with Jimi Jagne). He is also co-editor (with Darlene Clark Hine and Trica Danielle Keaton) of Black Europe and the African Diaspora (2009). Stephen earned his Ph.D. in Sociology at the University of California, Berkeley (1989); his MS.C in Social Sciences from the University of Bristol (1983); and his B.A. (honours) in Economics and Sociology from the University of Kent at Canterbury (1979). Stephen was born and raised in Liverpool, England – the city with the nation's longest-standing Black population. If you require an accommodation for effective communication (ASL interpreting/CART captioning, alternative media formats, etc.) or information about campus mobility access features in order to fully participate in this event, please contact ies@berkeley.edu with as much advance notice as possible and at least 7-10 days before the event.",
       "tags": [
         "Academic",
         "Arts",
         "Student Life"
       ],
-      "url": "https://events.berkeley.edu/ies/event/324810-transnational-black-culture-in-liverpool-at-the",
+      "url": "https://events.berkeley.edu/live/events/324810-transnational-black-culture-in-liverpool-at-the",
       "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260903T193000Z-324967@events.berkeley.edu",
+      "title": "OEW Seminar - Chiara Motta (Internal, BPP JM Candidate)",
+      "organizer": "Berkeley Haas",
+      "date": "2026-09-03",
+      "time": "12:30 PM",
+      "location": "Berkeley, CA",
+      "description": "Topic: TBD",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/324967-oew-seminar-chiara-motta-internal-bpp-jm",
+      "source": "livewhale"
+    },
+    {
+      "id": "berkeley_law_765083",
+      "title": "[CDO] What Is a Judicial Clerkship (and Is It for Me)?",
+      "organizer": "Career Development Office",
+      "date": "2026-09-03",
+      "time": "12:50 PM",
+      "location": "110 Law Building",
+      "description": "This program, featuring a panel of alumni who have clerked in various courts, will cover the basics of post-graduate judicial clerkships and why students should consider these opportunities, which are launchpads to all kinds of legal careers. This program is intended for all students. 2Ls who are considering applying for clerkships next year are especially encouraged to attend. RSVP for this event here. We will have lunch available, and your RSVP will help determine our lunch ordering. We place food hours 48 hours in advance, so please, RSVP ASAP. Food orders will include meat and vegetarian options. This program is intended for all students. 2Ls who are considering applying for clerkships next year are especially encouraged to attend.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://www.law.berkeley.edu/event/what-is-a-judicial-clerkship-and-is-it-for-me/",
+      "source": "berkeley_law"
     },
     {
       "id": "berkeley_law_758765",
@@ -4149,20 +4327,6 @@
       ],
       "url": "https://events.berkeley.edu/econ/event/322485-labor-lunch-stella-canessa-the-right-to-sue-your-empl",
       "source": "livewhale"
-    },
-    {
-      "id": "berkeley_law_765083",
-      "title": "[CDO] What is a Judicial Clerkship (and Is it for me)?",
-      "organizer": "Career Development Office",
-      "date": "2026-09-04",
-      "time": "12:50 PM",
-      "location": "110 Law Building",
-      "description": "This program, featuring a panel of alumni who have clerked in various courts, will cover the basics of post-graduate judicial clerkships and why students should consider these opportunities, which are launchpads to all kinds of legal careers. This program is intended for all students. 2Ls who are considering applying for clerkships next year are especially encouraged to attend. RSVP for this event here. We will have lunch available, and your RSVP will help determine our lunch ordering. We place food hours 48 hours in advance, so please, RSVP ASAP. Food orders will include meat and vegetarian options. This program is intended for all students. 2Ls who are considering applying for clerkships next year are especially encouraged to attend.",
-      "tags": [
-        "Academic"
-      ],
-      "url": "https://www.law.berkeley.edu/event/what-is-a-judicial-clerkship-and-is-it-for-me/",
-      "source": "berkeley_law"
     },
     {
       "id": "livewhale_20260904T200000Z-323517@events.berkeley.edu",
@@ -4572,6 +4736,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260909T223000Z-324969@events.berkeley.edu",
+      "title": "From Territorial Development to Real Estate Populism: Land Use Planning and the Origins of Authoritarianism in Contemporary El Salvador",
+      "organizer": "Geography Department",
+      "date": "2026-09-09",
+      "time": "3:30 PM",
+      "location": "575 McCone Hall",
+      "description": "Julio Gutierrez is an anthropologist and political ecologist currently working as a UC President's Postdoctoral Fellow in the Department of Geography at the University of California, Berkeley. Gutierrez specializes in urban political ecology and critical development studies, with a focus on land politics and the urban-rural interface. He is interested in how struggles over land shape different dimensions of human experience, from material needs like food, water, and housing to more abstract ideas about property, sovereignty, and self-determination.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/geog/event/324969-from-territorial-development-to-real-estate",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260909T230000Z-324005@events.berkeley.edu",
       "title": "California Men's Soccer vs Cal State Fullerton",
       "organizer": "Cal Athletics",
@@ -4699,6 +4877,21 @@
         "Academic"
       ],
       "url": "https://events.berkeley.edu/ib/event/324667-joanna-kelley-integrative-biology-seminar",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260910T193000Z-324966@events.berkeley.edu",
+      "title": "OEW Seminar - Eva Davoine (Internal, BPP JM Candidate)",
+      "organizer": "Berkeley Haas",
+      "date": "2026-09-10",
+      "time": "12:30 PM",
+      "location": "Berkeley, CA",
+      "description": "Topic: TBD",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/324966-oew-seminar-eva-davoine-internal-bpp-jm",
       "source": "livewhale"
     },
     {
@@ -4918,6 +5111,21 @@
         "2026-10-31"
       ],
       "end_date": "2026-10-31"
+    },
+    {
+      "id": "livewhale_20260912T150000Z-324949@events.berkeley.edu",
+      "title": "Women's+ Wellness Conference",
+      "organizer": "CAA",
+      "date": "2026-09-12",
+      "time": "8:00 AM",
+      "location": "Alumni House, UC Berkeley",
+      "description": "Join us for the Women's+ Wellness Conference, co-hosted by Wholistic Soul (https://www.wholisticsoul.org/) and the Cal Alumni Association (https://alumni.berkeley.edu/)Six Sessions: Mental, Emotional, Physical, Spiritual, Financial, and Social Well-Being Breakfast, lunch, and a social hour Conversations NOT Presentations Many amazing women telling their human stories. Leaving all TITLES at the door And so much more!",
+      "tags": [
+        "Student Life",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/CAA/event/324949-womens-wellness-conference",
+      "source": "livewhale"
     },
     {
       "id": "luma_evt-Hh9JYojkFUAHIU3",
@@ -5175,6 +5383,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260914T193000Z-324996@events.berkeley.edu",
+      "title": "PE Seminar - Jesse Shapiro (Harvard)",
+      "organizer": "Department of Economics",
+      "date": "2026-09-14",
+      "time": "12:30 PM",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "The Robert Powell Political Economy Seminar focuses on formal and quantitative work in the political economy field, including formal political theory.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/324996-pe-seminar-jesse-shapiro-harvard",
+      "source": "livewhale"
+    },
+    {
       "id": "berkeley_law_765088",
       "title": "[CDO] Judges in Residence: The View from the Bench",
       "organizer": "Career Development Office",
@@ -5186,20 +5408,6 @@
         "Academic"
       ],
       "url": "https://www.law.berkeley.edu/event/judges-in-residence-the-view-from-the-bench/",
-      "source": "berkeley_law"
-    },
-    {
-      "id": "berkeley_law_766246",
-      "title": "[CDO] Open Office Hours with Judges in Residence",
-      "organizer": "Berkeley Law",
-      "date": "2026-09-14",
-      "time": "2:00 PM",
-      "location": "122 Law Building",
-      "description": "The Honorable Rachel Bloomekatz (6th Cir.) and The Honorable Chief Justice Vladimir Devens ‘87 (Haw. Sup. Ct.) will be available for informal, drop-in Q&A. All students are welcome.",
-      "tags": [
-        "Academic"
-      ],
-      "url": "https://www.law.berkeley.edu/event/open-office-hours-with-judges-in-residence-2/",
       "source": "berkeley_law"
     },
     {
@@ -5231,20 +5439,6 @@
       ],
       "url": "https://events.berkeley.edu/physics/event/323804-physics-colloquia-with-victoria-xu",
       "source": "livewhale"
-    },
-    {
-      "id": "berkeley_law_766237",
-      "title": "[CDO] Open Office Hours with Judges in Residence",
-      "organizer": "Berkeley Law",
-      "date": "2026-09-15",
-      "time": "10:00 AM",
-      "location": "122 Law Building",
-      "description": "The Honorable Rachel Bloomekatz (6th Cir.) and The Honorable Chief Justice Vladimir Devens ‘87 (Haw. Sup. Ct.) will be available for informal, drop-in Q&A. All students are welcome.",
-      "tags": [
-        "Academic"
-      ],
-      "url": "https://www.law.berkeley.edu/event/open-office-hours-with-judges-in-residence/",
-      "source": "berkeley_law"
     },
     {
       "id": "livewhale_20260915T170000Z-321308@events.berkeley.edu",
@@ -5549,6 +5743,21 @@
         "Academic"
       ],
       "url": "https://events.berkeley.edu/ib/event/324735-geerat-vermeij-integrative-biology-seminar",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260917T193000Z-324965@events.berkeley.edu",
+      "title": "OEW Seminar - Eduardo Souza-Rodrigues (U Toronto)",
+      "organizer": "Berkeley Haas",
+      "date": "2026-09-17",
+      "time": "12:30 PM",
+      "location": "Berkeley, CA",
+      "description": "Topic: TBD",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/324965-oew-seminar-eduardo-souza-rodrigues-u-toronto",
       "source": "livewhale"
     },
     {
@@ -5999,6 +6208,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260921T193000Z-324993@events.berkeley.edu",
+      "title": "PE Seminar - Jonathan Old (Internal, no meetings/dinner)",
+      "organizer": "Department of Economics",
+      "date": "2026-09-21",
+      "time": "12:30 PM",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "The Robert Powell Political Economy Seminar focuses on formal and quantitative work in the political economy field, including formal political theory.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/324993-pe-seminar-jonathan-old-internal-no",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260921T230000Z-321957@events.berkeley.edu",
       "title": "Polly Fordyce: Structural & Quantitative Biology Seminar",
       "organizer": "Department of Chemistry",
@@ -6122,7 +6345,7 @@
       "date": "2026-09-22",
       "time": "5:00 PM",
       "location": "201 Philosophy Hall, UC Berkeley",
-      "description": "This talk features the implicit dialogue between the German-Jewish journalist Charlotte Beradt (1907-1986) and her fellow émigré, Hannah Arendt, regarding the boundaries between humans and animals, as well as the ethical limits of anthropocentrism during political crises. Beradt's Third Reich of Dreams, a catalogue of dreams compiled between 1933 and 1939 on the basis of dreams retold by more than fifty Germans living under totalitarian rule, prompts her readers to re-evaluate the unique traits of physiological activities such as dreaming—as opposed to discursive reasoning—in safeguarding the humane promise of politics. While conventional pictures of human nature often fall prey to naturalistic or essentialist tendencies, the vital dialogue between Beradt and Arendt helps to resuscitate the unmistakable normative value of anthropological evidence, the substance of which often escapes the immediate capture of language and yet preserves the hope for political renewal lost in effable experience. Ariel Tang is a Postdoctoral Fellow in the Department of Political Science at Stanford University. Her research focuses on Enlightenment political thought and its legacies, with special attention to questions related to knowledge institutions, education, and the interactions between culture and nature. Her current book manuscript traces an entangled history of the idea of Bildung and the rise of the modern research university. She received her bachelor's degree in Philosophy from Barnard College, Columbia University, and her PhD in Political Science from Yale University. If you require an accommodation for effective communication (ASL interpreting/CART captioning, alternative media formats, etc.) or information about campus mobility access features in order to fully participate in this event, please contact ies@berkeley.edu with as much advance notice as possible and at least 7-10 days before the event.",
+      "description": "My talk features the implicit dialogue between the German-Jewish journalist Charlotte Beradt (1907-1986) and her fellow émigré, Hannah Arendt, regarding the boundaries between humans and animals, as well as the ethical limits of anthropocentrism during political crises. Beradt's Third Reich of Dreams, a catalogue of dreams compiled between 1933 and 1939 on the basis of dreams retold by more than fifty Germans living under totalitarian rule, prompts her readers to re-evaluate the unique traits of physiological activities such as dreaming—as opposed to discursive reasoning—in safeguarding the humane promise of politics. While conventional pictures of human nature often fall prey to naturalistic or essentialist tendencies, the vital dialogue between Beradt and Arendt helps to resuscitate the unmistakable normative value of anthropological evidence, the substance of which often escapes the immediate capture of language and yet preserves the hope for political renewal lost in effable experience. Ariel Tang is a Postdoctoral Fellow in the Department of Political Science at Stanford University. Her research focuses on Enlightenment political thought and its legacies, with special attention to questions related to knowledge institutions, education, and the interactions between culture and nature. Her current book manuscript traces an entangled history of the idea of Bildung and the rise of the modern research university. She received her bachelor's degree in Philosophy from Barnard College, Columbia University, and her PhD in Political Science from Yale University. If you require an accommodation for effective communication (ASL interpreting/CART captioning, alternative media formats, etc.) or information about campus mobility access features in order to fully participate in this event, please contact ies@berkeley.edu with as much advance notice as possible and at least 7-10 days before the event.",
       "tags": [
         "Academic"
       ],
@@ -6222,7 +6445,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260923T230000Z-324744@events.berkeley.edu",
+      "id": "livewhale_20260923T230000Z-324746@events.berkeley.edu",
       "title": "CLIMB + Neyman Seminar with Susan Murphy: Online Reinforcement Learning for Digital Health Interventions in the Dyadic Setting",
       "organizer": "Climb",
       "date": "2026-09-23",
@@ -6369,6 +6592,21 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260924T193000Z-324964@events.berkeley.edu",
+      "title": "OEW Seminar - Ming-yen Ho (Internal, BPP JM Candidate)",
+      "organizer": "Berkeley Haas",
+      "date": "2026-09-24",
+      "time": "12:30 PM",
+      "location": "Berkeley, CA",
+      "description": "Topic: TBD",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/324964-oew-seminar-ming-yen-ho-internal-bpp-jm",
+      "source": "livewhale"
+    },
+    {
       "id": "berkeley_law_758807",
       "title": "[BCLT] 1L Career Prep: Emerging Companies, Venture Capital & Transactions",
       "organizer": "BCLT",
@@ -6450,7 +6688,7 @@
       "date": "2026-09-24",
       "time": "5:00 PM",
       "location": "201 Philosophy Hall, UC Berkeley",
-      "description": "Born in Cagliari, Fausta Cialente was a pioneering feminist author, journalist, and activist. After the fascist regime censored her debut novel Natalia (1930), she was a collaborator of the resistance movement in Egypt, where she lived for twenty-six years. Returning to Italy after World War II, she wrote for newspapers and magazines before publishing fiction again, winning the prestigious Strega Prize in 1976. Her final years were spent in England translating the works of Henry James, Louisa May Alcott, and Nathaniel Hawthorne. She died at the age of ninety-six.Julia Nelsen translates between English and Italian. In addition to her work on Fausta Cialente, her essays and translations have appeared in journals including Circumference, Two Lines,Firmament, and the Chicago Review. Alongside translation, she currently serves as policy analyst for the UCLA Academic Senate, and previously taught writing and literature courses and managed international partnerships between Europe and the West Coast. She holds a PhD in Comparative Literature from UC Berkeley and a Masters in European languages from the University of Milan.Mairi McLaughlin is Professor and Chair in the Department of French and an Affiliated Member of the Departments of Linguistics and Italian Studies at UC Berkeley. She specializes in French/Romance Linguistics and in Translation Studies and has published extensively on language contact, the language of the media, and journalistic and literary translation. Her books have been published by Garnier, Legenda, and Oxford University Press, and she has published articles in journals such as French Studies, The Italianist, Langages, META, Perspectives, and Target.If you require an accommodation for effective communication (ASL interpreting/CART captioning, alternative media formats, etc.) or information about campus mobility access features in order to fully participate in this event, please contact ies@berkeley.edu with as much advance notice as possible and at least 7-10 days before the event.",
+      "description": "Fausta Cialente (1898-1994) was one of Italy's most significant twentieth-century authors. Though she won critical acclaim—albeit late in her career—Cialente remained overlooked for decades until the recent rerelease of her literary works in Italian. A Very Cold Winter (Transit Books, 2026) is the first of Cialente's novels to be rediscovered in translation by Julia Nelsen. In conversation with Professor Mairi McLaughlin, Nelsen will discuss her translation of A Very Cold Winter, situate Cialente within the broader landscape of modern Italian and international literature, and explore the role translators play in recovering unsung voices.Julia Nelsen translates between English and Italian. In addition to her work on Fausta Cialente, her essays and translations have appeared in journals including Circumference, Two Lines,Firmament, and the Chicago Review. Alongside translation, she currently serves as policy analyst for the UCLA Academic Senate, and previously taught writing and literature courses and managed international partnerships between Europe and the West Coast. She holds a PhD in Comparative Literature from UC Berkeley and a Masters in European languages from the University of Milan.Mairi McLaughlin is Professor and Chair in the Department of French and an Affiliated Member of the Departments of Linguistics and Italian Studies at UC Berkeley. She specializes in French/Romance Linguistics and in Translation Studies and has published extensively on language contact, the language of the media, and journalistic and literary translation. Her books have been published by Garnier, Legenda, and Oxford University Press, and she has published articles in journals such as French Studies, The Italianist, Langages, META, Perspectives, and Target.If you require an accommodation for effective communication (ASL interpreting/CART captioning, alternative media formats, etc.) or information about campus mobility access features in order to fully participate in this event, please contact ies@berkeley.edu with as much advance notice as possible and at least 7-10 days before the event.",
       "tags": [
         "Academic"
       ],
@@ -6888,6 +7126,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260928T193000Z-324991@events.berkeley.edu",
+      "title": "PE Seminar - Leonardo Bursztyn (U Chicago) joint w/ Behavioral Seminar",
+      "organizer": "Department of Economics",
+      "date": "2026-09-28",
+      "time": "12:30 PM",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "The Robert Powell Political Economy Seminar focuses on formal and quantitative work in the political economy field, including formal political theory.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/324991-pe-seminar-leonardo-bursztyn-u-chicago-joint-w",
+      "source": "livewhale"
+    },
+    {
       "id": "berkeley_law_765424",
       "title": "[CDO] Info Session: School-Sponsored Public Interest Fellowships",
       "organizer": "Room 100",
@@ -7154,6 +7406,21 @@
         "Science & Tech"
       ],
       "url": "https://events.berkeley.edu/uhs/event/324791-creativity-your-well-being-using-watercolor-to-design",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261001T193000Z-324963@events.berkeley.edu",
+      "title": "OEW Seminar - Silvia Barbareschi (Internal, BPP JM Candidate)",
+      "organizer": "Berkeley Haas",
+      "date": "2026-10-01",
+      "time": "12:30 PM",
+      "location": "Berkeley, CA",
+      "description": "Topic: TBD",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/324963-oew-seminar-silvia-barbareschi-internal-bpp-jm",
       "source": "livewhale"
     },
     {
@@ -7543,6 +7810,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261005T193000Z-324989@events.berkeley.edu",
+      "title": "PE Seminar - Petra Oreskovic (Internal, no meetings/dinner)",
+      "organizer": "Department of Economics",
+      "date": "2026-10-05",
+      "time": "12:30 PM",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "The Robert Powell Political Economy Seminar focuses on formal and quantitative work in the political economy field, including formal political theory.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/324989-pe-seminar-petra-oreskovic-internal-no",
+      "source": "livewhale"
+    },
+    {
       "id": "berkeley_law_765385",
       "title": "The Price of Mercy: A Conversation with Emily Galvin-Almanza",
       "organizer": "Criminal Law & Justice Center",
@@ -7843,6 +8124,21 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261008T193000Z-324962@events.berkeley.edu",
+      "title": "OEW Seminar - Gabriel Granato Ferreira (Internal, BPP JM Candidate)",
+      "organizer": "Berkeley Haas",
+      "date": "2026-10-08",
+      "time": "12:30 PM",
+      "location": "Berkeley, CA",
+      "description": "Topic: TBD",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/324962-oew-seminar-gabriel-granato-ferreira-internal",
+      "source": "livewhale"
+    },
+    {
       "id": "berkeley_law_758833",
       "title": "[BCLT] 1L Career Prep: Trade Secrets & Tech Litigation",
       "organizer": "BCLT",
@@ -7915,7 +8211,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261009T000000Z-321557@events.berkeley.edu",
+      "id": "livewhale_20261009T000000Z-323841@events.berkeley.edu",
       "title": "2026 Feldman Lecture | Reckoning with the Past in Germany and the United States: The Case for Thinking Comparatively about Reparative Justice",
       "organizer": "Institute of European Studies",
       "date": "2026-10-08",
@@ -7926,7 +8222,7 @@
         "Academic",
         "Student Life"
       ],
-      "url": "https://events.berkeley.edu/ies/event/321557-2026-feldman-lecture-reckoning-with-the-past-in-germa",
+      "url": "https://events.berkeley.edu/live/events/321557-2026-feldman-lecture-reckoning-with-the-past-in-germa",
       "source": "livewhale"
     },
     {
@@ -8244,6 +8540,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261012T193000Z-324987@events.berkeley.edu",
+      "title": "PE Seminar - Eliana La Ferrara (Harvard)",
+      "organizer": "Department of Economics",
+      "date": "2026-10-12",
+      "time": "12:30 PM",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "The Robert Powell Political Economy Seminar focuses on formal and quantitative work in the political economy field, including formal political theory.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/324987-pe-seminar-eliana-la-ferrara-harvard",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261012T230000Z-321960@events.berkeley.edu",
       "title": "Matt Thomson: Structural & Quantitative Biology Seminar",
       "organizer": "Department of Chemistry",
@@ -8388,6 +8698,20 @@
       ],
       "url": "https://events.berkeley.edu/csas/event/324722-indranil-chakravarty-the-tree-within-octavio-pazs-yea",
       "source": "livewhale"
+    },
+    {
+      "id": "cal_performances_89570",
+      "title": "Michael Pollan & Christof Koch: A Journey into Consciousness",
+      "organizer": "Cal Performances",
+      "date": "2026-10-13",
+      "time": "7:30 PM",
+      "location": "Zellerbach Hall",
+      "description": "Save 25% when you subscribe to 4+ Seasonal Holidays events!",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://calperformances.org/events/2026-27/speakers/michael-pollan-christof-koch-a-journey-into-consciousness/",
+      "source": "cal_performances"
     },
     {
       "id": "livewhale_20261014T160000Z-324530@events.berkeley.edu",
@@ -8541,6 +8865,21 @@
         "Science & Tech"
       ],
       "url": "https://events.berkeley.edu/live/events/321989-mtx-seminar",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261015T193000Z-324961@events.berkeley.edu",
+      "title": "OEW Student Seminar",
+      "organizer": "Berkeley Haas",
+      "date": "2026-10-15",
+      "time": "12:30 PM",
+      "location": "Cheit 220",
+      "description": "Speakers:",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/324961-oew-student-seminar",
       "source": "livewhale"
     },
     {
@@ -8986,6 +9325,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261019T193000Z-324985@events.berkeley.edu",
+      "title": "PE Seminar - Christopher Clayton (Yale)",
+      "organizer": "Department of Economics",
+      "date": "2026-10-19",
+      "time": "12:30 PM",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "The Robert Powell Political Economy Seminar focuses on formal and quantitative work in the political economy field, including formal political theory.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/324985-pe-seminar-christopher-clayton-yale",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261019T231500Z-323091@events.berkeley.edu",
       "title": "Physics Colloquium with Long Ju",
       "organizer": "Department of Physics",
@@ -9274,6 +9627,21 @@
         "Academic"
       ],
       "url": "https://events.berkeley.edu/ib/event/324703-jamie-lloyd-smith-integrative-biology-seminar",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261022T193000Z-324960@events.berkeley.edu",
+      "title": "OEW Seminar - Suresh Naidu (Columbia)",
+      "organizer": "Berkeley Haas",
+      "date": "2026-10-22",
+      "time": "12:30 PM",
+      "location": "Berkeley, CA",
+      "description": "Topic: TBD",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/324960-oew-seminar-suresh-naidu-columbia",
       "source": "livewhale"
     },
     {
@@ -9610,6 +9978,20 @@
       "source": "calbears"
     },
     {
+      "id": "livewhale_20261026T193000Z-324983@events.berkeley.edu",
+      "title": "PE Seminar - Eva Davoine (Internal, no meetings/dinner)",
+      "organizer": "Department of Economics",
+      "date": "2026-10-26",
+      "time": "12:30 PM",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "The Robert Powell Political Economy Seminar focuses on formal and quantitative work in the political economy field, including formal political theory.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/324983-pe-seminar-eva-davoine-internal-no",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261026T210000Z-321349@events.berkeley.edu",
       "title": "Asphalt Pavement Preservation Treatments, Materials, Construction and Quality Assurance",
       "organizer": "Technology Transfer Program",
@@ -9844,6 +10226,20 @@
       "source": "bampfa"
     },
     {
+      "id": "cal_performances_89578",
+      "title": "Angela Davis in conversation with Poulomi Saha: I Wish I Knew How It Would Feel to Be Free: Movements for Liberation and Transfigurations of Freedom",
+      "organizer": "Cal Performances",
+      "date": "2026-10-28",
+      "time": "7:30 PM",
+      "location": "Zellerbach Hall",
+      "description": "Save 25% when you subscribe to 4+ Seasonal Holidays events!",
+      "tags": [
+        "Arts"
+      ],
+      "url": "https://calperformances.org/events/2026-27/speakers/angela-davis-in-conversation-with-poulomi-saha-wish-i-knew-how-it-would-feel-to-be-free-movements-for-liberation-and-transfigurations-of-freedom/",
+      "source": "cal_performances"
+    },
+    {
       "id": "livewhale_20261029T180000Z-324218@events.berkeley.edu",
       "title": "Marius Wernig: MTx Seminar",
       "organizer": "Molecular & Cell Biology",
@@ -9856,6 +10252,21 @@
         "Science & Tech"
       ],
       "url": "https://events.berkeley.edu/live/events/321987-mtx-seminar",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261029T193000Z-324959@events.berkeley.edu",
+      "title": "OEW Student Seminar",
+      "organizer": "Berkeley Haas",
+      "date": "2026-10-29",
+      "time": "12:30 PM",
+      "location": "Cheit 220",
+      "description": "Speakers:",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/324959-oew-student-seminar",
       "source": "livewhale"
     },
     {
@@ -10153,6 +10564,20 @@
         "Academic"
       ],
       "url": "https://events.berkeley.edu/crg/event/321909-crgs-writers-space",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261102T203000Z-324981@events.berkeley.edu",
+      "title": "PE Seminar - Anjali Adukia (U Chicago)",
+      "organizer": "Department of Economics",
+      "date": "2026-11-02",
+      "time": "12:30 PM",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "The Robert Powell Political Economy Seminar focuses on formal and quantitative work in the political economy field, including formal political theory.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/324981-pe-seminar-anjali-adukia-u-chicago",
       "source": "livewhale"
     },
     {
@@ -10519,6 +10944,21 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261105T203000Z-324958@events.berkeley.edu",
+      "title": "OEW Student Seminar",
+      "organizer": "Berkeley Haas",
+      "date": "2026-11-05",
+      "time": "12:30 PM",
+      "location": "Cheit 220",
+      "description": "Speakers:",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/324958-oew-student-seminar",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261105T221000Z-322229@events.berkeley.edu",
       "title": "Seminar 251, Labor: Evan Soltas",
       "organizer": "Department of Economics",
@@ -10735,6 +11175,20 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261109T203000Z-324979@events.berkeley.edu",
+      "title": "PE Seminar - Nico Voigtlander (UCLA)",
+      "organizer": "Department of Economics",
+      "date": "2026-11-09",
+      "time": "12:30 PM",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "The Robert Powell Political Economy Seminar focuses on formal and quantitative work in the political economy field, including formal political theory.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/324979-pe-seminar-nico-voigtlander-ucla",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261109T223000Z-323165@events.berkeley.edu",
       "title": "Discussion with Meredith Martin & Wouter Haverals",
       "organizer": "UC Berkeley",
@@ -10912,6 +11366,21 @@
         "Student Life"
       ],
       "url": "https://events.berkeley.edu/uhs/event/324794-somatic-practices-for-stress-management",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261112T203000Z-324957@events.berkeley.edu",
+      "title": "OEW Seminar - Paola Moscariello (NYU)",
+      "organizer": "Berkeley Haas",
+      "date": "2026-11-12",
+      "time": "12:30 PM",
+      "location": "Berkeley, CA",
+      "description": "Topic: TBD",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/324957-oew-seminar-paola-moscariello-nyu",
       "source": "livewhale"
     },
     {
@@ -11099,6 +11568,20 @@
         "Arts"
       ],
       "url": "https://events.berkeley.edu/ttp/event/321361-pavement-management-systems-and-preservation",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261116T203000Z-324977@events.berkeley.edu",
+      "title": "PE Seminar - Benjamin Marx (Boston U) joint w/ Development Seminar",
+      "organizer": "Department of Economics",
+      "date": "2026-11-16",
+      "time": "12:30 PM",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "The Robert Powell Political Economy Seminar focuses on formal and quantitative work in the political economy field, including formal political theory.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/324977-pe-seminar-benjamin-marx-boston-u-joint-w",
       "source": "livewhale"
     },
     {
@@ -11295,11 +11778,9 @@
       "source": "livewhale",
       "dates": [
         "2026-11-19",
-        "2026-11-20",
-        "2026-11-21",
-        "2026-11-22"
+        "2026-11-20"
       ],
-      "end_date": "2026-11-22"
+      "end_date": "2026-11-20"
     },
     {
       "id": "livewhale_20261119T200000Z-324805@events.berkeley.edu",
@@ -11313,6 +11794,21 @@
         "Student Life"
       ],
       "url": "https://events.berkeley.edu/uhs/event/324805-staff-garden-volunteer-day",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261119T203000Z-324956@events.berkeley.edu",
+      "title": "OEW Student Seminar",
+      "organizer": "Berkeley Haas",
+      "date": "2026-11-19",
+      "time": "12:30 PM",
+      "location": "Cheit 220",
+      "description": "Speakers:",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/324956-oew-student-seminar",
       "source": "livewhale"
     },
     {
@@ -11435,20 +11931,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261122T030000Z-323610@events.berkeley.edu",
-      "title": "Jason Moran and the Harlem Hell Fighters: James Reese Europe and the Absence of Ruin",
-      "organizer": "Cal Performances",
-      "date": "2026-11-21",
-      "time": "7:00 PM",
-      "location": "101 Zellerbach Hall, Berkeley, CA 94720",
-      "description": "Saturday, November 21, 7:30pmJazzJason Moran and the Harlem HellfightersJames Reese Europe and the Absence of RuinProgram:The Absence of Ruin is jazz pianist and composer Jason Moran's multidisciplinary meditation on the life and legacy of James Reese Europe, the underrecognized Black American composer and bandleader who landed in France with the Harlem Hellfighters on New Year's Day 1918. The celebrated all-Black unit helped break the stalemate on the Western Front during the First World War, while composer Europe's finely honed military music ensemble popularized the new spirit of jazz in a war-torn France fascinated with Black culture. Moran's layered work explores the idea of memory in Black culture, augmenting his long-standing Bandwagon bandmates––bassist Tarus Mateen and drummer Nasheet Waits––with a seven-piece horn section and visuals by Oscar-nominated cinematographer Bradford Young. An Illuminations: \"Innocence & Experience\" event. Visit calperformances.org/illuminations for details.",
-      "tags": [
-        "Arts"
-      ],
-      "url": "https://events.berkeley.edu/calperfs/event/323610-jason-moran-and-the-harlem-hell-fighters-james",
-      "source": "livewhale"
-    },
-    {
       "id": "cal_performances_82582",
       "title": "Jason Moran and the Harlem Hellfighters: James Reese Europe and the Absence of Ruin",
       "organizer": "Cal Performances",
@@ -11463,17 +11945,31 @@
       "source": "cal_performances"
     },
     {
-      "id": "livewhale_20261122T210000Z-324092@events.berkeley.edu",
+      "id": "calbears_vcal_38616-calbears.com",
       "title": "California Volleyball vs Syracuse",
       "organizer": "Cal Athletics",
       "date": "2026-11-22",
       "time": "1:00 PM",
-      "location": "Berkeley, CA, Haas Pavilion",
+      "location": "Haas Pavilion",
       "description": "California Volleyball vs Syracuse",
       "tags": [
         "Sports"
       ],
-      "url": "https://events.berkeley.edu/sports/event/324092-california-volleyball-vs-syracuse",
+      "url": "https://calbears.com/calendar.aspx?game_id=38616&sport_id=30",
+      "source": "calbears"
+    },
+    {
+      "id": "livewhale_20261123T203000Z-324975@events.berkeley.edu",
+      "title": "PE Seminar - Alberto Bisin (NYU)",
+      "organizer": "Department of Economics",
+      "date": "2026-11-23",
+      "time": "12:30 PM",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "The Robert Powell Political Economy Seminar focuses on formal and quantitative work in the political economy field, including formal political theory.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/324975-pe-seminar-alberto-bisin-nyu",
       "source": "livewhale"
     },
     {
@@ -11492,51 +11988,18 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261125T080000Z-322285@events.berkeley.edu",
-      "title": "Non-Instructional Day",
-      "organizer": "Cal Parents",
-      "date": "2026-11-25",
-      "time": "All day",
-      "location": "UC Berkeley Campus",
-      "description": "Non-Instructional Day (No Classes)",
-      "tags": [
-        "Student Life"
-      ],
-      "url": "https://events.berkeley.edu/calparents/event/322285-non-instructional-day",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20261125T210000Z-324091@events.berkeley.edu",
+      "id": "calbears_vcal_38615-calbears.com",
       "title": "California Volleyball vs Notre Dame",
       "organizer": "Cal Athletics",
       "date": "2026-11-25",
       "time": "1:00 PM",
-      "location": "Berkeley, CA, Haas Pavilion",
+      "location": "Haas Pavilion",
       "description": "California Volleyball vs Notre Dame",
       "tags": [
         "Sports"
       ],
-      "url": "https://events.berkeley.edu/sports/event/324091-california-volleyball-vs-notre-dame",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_322286@events.berkeley.edu",
-      "title": "Academic and Administrative Holiday - Thanksgiving",
-      "organizer": "Cal Parents",
-      "date": "2026-11-26",
-      "time": "All day",
-      "location": "UC Berkeley Campus",
-      "description": "Academic and Administrative Holiday - Thanksgiving",
-      "tags": [
-        "Student Life"
-      ],
-      "url": "https://events.berkeley.edu/calparents/event/322286-academic-and-administrative-holiday-thanksgiving",
-      "source": "livewhale",
-      "dates": [
-        "2026-11-26",
-        "2026-11-27"
-      ],
-      "end_date": "2026-11-27"
+      "url": "https://calbears.com/calendar.aspx?game_id=38615&sport_id=30",
+      "source": "calbears"
     },
     {
       "id": "livewhale_20261126T221000Z-322233@events.berkeley.edu",
@@ -11553,21 +12016,21 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261128T080000Z-315720@events.berkeley.edu",
+      "id": "calbears_vcal_38602-calbears.com",
       "title": "California Football vs Pittsburgh - Hometown Heroes",
       "organizer": "Cal Athletics",
       "date": "2026-11-28",
       "time": "All day",
-      "location": "Berkeley, Calif., California Memorial Stadium",
-      "description": "California Football vs Pittsburgh - Hometown HeroesRadio: KSFO 810 AM",
+      "location": "California Memorial Stadium",
+      "description": "California Football vs Pittsburgh - Hometown Heroes Radio: KSFO 810 AM",
       "tags": [
         "Sports"
       ],
-      "url": "https://events.berkeley.edu/sports/event/315720-california-football-vs-pittsburgh",
-      "source": "livewhale"
+      "url": "https://calbears.com/calendar.aspx?game_id=38602&sport_id=4",
+      "source": "calbears"
     },
     {
-      "id": "livewhale_20261128T180000Z-324090@events.berkeley.edu",
+      "id": "calbears_vcal_38614-calbears.com",
       "title": "California Volleyball at Boston College",
       "organizer": "Cal Athletics",
       "date": "2026-11-28",
@@ -11577,38 +12040,22 @@
       "tags": [
         "Sports"
       ],
-      "url": "https://events.berkeley.edu/sports/event/324090-california-volleyball-at-boston-college",
-      "source": "livewhale"
+      "url": "https://calbears.com/calendar.aspx?game_id=38614&sport_id=30",
+      "source": "calbears"
     },
     {
-      "id": "livewhale_20261128T220000Z-323611@events.berkeley.edu",
+      "id": "cal_performances_82596",
       "title": "Cirque Kalabanté: WOW (World of Words)",
       "organizer": "Cal Performances",
       "date": "2026-11-28",
       "time": "2:00 PM",
-      "location": "101 Zellerbach Hall, Berkeley, CA 94720",
-      "description": "Saturday, November 28, 2pmSunday, November 29, 3pmFamily/Seasonal HolidaysCirque KalabantéWOW (World of Words) Program: Led by Yamoussa Bangoura—a multidisciplinary artist of Guinean origin who founded both a school of circus arts and a company specializing in African arts—Cirque Kalabanté brings together traditional African movement and music with the Montreal circus arts tradition in a work that communicates its story almost entirely through dance, acrobatics, contortion, music, and clever staging in place of dialogue. Their new production, WOW (World of Words), explores the transmission of knowledge, the meeting of cultures, and the magic of shared respect.",
+      "location": "Zellerbach Hall",
+      "description": "Save 25% when you subscribe to 4+ Family events!",
       "tags": [
-        "Arts",
-        "Academic"
+        "Arts"
       ],
-      "url": "https://events.berkeley.edu/calperfs/event/323611-cirque-kalabante-wow-world-of-words",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20261129T230000Z-323989@events.berkeley.edu",
-      "title": "Cirque Kalabanté: WOW (World of Words)",
-      "organizer": "Cal Performances",
-      "date": "2026-11-29",
-      "time": "3:00 PM",
-      "location": "101 Zellerbach Hall, Berkeley, CA 94720",
-      "description": "Saturday, November 28, 2pmSunday, November 29, 3pmFamily/Seasonal HolidaysCirque KalabantéWOW (World of Words) Program: Led by Yamoussa Bangoura—a multidisciplinary artist of Guinean origin who founded both a school of circus arts and a company specializing in African arts—Cirque Kalabanté brings together traditional African movement and music with the Montreal circus arts tradition in a work that communicates its story almost entirely through dance, acrobatics, contortion, music, and clever staging in place of dialogue. Their new production, WOW (World of Words), explores the transmission of knowledge, the meeting of cultures, and the magic of shared respect.",
-      "tags": [
-        "Arts",
-        "Academic"
-      ],
-      "url": "https://events.berkeley.edu/calperfs/event/323989-cirque-kalabante-wow-world-of-words",
-      "source": "livewhale"
+      "url": "https://calperformances.org/events/2026-27/seasonal-holidays/cirque-kalabante-wow-world-of-words/",
+      "source": "cal_performances"
     },
     {
       "id": "simons_workshops-applications-pseudorandomness-high-dimensional-expansion::2026-11-30",
@@ -11623,21 +12070,6 @@
       ],
       "url": "https://simons.berkeley.edu/workshops/applications-pseudorandomness-high-dimensional-expansion",
       "source": "simons"
-    },
-    {
-      "id": "livewhale_20261130T180000Z-321366@events.berkeley.edu",
-      "title": "Adaptive Traffic Control Systems",
-      "organizer": "Technology Transfer Program",
-      "date": "2026-11-30",
-      "time": "10:00 AM",
-      "location": "Online",
-      "description": "Description This newly updated online course offers a summary of fundamental principles, operational requirements and expected benefits of some of the frequently deployed Adaptive Traffic Control Systems. The first session presents various traffic control systems and general characteristics, market state, and evaluations of the ATCS along with other solutions like traffic responsive and Artificial Intelligent (AI) based signal timing. The second session focuses on SCATS (one of the oldest and widely deployed systems in the entire world) and other ATCSs from the US market. The third session presents SynchroGreen and InSync, recent ATCSs which recently gained a lot of popularity among the US customers. Finally, the fourth session addresses SCOOT and ACS Lite, two systems with similarities in algorithms but various detection and communication requirements. Each session is divided into three major parts: the first offers a summary of fundamental principles of a selected adaptive technology, the second covers summary of operational and institutional requirements to run adaptive control, and the third presents operational benefits from available case studies. Topics IncludeFundamental principles of ATCS operations Adjustment of signal timings and operational flexibility Traffic responsive and AI based signal timing Detection requirements Communication requirements Software and hardware requirements Reported operational modes Institutional preparation for deployment of an ATCS Reported operational benefits What You Will Learn Students will obtain a significant amount of technical information to understand fundamental principles of operations, deployment requirements, and reported operational benefits (highlighted through exemplary case studies) of some of the frequently deployed Adaptive Traffic Control Systems. This information will help students to become familiar with these relatively new signal control technologies and develop a realistic set of expectations regarding their deployments and operational benefits. Who Should Attend This course is intended for traffic engineers, planners, technicians, and decision makers in municipal, county, and state agencies interested in the operations, requirements and benefits of Adaptive Traffic Control System technologies, particularly those with the responsibility for the planning, design, implementation, operation, and maintenance of traffic signal control systems for urban areas.",
-      "tags": [
-        "Academic",
-        "Science & Tech"
-      ],
-      "url": "https://events.berkeley.edu/ttp/event/321366-adaptive-traffic-control-systems",
-      "source": "livewhale"
     },
     {
       "id": "livewhale_20261130T180000Z-321912@events.berkeley.edu",
@@ -11859,6 +12291,20 @@
       "source": "simons"
     },
     {
+      "id": "livewhale_20261207T203000Z-324972@events.berkeley.edu",
+      "title": "PE Seminar - Katherine Casey (Stanford) joint w/ Development Seminar",
+      "organizer": "Department of Economics",
+      "date": "2026-12-07",
+      "time": "12:30 PM",
+      "location": "223 Philosophy Hall, UC Berkeley",
+      "description": "The Robert Powell Political Economy Seminar focuses on formal and quantitative work in the political economy field, including formal political theory.",
+      "tags": [
+        "Academic"
+      ],
+      "url": "https://events.berkeley.edu/econ/event/324972-pe-seminar-katherine-casey-stanford-joint-w",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261209T200000Z-323912@events.berkeley.edu",
       "title": "Noon Concert: Piano Performance Lab Recital",
       "organizer": "Department of Music",
@@ -11890,21 +12336,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261211T000000Z-316694@events.berkeley.edu",
-      "title": "Cybersecurity Fall 2026 Capstone Project Showcase",
-      "organizer": "UC Berkeley",
-      "date": "2026-12-10",
-      "time": "4:00 PM",
-      "location": "Online",
-      "description": "Graduating MICS students present their cybersecurity projects. A panel of judges will select an outstanding project for the Lily L. Chang MICS Capstone Award. More info: https://www.ischool.berkeley.edu/events/2026/cybersecurity-fall-2026-capstone-project-showcase (https://www.ischool.berkeley.edu/events/2026/cybersecurity-fall-2026-capstone-project-showcase)",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "url": "https://www.ischool.berkeley.edu/events/2026/cybersecurity-fall-2026-capstone-project-showcase",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261211T201000Z-322483@events.berkeley.edu",
       "title": "Labor Lunch: Mark Borgschulte",
       "organizer": "Department of Economics",
@@ -11931,21 +12362,6 @@
       ],
       "url": "https://calperformances.org/events/2026-27/seasonal-holidays/mark-morris-dance-group-holidayland/",
       "source": "cal_performances"
-    },
-    {
-      "id": "livewhale_20261218T010000Z-316693@events.berkeley.edu",
-      "title": "Data Science Fall 2026 Capstone Project Showcase",
-      "organizer": "UC Berkeley",
-      "date": "2026-12-17",
-      "time": "5:00 PM",
-      "location": "Online",
-      "description": "Graduating MIDS students present their data science projects. A panel of judges will select an outstanding project for the Hal R. Varian MIDS Capstone Award. More info: https://www.ischool.berkeley.edu/events/2026/data-science-fall-2026-capstone-project-showcase (https://www.ischool.berkeley.edu/events/2026/data-science-fall-2026-capstone-project-showcase)",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "url": "https://www.ischool.berkeley.edu/events/2026/data-science-fall-2026-capstone-project-showcase",
-      "source": "livewhale"
     },
     {
       "id": "cal_performances_82584",
@@ -12580,7 +12996,7 @@
       "uri": "https://begin.berkeley.edu/events/"
     }
   ],
-  "lastUpdated": 1785255809234,
+  "lastUpdated": 1785329889826,
   "data_age_hours": 0,
   "degraded_sources": []
 }
