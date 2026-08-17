@@ -19,10 +19,9 @@ jobs:
       - name: Verify production artifacts
         env:
           PRODUCTION_URL: https://cal-events.com
-          # Summer cadence (2026-06): MWF cron means Fri→Mon is ~72h between
-          # publishes; threshold must cover that plus Vercel deploy latency.
-          # Revert to 36 (or 30) on 2026-08-17 when daily cron is restored.
-          MAX_STATUS_AGE_HOURS: "80"
+          # Daily cadence: publishes should land ~every 24h. 36h covers one
+          # missed run plus Vercel deploy latency.
+          MAX_STATUS_AGE_HOURS: "36"
           # Retry to absorb the Vercel deploy race. Push-to-main triggers both
           # this smoke test and the production deploy concurrently, and a
           # fresh fetch can see the previous build's status.json for up to

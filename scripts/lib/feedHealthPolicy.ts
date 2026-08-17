@@ -23,11 +23,10 @@ export const CRITICAL_SOURCES: ReadonlySet<string> = new Set(["livewhale"]);
 
 // Ceiling on how old a source's last-good data may be and still be republished.
 // Must exceed the longest gap between scheduled runs, or the first run after the
-// gap sees every fallback as expired. The summer cadence is Mon/Wed/Fri
-// (.github/workflows/update-events.yml), so the Fri -> Mon gap is ~72h; 80 leaves
-// headroom for run start-time drift. Revisit alongside the cadence itself: back
-// on a daily schedule the gap is ~24h and this can drop to 48.
-const DEFAULT_MAX_FALLBACK_AGE_HOURS = 80;
+// gap sees every fallback as expired. Daily cadence
+// (.github/workflows/update-events.yml) leaves ~24h between publishes; 48 leaves
+// headroom for a missed run or start-time drift.
+const DEFAULT_MAX_FALLBACK_AGE_HOURS = 48;
 
 export function parseMaxFallbackAgeHours(
   value: string | number | undefined,
