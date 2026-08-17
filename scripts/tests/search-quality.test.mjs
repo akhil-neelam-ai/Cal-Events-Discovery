@@ -350,11 +350,16 @@ test('real search: "basketball" does not substitute baseball', () => {
 
 test('real search: "moffitt" does not broaden to generic library exhibits', () => {
   const output = searchEvents(events, "moffitt", searchIndex);
-  const bad = output.results.filter((event) =>
-    /bancroft library|doe library/i.test(
-      `${event.title ?? ""} ${event.location ?? ""}`,
-    ),
-  );
+  // Doe/Bancroft events that never mention Moffitt are false broadenings.
+  // Tours that start at Doe but visit Moffitt (and say so) are legitimate hits.
+  const bad = output.results.filter((event) => {
+    const titleLocation = `${event.title ?? ""} ${event.location ?? ""}`;
+    const haystack = `${titleLocation} ${event.description ?? ""}`;
+    const isGenericLibrary = /bancroft library|doe library/i.test(
+      titleLocation,
+    );
+    return isGenericLibrary && !/moffitt/i.test(haystack);
+  });
 
   assert.equal(
     bad.length,
