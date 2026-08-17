@@ -26,7 +26,8 @@ npm run update-events
 | `npm run dev` | Vite dev server |
 | `npm run build` | Typecheck + production build → `dist/` |
 | `npm run typecheck` | `tsc --noEmit` only |
-| `npm run validate` | Lint, format, typecheck, script tests, UI tests |
+| `npm run validate` | Lint, format, typecheck, publish-critical script tests, UI tests |
+| `npm run test:search-quality` | Live corpus golden queries (non-blocking on the daily publish path) |
 | `npm run update-events` | Full ingestion pipeline → `public/*.json` |
 | `npm run test:e2e` | Build + Playwright |
 | `vercel --prod` | Deploy to Vercel |
@@ -60,7 +61,7 @@ Deep architecture: see [ARCHITECTURE.md](./ARCHITECTURE.md). Agent/adapter detai
 |----------|---------|---------|
 | **Validate** | PR + push to `main` (ignores artifact-only commits) | Lint, format, typecheck, 94+ tests |
 | **Browser E2E** | PR + push to `main` (ignores artifacts) | Playwright against production build |
-| **Update Events Daily** | 4:00 AM Pacific (cron) + manual | Fetch sources, health check, open automation PR, merge when required checks pass |
+| **Update Events Daily** | 4:00 AM Pacific (cron) + manual | Fetch sources, health check, publish-critical validate, open automation PR; corpus search-quality is non-blocking |
 | **Security Audit** | Weekly Monday + manual | `npm audit` (prod deps); opens a `security-audit` issue on findings |
 | **Source Contracts** | Weekly Monday + manual | Live HTTP checks against all 9 Berkeley endpoints |
 | **Production Smoke** | Every push to `main` | Verify `cal-events.com` serves fresh events + status |
@@ -121,8 +122,9 @@ After every pipeline run, check `public/status.json` (or `https://cal-events.com
 ### Daily cron failed
 
 1. Open the failed run in **Actions → Update Events Daily**.
-2. Check for an open issue labeled **`pipeline-failure`** (auto-created on failure).
-3. Common causes:
+2. Check for an open issue labeled **`pipeline-failure`** (auto-created on publish-path failure: LiveWhale/backbone or merge breakage).
+3. Corpus/search golden-query mismatches open **`data-quality`** instead and do **not** block the snapshot.
+4. Common causes:
    - Missing `AUTOMATION_PR_TOKEN` on scheduled runs
    - LiveWhale (the backbone source) down with no fallback (`checkFeedHealth`
      blocks). Supplementary sources degrade to last-good data and only warn.
@@ -147,7 +149,8 @@ Re-run manually: **Actions → Update Events Daily → Run workflow**.
 ```bash
 npx tsx scripts/checkFeedHealth.ts        # exits 1 on blocking issues
 node scripts/runSourceContracts.mjs       # live endpoint smoke
-npm run validate                            # full test suite
+npm run validate                            # publish-critical suite
+npm run test:search-quality                 # live corpus golden queries
 ```
 
 ## Sources

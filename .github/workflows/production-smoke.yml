@@ -73,5 +73,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           WORKFLOW_NAME: Production Smoke Test
-          FAILURE_CONTEXT: live production artifact checks
+          FAILURE_CONTEXT: live production feed stale or unreachable
+          ISSUE_LABEL: pipeline-failure
+          ISSUE_LABEL_DESCRIPTION: Stale or unreachable production feed requiring operator attention
         run: node scripts/notifyPipelineFailure.mjs

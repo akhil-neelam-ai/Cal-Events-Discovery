@@ -68,3 +68,28 @@ jobs:
 
       - name: Run validation suite
         run: npm run validate
+
+  # Non-blocking on purpose: corpus golden queries can fail when real campus
+  # content changes without any code bug. Required merge gates stay `validate`
+  # + `browser-e2e` on the automation PR. Daily cron opens a data-quality issue
+  # when this suite fails against a fresh snapshot.
+  search-quality:
+    needs: validate
+    if: ${{ always() && needs.validate.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run corpus search-quality suite
+        run: npm run test:search-quality

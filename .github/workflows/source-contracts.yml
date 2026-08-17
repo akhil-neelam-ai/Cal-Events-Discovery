@@ -56,4 +56,7 @@ jobs:
           FAILURE_CONTEXT:
             "live Berkeley source contract checks (failed sources:
             ${{ needs.source-contracts.outputs.failed_sources || 'unknown' }})"
+          ISSUE_LABEL: source-contracts
+          ISSUE_LABEL_COLOR: 0E8A16
+          ISSUE_LABEL_DESCRIPTION: Non-urgent live source contract drift for triage
         run: node scripts/notifyPipelineFailure.mjs
