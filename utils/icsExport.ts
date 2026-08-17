@@ -166,3 +166,75 @@ export function downloadEventIcs(event: CalEvent): void {
   anchor.click();
   URL.revokeObjectURL(url);
 }
+
+/**
+ * Primary start/end window for a Google Calendar template URL.
+ * Returns null for gappy multi-day runs (Google templates are single-event
+ * only) so callers can fall back to a full .ics download.
+ */
+function googleCalendarWindow(
+  event: CalEvent,
+): { dates: string; allDay: boolean } | null {
+  const dates = event.dates && event.dates.length > 1 ? event.dates : null;
+
+  if (dates) {
+    const allDay = /all\s*day/i.test(event.time);
+    if (allDay && isContiguousRun(dates)) {
+      const start = dates[0].replace(/-/g, "");
+      const endExclusive = addDaysToDateKey(dates[dates.length - 1], 1).replace(
+        /-/g,
+        "",
+      );
+      return { dates: `${start}/${endExclusive}`, allDay: true };
+    }
+    // Multiple discrete occurrences — ICS preserves every date.
+    return null;
+  }
+
+  const window = timeWindow(event.time, event.date.slice(0, 10));
+  return {
+    dates: `${window.startLocal}/${window.endLocal}`,
+    allDay: window.allDay,
+  };
+}
+
+/** Google Calendar "create event" URL, or null when .ics is the better path. */
+export function buildGoogleCalendarUrl(event: CalEvent): string | null {
+  const window = googleCalendarWindow(event);
+  if (!window) {
+    return null;
+  }
+
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: event.title,
+    dates: window.dates,
+    details: event.description || event.title,
+  });
+  if (event.location) {
+    params.set("location", event.location);
+  }
+  if (!window.allDay) {
+    params.set("ctz", PT_TIME_ZONE);
+  }
+
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+/**
+ * Desktop: open Google Calendar (falls back to .ics for multi-occurrence).
+ * Mobile: download .ics so iOS/Android offer the device calendar app.
+ */
+export function addEventToCalendar(
+  event: CalEvent,
+  options: { preferGoogle: boolean },
+): void {
+  if (options.preferGoogle) {
+    const googleUrl = buildGoogleCalendarUrl(event);
+    if (googleUrl) {
+      window.open(googleUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+  }
+  downloadEventIcs(event);
+}

@@ -189,11 +189,34 @@ describe("App UI regressions", () => {
       }),
     ]);
 
+    window.history.replaceState({}, "", "/?date=today");
+
     render(<App />);
 
     expect(
       screen.getByText("Nothing today — showing this week instead."),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 2, name: /this week/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Tomorrow Founder Talk")).toBeInTheDocument();
+  });
+
+  it("defaults to this week on first visit", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "tomorrow-event",
+        title: "Tomorrow Founder Talk",
+        date: TOMORROW_KEY,
+        description: "A founder talk happening tomorrow.",
+      }),
+    ]);
+
+    render(<App />);
+
+    expect(
+      screen.queryByText("Nothing today — showing this week instead."),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole("heading", { level: 2, name: /this week/i }),
     ).toBeInTheDocument();
@@ -228,7 +251,7 @@ describe("App UI regressions", () => {
     await user.click(screen.getByRole("button", { name: "Arts" }));
 
     expect(
-      screen.getByRole("heading", { level: 2, name: /arts · today/i }),
+      screen.getByRole("heading", { level: 2, name: /arts · this week/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("BAMPFA Screening")).toBeInTheDocument();
     expect(

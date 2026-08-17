@@ -159,7 +159,7 @@ test("preserves search and filter state across detail open and reload", async ({
   await page.goto("/");
 
   await expect(
-    page.getByRole("heading", { level: 2, name: /today/i }),
+    page.getByRole("heading", { level: 2, name: /this week/i }),
   ).toBeVisible();
 
   await page.getByRole("button", { name: /all events/i }).click();
