@@ -111,8 +111,27 @@ jobs:
           MAX_FALLBACK_AGE_HOURS: "48"
         run: npx tsx scripts/checkFeedHealth.ts
 
+      # Publish-critical validation only. Live corpus golden queries
+      # (search-quality) must not block shipping a healthy snapshot — they run
+      # afterward and open a low-priority data-quality issue on failure.
       - name: Validate published artifacts
         run: npm run validate
+
+      - name: Corpus search-quality checks
+        id: search_quality
+        continue-on-error: true
+        run: npm run test:search-quality
+
+      - name: Open data-quality issue on corpus regressions
+        if: ${{ steps.search_quality.outcome == 'failure' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_NAME: Corpus search quality
+          FAILURE_CONTEXT: live golden-query checks against the newly generated feed
+          ISSUE_LABEL: data-quality
+          ISSUE_LABEL_COLOR: FBCA04
+          ISSUE_LABEL_DESCRIPTION: Non-blocking corpus/search quality regression for triage
+        run: node scripts/notifyPipelineFailure.mjs
 
       - name: Create artifact update pull request
         id: create_pr
@@ -142,7 +161,8 @@ jobs:
             ## Validation
 
             - `npm run update-events`
-            - `npm run validate`
+            - `npm run validate` (publish-critical; search-quality is non-blocking)
+            - Corpus search-quality: `${{ steps.search_quality.outcome }}`
 
             Workflow run: `${{ github.run_id }}`
           author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
@@ -230,5 +250,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           WORKFLOW_NAME: Update Events Daily
-          FAILURE_CONTEXT: update-events job
+          FAILURE_CONTEXT: update-events job (publish-critical path)
+          ISSUE_LABEL: pipeline-failure
+          ISSUE_LABEL_DESCRIPTION: Backbone outage or publish-path failure requiring operator attention
         run: node scripts/notifyPipelineFailure.mjs
