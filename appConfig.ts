@@ -68,7 +68,7 @@ export const DateRanges = [
 ];
 
 export const DEFAULT_FILTERS: SearchFilters = {
-  dateRange: "today",
+  dateRange: "week",
   category: "All",
   searchQuery: "",
   source: "All",

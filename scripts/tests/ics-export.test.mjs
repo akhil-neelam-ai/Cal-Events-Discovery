@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { buildEventIcs } from "../../utils/icsExport.ts";
+import {
+  buildEventIcs,
+  buildGoogleCalendarUrl,
+} from "../../utils/icsExport.ts";
 
 const TIMED_EVENT = {
   id: "evt-123",
@@ -109,4 +112,48 @@ test("buildEventIcs escapes ICS control characters in text fields", () => {
   for (const line of ics.split("\r\n")) {
     assert.doesNotMatch(line, /\n/);
   }
+});
+
+test("buildGoogleCalendarUrl uses PT local times with ctz", () => {
+  const url = buildGoogleCalendarUrl(TIMED_EVENT);
+  assert.ok(url);
+  const parsed = new URL(url);
+  assert.equal(
+    parsed.origin + parsed.pathname,
+    "https://calendar.google.com/calendar/render",
+  );
+  assert.equal(parsed.searchParams.get("action"), "TEMPLATE");
+  assert.equal(parsed.searchParams.get("text"), "Quantum Talk");
+  assert.equal(
+    parsed.searchParams.get("dates"),
+    "20260530T180000/20260530T190000",
+  );
+  assert.equal(parsed.searchParams.get("ctz"), "America/Los_Angeles");
+  assert.equal(parsed.searchParams.get("location"), "Soda Hall");
+});
+
+test("buildGoogleCalendarUrl omits ctz for all-day events", () => {
+  const url = buildGoogleCalendarUrl(ALL_DAY_EVENT);
+  assert.ok(url);
+  const parsed = new URL(url);
+  assert.equal(parsed.searchParams.get("dates"), "20260530/20260531");
+  assert.equal(parsed.searchParams.get("ctz"), null);
+});
+
+test("buildGoogleCalendarUrl returns null for gappy multi-day runs", () => {
+  const url = buildGoogleCalendarUrl({
+    ...ALL_DAY_EVENT,
+    dates: ["2026-06-01", "2026-06-03", "2026-06-08"],
+  });
+  assert.equal(url, null);
+});
+
+test("buildGoogleCalendarUrl spans contiguous all-day runs", () => {
+  const url = buildGoogleCalendarUrl({
+    ...ALL_DAY_EVENT,
+    dates: ["2026-05-30", "2026-05-31", "2026-06-01", "2026-06-02"],
+  });
+  assert.ok(url);
+  const parsed = new URL(url);
+  assert.equal(parsed.searchParams.get("dates"), "20260530/20260603");
 });

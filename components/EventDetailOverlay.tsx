@@ -6,7 +6,7 @@ import {
   formatMultiDayWhen,
   isContiguousRun,
 } from "../utils/eventDates";
-import { downloadEventIcs } from "../utils/icsExport";
+import { addEventToCalendar } from "../utils/icsExport";
 import { getCategoryStyle, getDirectionsUrl } from "../utils/eventPresentation";
 import { useDialogAccessibility } from "../hooks/useDialogAccessibility";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
@@ -34,10 +34,12 @@ function detailWhenSecondary(event: CalEvent): string {
 function DetailActions({
   event,
   directionsUrl,
+  preferGoogleCalendar,
   compact = false,
 }: {
   event: CalEvent;
   directionsUrl: string | null;
+  preferGoogleCalendar: boolean;
   compact?: boolean;
 }) {
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">(
@@ -66,8 +68,12 @@ function DetailActions({
   }, []);
 
   const handleAddToCalendar = useCallback(() => {
-    downloadEventIcs(event);
-  }, [event]);
+    addEventToCalendar(event, { preferGoogle: preferGoogleCalendar });
+  }, [event, preferGoogleCalendar]);
+
+  const calendarLabel = preferGoogleCalendar
+    ? "Add to Google Calendar"
+    : "Add to Calendar";
 
   const handleCopyLink = useCallback(() => {
     if (!navigator.clipboard) {
@@ -121,7 +127,7 @@ function DetailActions({
           style={{ transition: "background-color 150ms ease" }}
           onClick={handleAddToCalendar}
         >
-          Add to Calendar
+          {calendarLabel}
         </button>
         <button
           type="button"
@@ -192,7 +198,7 @@ function DetailActions({
         style={{ transition: "background-color 150ms ease" }}
         onClick={handleAddToCalendar}
       >
-        Add to Calendar
+        {calendarLabel}
       </button>
       {event.url && (
         <a
@@ -482,7 +488,12 @@ function BottomSheet({
             </p>
           </div>
 
-          <DetailActions event={event} directionsUrl={directionsUrl} compact />
+          <DetailActions
+            event={event}
+            directionsUrl={directionsUrl}
+            preferGoogleCalendar={false}
+            compact
+          />
         </div>
       </div>
     </div>
@@ -670,7 +681,11 @@ function SlideOutPanel({
             </p>
           </div>
 
-          <DetailActions event={event} directionsUrl={directionsUrl} />
+          <DetailActions
+            event={event}
+            directionsUrl={directionsUrl}
+            preferGoogleCalendar
+          />
         </div>
       </div>
     </div>
