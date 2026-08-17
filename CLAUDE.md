@@ -8,7 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm run dev                          # Vite dev server → localhost:5173
 npm run build                        # tsc + vite build → dist/
 npm run update-events                # Run full data pipeline → public/events.json + search-index.json + status.json
-npm run validate                     # Run test suite (Node + tsx loader)
+npm run validate                     # Publish-critical suite (excludes live corpus search-quality)
+npm run test:search-quality          # Live golden queries against public/ artifacts
 npm run preview                      # Preview built output locally
 vercel --prod                        # Deploy to Vercel
 ```
