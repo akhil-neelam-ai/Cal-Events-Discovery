@@ -64,11 +64,55 @@ jobs:
     timeout-minutes: 45
 
     steps:
-      - name: Require automation token for scheduled runs
-        if: ${{ github.event_name == 'schedule' && env.AUTOMATION_PR_TOKEN == '' }}
+      # Validate the automation token before spending a pipeline run on it.
+      # An expired PAT used to surface only at the create-PR step, as
+      # `fatal: could not read Username for 'https://github.com'` — git's
+      # credential-prompt message, which names neither the token nor the fix.
+      # That cost seven days of stale production data in 2026-08.
+      #
+      # Sets usable=true only when the token authenticates AND is not
+      # definitively read-only. A set-but-broken token degrades to
+      # GITHUB_TOKEN rather than losing the day's snapshot entirely; the
+      # final step of this job then fails the run so notify-failure alerts.
+      - name: Check automation token
+        id: token_check
+        env:
+          GH_TOKEN: ${{ env.AUTOMATION_PR_TOKEN }}
+          REPO: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          ROTATE_URL: ${{ github.server_url }}/settings/personal-access-tokens
         run: |
-          echo "::error::AUTOMATION_PR_TOKEN required for scheduled runs — see README"
-          exit 1
+          set -uo pipefail
+
+          if [ -z "${AUTOMATION_PR_TOKEN:-}" ]; then
+            echo "usable=false" >> "$GITHUB_OUTPUT"
+            if [ "${EVENT_NAME}" = "schedule" ]; then
+              echo "::error::AUTOMATION_PR_TOKEN is not set — scheduled runs require it. See README → GitHub secrets."
+              exit 1
+            fi
+            echo "::warning::AUTOMATION_PR_TOKEN is not set; the snapshot PR will be opened with GITHUB_TOKEN and will not auto-merge."
+            exit 0
+          fi
+
+          # Hitting the repo endpoint checks the two things the token must do:
+          # authenticate, and reach this repository.
+          if ! push_access="$(gh api "repos/${REPO}" --jq '.permissions.push' 2>&1)"; then
+            echo "::error::AUTOMATION_PR_TOKEN is set but GitHub rejected it — expired, revoked, or not scoped to ${REPO}. Rotate it at ${ROTATE_URL} and update the AUTOMATION_PR_TOKEN secret."
+            echo "gh api reported: ${push_access}"
+            echo "usable=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Only a definitive `false` is treated as insufficient. Some token
+          # types omit `permissions` entirely; that is not evidence of a
+          # problem, so let the real push be the judge.
+          if [ "${push_access}" = "false" ]; then
+            echo "::error::AUTOMATION_PR_TOKEN authenticates but has no write access to ${REPO}. Grant Contents + Pull requests write, then update the secret."
+            echo "usable=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "usable=true" >> "$GITHUB_OUTPUT"
 
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -137,7 +181,7 @@ jobs:
         id: create_pr
         uses: peter-evans/create-pull-request@v8
         with:
-          token: ${{ env.AUTOMATION_PR_TOKEN || github.token }}
+          token: ${{ steps.token_check.outputs.usable == 'true' && env.AUTOMATION_PR_TOKEN || github.token }}
           branch: automation/update-events
           base: main
           delete-branch: true
@@ -169,13 +213,13 @@ jobs:
           committer: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
 
       - name: Warn if updater PR cannot complete automatically
-        if: ${{ steps.create_pr.outputs.pull-request-number && env.AUTOMATION_PR_TOKEN == '' }}
+        if: ${{ steps.create_pr.outputs.pull-request-number && steps.token_check.outputs.usable != 'true' }}
         run: |
-          echo "::warning::AUTOMATION_PR_TOKEN is not set."
-          echo "::warning::The updater PR was created with GITHUB_TOKEN, so downstream pull_request workflows like browser-e2e will not run and auto-merge is skipped."
+          echo "::warning::AUTOMATION_PR_TOKEN is unavailable or unusable."
+          echo "::warning::The updater PR was created with GITHUB_TOKEN, so downstream pull_request workflows like browser-e2e will not run and auto-merge is skipped. Merge PR #${{ steps.create_pr.outputs.pull-request-number }} by hand to publish today's snapshot."
 
       - name: Wait for required checks and merge artifact update PR
-        if: ${{ steps.create_pr.outputs.pull-request-number && env.AUTOMATION_PR_TOKEN != '' }}
+        if: ${{ steps.create_pr.outputs.pull-request-number && steps.token_check.outputs.usable == 'true' }}
         # Gate the merge on the data-relevant checks ONLY. The old approach used
         # `gh pr checks --watch --fail-fast`, which failed the whole cron when
         # *any* check went red — including unrelated ones (e.g. a transient
@@ -236,11 +280,24 @@ jobs:
 
           gh pr merge --merge "${pr_number}"
 
+      # Runs last so the snapshot PR is already open with fresh data. Failing
+      # here is what routes a set-but-broken token to notify-failure, instead
+      # of letting a run that published nothing report success. A token that
+      # is simply absent is a supported workflow_dispatch mode and is left to
+      # the warning above.
+      - name: Fail run when automation token is unusable
+        if: ${{ steps.token_check.outputs.usable != 'true' && env.AUTOMATION_PR_TOKEN != '' }}
+        run: |
+          echo "::error::AUTOMATION_PR_TOKEN is set but unusable — see the 'Check automation token' step. Today's snapshot is waiting in the automation/update-events PR and needs a manual merge. Rotate the token to restore automatic publishing."
+          exit 1
+
   notify-failure:
     needs: update-events
     if: failure()
     runs-on: ubuntu-latest
     permissions:
+      # actions:read lets the notifier name the steps that actually failed.
+      actions: read
       issues: write
     steps:
       - name: Checkout repository

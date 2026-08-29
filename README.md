@@ -94,6 +94,21 @@ Set these in **Settings → Secrets and variables → Actions**:
 
 `workflow_dispatch` runs work without `AUTOMATION_PR_TOKEN`, but the PR won't auto-merge.
 
+### Rotating `AUTOMATION_PR_TOKEN`
+
+**PATs expire.** When this one does, the pipeline still fetches, validates, and
+commits a perfectly good snapshot — it just cannot push it. Set a calendar
+reminder for the expiry date you choose.
+
+The `Check automation token` step validates the token before the run does any
+work and prints the remediation. An expired token no longer loses the day's
+data: the snapshot PR is opened with `GITHUB_TOKEN` instead, so the events are
+one manual merge away, and the run is marked failed so an issue is filed.
+
+To rotate: regenerate the PAT (Contents + Pull requests write on this repo),
+update the `AUTOMATION_PR_TOKEN` secret, then re-run **Actions → Update Events
+Daily → Run workflow**.
+
 ## Reading `status.json`
 
 After every pipeline run, check `public/status.json` (or `https://cal-events.com/status.json`):
@@ -126,6 +141,11 @@ After every pipeline run, check `public/status.json` (or `https://cal-events.com
 3. Corpus/search golden-query mismatches open **`data-quality`** instead and do **not** block the snapshot.
 4. Common causes:
    - Missing `AUTOMATION_PR_TOKEN` on scheduled runs
+   - **Expired or revoked `AUTOMATION_PR_TOKEN`.** The pipeline is healthy and
+     every check passes, then the run dies at `Create artifact update pull
+     request` with `fatal: could not read Username for 'https://github.com'`.
+     That git message means the token was rejected, not that a username is
+     missing — see [Rotating `AUTOMATION_PR_TOKEN`](#rotating-automation_pr_token).
    - LiveWhale (the backbone source) down with no fallback (`checkFeedHealth`
      blocks). Supplementary sources degrade to last-good data and only warn.
    - A required PR check (`validate` or `browser-e2e`) failed on the automation PR
@@ -135,8 +155,13 @@ Re-run manually: **Actions → Update Events Daily → Run workflow**.
 ### Production data looks stale
 
 1. Hit `https://cal-events.com/status.json` — check `generated_at`.
-2. Check if an open `automation/update-events` PR is stuck unmerged.
-3. **Production Smoke** workflow on `main` fails if status is >36h old.
+2. Check if an open `automation/update-events` PR is stuck unmerged. When the
+   automation token is unusable the snapshot lands there instead of on `main`,
+   and merging it publishes the data.
+3. **Production Smoke** fails if status is >36h old. It runs on every push to
+   `main` _and_ daily at 20:00 UTC — the daily run is the one that catches
+   publishing having stopped, since a push-triggered check only ever sees data
+   that was just published. On failure it files a `pipeline-failure` issue.
 
 ### A source broke (Berkeley changed their site)
 
