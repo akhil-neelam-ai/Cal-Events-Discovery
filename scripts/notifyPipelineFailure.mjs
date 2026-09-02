@@ -37,9 +37,46 @@ function gh(args) {
 
 const runUrl = `${SERVER_URL}/${REPO}/actions/runs/${RUN_ID}`;
 const title = `${WORKFLOW_NAME} failed — ${new Date().toISOString().slice(0, 10)}`;
+
+/**
+ * Name the steps that actually failed.
+ *
+ * Without this every comment reads the same regardless of cause, so a run of
+ * consecutive failures is indistinguishable from one repeated blip. In
+ * 2026-08 an expired PAT posted six identical "failed during update-events
+ * job" comments while the pipeline itself was perfectly healthy.
+ *
+ * Best-effort by design: this is the notifier's own enrichment, and losing it
+ * must never cost the operator the underlying alert.
+ */
+function describeFailedSteps() {
+  try {
+    const raw = gh(["run", "view", RUN_ID, "--repo", REPO, "--json", "jobs"]);
+    const { jobs = [] } = JSON.parse(raw || "{}");
+
+    const failed = jobs.flatMap((job) =>
+      (job.steps ?? [])
+        .filter((step) => step.conclusion === "failure")
+        .map((step) => `\`${job.name}\` → **${step.name}**`),
+    );
+
+    return failed.length > 0 ? failed : null;
+  } catch (stepError) {
+    console.warn(
+      `[notifyPipelineFailure] could not resolve failed step names: ${stepError instanceof Error ? stepError.message : stepError}`,
+    );
+    return null;
+  }
+}
+
+const failedSteps = describeFailedSteps();
+
 const body = [
   `${WORKFLOW_NAME} failed during **${FAILURE_CONTEXT}**.`,
   "",
+  ...(failedSteps
+    ? ["Failed steps:", "", ...failedSteps.map((s) => `- ${s}`), ""]
+    : []),
   `- Workflow run: ${runUrl}`,
   `- Repository: ${REPO}`,
   "",
