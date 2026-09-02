@@ -33,7 +33,7 @@ const W_DESC_KEYWORD = 3; // keyword found in description (weakest — lots of n
 // per field — these are high-confidence mappings so they override keywords.
 const ORGANIZER_MAP: Array<[RegExp, FrontendCategory]> = [
   [
-    /\b(eecs|electrical engineering|computer science|simons institute|data science|statistics|bioengineering|computational|informatics)\b/i,
+    /\b(eecs|electrical engineering|computer science|simons institute|berkeley ai risk|data science|statistics|bioengineering|computational|informatics)\b/i,
     "Science & Tech",
   ],
   [

@@ -48,7 +48,7 @@ React app loads JSON client-side, search runs in-browser
 Vercel CDN → cal-events.com
 ```
 
-1. **Ingestion** — `scripts/updateEvents.ts` runs 11 source adapters in parallel (60s timeout each), dedupes, writes three JSON files.
+1. **Ingestion** — `scripts/updateEvents.ts` runs 12 source adapters in parallel (60s timeout each), dedupes, writes three JSON files.
 2. **Automation** — Daily cron opens a PR on `automation/update-events` with updated artifacts.
 3. **Merge** — PR runs validate + E2E, auto-merges to `main` if green.
 4. **Deploy** — Vercel deploys `main`. Production smoke test hits live URLs.
@@ -190,6 +190,7 @@ npm run test:search-quality                 # live corpus golden queries
 | Berkeley Haas / Law / BEGIN | `tribe.ts` | Tribe Events Calendar REST |
 | Simons Institute | `simons.ts` | JSON API |
 | Luma (Berkeley calendars) | `luma.ts` | Luma JSON API |
+| Berkeley AI Risk | `ai_risk.ts` | JS schedule scrape |
 
 ## Deploy
 

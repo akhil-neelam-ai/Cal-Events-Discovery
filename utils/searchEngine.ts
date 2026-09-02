@@ -108,6 +108,11 @@ const SOURCE_PATTERNS: Array<[string, RegExp, string]> = [
   ["haas", /\b(haas|berkeley haas|business school)\b/i, "Berkeley Haas"],
   ["berkeley_law", /\b(berkeley law|law school|bclt)\b/i, "Berkeley Law"],
   ["simons", /\b(simons|simons institute)\b/i, "Simons Institute"],
+  [
+    "ai_risk",
+    /\b(berkeley ai risk|ai-risk\.berkeley|ai risk speaker)\b/i,
+    "Berkeley AI Risk",
+  ],
   ["livewhale", /\b(livewhale|uc berkeley events)\b/i, "UC Berkeley Events"],
 ];
 

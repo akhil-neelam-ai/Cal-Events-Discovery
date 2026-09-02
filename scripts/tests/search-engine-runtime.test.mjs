@@ -572,6 +572,14 @@ test("dismissed source intent becomes literal search text instead of returning t
   assert.equal(output.results[0]?.id, "evt-law");
 });
 
+test('"berkeley ai risk" is a source lock; generic "ai risk" is not', () => {
+  const locked = buildSearchPlan("berkeley ai risk");
+  assert.equal(locked.filters.source, "ai_risk");
+
+  const generic = buildSearchPlan("ai risk");
+  assert.equal(generic.filters.source, undefined);
+});
+
 test('"student org" is not treated as a CalLink source lock', () => {
   const plan = buildSearchPlan("student org");
 

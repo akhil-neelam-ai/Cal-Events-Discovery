@@ -24,7 +24,7 @@ const TIMEOUT_MS = 30_000;
  * Only a critical source failing its contract is worth breaking the build. Every
  * other source is supplementary — scraped from fragile endpoints or naturally
  * sparse between terms — so its failure is reported and notified, but must not
- * take the whole check red and mask the health of the other ten.
+ * take the whole check red and mask the health of the other sources.
  */
 export const CRITICAL_CONTRACT_SOURCES = new Set(["livewhale"]);
 
@@ -149,6 +149,18 @@ export const CONTRACTS = [
         !Array.isArray(parsed.events)
       ) {
         throw new Error("BEGIN Tribe response missing expected `events` array");
+      }
+    },
+  },
+  {
+    name: "ai_risk",
+    url: "https://ai-risk.berkeley.edu/speaker-series.js",
+    validate(_response, body) {
+      if (!/(?:const|let|var)\s+speakerEvents\s*=/.test(body)) {
+        throw new Error("speaker-series.js missing speakerEvents assignment");
+      }
+      if (!/eventDate\s*:/.test(body)) {
+        throw new Error("speaker-series.js missing eventDate fields");
       }
     },
   },

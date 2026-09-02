@@ -20,11 +20,11 @@ Three layers, cleanly separated.
 
 ### 1. Data pipeline (`scripts/`)
 
-`scripts/updateEvents.ts` is the orchestrator. It runs 10 source adapters in parallel with a 60 s timeout each, dedupes the union, projects to legacy shape, writes 3 static JSON artifacts to `public/`.
+`scripts/updateEvents.ts` is the orchestrator. It runs 12 source adapters in parallel with a 60 s timeout each, dedupes the union, projects to legacy shape, writes 3 static JSON artifacts to `public/`.
 
 **Source priority** (used by dedupe to pick winner when two sources have the same event):
 ```
-livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley_law / simons / luma / begin (3)
+livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley_law / simons / luma / begin / ai_risk (3)
 ```
 
 **Failure handling** — each source has a `RecoveryPolicy` in `updateEvents.ts`:
@@ -46,6 +46,7 @@ livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley
 | `tribe.ts` | Tribe/WP REST API | Haas + Berkeley Law + BEGIN (Berkeley Gateway to Innovation) — generic adapter, reusable for any site running The Events Calendar plugin |
 | `simons.ts` | JSON API | CS theory research institute (`simons.berkeley.edu/api/events`) |
 | `luma.ts` | Luma JSON API | Berkeley-affiliated Luma calendars (`api.lu.ma/calendar/get-items`); calendar IDs listed in `BERKELEY_LUMA_CALENDARS` |
+| `ai_risk.ts` | JS schedule scrape | Berkeley AI Risk speaker series (`ai-risk.berkeley.edu/speaker-series.js`) |
 
 ### 3. Frontend (`App.tsx` + `utils/`)
 

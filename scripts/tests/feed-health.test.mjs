@@ -52,7 +52,14 @@ test("evaluateFeedHealth blocks unrecovered critical (livewhale) degradation", (
 test("evaluateFeedHealth warns (does not block) on supplementary source degradation", () => {
   // Non-backbone sources are platform-capped, scraped from fragile endpoints, or
   // sparse between terms. One going down must not hard-fail the daily publish.
-  for (const source of ["bampfa", "callink", "luma", "begin", "simons"]) {
+  for (const source of [
+    "bampfa",
+    "callink",
+    "luma",
+    "begin",
+    "simons",
+    "ai_risk",
+  ]) {
     const result = evaluateFeedHealth(
       {
         ...healthyStatus,
@@ -184,7 +191,7 @@ test("CRITICAL_SOURCES is backbone-only and shared by both gates", () => {
   assert.ok(CRITICAL_SOURCES.has("livewhale"));
   assert.equal(CRITICAL_SOURCES.size, 1);
 
-  for (const source of ["luma", "begin", "callink", "bampfa"]) {
+  for (const source of ["luma", "begin", "callink", "bampfa", "ai_risk"]) {
     assert.ok(
       !CRITICAL_SOURCES.has(source),
       `${source} should be supplementary, not critical`,
