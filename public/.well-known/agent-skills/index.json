@@ -6,7 +6,7 @@
       "type": "skill-md",
       "description": "Search upcoming UC Berkeley campus events using the public CalEvents event feed.",
       "url": "/.well-known/agent-skills/search-events/SKILL.md",
-      "digest": "sha256:c10c7e1b5dd183846c6ea59c8a34c7263c3c1f705ff8480ef0dac6b252f5a6b0"
+      "digest": "sha256:33e9daca1f456d40bcda4a5245edd16f6ec7eea93ed17c40c44a22d3cd640f2e"
     },
     {
       "name": "event-feed-status",
@@ -14,6 +14,27 @@
       "description": "Inspect CalEvents ingestion freshness, source health, and fallback status.",
       "url": "/.well-known/agent-skills/event-feed-status/SKILL.md",
       "digest": "sha256:70045cc7913643d2cff3dae5e59174dc646052207a19c21de643aac428c23e53"
+    },
+    {
+      "name": "event-detail",
+      "type": "skill-md",
+      "description": "Look up a single CalEvents event by id with directions and calendar links.",
+      "url": "/.well-known/agent-skills/event-detail/SKILL.md",
+      "digest": "sha256:ed3b994f9bd129fbca82fcea1ec0ccd4792c95e69aedd31040d585f1479596d4"
+    },
+    {
+      "name": "calendar-export",
+      "type": "skill-md",
+      "description": "Export a CalEvents event to .ics or Google Calendar.",
+      "url": "/.well-known/agent-skills/calendar-export/SKILL.md",
+      "digest": "sha256:ef2a2d9d939a0c14e55fec304d81a98655db02c8b8a7a5874e453b5a1873e395"
+    },
+    {
+      "name": "share-event",
+      "type": "skill-md",
+      "description": "Build shareable CalEvents deep links from shared URL workspace params.",
+      "url": "/.well-known/agent-skills/share-event/SKILL.md",
+      "digest": "sha256:dde493660ec22167f8cf54dfe4187e71d208fd628e896f29982e5744b8b31169"
     }
   ]
 }

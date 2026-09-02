@@ -24,6 +24,20 @@ export function AppFooter() {
             akhil_neelam@berkeley.edu
           </a>
         </p>
+        <p className="mt-3 text-xs text-white/60">
+          Building an agent? See{" "}
+          <a
+            href="/for-agents.html"
+            className="text-berkeley-gold hover:underline"
+          >
+            for agents
+          </a>
+          ,{" "}
+          <a href="/llms.txt" className="text-berkeley-gold hover:underline">
+            llms.txt
+          </a>
+          , and browser WebMCP tools on this page.
+        </p>
         <p className="mt-3 text-xs text-white/50">
           This site uses Google Analytics for anonymous usage stats, including
           search terms entered, to improve event discovery.

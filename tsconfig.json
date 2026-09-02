@@ -20,6 +20,7 @@
   "include": [
     "App.tsx",
     "appConfig.ts",
+    "agent/**/*.ts",
     "components/**/*.ts",
     "components/**/*.tsx",
     "hooks/**/*.ts",
