@@ -221,6 +221,9 @@ describe("App UI regressions", () => {
       screen.getByRole("heading", { level: 2, name: /this week/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Tomorrow Founder Talk")).toBeInTheDocument();
+    expect(screen.getAllByText("Updates everyday").length).toBeGreaterThan(0);
+    expect(screen.queryByText(/Updated \d+h ago/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Synced \d+h ago/)).not.toBeInTheDocument();
   });
 
   it("keeps category filtering aligned with the primary event tag", async () => {

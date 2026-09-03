@@ -1,7 +1,7 @@
 /**
  * Generic adapter for The Events Calendar (Tribe / Stellar) WordPress plugin.
  *
- * Both haas.berkeley.edu and www.law.berkeley.edu run this plugin and expose
+ * Haas, Berkeley Law, BEGIN, and BRSL run this plugin and expose
  * a clean REST API at `/wp-json/tribe/events/v1/events`. Shape:
  *   - id (stable), title (HTML-entity-encoded), url
  *   - utc_start_date / utc_end_date — already UTC-normalized ISO-ish strings
@@ -352,6 +352,20 @@ export function fetchBegin(options: FetchOptions = {}): Promise<FetchResult> {
       defaultOrganizerUnit: "BEGIN",
       defaultAddress: "UC Berkeley, Berkeley, CA 94720",
       defaultCategory: "Entrepreneurship",
+    },
+    options,
+  );
+}
+
+export function fetchBrsl(options: FetchOptions = {}): Promise<FetchResult> {
+  return fetchTribe(
+    {
+      sourceName: "brsl",
+      baseUrl: "https://brsl.berkeley.edu",
+      defaultOrganizer: "Berkeley Risk and Security Lab",
+      defaultOrganizerUnit: "Berkeley Risk and Security Lab",
+      defaultAddress: "2607 Hearst Avenue, Berkeley, CA 94720",
+      defaultCategory: "Science & Tech",
     },
     options,
   );

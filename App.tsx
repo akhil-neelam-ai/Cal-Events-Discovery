@@ -71,7 +71,6 @@ export default function App() {
   const initialUrlState = readAppUrlState();
   const {
     allEvents,
-    lastUpdated,
     dataAgeHours,
     degradedSources,
     loading,
@@ -284,7 +283,6 @@ export default function App() {
       <AppHeaderShell
         mainContentId={mainContentId}
         isMobile={isMobile}
-        lastUpdated={lastUpdated}
         loading={loading}
         allEventsCount={allEvents.length}
         sourceCount={sourceCount}
@@ -322,7 +320,6 @@ export default function App() {
             effectiveDateRange={effectiveDateRange}
             todayKey={todayKey}
             filteredEvents={filteredEvents}
-            lastUpdated={lastUpdated}
             searchFallbackMessage={searchFallbackMessage}
             emptyState={emptyState}
             eventGroups={eventGroups}

@@ -12,6 +12,7 @@ export const SOURCE_LABELS: Record<string, string> = {
   luma: "Luma",
   begin: "Berkeley BEGIN",
   ai_risk: "Berkeley AI Risk",
+  brsl: "Berkeley Risk and Security Lab",
 };
 
 export const SOURCE_URLS: Record<string, string> = {
@@ -26,6 +27,7 @@ export const SOURCE_URLS: Record<string, string> = {
   luma: "https://luma.com/discover",
   begin: "https://begin.berkeley.edu/events/",
   ai_risk: "https://ai-risk.berkeley.edu/speaker-series.html",
+  brsl: "https://brsl.berkeley.edu/events/",
 };
 
 export interface SourceOption {
@@ -63,6 +65,7 @@ export const ALL_SOURCES = [
   "luma",
   "begin",
   "ai_risk",
+  "brsl",
 ];
 export const DateRanges = [
   { label: "Today", value: "today" },
@@ -78,6 +81,8 @@ export const DEFAULT_FILTERS: SearchFilters = {
 };
 
 export const VISIBLE_EVENT_BATCH_SIZE = 72;
+
+export const FEED_CADENCE_COPY = "Updates everyday";
 
 // Natural-language example queries shown as chips below the hero search bar.
 // Each sets a sensible scope plus a query the client search engine interprets.

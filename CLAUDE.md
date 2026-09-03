@@ -24,7 +24,7 @@ Three layers, cleanly separated.
 
 **Source priority** (used by dedupe to pick winner when two sources have the same event):
 ```
-livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley_law / simons / luma / begin / ai_risk (3)
+livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley_law / simons / luma / begin / ai_risk / brsl (3)
 ```
 
 **Failure handling** — each source has a `RecoveryPolicy` in `updateEvents.ts`:
@@ -43,7 +43,7 @@ livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley
 | `cal_performances.ts` | WordPress REST API | Arts presenter |
 | `calbears.ts` | iCal | Athletics schedule |
 | `bampfa.ts` | HTML scraper (cheerio) | Film/art museum |
-| `tribe.ts` | Tribe/WP REST API | Haas + Berkeley Law + BEGIN (Berkeley Gateway to Innovation) — generic adapter, reusable for any site running The Events Calendar plugin |
+| `tribe.ts` | Tribe/WP REST API | Haas + Berkeley Law + BEGIN + BRSL — generic adapter, reusable for any site running The Events Calendar plugin |
 | `simons.ts` | JSON API | CS theory research institute (`simons.berkeley.edu/api/events`) |
 | `luma.ts` | Luma JSON API | Berkeley-affiliated Luma calendars (`api.lu.ma/calendar/get-items`); calendar IDs listed in `BERKELEY_LUMA_CALENDARS` |
 | `ai_risk.ts` | JS schedule scrape | Berkeley AI Risk speaker series (`ai-risk.berkeley.edu/speaker-series.js`) |
@@ -88,7 +88,7 @@ Loads `events.json` and `search-index.json` at startup. Search is entirely clien
 
 **LiveWhale group feeds**: The main feed misses events posted only to department calendars. Group feeds use path-based URLs (not query params), and group names are case-sensitive. The adapter fetches 30+ groups in parallel and dedupes by UID.
 
-**Tribe adapter reusability**: `scripts/sources/tribe.ts` exports `fetchHaas`, `fetchBerkeleyLaw`, and `fetchBegin` — it's a generic WP REST adapter driven by a `TribeSourceConfig`. Adding a new WordPress site running The Events Calendar plugin requires only a new export with a different base URL.
+**Tribe adapter reusability**: `scripts/sources/tribe.ts` exports `fetchHaas`, `fetchBerkeleyLaw`, `fetchBegin`, and `fetchBrsl` — it's a generic WP REST adapter driven by a `TribeSourceConfig`. Adding a new WordPress site running The Events Calendar plugin requires only a new export with a different base URL.
 
 **Stemming must be consistent**: `buildIndex.ts` and `searchEngine.ts` both call the same `stem()` function from `utils/textUtils.ts`. If you change the stemmer, regenerate the index.
 

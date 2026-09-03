@@ -234,7 +234,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         source: {
           type: "string",
           description:
-            "Optional source id: livewhale, callink, cal_performances, calbears, bampfa, haas, berkeley_law, simons, luma, begin, or ai_risk.",
+            "Optional source id: livewhale, callink, cal_performances, calbears, bampfa, haas, berkeley_law, simons, luma, begin, ai_risk, or brsl.",
         },
         startDate: {
           type: "string",

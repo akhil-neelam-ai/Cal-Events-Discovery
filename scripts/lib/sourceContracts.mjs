@@ -164,6 +164,20 @@ export const CONTRACTS = [
       }
     },
   },
+  {
+    name: "brsl",
+    url: "https://brsl.berkeley.edu/wp-json/tribe/events/v1/events?per_page=1",
+    validate(_response, body) {
+      const parsed = JSON.parse(body);
+      if (
+        !parsed ||
+        typeof parsed !== "object" ||
+        !Array.isArray(parsed.events)
+      ) {
+        throw new Error("BRSL Tribe response missing expected `events` array");
+      }
+    },
+  },
 ];
 
 export async function checkContract(contract) {

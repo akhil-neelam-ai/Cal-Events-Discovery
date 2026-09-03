@@ -50,7 +50,12 @@ import { fetchCallink } from "./sources/callink.js";
 import { fetchCalPerformances } from "./sources/cal_performances.js";
 import { fetchCalBears } from "./sources/calbears.js";
 import { fetchBampfa } from "./sources/bampfa.js";
-import { fetchHaas, fetchBerkeleyLaw, fetchBegin } from "./sources/tribe.js";
+import {
+  fetchHaas,
+  fetchBerkeleyLaw,
+  fetchBegin,
+  fetchBrsl,
+} from "./sources/tribe.js";
 import { fetchSimons } from "./sources/simons.js";
 import { fetchLuma } from "./sources/luma.js";
 import { fetchAiRisk } from "./sources/ai_risk.js";
@@ -162,6 +167,7 @@ const FALLBACK_POLICIES: Partial<Record<SourceName, RecoveryPolicy>> = {
   luma: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
   begin: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
   ai_risk: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
+  brsl: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
 };
 
 async function runAdapter<
@@ -452,6 +458,7 @@ async function main(): Promise<void> {
         name: "ai_risk",
         promise: runAdapterWithTimeout("ai_risk", fetchAiRisk),
       },
+      { name: "brsl", promise: runAdapterWithTimeout("brsl", fetchBrsl) },
     ];
 
   const settledRuns = await Promise.allSettled(
@@ -585,6 +592,10 @@ async function main(): Promise<void> {
     {
       title: "Berkeley AI Risk Speaker Series",
       uri: "https://ai-risk.berkeley.edu/speaker-series.html",
+    },
+    {
+      title: "Berkeley Risk and Security Lab Events",
+      uri: "https://brsl.berkeley.edu/events/",
     },
     ...groundingSources,
   ];
