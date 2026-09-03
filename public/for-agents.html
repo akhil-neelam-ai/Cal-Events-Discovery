@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CalEvents for Agents</title>
+    <meta
+      name="description"
+      content="Machine-readable UC Berkeley campus events: JSON feeds, OpenAPI, WebMCP tools, and agent skills."
+    />
+    <link rel="canonical" href="https://cal-events.com/for-agents.html" />
+    <style>
+      :root {
+        --ink: #0d2240;
+        --gold: #c4820e;
+        --paper: #f7f4ef;
+        --line: #d9d2c5;
+      }
+      body {
+        margin: 0;
+        font-family: "Source Serif 4", Georgia, serif;
+        background: var(--paper);
+        color: var(--ink);
+        line-height: 1.5;
+      }
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 4rem;
+      }
+      h1 {
+        font-size: 2rem;
+        margin: 0 0 0.5rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin: 2rem 0 0.5rem;
+      }
+      p,
+      li {
+        font-size: 1rem;
+      }
+      a {
+        color: var(--gold);
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.9em;
+      }
+      ul {
+        padding-left: 1.2rem;
+      }
+      .muted {
+        color: #5a6472;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>CalEvents for agents</h1>
+      <p class="muted">
+        Public, read-only UC Berkeley campus event discovery. No auth. No write
+        APIs.
+      </p>
+
+      <h2>Start here</h2>
+      <ul>
+        <li><a href="/llms.txt">llms.txt</a> — short agent overview</li>
+        <li><a href="/llms-full.txt">llms-full.txt</a> — expanded context</li>
+        <li><a href="/openapi.json">openapi.json</a> — static data API</li>
+        <li>
+          <a href="/.well-known/agent-skills/index.json">agent skills index</a>
+        </li>
+        <li>
+          <a href="/.well-known/mcp/server-card.json">MCP server card</a>
+        </li>
+        <li><a href="/">Homepage</a> — WebMCP tools when supported</li>
+      </ul>
+
+      <h2>Data</h2>
+      <ul>
+        <li><a href="/events.json">events.json</a></li>
+        <li><a href="/search-index.json">search-index.json</a></li>
+        <li><a href="/status.json">status.json</a></li>
+      </ul>
+
+      <h2>URL workspace</h2>
+      <p>
+        Humans and agents share the same query string:
+        <code>?q</code>, <code>?date</code> (<code>today</code> /
+        <code>tomorrow</code> / <code>week</code> / <code>upcoming</code>),
+        <code>?category</code>, <code>?source</code>, <code>?event</code>.
+      </p>
+      <p>
+        Browser WebMCP tools include <code>get_ui_state</code>,
+        <code>apply_ui_state</code>, and <code>build_calevents_url</code>.
+      </p>
+
+      <h2>WebMCP tools</h2>
+      <ul>
+        <li><code>search_berkeley_events</code> — ranked UI search path</li>
+        <li><code>get_event_by_id</code></li>
+        <li><code>generate_event_ics</code></li>
+        <li><code>get_cal_events_feed_status</code></li>
+        <li><code>get_ui_state</code> / <code>apply_ui_state</code></li>
+        <li><code>build_calevents_url</code></li>
+        <li><code>get_event_directions</code></li>
+      </ul>
+
+      <h2>CRUD limits</h2>
+      <p>
+        Events and feed status are <strong>read-only</strong>. There is no
+        create, update, or delete for campus events through CalEvents. Calendar
+        export and directions URLs are derived reads.
+      </p>
+    </main>
+  </body>
+</html>

@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "CalEvents Public Data API",
-    "version": "1.0.0",
-    "description": "Static public data resources for UC Berkeley campus event discovery."
+    "version": "1.1.0",
+    "description": "Static public data resources for UC Berkeley campus event discovery. Read-only: there are no create, update, or delete operations for events or feed status. Mutations are not supported."
   },
   "servers": [
     {

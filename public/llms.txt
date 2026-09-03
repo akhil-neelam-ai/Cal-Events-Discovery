@@ -5,12 +5,13 @@ CalEvents is a public UC Berkeley campus events discovery site. It aggregates up
 ## Primary Resources
 
 - [Homepage](https://cal-events.com/): Search and browse upcoming Berkeley events by date, category, source, and keyword.
+- [For Agents](https://cal-events.com/for-agents.html): Human-readable agent entry point (tools, URL schema, CRUD limits).
 - [Events JSON](https://cal-events.com/events.json): Public machine-readable event feed. The top-level object contains `events`, `sources`, and `lastUpdated`.
 - [Search Index](https://cal-events.com/search-index.json): Compact text-search index generated from the published events.
 - [Feed Status](https://cal-events.com/status.json): Machine-readable ingestion status, source health, fallback usage, duplicate counts, and filtering counts.
 - [OpenAPI Description](https://cal-events.com/openapi.json): API description for public static data resources.
 - [API Catalog](https://cal-events.com/.well-known/api-catalog): Linkset catalog for API discovery.
-- [Agent Skills](https://cal-events.com/.well-known/agent-skills/index.json): Skill files that explain how agents can search events and inspect feed status.
+- [Agent Skills](https://cal-events.com/.well-known/agent-skills/index.json): Skill files for search, status, detail, calendar export, and share.
 
 ## Event Feed Shape
 
@@ -25,15 +26,38 @@ Each event in `events.json` has:
 - `description`: event summary
 - `tags`: primary category first, with optional secondary tags
 - `url`: official source URL
-- `source`: normalized source id such as `livewhale`, `bampfa`, `callink`, `calbears`, `cal_performances`, `haas`, `berkeley_law`, `simons`, `luma`, or `begin`
+- `source`: normalized source id such as `livewhale`, `bampfa`, `callink`, `calbears`, `cal_performances`, `haas`, `berkeley_law`, `simons`, `luma`, `begin`, or `ai_risk`
 
 ## Categories
 
 Supported user-facing categories are `Academic`, `Arts`, `Sports`, `Science & Tech`, `Student Life`, and `Entrepreneurship`.
 
+## URL Workspace Schema
+
+Humans and agents share the same homepage query string:
+
+| Param | Values | Role |
+|-------|--------|------|
+| `q` | string | Search query |
+| `date` | `today` \| `tomorrow` \| `week` \| `upcoming` | Date bucket (default: week) |
+| `category` | category name | Primary tag filter |
+| `source` | source id | Source filter |
+| `event` | event id | Selected detail |
+
+WebMCP helpers: `build_calevents_url`, `get_ui_state`, `apply_ui_state`.
+
+## WebMCP Tools (homepage)
+
+Primitives (capability, not multi-step workflows): `search_berkeley_events` (ranked UI path), `get_event_by_id`, `generate_event_ics`, `get_cal_events_feed_status`, `get_ui_state`, `apply_ui_state`, `build_calevents_url`, `get_event_directions`. Named outcomes live in MCP prompts and agent skills.
+
+## CRUD Limits
+
+CalEvents is **read-only**. Events and feed status cannot be created, updated, or deleted through this site or its OpenAPI surface. Calendar `.ics` / Google Calendar URLs and directions links are derived reads.
+
 ## Guidance For Agents
 
 - Prefer `events.json` for event data instead of scraping the rendered UI.
+- Prefer WebMCP `search_berkeley_events` over ad-hoc substring filters when the homepage is available.
 - Use `status.json` to understand freshness and source-level health.
 - Dates are intended for America/Los_Angeles.
 - Use official event `url` values for final user-facing citations or handoff links.

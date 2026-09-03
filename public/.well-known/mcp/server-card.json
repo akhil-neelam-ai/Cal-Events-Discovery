@@ -1,7 +1,7 @@
 {
   "serverInfo": {
     "name": "CalEvents",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Public UC Berkeley campus event discovery resources for agents."
   },
   "transports": [
@@ -15,12 +15,50 @@
       "events": "https://cal-events.com/events.json",
       "status": "https://cal-events.com/status.json",
       "searchIndex": "https://cal-events.com/search-index.json",
-      "openapi": "https://cal-events.com/openapi.json"
+      "openapi": "https://cal-events.com/openapi.json",
+      "forAgents": "https://cal-events.com/for-agents.html"
     },
     "tools": {
       "discovery": "https://cal-events.com/.well-known/agent-skills/index.json",
-      "browser": "WebMCP tools are registered on the homepage when navigator.modelContext is available."
+      "browser": "WebMCP tools register on the homepage from the app bundle when navigator.modelContext is available: search_berkeley_events, get_event_by_id, generate_event_ics, get_cal_events_feed_status, get_ui_state, apply_ui_state, build_calevents_url, get_event_directions."
     },
-    "prompts": {}
+    "prompts": {
+      "whats-on-tonight": {
+        "description": "Find UC Berkeley events happening tonight (Pacific).",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Search CalEvents for events tonight. Use search_berkeley_events with datePreset today and a query or filter for evening if needed. Summarize the top matches with time, location, and official url. Optionally apply_ui_state so the open page matches."
+          }
+        ]
+      },
+      "is-feed-healthy": {
+        "description": "Check whether the CalEvents ingestion feed is healthy and fresh.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Call get_cal_events_feed_status. Report generated_at, total_events, fallback_used, data_quality_blocked, and any degraded sources in plain language."
+          }
+        ]
+      },
+      "ics-for-event": {
+        "description": "Produce an .ics calendar payload for a known CalEvents event id.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Given an event id, call generate_event_ics. Return the filename and ics text, and mention googleCalendarUrl when present."
+          }
+        ]
+      },
+      "share-this-event": {
+        "description": "Build a shareable CalEvents deep link for an event or search.",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Use build_calevents_url with event and/or q/date/category/source. Prefer the permalink for sharing; use the official event url for tickets."
+          }
+        ]
+      }
+    }
   }
 }

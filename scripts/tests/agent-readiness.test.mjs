@@ -68,6 +68,7 @@ test("sitemap lists canonical agent resources", () => {
   const sitemap = readText("public/sitemap.xml");
   for (const url of [
     "https://cal-events.com/",
+    "https://cal-events.com/for-agents.html",
     "https://cal-events.com/llms.txt",
     "https://cal-events.com/events.json",
     "https://cal-events.com/status.json",
@@ -84,7 +85,12 @@ test("agent discovery JSON files are valid and internally linked", () => {
 
   assert.ok(Array.isArray(apiCatalog.linkset));
   assert.equal(serverCard.serverInfo.name, "CalEvents");
+  assert.ok(serverCard.capabilities.prompts["whats-on-tonight"]);
+  assert.ok(serverCard.capabilities.prompts["is-feed-healthy"]);
+  assert.ok(serverCard.capabilities.prompts["ics-for-event"]);
   assert.equal(agentCard.name, "CalEvents");
+  assert.equal(agentCard.capabilities.readOnly, true);
+  assert.match(openapi.info.description, /Read-only/i);
   assert.ok(
     Array.isArray(agentCard.supportedInterfaces),
     "A2A Agent Card must declare supportedInterfaces",
@@ -120,7 +126,8 @@ test("agent skills index contains valid SHA-256 digests", () => {
 
 test("homepage and Vercel config expose discovery hooks", () => {
   const html = readText("index.html");
-  const webmcpTools = readText("public/webmcp-tools.js");
+  const registerWebMcp = readText("agent/registerWebMcp.ts");
+  const webMcpTools = readText("agent/webmcpTools.ts");
   const vercel = readJson("vercel.json");
   const publicFiles = fs.readdirSync(publicDir);
   const securityHeadersRoute = vercel.routes.find(
@@ -128,13 +135,17 @@ test("homepage and Vercel config expose discovery hooks", () => {
   );
 
   assert.ok(publicFiles.includes("llms.txt"));
+  assert.ok(publicFiles.includes("for-agents.html"));
   assert.match(html, /src="\/webmcp-tools\.js"/);
-  assert.match(webmcpTools, /navigator\.modelContext\.registerTool/);
-  assert.match(webmcpTools, /search_berkeley_events/);
-  assert.match(webmcpTools, /AbortController/);
-  assert.match(webmcpTools, /input = input \?\? \{\}/);
-  assert.match(webmcpTools, /matchedCategory/);
-  assert.match(webmcpTools, /tags: Array\.isArray/);
+  assert.match(registerWebMcp, /registerWebMcpTools/);
+  assert.match(webMcpTools, /search_berkeley_events/);
+  assert.match(webMcpTools, /get_ui_state/);
+  assert.match(webMcpTools, /apply_ui_state/);
+  assert.match(webMcpTools, /build_calevents_url/);
+  assert.match(webMcpTools, /get_event_directions/);
+  assert.match(webMcpTools, /AbortController/);
+  assert.match(webMcpTools, /input = input \?\? \{\}/);
+  assert.match(webMcpTools, /searchEvents\(/);
   assert.equal(
     securityHeadersRoute.headers["X-Content-Type-Options"],
     "nosniff",

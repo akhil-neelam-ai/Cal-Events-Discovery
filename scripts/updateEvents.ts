@@ -8,6 +8,7 @@
  *   cal_performances (WP REST API, arts presenter) =
  *   calbears         (athletics iCal) =
  *   bampfa           (HTML scraper, art museum & film archive)
+ *   ai_risk          (JS schedule scrape, Berkeley AI Risk speaker series)
  *
  * Failure handling: each source is independent. If a source throws, we
  * record it in status.json and continue. We refuse to overwrite a healthy
@@ -52,6 +53,7 @@ import { fetchBampfa } from "./sources/bampfa.js";
 import { fetchHaas, fetchBerkeleyLaw, fetchBegin } from "./sources/tribe.js";
 import { fetchSimons } from "./sources/simons.js";
 import { fetchLuma } from "./sources/luma.js";
+import { fetchAiRisk } from "./sources/ai_risk.js";
 import { buildSearchIndex } from "./lib/buildIndex.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -159,6 +161,7 @@ const FALLBACK_POLICIES: Partial<Record<SourceName, RecoveryPolicy>> = {
   simons: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
   luma: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
   begin: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
+  ai_risk: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
 };
 
 async function runAdapter<
@@ -445,6 +448,10 @@ async function main(): Promise<void> {
       { name: "simons", promise: runAdapterWithTimeout("simons", fetchSimons) },
       { name: "luma", promise: runAdapterWithTimeout("luma", fetchLuma) },
       { name: "begin", promise: runAdapterWithTimeout("begin", fetchBegin) },
+      {
+        name: "ai_risk",
+        promise: runAdapterWithTimeout("ai_risk", fetchAiRisk),
+      },
     ];
 
   const settledRuns = await Promise.allSettled(
@@ -574,6 +581,10 @@ async function main(): Promise<void> {
     {
       title: "Berkeley Gateway to Innovation Events",
       uri: "https://begin.berkeley.edu/events/",
+    },
+    {
+      title: "Berkeley AI Risk Speaker Series",
+      uri: "https://ai-risk.berkeley.edu/speaker-series.html",
     },
     ...groundingSources,
   ];
