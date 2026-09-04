@@ -108,7 +108,7 @@ function makeEvent(overrides: Partial<CalEvent> = {}): CalEvent {
     location: overrides.location ?? "Soda Hall",
     description: overrides.description ?? "A Berkeley event about AI.",
     tags: overrides.tags ?? ["Science & Tech"],
-    topics: overrides.topics,
+    topics: overrides.topics ?? ["ai-machine-learning"],
     url: overrides.url ?? `https://example.com/${id}`,
     source: overrides.source ?? "livewhale",
   };

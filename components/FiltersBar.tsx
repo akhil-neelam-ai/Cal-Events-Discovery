@@ -20,13 +20,6 @@ const DATE_RANGE_DESCRIPTIONS: Record<string, string> = {
 
 type TopicGroupValue = (typeof TOPIC_GROUP_PRESENTATION)[number]["value"];
 
-interface TopicControlsProps {
-  filters: SearchFilters;
-  topicVocabulary: TopicVocabulary | null;
-  topicCounts: ReadonlyMap<string, number>;
-  onTopicChange: (next: string) => void;
-}
-
 function sortTopicsByAvailability(
   topics: TopicDefinition[],
   topicCounts: ReadonlyMap<string, number>,

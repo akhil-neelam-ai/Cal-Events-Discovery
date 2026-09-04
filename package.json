@@ -19,6 +19,7 @@
     "test:ui": "vitest run",
     "test:scripts": "node scripts/runScriptTests.mjs --exclude=search-quality.test.mjs",
     "test:search-quality": "node --import tsx/esm --test scripts/tests/search-quality.test.mjs",
+    "test:topic-quality": "node --import tsx/esm --test scripts/tests/topic-quality.test.mjs",
     "install:browsers": "playwright install chromium",
     "test:e2e": "npm run build && playwright test",
     "test:e2e:headed": "npm run build && playwright test --headed",

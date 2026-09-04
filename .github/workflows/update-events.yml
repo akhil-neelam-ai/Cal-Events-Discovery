@@ -198,6 +198,22 @@ jobs:
           ISSUE_LABEL_DESCRIPTION: Non-blocking corpus/search quality regression for triage
         run: node scripts/notifyPipelineFailure.mjs
 
+      - name: Topic assignment quality checks
+        id: topic_quality
+        continue-on-error: true
+        run: npm run test:topic-quality
+
+      - name: Open data-quality issue on topic regressions
+        if: ${{ steps.topic_quality.outcome == 'failure' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_NAME: Topic assignment quality
+          FAILURE_CONTEXT: topic distribution or deterministic assignment checks failed against the newly generated feed
+          ISSUE_LABEL: data-quality
+          ISSUE_LABEL_COLOR: FBCA04
+          ISSUE_LABEL_DESCRIPTION: Non-blocking corpus/search quality regression for triage
+        run: node scripts/notifyPipelineFailure.mjs
+
       - name: Create artifact update pull request
         id: create_pr
         uses: peter-evans/create-pull-request@v8

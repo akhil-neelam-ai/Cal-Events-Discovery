@@ -311,14 +311,16 @@ export function useEventBrowserState({
     }
 
     if ((topicCounts.get(filters.topic) ?? 0) > 0) {
-      setTopicFilterNotice(null);
       return;
     }
 
-    setTopicFilterNotice(
-      "Topic cleared because no events match it with the other filters.",
-    );
-    onUnavailableTopic(filters.topic);
+    const timeout = window.setTimeout(() => {
+      setTopicFilterNotice(
+        "Topic cleared because no events match it with the other filters.",
+      );
+      onUnavailableTopic(filters.topic);
+    }, 0);
+    return () => window.clearTimeout(timeout);
   }, [filters.topic, onUnavailableTopic, topicAvailabilityReady, topicCounts]);
 
   useEffect(() => {
