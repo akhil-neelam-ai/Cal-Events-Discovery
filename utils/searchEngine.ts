@@ -72,23 +72,20 @@ const RE_CAL_GAMES = /\b(cal games?|bears games?|cal bears games?)\b/i;
 const CATEGORY_PATTERNS: Array<[string, RegExp]> = [
   [
     "Entrepreneurship",
-    /\b(startup|founder|venture|pitch|demo day|skydeck|entrepreneur|entrepreneurship|product management|innovation hub)\b/i,
+    /\b(skydeck|entrepreneurship|product management|innovation hub)\b/i,
   ],
   [
     "Sports",
     /\b(cal games?|bears games?|cal bears|athletics|basketball|football|baseball|volleyball|soccer|swim meet|swim team|tennis|gymnastics|rowing|crew|sports)\b/i,
   ],
-  [
-    "Arts",
-    /\b(arts?|film screening|film|movie|concert|performance|theater|theatre|gallery|bampfa|dance|opera|recital|exhibition|exhibit|museum|poetry)\b/i,
-  ],
+  ["Arts", /\b(arts?|performance|theatre|gallery|bampfa|exhibit)\b/i],
   [
     "Science & Tech",
-    /\b(science(?:\s*&\s*tech)?|tech(?:nology)?|ai\b|artificial intelligence|machine learning|language models?|llm|data science|hackathon|coding|computer science|eecs|engineering talk|robotics|biotech|genomics|tech talk)\b/i,
+    /\b((?<!data )(?<!computer )science(?:\s*&\s*tech)?|tech(?:nology)?|hackathon|coding|engineering talk|tech talk)\b/i,
   ],
   [
     "Student Life",
-    /\b(student life|free food|student org|club|social|mixer|orientation|undergrad|grad student|tabling|info session|open house|coffee chat)\b/i,
+    /\b(student life|student org|orientation|undergrad|grad student|tabling|open house|coffee chat)\b/i,
   ],
   [
     "Academic",
@@ -359,9 +356,10 @@ export function buildSearchPlan(query: string): SearchPlan {
 
   // ── Category ─────────────────────────────────────────────────────────────
   for (const [category, pattern] of CATEGORY_PATTERNS) {
-    if (pattern.test(raw)) {
+    if (pattern.test(cleaned)) {
       filters.category = category;
       interpretations.push({ key: `category:${category}`, label: category });
+      cleaned = stripIntent(cleaned, pattern);
       break;
     }
   }

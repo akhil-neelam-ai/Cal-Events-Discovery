@@ -96,7 +96,7 @@ export const DESKTOP_HERO_PRESETS: QuickFilterPreset[] = [
   {
     label: "AI talks",
     dateRange: "week",
-    category: "Science & Tech",
+    category: "All",
     searchQuery: "ai",
   },
   {
