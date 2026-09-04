@@ -59,6 +59,7 @@ test("evaluateFeedHealth warns (does not block) on supplementary source degradat
     "begin",
     "simons",
     "ai_risk",
+    "brsl",
   ]) {
     const result = evaluateFeedHealth(
       {
@@ -191,7 +192,14 @@ test("CRITICAL_SOURCES is backbone-only and shared by both gates", () => {
   assert.ok(CRITICAL_SOURCES.has("livewhale"));
   assert.equal(CRITICAL_SOURCES.size, 1);
 
-  for (const source of ["luma", "begin", "callink", "bampfa", "ai_risk"]) {
+  for (const source of [
+    "luma",
+    "begin",
+    "callink",
+    "bampfa",
+    "ai_risk",
+    "brsl",
+  ]) {
     assert.ok(
       !CRITICAL_SOURCES.has(source),
       `${source} should be supplementary, not critical`,

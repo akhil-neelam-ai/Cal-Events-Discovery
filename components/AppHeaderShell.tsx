@@ -2,8 +2,11 @@ import { useId } from "react";
 
 import { Analytics } from "@vercel/analytics/react";
 
-import type { QuickFilterPreset, SourceOption } from "../appConfig";
-import { useSyncStatusCopy } from "../hooks/useLiveTimestamp";
+import {
+  FEED_CADENCE_COPY,
+  type QuickFilterPreset,
+  type SourceOption,
+} from "../appConfig";
 import { LoadingState, type SearchFilters } from "../types";
 import type { StatusBannerData } from "../utils/statusUi";
 import { DesktopHero } from "./DesktopHero";
@@ -15,7 +18,6 @@ import { StatusBanner } from "./StatusBanner";
 export function AppHeaderShell({
   mainContentId,
   isMobile,
-  lastUpdated,
   loading,
   allEventsCount,
   sourceCount,
@@ -37,7 +39,6 @@ export function AppHeaderShell({
 }: {
   mainContentId: string;
   isMobile: boolean;
-  lastUpdated: number | null;
   loading: LoadingState;
   allEventsCount: number;
   sourceCount: number;
@@ -58,13 +59,13 @@ export function AppHeaderShell({
   onDismissStaleBanner: () => void;
 }) {
   const desktopSearchInputId = useId();
-  const liveSyncCopy = useSyncStatusCopy(lastUpdated);
 
-  const desktopHeroStatusCopy = liveSyncCopy
-    ? liveSyncCopy
-    : loading === LoadingState.ERROR
+  const desktopHeroStatusCopy =
+    loading === LoadingState.ERROR
       ? "Latest batch unavailable"
-      : "Loading latest batch";
+      : loading === LoadingState.SUCCESS
+        ? FEED_CADENCE_COPY
+        : "Loading latest batch";
 
   const showStaleBanner =
     (typeof dataAgeHours === "number" && dataAgeHours > 12) ||
@@ -87,7 +88,6 @@ export function AppHeaderShell({
       {isMobile ? (
         <>
           <MobileHeader
-            lastUpdated={lastUpdated}
             searchQuery={filters.searchQuery}
             onSearchChange={onSearchChange}
           />

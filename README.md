@@ -1,6 +1,6 @@
 # Cal Events Discovery
 
-UC Berkeley campus events in one searchable feed. The site ships a static snapshot (~900+ upcoming events) built from 11 Berkeley sources, updated daily by GitHub Actions, hosted on Vercel at [cal-events.com](https://cal-events.com).
+UC Berkeley campus events in one searchable feed. The site ships a static snapshot (~900+ upcoming events) built from 12 Berkeley sources, updated daily by GitHub Actions, hosted on Vercel at [cal-events.com](https://cal-events.com).
 
 ## Quick start
 
@@ -187,7 +187,7 @@ npm run test:search-quality                 # live corpus golden queries
 | Cal Performances | `cal_performances.ts` | WordPress REST |
 | Cal Bears athletics | `calbears.ts` | iCal |
 | BAMPFA | `bampfa.ts` | HTML scraper |
-| Berkeley Haas / Law / BEGIN | `tribe.ts` | Tribe Events Calendar REST |
+| Berkeley Haas / Law / BEGIN / BRSL | `tribe.ts` | Tribe Events Calendar REST |
 | Simons Institute | `simons.ts` | JSON API |
 | Luma (Berkeley calendars) | `luma.ts` | Luma JSON API |
 | Berkeley AI Risk | `ai_risk.ts` | JS schedule scrape |

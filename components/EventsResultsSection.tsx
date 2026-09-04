@@ -1,5 +1,5 @@
+import { FEED_CADENCE_COPY } from "../appConfig";
 import type { CalEvent, SearchFilters } from "../types";
-import { useUpdatedStatusCopy } from "../hooks/useLiveTimestamp";
 import type { EventGroup } from "../utils/eventDates";
 import type { EmptyStateConfig } from "../utils/emptyState";
 import type { InterpretedChip } from "../utils/searchEngine";
@@ -24,7 +24,6 @@ export function EventsResultsSection({
   effectiveDateRange,
   todayKey,
   filteredEvents,
-  lastUpdated,
   searchFallbackMessage,
   emptyState,
   eventGroups,
@@ -41,7 +40,6 @@ export function EventsResultsSection({
   effectiveDateRange: SearchFilters["dateRange"];
   todayKey: string;
   filteredEvents: CalEvent[];
-  lastUpdated: number | null;
   searchFallbackMessage?: string;
   emptyState: EmptyStateConfig;
   eventGroups: EventGroup[];
@@ -51,8 +49,6 @@ export function EventsResultsSection({
   onEventClick: (event: CalEvent) => void;
   onLoadMore: () => void;
 }) {
-  const updatedCopy = useUpdatedStatusCopy(lastUpdated);
-
   return (
     <>
       {fallbackBannerCopy && (
@@ -75,9 +71,7 @@ export function EventsResultsSection({
               ({filteredEvents.length})
             </span>
           </h2>
-          {updatedCopy && (
-            <p className="mt-1 text-sm text-slate-500">{updatedCopy}</p>
-          )}
+          <p className="mt-1 text-sm text-slate-500">{FEED_CADENCE_COPY}</p>
         </div>
       </div>
 
