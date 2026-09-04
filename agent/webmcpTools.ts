@@ -57,6 +57,7 @@ function summarizeEvent(event: CalEvent) {
     organizer: event.organizer,
     category: event.tags?.[0] ?? null,
     tags: Array.isArray(event.tags) ? event.tags : [],
+    topics: Array.isArray(event.topics) ? event.topics : [],
     source: event.source || null,
     url: event.url,
     directionsUrl: getDirectionsUrl(event.location),
@@ -90,7 +91,10 @@ function resolveDatePreset(
   return { startDate: todayKey };
 }
 
-function buildFiltersFromInput(input: Record<string, unknown>): SearchFilters {
+function buildFiltersFromInput(
+  input: Record<string, unknown>,
+  allowedTopics: readonly string[] = [],
+): SearchFilters {
   const datePreset =
     typeof input.date === "string"
       ? input.date
@@ -123,15 +127,42 @@ function buildFiltersFromInput(input: Record<string, unknown>): SearchFilters {
         ? input.query
         : DEFAULT_FILTERS.searchQuery;
 
+  const topic =
+    typeof input.topic === "string" && input.topic.trim()
+      ? input.topic.trim()
+      : DEFAULT_FILTERS.topic;
+
   return {
     dateRange,
     category: Categories.includes(category)
       ? category
       : DEFAULT_FILTERS.category,
-    topic: DEFAULT_FILTERS.topic,
+    topic: allowedTopics.includes(topic) ? topic : DEFAULT_FILTERS.topic,
     source: ALL_SOURCES.includes(source) ? source : DEFAULT_FILTERS.source,
     searchQuery: String(searchQuery ?? "").trim(),
   };
+}
+
+function getPublishedTopicSlugs(payload: EventsPayload): string[] {
+  return Array.isArray(payload.topic_vocabulary?.topics)
+    ? payload.topic_vocabulary.topics
+        .map((topic) => topic.slug)
+        .filter((slug) => typeof slug === "string")
+    : [];
+}
+
+function validateTopic(
+  input: Record<string, unknown>,
+  allowedTopics: readonly string[],
+): string | null {
+  if (typeof input.topic !== "string" || !input.topic.trim()) return null;
+  const topic = input.topic.trim();
+  if (!allowedTopics.includes(topic)) {
+    throw new Error(
+      `Unknown topic "${topic}". Use a slug from events.json.topic_vocabulary.topics.`,
+    );
+  }
+  return topic;
 }
 
 export function createDefaultFetchJson(
@@ -232,6 +263,11 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
           description:
             "Optional category filter (primary tag), same as the UI category control.",
         },
+        topic: {
+          type: "string",
+          description:
+            "Optional published topic slug. Valid slugs are listed in events.json.topic_vocabulary.topics; do not assume a fixed enum.",
+        },
         source: {
           type: "string",
           description:
@@ -284,6 +320,17 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         fetchSearchIndex(),
       ]);
       const allEvents = Array.isArray(data.events) ? data.events : [];
+      const allowedTopics = getPublishedTopicSlugs(data);
+      let topic: string | null;
+      try {
+        topic = validateTopic(input, allowedTopics);
+      } catch (error) {
+        return {
+          error: error instanceof Error ? error.message : "invalid topic",
+          count: 0,
+          events: [],
+        };
+      }
       const category =
         typeof input.category === "string" ? input.category.trim() : "";
       const source =
@@ -295,7 +342,9 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         const matchesCategory =
           !category || primaryCategory === category.toLowerCase();
         const matchesSource = !source || event.source === source;
-        return matchesCategory && matchesSource;
+        const matchesTopic =
+          !topic || (event.topics ?? []).some((slug) => slug === topic);
+        return matchesCategory && matchesSource && matchesTopic;
       });
 
       let ranked: CalEvent[];
@@ -306,6 +355,18 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         const output = searchEvents(pool, query, index);
         ranked = output.results;
         fallbackUsed = output.fallbackUsed;
+        // Older published fixtures may predate topic_vocabulary. Preserve
+        // their ranked-search behavior until the next feed publish.
+        if (ranked.length === 0 && allowedTopics.length === 0) {
+          const needle = query.toLowerCase();
+          ranked = sortEventsChronologically(
+            pool.filter((event) =>
+              `${event.title} ${event.description}`
+                .toLowerCase()
+                .includes(needle),
+            ),
+          );
+        }
       }
 
       const todayKey = getCurrentPacificDateKey();
@@ -447,8 +508,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         defaultFilters: DEFAULT_FILTERS,
         allowedCategories: Categories,
         allowedSources: ALL_SOURCES,
-        // U8 replaces this empty list with slugs from the loaded payload.
-        allowedTopics: [],
+        allowedTopics: getPublishedTopicSlugs(await fetchEventsPayload()),
       });
 
       const result: Record<string, unknown> = {
@@ -501,6 +561,11 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
           type: "string",
           description: 'Source id or "All".',
         },
+        topic: {
+          type: "string",
+          description:
+            "Published topic slug from events.json.topic_vocabulary.",
+        },
         event: {
           type: "string",
           description: "Selected event id (?event=).",
@@ -510,7 +575,16 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
     annotations: { readOnlyHint: true },
     execute: async function executeBuildUrl(input) {
       input = input ?? {};
-      const filters = buildFiltersFromInput(input);
+      const data = await fetchEventsPayload();
+      const allowedTopics = getPublishedTopicSlugs(data);
+      try {
+        validateTopic(input, allowedTopics);
+      } catch (error) {
+        return {
+          error: error instanceof Error ? error.message : "invalid topic",
+        };
+      }
+      const filters = buildFiltersFromInput(input, allowedTopics);
       const eventId =
         typeof input.event === "string" && input.event.trim()
           ? input.event.trim()
@@ -546,13 +620,27 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         },
         category: { type: "string" },
         source: { type: "string" },
+        topic: {
+          type: "string",
+          description:
+            "Published topic slug from events.json.topic_vocabulary.",
+        },
         event: { type: "string" },
       },
     },
     annotations: { readOnlyHint: false },
     execute: async function executeApplyUiState(input) {
       input = input ?? {};
-      const filters = buildFiltersFromInput(input);
+      const data = await fetchEventsPayload();
+      const allowedTopics = getPublishedTopicSlugs(data);
+      try {
+        validateTopic(input, allowedTopics);
+      } catch (error) {
+        return {
+          error: error instanceof Error ? error.message : "invalid topic",
+        };
+      }
+      const filters = buildFiltersFromInput(input, allowedTopics);
       const eventId =
         typeof input.event === "string" && input.event.trim()
           ? input.event.trim()

@@ -40,6 +40,10 @@
                       "type": "number",
                       "description": "Unix epoch milliseconds for the published snapshot."
                     },
+                    "topic_vocabulary": {
+                      "$ref": "#/components/schemas/TopicVocabulary",
+                      "description": "Published topic vocabulary. Use its slugs to validate topic filters; this API does not repeat them as an enum."
+                    },
                     "data_age_hours": {
                       "type": "number",
                       "description": "Hours since the underlying source data was fetched."
@@ -122,7 +126,17 @@
     "schemas": {
       "Event": {
         "type": "object",
-        "required": ["id", "title", "organizer", "date", "time", "location", "description", "tags", "url"],
+        "required": [
+          "id",
+          "title",
+          "organizer",
+          "date",
+          "time",
+          "location",
+          "description",
+          "tags",
+          "url"
+        ],
         "properties": {
           "id": { "type": "string" },
           "title": { "type": "string" },
@@ -135,6 +149,12 @@
             "type": "array",
             "items": { "type": "string" }
           },
+          "topics": {
+            "type": "array",
+            "maxItems": 3,
+            "items": { "type": "string" },
+            "description": "Zero to three topic slugs from the published topic_vocabulary; independent of tags[0]."
+          },
           "url": { "type": "string", "format": "uri" },
           "source": { "type": "string" }
         }
@@ -145,6 +165,28 @@
         "properties": {
           "title": { "type": "string" },
           "uri": { "type": "string", "format": "uri" }
+        }
+      },
+      "TopicVocabulary": {
+        "type": "object",
+        "required": ["version", "topics"],
+        "properties": {
+          "version": { "type": "integer" },
+          "topics": {
+            "type": "array",
+            "description": "The source of truth for valid topic filter slugs.",
+            "items": { "$ref": "#/components/schemas/TopicDefinition" }
+          }
+        }
+      },
+      "TopicDefinition": {
+        "type": "object",
+        "required": ["slug", "label", "group", "synonyms"],
+        "properties": {
+          "slug": { "type": "string" },
+          "label": { "type": "string" },
+          "group": { "type": "string", "enum": ["fields", "interests"] },
+          "synonyms": { "type": "array", "items": { "type": "string" } }
         }
       },
       "SourceStatus": {

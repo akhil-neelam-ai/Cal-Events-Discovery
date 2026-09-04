@@ -13,6 +13,7 @@
   "capabilities": {
     "resources": {
       "events": "https://cal-events.com/events.json",
+      "topicVocabulary": "https://cal-events.com/events.json",
       "status": "https://cal-events.com/status.json",
       "searchIndex": "https://cal-events.com/search-index.json",
       "openapi": "https://cal-events.com/openapi.json",
@@ -20,7 +21,7 @@
     },
     "tools": {
       "discovery": "https://cal-events.com/.well-known/agent-skills/index.json",
-      "browser": "WebMCP tools register on the homepage from the app bundle when navigator.modelContext is available: search_berkeley_events, get_event_by_id, generate_event_ics, get_cal_events_feed_status, get_ui_state, apply_ui_state, build_calevents_url, get_event_directions."
+      "browser": "WebMCP tools register on the homepage from the app bundle when navigator.modelContext is available: search_berkeley_events (optional topic slug validated against events.json.topic_vocabulary), get_event_by_id, generate_event_ics, get_cal_events_feed_status, get_ui_state, apply_ui_state, build_calevents_url, get_event_directions."
     },
     "prompts": {
       "whats-on-tonight": {
@@ -28,7 +29,7 @@
         "messages": [
           {
             "role": "user",
-            "content": "Search CalEvents for events tonight. Use search_berkeley_events with datePreset today and a query or filter for evening if needed. Summarize the top matches with time, location, and official url. Optionally apply_ui_state so the open page matches."
+            "content": "Search CalEvents for events tonight. Use search_berkeley_events with datePreset today and a query, topic slug from events.json.topic_vocabulary, or filter for evening if needed. Summarize the top matches with time, location, and official url. Optionally apply_ui_state so the open page matches."
           }
         ]
       },
@@ -55,7 +56,7 @@
         "messages": [
           {
             "role": "user",
-            "content": "Use build_calevents_url with event and/or q/date/category/source. Prefer the permalink for sharing; use the official event url for tickets."
+            "content": "Use build_calevents_url with event and/or q/date/category/topic/source. Validate topic against events.json.topic_vocabulary. Prefer the permalink for sharing; use the official event url for tickets."
           }
         ]
       }

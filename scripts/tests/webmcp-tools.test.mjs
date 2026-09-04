@@ -10,6 +10,21 @@ function makePayload(events) {
   };
 }
 
+function withTopics(payload, topics = ["ai-machine-learning"]) {
+  return {
+    ...payload,
+    topic_vocabulary: {
+      version: 1,
+      topics: topics.map((slug) => ({
+        slug,
+        label: slug,
+        group: "fields",
+        synonyms: [slug],
+      })),
+    },
+  };
+}
+
 function event(overrides = {}) {
   return {
     id: overrides.id ?? "event",
@@ -20,6 +35,7 @@ function event(overrides = {}) {
     location: overrides.location ?? "Sather Gate",
     description: overrides.description ?? "AI event",
     tags: overrides.tags ?? ["Science & Tech"],
+    topics: overrides.topics,
     url: "https://example.com",
     source: overrides.source ?? "livewhale",
   };
@@ -129,6 +145,28 @@ test("WebMCP get_event_by_id returns directions and calendar links", async () =>
   assert.match(noId.error, /id is required/);
 });
 
+test("WebMCP topic filtering uses the published vocabulary and projects topics", async () => {
+  const payload = withTopics(
+    makePayload([
+      event({ id: "ai", topics: ["ai-machine-learning"], title: "AI forum" }),
+      event({ id: "law", topics: ["law"], title: "Law forum" }),
+    ]),
+    ["ai-machine-learning", "law"],
+  );
+  const { tools } = loadTools(payload);
+  const search = tools.get("search_berkeley_events");
+
+  const result = await search.execute({ topic: "ai-machine-learning" });
+  assert.deepEqual(
+    result.events.map((item) => item.id),
+    ["ai"],
+  );
+  assert.deepEqual(result.events[0].topics, ["ai-machine-learning"]);
+
+  const unknown = await search.execute({ topic: "does-not-exist" });
+  assert.match(unknown.error, /Unknown topic/);
+});
+
 test("WebMCP generate_event_ics escapes text and rolls a late-evening DTEND", async () => {
   const { tools } = loadTools(
     makePayload([
@@ -189,7 +227,7 @@ test("WebMCP datePreset 'today' resolves Pacific bounds to today's events", asyn
 });
 
 test("WebMCP URL workspace tools build and apply shared state", async () => {
-  const { tools, applied } = loadTools(makePayload([]), {
+  const { tools, applied } = loadTools(withTopics(makePayload([])), {
     locationSearch: "?q=jazz&date=today",
   });
 
@@ -207,11 +245,13 @@ test("WebMCP URL workspace tools build and apply shared state", async () => {
     date: "week",
     category: "Academic",
     event: "abc",
+    topic: "ai-machine-learning",
   });
   assert.match(built.url, /cal-events\.com\/\?/);
   assert.match(built.search, /q=moffitt/);
   assert.match(built.search, /event=abc/);
   assert.match(built.search, /category=Academic/);
+  assert.match(built.search, /topic=ai-machine-learning/);
 
   const appliedResult = await applyUi.execute({
     query: "haas",

@@ -20,6 +20,7 @@ Returns the current event snapshot:
       "location": "Venue",
       "description": "Event summary",
       "tags": ["Academic"],
+      "topics": ["ai-machine-learning"],
       "url": "https://official-source.example/event",
       "source": "livewhale"
     }
@@ -53,13 +54,14 @@ Returns a compact generated index for local search. Agents can use this for fast
 2. Otherwise fetch `https://cal-events.com/events.json`.
 3. Filter events by `date >= today` in America/Los_Angeles.
 4. Filter by `tags[0]` for the primary displayed category.
-5. Present concise results with the official event `url`.
-6. Share UI state via `?q=&date=&category=&source=&event=` (`build_calevents_url` / `apply_ui_state`).
+5. Filter by `topics` for a published topic slug. Read valid slugs from `topic_vocabulary.topics`.
+6. Present concise results with the official event `url`.
+7. Share UI state via `?q=&date=&category=&topic=&source=&event=` (`build_calevents_url` / `apply_ui_state`).
 7. If needed, fetch `https://cal-events.com/status.json` to explain freshness or source coverage.
 
 ## URL Workspace
 
-Query params on `https://cal-events.com/`: `q`, `date` (`today`|`tomorrow`|`week`|`upcoming`), `category`, `source`, `event`. See `/for-agents.html`.
+Query params on `https://cal-events.com/`: `q`, `date` (`today`|`tomorrow`|`week`|`upcoming`), `category`, `topic`, `source`, `event`. See `/for-agents.html`. Topic values come from `events.json.topic_vocabulary.topics`.
 
 ## CRUD Limits
 

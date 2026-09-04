@@ -9,7 +9,9 @@ When the CalEvents homepage is open and WebMCP is available, call
 (`search-index.json`, synonym expansion, intent detection, fuzzy fallback).
 
 Optional inputs: `query`, `datePreset` (`today` | `tomorrow` | `week` |
-`upcoming`), `category`, `source`, `startDate`, `endDate`, `limit`.
+`upcoming`), `category`, `topic`, `source`, `startDate`, `endDate`, `limit`.
+For `topic`, use a slug from the published `topic_vocabulary.topics` block in
+`events.json`; the vocabulary is the source of truth and may change.
 
 To show the same results in the UI, call `apply_ui_state` with matching
 `q` / `date` / `category` / `source`.
@@ -32,7 +34,8 @@ For ranked offline search, also load `https://cal-events.com/search-index.json`.
 3. Treat `date` as an America/Los_Angeles calendar date in `YYYY-MM-DD`.
 4. Filter out events before the user's requested date window.
 5. For category filtering, prefer the first value in `tags` because it is the primary displayed category.
-6. Return concise results with title, date, time, location, organizer, and the official `url`.
+6. For topic filtering, match the event's published `topics` slugs. Topics are independent of `tags`.
+7. Return concise results with title, date, time, location, organizer, topics, and the official `url`.
 
 ## Supported Categories
 
@@ -42,6 +45,8 @@ For ranked offline search, also load `https://cal-events.com/search-index.json`.
 - Science & Tech
 - Student Life
 - Entrepreneurship
+
+Topic slugs and labels are published in `events.json.topic_vocabulary.topics`.
 
 ## Notes
 
