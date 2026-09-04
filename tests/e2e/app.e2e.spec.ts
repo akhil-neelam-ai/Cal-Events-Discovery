@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { TOPIC_VOCABULARY } from "../../scripts/lib/topics";
+
 function pacificDateKey(offsetDays = 0): string {
   const date = new Date(Date.now() + offsetDays * 86_400_000);
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -32,6 +34,7 @@ function buildFixtureEvents() {
       location: "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
       description: "A film screening at BAMPFA for Berkeley students.",
       tags: ["Arts"],
+      topics: ["film", "visual-arts-exhibitions"],
       url: "https://example.com/dreams",
       source: "bampfa",
     },
@@ -44,6 +47,7 @@ function buildFixtureEvents() {
       location: "Soda Hall",
       description: "A science talk about machine learning.",
       tags: ["Science & Tech"],
+      topics: ["ai-machine-learning"],
       url: "https://example.com/ai",
       source: "livewhale",
     },
@@ -56,6 +60,7 @@ function buildFixtureEvents() {
       location: "Doe Library",
       description: "An academic lecture with arts context.",
       tags: ["Academic", "Arts"],
+      topics: ["history-humanities"],
       url: "https://example.com/archive",
       source: "livewhale",
     },
@@ -68,6 +73,7 @@ function buildFixtureEvents() {
       location: "MLK Student Union",
       description: "Free food and student social.",
       tags: ["Student Life"],
+      topics: ["free-food", "social-clubs"],
       url: "https://example.com/pizza",
       source: "callink",
     },
@@ -123,6 +129,7 @@ test.beforeEach(async ({ page }) => {
       body: JSON.stringify({
         events,
         sources: [],
+        topic_vocabulary: TOPIC_VOCABULARY,
         lastUpdated: Date.now(),
       }),
     });
@@ -236,6 +243,27 @@ test("filters by source dropdown", async ({ page }) => {
   await expect(page).toHaveURL(/source=callink/);
 });
 
+test("desktop topic chips expand and filter across categories", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto("/");
+
+  await expect(page.getByTestId("desktop-topic-filters")).toBeVisible();
+  await page.getByRole("button", { name: "More topics" }).click();
+  await expect(
+    page.getByRole("button", { name: /AI and Machine Learning, 1 event/ }),
+  ).toBeVisible();
+
+  await page
+    .getByRole("button", { name: /AI and Machine Learning, 1 event/ })
+    .click();
+
+  await expect(page.getByText("AI Research Forum")).toBeVisible();
+  await expect(page.getByText("Dreams Are Colder Than Death")).toHaveCount(0);
+  await expect(page).toHaveURL(/topic=ai-machine-learning/);
+});
+
 test("shows and dismisses data-quality blocked status banner", async ({
   page,
 }) => {
@@ -296,4 +324,20 @@ test("supports mobile advanced filters", async ({ page }) => {
   await expect(page.getByText("Free Pizza Mixer")).toBeVisible();
   await expect(page.getByText("Dreams Are Colder Than Death")).toHaveCount(0);
   await expect(page).toHaveURL(/category=Student\+Life/);
+});
+
+test("mobile topic selection updates the filter badge and summary", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /^Filters$/ }).click();
+  await page.getByRole("button", { name: /Free Food, 1 event/ }).click();
+
+  await expect(page.getByRole("button", { name: /Filters 1/ })).toBeVisible();
+  await expect(page.getByText("Topic: Free Food")).toBeVisible();
+  await expect(page.getByText("Free Pizza Mixer")).toBeVisible();
+  await expect(page.getByText("Dreams Are Colder Than Death")).toHaveCount(0);
+  await expect(page).toHaveURL(/topic=free-food/);
 });

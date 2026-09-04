@@ -143,6 +143,7 @@ export function useEventBrowserActions({
       }));
       setSelectedEventId(null);
       setDismissedInterpretationKeys(new Set());
+      trackFilter({ filter_type: "topic", filter_value: topic });
     },
     [
       onHistoryIntent,
