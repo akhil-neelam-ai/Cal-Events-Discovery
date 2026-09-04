@@ -29,6 +29,7 @@ import type {
   SourceName,
   SourceStatus,
   StatusReport,
+  TopicAssignmentStatus,
 } from "./lib/schema.js";
 import { PublishedEventsPayloadSchema } from "./lib/schema.js";
 import type { FetchOptions } from "./lib/abort.js";
@@ -61,7 +62,8 @@ import { fetchSimons } from "./sources/simons.js";
 import { fetchLuma } from "./sources/luma.js";
 import { fetchAiRisk } from "./sources/ai_risk.js";
 import { buildSearchIndex } from "./lib/buildIndex.js";
-import { assignTopics, TOPIC_VOCABULARY } from "./lib/topics.js";
+import { TOPIC_VOCABULARY } from "./lib/topics.js";
+import { assignTopicsResiliently } from "./lib/topicAssignmentResilience.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -543,11 +545,15 @@ async function main(): Promise<void> {
   // Sort by date ascending
   active.sort((a, b) => a.start_at.localeCompare(b.start_at));
 
-  // Project to legacy shape
-  const legacy: LegacyCalEvent[] = active.map((event) => ({
-    ...projectToLegacy(event),
-    topics: assignTopics(event),
-  }));
+  // Projection stays outside the topic-assignment recovery boundary. A broken
+  // projection must still stop publication instead of being mislabeled as a
+  // topic-quality problem.
+  const assignmentSources = new Map<string, CanonicalEvent>();
+  let legacy: LegacyCalEvent[] = active.map((event) => {
+    const published = projectToLegacy(event);
+    assignmentSources.set(published.id, event);
+    return published;
+  });
 
   const recovery: RecoveryState = {
     fallbackSources: new Set<SourceName>(),
@@ -565,11 +571,18 @@ async function main(): Promise<void> {
     recovery.degradedSources.add(name);
     recovery.degradedReasons.add(reason);
   }
-  // Fallback rows are already in legacy form and never passed through the
-  // canonical projection above. Assign them from their published text so the
-  // per-event topics contract remains consistent on degraded source days.
-  for (const event of legacy) {
-    event.topics ??= assignTopics(event);
+  const topicAssignment = assignTopicsResiliently(
+    legacy.map((event) => ({
+      published: event,
+      source: assignmentSources.get(event.id) ?? event,
+    })),
+    existing.events,
+  );
+  legacy = topicAssignment.events;
+  if (topicAssignment.status.outcome === "error") {
+    console.warn(
+      `[orchestrator] topic assignment failed; carried forward ${topicAssignment.status.carried_forward_count} event topic sets: ${topicAssignment.status.error}`,
+    );
   }
   legacy.sort(compareLegacyEvents);
 
@@ -626,6 +639,7 @@ async function main(): Promise<void> {
         existing.events.length,
         duplicatesRemoved,
         recovery,
+        topicAssignment.status,
         true,
         "all sources failed",
       );
@@ -642,6 +656,7 @@ async function main(): Promise<void> {
         existing.events.length,
         duplicatesRemoved,
         recovery,
+        topicAssignment.status,
         true,
         "sources produced 0 events",
       );
@@ -656,6 +671,7 @@ async function main(): Promise<void> {
       legacy.length,
       duplicatesRemoved,
       recovery,
+      topicAssignment.status,
       false,
       undefined,
       true,
@@ -695,6 +711,7 @@ async function main(): Promise<void> {
     legacy.length,
     duplicatesRemoved,
     recovery,
+    topicAssignment.status,
     false,
     undefined,
     false,
@@ -706,6 +723,7 @@ function writeStatus(
   totalEvents: number,
   duplicatesRemoved: number,
   recovery: RecoveryState,
+  topicStatus: TopicAssignmentStatus,
   publishFallbackUsed = false,
   publishFallbackReason?: string,
   dataQualityBlocked = false,
@@ -722,6 +740,7 @@ function writeStatus(
     duplicates_removed: duplicatesRemoved,
     past_events_filtered: runs.reduce((s, r) => s + r.filteredPast, 0),
     invalid_events_filtered: runs.reduce((s, r) => s + r.invalid, 0),
+    topics: topicStatus,
     sources: runs.map((r) => r.status),
     fallback_used: publishFallbackUsed || fallbackSources.length > 0,
     degraded:

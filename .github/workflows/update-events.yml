@@ -161,6 +161,27 @@ jobs:
       - name: Validate published artifacts
         run: npm run validate
 
+      - name: Read topic assignment status
+        id: topic_assignment
+        run: |
+          outcome="$(jq -r '.topics.outcome // "error"' public/status.json)"
+          echo "outcome=${outcome}" >> "$GITHUB_OUTPUT"
+          if [ "${outcome}" = "error" ]; then
+            error="$(jq -r '.topics.error // "unknown assignment error"' public/status.json)"
+            echo "::warning::Topic assignment failed. The snapshot was published with carried-forward topics where available: ${error}"
+          fi
+
+      - name: Open data-quality issue on topic assignment failure
+        if: ${{ steps.topic_assignment.outputs.outcome == 'error' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_NAME: Topic assignment quality
+          FAILURE_CONTEXT: topic assignment reported a failure in the newly generated status.json
+          ISSUE_LABEL: data-quality
+          ISSUE_LABEL_COLOR: FBCA04
+          ISSUE_LABEL_DESCRIPTION: Non-blocking corpus/search quality regression for triage
+        run: node scripts/notifyPipelineFailure.mjs
+
       - name: Corpus search-quality checks
         id: search_quality
         continue-on-error: true

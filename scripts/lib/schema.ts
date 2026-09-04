@@ -236,6 +236,13 @@ export interface SourceStatus {
   degraded_reason?: string;
 }
 
+export interface TopicAssignmentStatus {
+  outcome: "ok" | "error";
+  assigned_count: number;
+  carried_forward_count: number;
+  error?: string;
+}
+
 /**
  * Top-level ingestion summary written to `public/status.json`.
  * Keep this shape stable because the frontend reads it directly.
@@ -246,6 +253,7 @@ export interface StatusReport {
   duplicates_removed: number;
   past_events_filtered: number;
   invalid_events_filtered: number;
+  topics: TopicAssignmentStatus;
   sources: SourceStatus[];
   fallback_used: boolean;
   degraded: boolean;
