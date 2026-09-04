@@ -73,9 +73,17 @@ export const DateRanges = [
   { label: "All Events", value: "upcoming" },
 ];
 
+export const TOPIC_GROUP_PRESENTATION = [
+  { value: "fields", label: "Fields" },
+  { value: "interests", label: "Interests" },
+] as const;
+
+export const COLLAPSED_TOPICS_PER_GROUP = 4;
+
 export const DEFAULT_FILTERS: SearchFilters = {
   dateRange: "week",
   category: "All",
+  topic: "",
   searchQuery: "",
   source: "All",
 };
@@ -96,7 +104,7 @@ export const DESKTOP_HERO_PRESETS: QuickFilterPreset[] = [
   {
     label: "AI talks",
     dateRange: "week",
-    category: "Science & Tech",
+    category: "All",
     searchQuery: "ai",
   },
   {

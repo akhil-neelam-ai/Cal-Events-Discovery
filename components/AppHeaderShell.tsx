@@ -8,6 +8,7 @@ import {
   type SourceOption,
 } from "../appConfig";
 import { LoadingState, type SearchFilters } from "../types";
+import type { TopicVocabulary } from "../types";
 import type { StatusBannerData } from "../utils/statusUi";
 import { DesktopHero } from "./DesktopHero";
 import { DesktopFiltersBar, MobileFiltersBar } from "./FiltersBar";
@@ -24,9 +25,12 @@ export function AppHeaderShell({
   filters,
   activeDateRange,
   sourceOptions,
+  topicVocabulary,
+  topicCounts,
   onSearchChange,
   onDateChange,
   onCategoryChange,
+  onTopicChange,
   onSourceChange,
   onPresetSelect,
   statusBanner,
@@ -45,9 +49,12 @@ export function AppHeaderShell({
   filters: SearchFilters;
   activeDateRange: SearchFilters["dateRange"];
   sourceOptions: SourceOption[];
+  topicVocabulary: TopicVocabulary | null;
+  topicCounts: ReadonlyMap<string, number>;
   onSearchChange: (query: string) => void;
   onDateChange: (next: SearchFilters["dateRange"]) => void;
   onCategoryChange: (next: string) => void;
+  onTopicChange: (next: string) => void;
   onSourceChange: (next: string) => void;
   onPresetSelect: (preset: QuickFilterPreset) => void;
   statusBanner: StatusBannerData | null;
@@ -96,8 +103,11 @@ export function AppHeaderShell({
               filters={filters}
               activeDateRange={activeDateRange}
               sourceOptions={sourceOptions}
+              topicVocabulary={topicVocabulary}
+              topicCounts={topicCounts}
               onDateChange={onDateChange}
               onCategoryChange={onCategoryChange}
+              onTopicChange={onTopicChange}
               onSourceChange={onSourceChange}
             />
           </div>
@@ -117,8 +127,11 @@ export function AppHeaderShell({
               filters={filters}
               activeDateRange={activeDateRange}
               sourceOptions={sourceOptions}
+              topicVocabulary={topicVocabulary}
+              topicCounts={topicCounts}
               onDateChange={onDateChange}
               onCategoryChange={onCategoryChange}
+              onTopicChange={onTopicChange}
               onSourceChange={onSourceChange}
             />
           </div>

@@ -53,7 +53,7 @@ Vercel CDN → cal-events.com
 3. **Merge** — PR runs validate + E2E, auto-merges to `main` if green.
 4. **Deploy** — Vercel deploys `main`. Production smoke test hits live URLs.
 
-Deep architecture: see [ARCHITECTURE.md](./ARCHITECTURE.md). Agent/adapter details: see [CLAUDE.md](./CLAUDE.md).
+Deep architecture: see [ARCHITECTURE.md](./ARCHITECTURE.md). Agent, adapter, and contributor guidance: see [AGENTS.md](./AGENTS.md), which `CLAUDE.md` imports.
 
 ## CI/CD workflows
 

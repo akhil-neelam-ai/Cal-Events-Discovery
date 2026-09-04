@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import type { CalEvent, SearchFilters } from "../types";
 import {
@@ -28,6 +28,8 @@ interface UseEventBrowserStateParams {
   tomorrowKey: string;
   nextWeekKey: string;
   userSetDateRange: boolean;
+  topicAvailabilityReady: boolean;
+  onUnavailableTopic: (topic: string) => void;
   emptyStateActions: EmptyStateActions;
 }
 
@@ -36,6 +38,8 @@ interface UseEventBrowserStateResult {
   searchFallbackMessage?: string;
   effectiveDateRange: SearchFilters["dateRange"];
   filteredEvents: CalEvent[];
+  topicCounts: ReadonlyMap<string, number>;
+  topicFilterNotice: string | null;
   visibleSelectedEventId: string | null;
   selectedEvent: CalEvent | null;
   fallbackBannerCopy: string | null;
@@ -52,8 +56,13 @@ export function useEventBrowserState({
   tomorrowKey,
   nextWeekKey,
   userSetDateRange,
+  topicAvailabilityReady,
+  onUnavailableTopic,
   emptyStateActions,
 }: UseEventBrowserStateParams): UseEventBrowserStateResult {
+  const [topicFilterNotice, setTopicFilterNotice] = useState<string | null>(
+    null,
+  );
   const activePlan = useMemo(() => {
     const query = filters.searchQuery.trim();
     if (query.length < 2) {
@@ -89,6 +98,14 @@ export function useEventBrowserState({
         return false;
       }
 
+      if (
+        interpretation.key.startsWith("topic:") &&
+        filters.topic &&
+        interpretation.key !== `topic:${filters.topic}`
+      ) {
+        return false;
+      }
+
       return true;
     });
   }, [
@@ -96,6 +113,7 @@ export function useEventBrowserState({
     dismissedInterpretationKeys,
     filters.category,
     filters.source,
+    filters.topic,
   ]);
 
   const searchOutput = useMemo(() => {
@@ -143,6 +161,19 @@ export function useEventBrowserState({
       effectiveDismissedKeys.add(`source:${activePlan.filters.source}`);
     }
 
+    const interpretedTopic = activePlan?.interpretations.find((item) =>
+      item.key.startsWith("topic:"),
+    );
+    if (
+      interpretedTopic &&
+      filters.topic &&
+      interpretedTopic.key !== `topic:${filters.topic}`
+    ) {
+      // A direct chip choice is authoritative over topic intent inferred from
+      // text. U7 teaches searchEvents how to dismiss this topic key.
+      effectiveDismissedKeys.add(interpretedTopic.key);
+    }
+
     const { results, fallbackUsed, fallbackMessage } = searchEvents(
       pool,
       query,
@@ -162,6 +193,7 @@ export function useEventBrowserState({
     filters.category,
     filters.searchQuery,
     filters.source,
+    filters.topic,
     searchIndex,
   ]);
 
@@ -237,7 +269,7 @@ export function useEventBrowserState({
     dateBuckets.week.length,
   ]);
 
-  const filteredEvents = useMemo(() => {
+  const activeDateBucket = useMemo(() => {
     const activeBucket =
       effectiveDateRange === "today"
         ? dateBuckets.today
@@ -247,8 +279,58 @@ export function useEventBrowserState({
             ? dateBuckets.week
             : dateBuckets.upcoming;
 
-    return sortEventsChronologically(activeBucket);
+    return activeBucket;
   }, [effectiveDateRange, dateBuckets]);
+
+  // Availability deliberately excludes the active topic itself. Every other
+  // active filter has already shaped activeDateBucket, so a topic count is the
+  // number of results selecting that topic would produce right now.
+  const topicCounts = useMemo<ReadonlyMap<string, number>>(() => {
+    const counts = new Map<string, number>();
+    for (const event of activeDateBucket) {
+      for (const topic of event.topics ?? []) {
+        counts.set(topic, (counts.get(topic) ?? 0) + 1);
+      }
+    }
+    return counts;
+  }, [activeDateBucket]);
+
+  const filteredEvents = useMemo(() => {
+    const topicFiltered = filters.topic
+      ? activeDateBucket.filter((event) =>
+          event.topics?.some((topic) => topic === filters.topic),
+        )
+      : activeDateBucket;
+
+    return sortEventsChronologically(topicFiltered);
+  }, [activeDateBucket, filters.topic]);
+
+  useEffect(() => {
+    if (!topicAvailabilityReady || !filters.topic) {
+      return;
+    }
+
+    if ((topicCounts.get(filters.topic) ?? 0) > 0) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setTopicFilterNotice(
+        "Topic cleared because no events match it with the other filters.",
+      );
+      onUnavailableTopic(filters.topic);
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [filters.topic, onUnavailableTopic, topicAvailabilityReady, topicCounts]);
+
+  useEffect(() => {
+    if (!topicFilterNotice) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => setTopicFilterNotice(null), 5000);
+    return () => window.clearTimeout(timeout);
+  }, [topicFilterNotice]);
 
   const visibleSelectedEventId = useMemo(() => {
     if (!selectedEventId) {
@@ -308,6 +390,8 @@ export function useEventBrowserState({
     searchFallbackMessage: searchOutput.fallbackMessage,
     effectiveDateRange,
     filteredEvents,
+    topicCounts,
+    topicFilterNotice,
     visibleSelectedEventId,
     selectedEvent,
     fallbackBannerCopy,

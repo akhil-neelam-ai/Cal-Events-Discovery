@@ -23,7 +23,7 @@ interface SearchParams {
 }
 
 interface FilterParams {
-  filter_type: "category" | "date_range" | "source";
+  filter_type: "category" | "date_range" | "source" | "topic";
   filter_value: string;
 }
 

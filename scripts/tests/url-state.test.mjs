@@ -6,6 +6,7 @@ import { buildUrlStateSearch, parseUrlState } from "../../utils/urlState.ts";
 const DEFAULT_FILTERS = {
   dateRange: "today",
   category: "All",
+  topic: "",
   searchQuery: "",
   source: "All",
 };
@@ -32,17 +33,19 @@ const OPTIONS = {
     "berkeley_law",
     "simons",
   ],
+  allowedTopics: ["ai-machine-learning", "law", "film"],
 };
 
 test("parseUrlState restores shareable filters and selected event", () => {
   const parsed = parseUrlState(
-    "?q=ai%20talks&date=week&category=Science%20%26%20Tech&source=livewhale&event=evt-42",
+    "?q=ai%20talks&date=week&category=Science%20%26%20Tech&source=livewhale&topic=ai-machine-learning&event=evt-42",
     OPTIONS,
   );
 
   assert.deepEqual(parsed.filters, {
     dateRange: "week",
     category: "Science & Tech",
+    topic: "ai-machine-learning",
     searchQuery: "ai talks",
     source: "livewhale",
   });
@@ -61,9 +64,9 @@ test("parseUrlState preserves tomorrow when shared explicitly", () => {
   assert.equal(parsed.hasExplicitDateRange, true);
 });
 
-test("parseUrlState ignores unsupported values", () => {
+test("parseUrlState ignores unsupported values, including unknown topics", () => {
   const parsed = parseUrlState(
-    "?date=month&category=Unknown&source=made-up&event=",
+    "?date=month&category=Unknown&source=made-up&topic=made-up&event=",
     OPTIONS,
   );
 
@@ -89,6 +92,7 @@ test("buildUrlStateSearch omits defaults and trims search text", () => {
       searchQuery: "  career fair  ",
       dateRange: "upcoming",
       source: "callink",
+      topic: "law",
     },
     "event-123",
     { defaultFilters: DEFAULT_FILTERS },
@@ -96,7 +100,7 @@ test("buildUrlStateSearch omits defaults and trims search text", () => {
 
   assert.equal(
     serialized,
-    "?q=career+fair&date=upcoming&source=callink&event=event-123",
+    "?q=career+fair&date=upcoming&topic=law&source=callink&event=event-123",
   );
 });
 

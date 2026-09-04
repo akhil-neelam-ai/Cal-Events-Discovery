@@ -458,13 +458,17 @@ const GROUP_FEED_CONCURRENCY = 8;
  */
 async function fetchAllGroupFeeds(
   options: FetchOptions,
-): Promise<Record<string, unknown>[]> {
-  const results: Record<string, unknown>[] = new Array(LIVEWHALE_GROUPS.length);
+): Promise<LiveWhaleGroupFeed[]> {
+  const results: LiveWhaleGroupFeed[] = new Array(LIVEWHALE_GROUPS.length);
   let nextIdx = 0;
   const worker = async (): Promise<void> => {
     while (nextIdx < LIVEWHALE_GROUPS.length) {
       const myIdx = nextIdx++;
-      results[myIdx] = await fetchGroupFeed(LIVEWHALE_GROUPS[myIdx], options);
+      const group = LIVEWHALE_GROUPS[myIdx];
+      results[myIdx] = {
+        group,
+        parsed: await fetchGroupFeed(group, options),
+      };
     }
   };
   await Promise.all(
@@ -474,6 +478,64 @@ async function fetchAllGroupFeeds(
     ),
   );
   return results;
+}
+
+export interface LiveWhaleGroupFeed {
+  group: string;
+  parsed: Record<string, unknown>;
+}
+
+export interface MergedLiveWhaleFeeds {
+  parsed: Record<string, unknown>;
+  groupsByUid: Map<string, string[]>;
+}
+
+function eventUid(key: string, value: unknown): string | null {
+  const component = value as { type?: string; uid?: unknown } | undefined;
+  if (!component || component.type !== "VEVENT") return null;
+  return asString(component.uid) || key;
+}
+
+/** Merge main and group calendars by VEVENT UID while retaining all groups. */
+export function mergeLiveWhaleFeeds(
+  mainParsed: Record<string, unknown>,
+  groupFeeds: readonly LiveWhaleGroupFeed[],
+): MergedLiveWhaleFeeds {
+  const parsed: Record<string, unknown> = { ...mainParsed };
+  const keyByUid = new Map<string, string>();
+  const groupsByUidSets = new Map<string, Set<string>>();
+
+  for (const [key, value] of Object.entries(mainParsed)) {
+    const uid = eventUid(key, value);
+    if (uid) keyByUid.set(uid, key);
+  }
+
+  for (const { group, parsed: groupParsed } of groupFeeds) {
+    for (const [key, value] of Object.entries(groupParsed)) {
+      const uid = eventUid(key, value);
+      if (!uid) {
+        if (!(key in parsed)) parsed[key] = value;
+        continue;
+      }
+
+      const memberships = groupsByUidSets.get(uid) ?? new Set<string>();
+      memberships.add(group);
+      groupsByUidSets.set(uid, memberships);
+
+      if (keyByUid.has(uid)) continue;
+      if (!(key in parsed)) {
+        parsed[key] = value;
+        keyByUid.set(uid, key);
+      }
+    }
+  }
+
+  return {
+    parsed,
+    groupsByUid: new Map(
+      [...groupsByUidSets].map(([uid, groups]) => [uid, [...groups]]),
+    ),
+  };
 }
 
 export async function fetchLiveWhale(
@@ -486,15 +548,9 @@ export async function fetchLiveWhale(
     fetchAllGroupFeeds(options),
   ]);
 
-  // Merge all iCal records; deduplicate by UID (group feeds overlap with main)
-  const merged: Record<string, unknown> = { ...mainParsed };
-  for (const groupParsed of groupResults) {
-    for (const [key, val] of Object.entries(groupParsed)) {
-      if (!(key in merged)) merged[key] = val;
-    }
-  }
-
-  const parsed = merged;
+  // Merge all iCal records by UID. The main record remains authoritative, but
+  // every department feed that contained it is retained as assignment input.
+  const { parsed, groupsByUid } = mergeLiveWhaleFeeds(mainParsed, groupResults);
 
   const todayIso = todayPT();
   const fetched_at = new Date().toISOString();
@@ -601,6 +657,7 @@ export async function fetchLiveWhale(
           categories,
           organizer: unit,
         }),
+        livewhale_groups: groupsByUid.get(asString(ve.uid)) ?? [],
         last_seen_at: fetched_at,
         confidence: 1,
         quality_flags: !slug

@@ -12,6 +12,8 @@ interface ParseUrlStateOptions {
   defaultFilters: SearchFilters;
   allowedCategories: readonly string[];
   allowedSources: readonly string[];
+  /** Null only during the initial feed load; values are provisional then. */
+  allowedTopics: readonly string[] | null;
 }
 
 interface BuildUrlStateOptions {
@@ -37,13 +39,19 @@ function sanitizeDateRange(
 
 export function parseUrlState(
   search: string,
-  { defaultFilters, allowedCategories, allowedSources }: ParseUrlStateOptions,
+  {
+    defaultFilters,
+    allowedCategories,
+    allowedSources,
+    allowedTopics,
+  }: ParseUrlStateOptions,
 ): AppUrlState {
   const params = new URLSearchParams(search);
   const rawDateRange = params.get("date");
   const rawSearchQuery = params.get("q")?.trim() ?? "";
   const rawCategory = params.get("category");
   const rawSource = params.get("source");
+  const rawTopic = params.get("topic")?.trim() ?? "";
   const hasExplicitDateRange = Boolean(
     rawDateRange && VALID_DATE_RANGES.has(rawDateRange as DateRange),
   );
@@ -56,6 +64,10 @@ export function parseUrlState(
       rawCategory && allowedCategories.includes(rawCategory)
         ? rawCategory
         : defaultFilters.category,
+    topic:
+      rawTopic && (allowedTopics === null || allowedTopics.includes(rawTopic))
+        ? rawTopic
+        : defaultFilters.topic,
     source:
       rawSource && allowedSources.includes(rawSource)
         ? rawSource
@@ -89,6 +101,10 @@ export function buildUrlStateSearch(
 
   if (filters.category !== defaultFilters.category) {
     params.set("category", filters.category);
+  }
+
+  if (filters.topic !== defaultFilters.topic) {
+    params.set("topic", filters.topic);
   }
 
   if (filters.source !== defaultFilters.source) {

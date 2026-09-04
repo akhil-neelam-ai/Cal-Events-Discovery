@@ -20,12 +20,24 @@ Returns the current event snapshot:
       "location": "Venue",
       "description": "Event summary",
       "tags": ["Academic"],
+      "topics": ["ai-machine-learning"],
       "url": "https://official-source.example/event",
       "source": "livewhale"
     }
   ],
   "sources": [{ "title": "Source title", "uri": "https://source.example" }],
-  "lastUpdated": 1777560000000
+  "lastUpdated": 1777560000000,
+  "topic_vocabulary": {
+    "version": 1,
+    "topics": [
+      {
+        "slug": "ai-machine-learning",
+        "label": "AI and Machine Learning",
+        "group": "fields",
+        "synonyms": ["ai", "machine learning"]
+      }
+    ]
+  }
 }
 ```
 
@@ -40,8 +52,12 @@ Returns the latest ingestion status. Important fields include:
 - `sources`: per-source health records
 - `fallback_used`: whether cached source data was used
 - `data_quality_blocked`: whether the dataset should be treated as materially incomplete
+- `topics.outcome`: `ok` or `error` for topic assignment in this publish
+- `topics.assigned_count`: events assigned topics in this run
+- `topics.carried_forward_count`: events that kept topics from the prior snapshot
+- `topics.error`: optional topic assignment error
 
-Recovered fallback state is an engineering signal, not user-facing copy. If `data_quality_blocked` is not true and events are present, agents can continue using the feed.
+Recovered fallback state is an engineering signal, not user-facing copy. If `data_quality_blocked` is not true and events are present, agents can continue using the feed. Report `topics.outcome` separately from source health. A topic assignment error does not make an event source degraded. If `topics.outcome` is `error`, report `topics.carried_forward_count` and `topics.error`.
 
 ### `GET /search-index.json`
 
@@ -53,13 +69,14 @@ Returns a compact generated index for local search. Agents can use this for fast
 2. Otherwise fetch `https://cal-events.com/events.json`.
 3. Filter events by `date >= today` in America/Los_Angeles.
 4. Filter by `tags[0]` for the primary displayed category.
-5. Present concise results with the official event `url`.
-6. Share UI state via `?q=&date=&category=&source=&event=` (`build_calevents_url` / `apply_ui_state`).
-7. If needed, fetch `https://cal-events.com/status.json` to explain freshness or source coverage.
+5. Filter by `topics` for a published topic slug. Read valid slugs from `topic_vocabulary.topics`.
+6. Present concise results with the official event `url`.
+8. Share UI state via `?q=&date=&category=&topic=&source=&event=` (`build_calevents_url` / `apply_ui_state`).
+9. If needed, fetch `https://cal-events.com/status.json` to explain freshness, source coverage, or topic assignment.
 
 ## URL Workspace
 
-Query params on `https://cal-events.com/`: `q`, `date` (`today`|`tomorrow`|`week`|`upcoming`), `category`, `source`, `event`. See `/for-agents.html`.
+Query params on `https://cal-events.com/`: `q`, `date` (`today`|`tomorrow`|`week`|`upcoming`), `category`, `topic`, `source`, `event`. See `/for-agents.html`. Topic values come from `events.json.topic_vocabulary.topics`.
 
 ## CRUD Limits
 

@@ -76,6 +76,7 @@ export default function App() {
     loading,
     statusReport,
     searchIndex,
+    topicVocabulary,
     sourceOptions,
     sourceCount,
     loadEvents,
@@ -95,6 +96,10 @@ export default function App() {
     initialUrlState.hasExplicitDateRange,
   );
   const showBackToTop = useBackToTopVisibility();
+  const allowedTopicSlugs = useMemo(
+    () => topicVocabulary?.topics.map((topic) => topic.slug) ?? null,
+    [topicVocabulary],
+  );
 
   const handleEventClick = useCallback((event: CalEvent) => {
     setSelectedEventId(event.id);
@@ -203,6 +208,12 @@ export default function App() {
     setUserSetDateRange(true);
   }, []);
 
+  const clearUnavailableTopic = useCallback((topic: string) => {
+    setFilters((prev) =>
+      prev.topic === topic ? { ...prev, topic: DEFAULT_FILTERS.topic } : prev,
+    );
+  }, []);
+
   const emptyStateActions = useMemo(
     () => ({
       resetAll,
@@ -223,6 +234,8 @@ export default function App() {
     visibleSelectedEventId,
     selectedEvent,
     fallbackBannerCopy,
+    topicCounts,
+    topicFilterNotice,
     emptyState,
   } = useEventBrowserState({
     allEvents,
@@ -234,6 +247,8 @@ export default function App() {
     tomorrowKey,
     nextWeekKey,
     userSetDateRange,
+    topicAvailabilityReady: allowedTopicSlugs !== null,
+    onUnavailableTopic: clearUnavailableTopic,
     emptyStateActions,
   });
 
@@ -253,6 +268,7 @@ export default function App() {
 
   const { onHistoryIntent } = useUrlStateSync({
     filters,
+    allowedTopicSlugs,
     selectedEventId: visibleSelectedEventId,
     setFilters,
     setSelectedEventId,
@@ -264,6 +280,7 @@ export default function App() {
     handleDismissChip,
     handleDateRangeChange,
     handleCategoryChange,
+    handleTopicChange,
     handleSourceChange,
     handleQuickPreset,
   } = useEventBrowserActions({
@@ -289,9 +306,12 @@ export default function App() {
         filters={filters}
         activeDateRange={effectiveDateRange}
         sourceOptions={sourceOptions}
+        topicVocabulary={topicVocabulary}
+        topicCounts={topicCounts}
         onSearchChange={handleSearchChange}
         onDateChange={handleDateRangeChange}
         onCategoryChange={handleCategoryChange}
+        onTopicChange={handleTopicChange}
         onSourceChange={handleSourceChange}
         onPresetSelect={handleQuickPreset}
         statusBanner={statusBanner}
@@ -304,7 +324,11 @@ export default function App() {
       />
 
       {/* Main Content */}
-      <main id={mainContentId} className="container mx-auto px-4 py-6 md:py-7">
+      <main
+        id={mainContentId}
+        tabIndex={-1}
+        className="container mx-auto px-4 py-6 md:py-7"
+      >
         {loading === LoadingState.LOADING && <LoadingStateView />}
 
         {loading === LoadingState.ERROR && (
@@ -313,7 +337,7 @@ export default function App() {
 
         {loading === LoadingState.SUCCESS && (
           <EventsResultsSection
-            fallbackBannerCopy={fallbackBannerCopy}
+            fallbackBannerCopy={topicFilterNotice ?? fallbackBannerCopy}
             activeChips={activeChips}
             onDismissChip={handleDismissChip}
             category={filters.category}

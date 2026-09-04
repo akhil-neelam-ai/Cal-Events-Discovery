@@ -4,9 +4,9 @@ CalEvents is a public UC Berkeley campus events discovery site. It aggregates up
 
 ## Primary Resources
 
-- [Homepage](https://cal-events.com/): Search and browse upcoming Berkeley events by date, category, source, and keyword.
+- [Homepage](https://cal-events.com/): Search and browse upcoming Berkeley events by date, category, topic, source, and keyword.
 - [For Agents](https://cal-events.com/for-agents.html): Human-readable agent entry point (tools, URL schema, CRUD limits).
-- [Events JSON](https://cal-events.com/events.json): Public machine-readable event feed. The top-level object contains `events`, `sources`, and `lastUpdated`.
+- [Events JSON](https://cal-events.com/events.json): Public machine-readable event feed. The top-level object contains `events`, `sources`, `lastUpdated`, and `topic_vocabulary`.
 - [Search Index](https://cal-events.com/search-index.json): Compact text-search index generated from the published events.
 - [Feed Status](https://cal-events.com/status.json): Machine-readable ingestion status, source health, fallback usage, duplicate counts, and filtering counts.
 - [OpenAPI Description](https://cal-events.com/openapi.json): API description for public static data resources.
@@ -25,12 +25,17 @@ Each event in `events.json` has:
 - `location`: venue or location text
 - `description`: event summary
 - `tags`: primary category first, with optional secondary tags
+- `topics`: zero to three published topic slugs; independent of `tags`
 - `url`: official source URL
 - `source`: normalized source id such as `livewhale`, `bampfa`, `callink`, `calbears`, `cal_performances`, `haas`, `berkeley_law`, `simons`, `luma`, `begin`, `ai_risk`, or `brsl`
 
 ## Categories
 
 Supported user-facing categories are `Academic`, `Arts`, `Sports`, `Science & Tech`, `Student Life`, and `Entrepreneurship`.
+
+Topic slugs, labels, groups, and synonyms are published in
+`events.json.topic_vocabulary.topics`. Agents must validate topic filters
+against that block instead of assuming a fixed enum.
 
 ## URL Workspace Schema
 
@@ -41,6 +46,7 @@ Humans and agents share the same homepage query string:
 | `q` | string | Search query |
 | `date` | `today` \| `tomorrow` \| `week` \| `upcoming` | Date bucket (default: week) |
 | `category` | category name | Primary tag filter |
+| `topic` | published topic slug | Topic filter, independent of category |
 | `source` | source id | Source filter |
 | `event` | event id | Selected detail |
 

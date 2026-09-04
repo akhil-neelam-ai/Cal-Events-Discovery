@@ -9,6 +9,8 @@ export type HistoryMode = "push" | "replace";
 
 interface UseUrlStateSyncParams {
   filters: SearchFilters;
+  /** Slugs from the loaded payload. Null while that payload is loading. */
+  allowedTopicSlugs: readonly string[] | null;
   selectedEventId: string | null;
   setFilters: Dispatch<SetStateAction<SearchFilters>>;
   setSelectedEventId: Dispatch<SetStateAction<string | null>>;
@@ -20,19 +22,21 @@ export interface UseUrlStateSyncResult {
   onHistoryIntent: (mode: HistoryMode) => void;
 }
 
-export function readAppUrlState() {
+export function readAppUrlState(allowedTopicSlugs?: readonly string[]) {
   return parseUrlState(
     typeof window !== "undefined" ? window.location.search : "",
     {
       defaultFilters: DEFAULT_FILTERS,
       allowedCategories: Categories,
       allowedSources: ALL_SOURCES,
+      allowedTopics: allowedTopicSlugs ?? null,
     },
   );
 }
 
 export function useUrlStateSync({
   filters,
+  allowedTopicSlugs,
   selectedEventId,
   setFilters,
   setSelectedEventId,
@@ -44,6 +48,22 @@ export function useUrlStateSync({
   const onHistoryIntent = useCallback((mode: HistoryMode) => {
     historyModeRef.current = mode;
   }, []);
+
+  // The vocabulary arrives with events.json, after the first URL read. Keep a
+  // topic provisional during that short load, then validate it against the
+  // published slugs before the successful feed becomes interactive.
+  useEffect(() => {
+    if (typeof window === "undefined" || allowedTopicSlugs === null) {
+      return;
+    }
+
+    const rawTopic = new URLSearchParams(window.location.search).get("topic");
+    if (rawTopic && !allowedTopicSlugs.includes(rawTopic)) {
+      setFilters((current) =>
+        current.topic ? { ...current, topic: "" } : current,
+      );
+    }
+  }, [allowedTopicSlugs, setFilters]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -80,6 +100,7 @@ export function useUrlStateSync({
         defaultFilters: DEFAULT_FILTERS,
         allowedCategories: Categories,
         allowedSources: ALL_SOURCES,
+        allowedTopics: allowedTopicSlugs,
       });
 
       setFilters(nextState.filters);
@@ -91,6 +112,7 @@ export function useUrlStateSync({
     return () => window.removeEventListener("popstate", handlePopState);
   }, [
     isApplyingHistoryRef,
+    allowedTopicSlugs,
     setFilters,
     setSelectedEventId,
     setUserSetDateRange,

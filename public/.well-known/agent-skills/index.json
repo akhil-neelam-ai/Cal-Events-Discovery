@@ -6,14 +6,14 @@
       "type": "skill-md",
       "description": "Search upcoming UC Berkeley campus events using the public CalEvents event feed.",
       "url": "/.well-known/agent-skills/search-events/SKILL.md",
-      "digest": "sha256:33e9daca1f456d40bcda4a5245edd16f6ec7eea93ed17c40c44a22d3cd640f2e"
+      "digest": "sha256:6c7fe881b8965f1b2617ee71d3f2b51666c8a82a7f2c7f538840dcdbff4cfc18"
     },
     {
       "name": "event-feed-status",
       "type": "skill-md",
       "description": "Inspect CalEvents ingestion freshness, source health, and fallback status.",
       "url": "/.well-known/agent-skills/event-feed-status/SKILL.md",
-      "digest": "sha256:70045cc7913643d2cff3dae5e59174dc646052207a19c21de643aac428c23e53"
+      "digest": "sha256:4d6302251238778b0339c319ef7a5a57023286895b2a88234db0bc9ae7c11c2e"
     },
     {
       "name": "event-detail",
@@ -34,7 +34,7 @@
       "type": "skill-md",
       "description": "Build shareable CalEvents deep links from shared URL workspace params.",
       "url": "/.well-known/agent-skills/share-event/SKILL.md",
-      "digest": "sha256:dde493660ec22167f8cf54dfe4187e71d208fd628e896f29982e5744b8b31169"
+      "digest": "sha256:08840057e2a94cd15cd026be21ea33967fbbebacb24b41ce3542ee3eb2052e8d"
     }
   ]
 }
