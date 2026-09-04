@@ -11,8 +11,10 @@ import {
   daysBetweenDateKeys,
   getCurrentPacificDateKey,
   getPacificDateKey,
+  sortEventsChronologically,
 } from "./eventDates";
 import type { SearchIndex } from "./textUtils";
+import { TOPICS } from "../scripts/lib/topics";
 
 export type { SearchIndex };
 
@@ -27,6 +29,7 @@ export interface SearchFilter {
   campusArea?: "northside" | "southside" | "downtown";
   free?: boolean;
   modality?: "online" | "in-person";
+  topic?: string;
 }
 
 export interface InterpretedChip {
@@ -208,6 +211,15 @@ function addInterpretationOnce(
   }
 }
 
+const TOPIC_SYNONYMS = TOPICS.flatMap((topic) =>
+  topic.synonyms.map((synonym) => ({ topic, synonym })),
+).sort((left, right) => right.synonym.length - left.synonym.length);
+
+function topicPattern(synonym: string): RegExp {
+  const escaped = synonym.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`\\b${escaped}\\b`, "i");
+}
+
 const STEMMED_DOMAIN_SYNONYMS = new Map<string, string[]>();
 
 for (const [key, synonyms] of Object.entries(DOMAIN_SYNONYMS)) {
@@ -325,33 +337,60 @@ export function buildSearchPlan(query: string): SearchPlan {
     cleaned = stripIntent(cleaned, RE_EVENING);
   }
 
+  // ── Source ────────────────────────────────────────────────────────────────
+  // Source phrases can contain topic words (for example, "Berkeley AI Risk").
+  // Claim the source before topic interpretation so a named feed remains one
+  // hard filter rather than becoming an accidental source/topic intersection.
+  for (const [source, pattern, label] of SOURCE_PATTERNS) {
+    if (pattern.test(cleaned)) {
+      filters.source = source;
+      interpretations.push({ key: `source:${source}`, label });
+      cleaned = stripIntent(cleaned, pattern);
+      break;
+    }
+  }
+
+  // ── Topic ─────────────────────────────────────────────────────────────────
+  // Topics claim the first vocabulary synonym encountered in query order.
+  // Strip only that occurrence so later detectors cannot reinterpret it; any
+  // additional subject words remain searchable ranking text.
+  let firstTopicMatch: {
+    topic: (typeof TOPICS)[number];
+    synonym: string;
+    index: number;
+  } | null = null;
+  for (const entry of TOPIC_SYNONYMS) {
+    const match = topicPattern(entry.synonym).exec(cleaned);
+    if (!match || match.index === undefined) continue;
+    if (firstTopicMatch === null || match.index < firstTopicMatch.index) {
+      firstTopicMatch = { ...entry, index: match.index };
+    }
+  }
+  if (firstTopicMatch) {
+    const { topic } = firstTopicMatch;
+    const pattern = topicPattern(firstTopicMatch.synonym);
+    filters.topic = topic.slug;
+    interpretations.push({ key: `topic:${topic.slug}`, label: topic.label });
+    cleaned = stripIntent(cleaned, pattern);
+  }
+
   // ── Modality ──────────────────────────────────────────────────────────────
-  if (RE_ONLINE.test(raw)) {
+  if (RE_ONLINE.test(cleaned)) {
     filters.modality = "online";
     interpretations.push({ key: "modality:online", label: "Online" });
     cleaned = stripIntent(cleaned, RE_ONLINE);
-  } else if (RE_INPERSON.test(raw)) {
+  } else if (RE_INPERSON.test(cleaned)) {
     filters.modality = "in-person";
     interpretations.push({ key: "modality:in-person", label: "In Person" });
     cleaned = stripIntent(cleaned, RE_INPERSON);
   }
 
   // ── Free ──────────────────────────────────────────────────────────────────
-  if (RE_FREE.test(raw)) {
+  if (RE_FREE.test(cleaned)) {
     filters.free = true;
     interpretations.push({ key: "free:true", label: "Free" });
   } else if (RE_CONTEXTUAL_FREE.test(raw)) {
     cleaned = stripIntent(cleaned, /\bfree\b/i);
-  }
-
-  // ── Source ────────────────────────────────────────────────────────────────
-  for (const [source, pattern, label] of SOURCE_PATTERNS) {
-    if (pattern.test(raw)) {
-      filters.source = source;
-      interpretations.push({ key: `source:${source}`, label });
-      cleaned = stripIntent(cleaned, pattern);
-      break;
-    }
   }
 
   // ── Category ─────────────────────────────────────────────────────────────
@@ -385,9 +424,9 @@ export function buildSearchPlan(query: string): SearchPlan {
   }
 
   // ── Known phrases ─────────────────────────────────────────────────────────
-  const rawLower = raw.toLowerCase();
+  const cleanedLower = cleaned.toLowerCase();
   for (const phrase of KNOWN_PHRASES) {
-    if (rawLower.includes(phrase)) phrases.push(phrase);
+    if (cleanedLower.includes(phrase)) phrases.push(phrase);
   }
 
   // ── Keywords ──────────────────────────────────────────────────────────────
@@ -395,7 +434,9 @@ export function buildSearchPlan(query: string): SearchPlan {
     cleaned || (interpretations.length === 0 ? raw : ""),
   );
 
-  const expandedTokens = expandKeywordTokens(keywords, rawLower);
+  // Expand only residual text. Intent words claimed by a detector must not
+  // re-enter scoring through a raw-query synonym expansion.
+  const expandedTokens = expandKeywordTokens(keywords, cleanedLower);
 
   return {
     raw,
@@ -642,6 +683,16 @@ function applyPoolFilters(
     }
 
     if (
+      filters.topic &&
+      !dismissedKeys.has(`topic:${filters.topic}`) &&
+      !(ev.topics ?? []).includes(
+        filters.topic as NonNullable<CalEvent["topics"]>[number],
+      )
+    ) {
+      return false;
+    }
+
+    if (
       filters.campusArea &&
       !dismissedKeys.has(`campusArea:${filters.campusArea}`)
     ) {
@@ -711,7 +762,7 @@ function runScoring(
   // When the query is purely a temporal/intent signal (e.g. "today", "this week"),
   // cleaned produces no keywords. Return pool unscored — date filtering happens in App.
   if (plan.expandedTokens.length === 0 && plan.phrases.length === 0)
-    return pool;
+    return sortEventsChronologically(pool);
 
   const eventMap = new Map(pool.map((e) => [e.id, e]));
   const scored = new Map<string, { event: CalEvent; score: number }>();
@@ -871,6 +922,7 @@ function withDismissedInterpretations(
     if (field === "timeOfDay") delete filters.timeOfDay;
     if (field === "free") delete filters.free;
     if (field === "modality") delete filters.modality;
+    if (field === "topic") delete filters.topic;
   }
 
   const dismissedLiteralText = plan.interpretations
@@ -889,6 +941,23 @@ function withDismissedInterpretations(
     expandedTokens = expandKeywordTokens(
       keywords,
       `${plan.raw} ${dismissedLiteralText}`.toLowerCase(),
+    );
+  }
+
+  const dismissedTopicText = plan.interpretations
+    .filter(
+      (interpretation) =>
+        dismissedKeys.has(interpretation.key) &&
+        interpretation.key.startsWith("topic:"),
+    )
+    .map((interpretation) => interpretation.label)
+    .join(" ");
+  if (dismissedTopicText) {
+    cleaned = [cleaned, dismissedTopicText].filter(Boolean).join(" ");
+    keywords = tokenize(cleaned);
+    expandedTokens = expandKeywordTokens(
+      keywords,
+      `${plan.raw} ${dismissedTopicText}`.toLowerCase(),
     );
   }
 
@@ -981,6 +1050,24 @@ export function searchEvents(
           plan,
           fallbackUsed: true,
           fallbackMessage: `No "${cat}" results for "${plan.keywords.join(" ")}". Showing all categories.`,
+        };
+      }
+    }
+    // Try dropping topic
+    if (plan.filters.topic) {
+      const topic = TOPICS.find(
+        (candidate) => candidate.slug === plan.filters.topic,
+      );
+      const relaxedPlan: SearchPlan = { ...plan, filters: { ...plan.filters } };
+      delete relaxedPlan.filters.topic;
+      const fallbackPool = applyPoolFilters(events, relaxedPlan, dismissedKeys);
+      const fallbackResults = runScoring(fallbackPool, relaxedPlan, index);
+      if (fallbackResults.length > 0) {
+        return {
+          results: fallbackResults,
+          plan,
+          fallbackUsed: true,
+          fallbackMessage: `No "${topic?.label ?? plan.filters.topic}" results for "${plan.keywords.join(" ")}". Showing all topics.`,
         };
       }
     }

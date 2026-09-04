@@ -343,6 +343,7 @@ test("invalid event dates do not drop indexed text matches", () => {
       title: "Quantum Seminar",
       date: "not-a-real-date",
       description: "Quantum research seminar.",
+      topics: ["physics-math-quantum"],
     },
     {
       ...SYNTHETIC_EVENTS[0],
@@ -350,6 +351,7 @@ test("invalid event dates do not drop indexed text matches", () => {
       title: "Quantum Workshop",
       date: new Date(Date.now() + 7 * 86_400_000).toISOString(),
       description: "Quantum research workshop.",
+      topics: ["physics-math-quantum"],
     },
   ];
   const index = {
@@ -387,6 +389,7 @@ test("recency bonus ranks a today event above an identical future event", () => 
       location: "LeConte Hall",
       description: "A quantum physics symposium.",
       tags: ["Science & Tech"],
+      topics: ["physics-math-quantum"],
       url: "https://example.com/future",
       source: "livewhale",
     },
@@ -399,6 +402,7 @@ test("recency bonus ranks a today event above an identical future event", () => 
       location: "LeConte Hall",
       description: "A quantum physics symposium.",
       tags: ["Science & Tech"],
+      topics: ["physics-math-quantum"],
       url: "https://example.com/today",
       source: "livewhale",
     },
@@ -424,24 +428,27 @@ test("recency bonus ranks a today event above an identical future event", () => 
 });
 
 test('natural-language query "artificial intelligence" ranks AI events without category intent', () => {
-  const output = searchEvents(
-    SYNTHETIC_EVENTS,
-    "Artificial Intelligence",
-    null,
+  const events = SYNTHETIC_EVENTS.map((event) =>
+    event.id === "evt-ai-science" || event.id === "evt-ai-arts"
+      ? { ...event, topics: ["ai-machine-learning"] }
+      : event,
   );
+  const output = searchEvents(events, "Artificial Intelligence", null);
 
   assert.equal(output.plan.filters.category, undefined);
-  assert.ok(
-    output.plan.expandedTokens.includes("ai"),
-    "AI synonym should be searched for the full phrase",
-  );
+  assert.equal(output.plan.filters.topic, "ai-machine-learning");
+  assert.ok(!output.plan.expandedTokens.includes("ai"));
   assert.ok(["evt-ai-science", "evt-ai-arts"].includes(output.results[0]?.id));
   assert.ok(output.results.some((event) => event.id === "evt-ai-arts"));
   assert.ok(output.results.some((event) => event.id === "evt-ai-science"));
 });
 
 test('indexed query "artificial intelligence" ranks AI events without category intent', () => {
-  const events = SYNTHETIC_EVENTS;
+  const events = SYNTHETIC_EVENTS.map((event) =>
+    event.id === "evt-ai-science" || event.id === "evt-ai-arts"
+      ? { ...event, topics: ["ai-machine-learning"] }
+      : event,
+  );
   const index = {
     ids: events.map((event) => event.id),
     t: {
@@ -473,6 +480,7 @@ test('indexed query "artificial intelligence" ranks AI events without category i
   const output = searchEvents(events, "Artificial Intelligence", index);
 
   assert.equal(output.plan.filters.category, undefined);
+  assert.equal(output.plan.filters.topic, "ai-machine-learning");
   assert.ok(["evt-ai-science", "evt-ai-arts"].includes(output.results[0]?.id));
   assert.ok(output.results.some((event) => event.id === "evt-ai-arts"));
   assert.ok(output.results.some((event) => event.id === "evt-ai-science"));
@@ -515,6 +523,110 @@ test('live-corpus query "AI" ranks matches across categories without category in
   );
   assert.ok(output.results.length >= 50);
   assert.ok(categories.size > 1);
+});
+
+test("topic intent uses the first subject word and preserves later words for ranking", () => {
+  const events = [
+    { ...SYNTHETIC_EVENTS[7], id: "topic-ai", topics: ["ai-machine-learning"] },
+    { ...SYNTHETIC_EVENTS[16], id: "topic-law", topics: ["law"] },
+  ];
+
+  const aiFirst = searchEvents(events, "AI law", null);
+  assert.equal(aiFirst.plan.filters.topic, "ai-machine-learning");
+  assert.deepEqual(aiFirst.plan.keywords, ["law"]);
+  assert.ok(
+    aiFirst.plan.interpretations.some(
+      (chip) => chip.key === "topic:ai-machine-learning",
+    ),
+  );
+
+  const lawFirst = searchEvents(events, "law AI", null);
+  assert.equal(lawFirst.plan.filters.topic, "law");
+  assert.deepEqual(lawFirst.plan.keywords, ["ai"]);
+});
+
+test("free food is one topic hard filter, without free or category intent", () => {
+  const events = [
+    { ...SYNTHETIC_EVENTS[5], id: "topic-food", topics: ["free-food"] },
+    {
+      ...SYNTHETIC_EVENTS[7],
+      id: "topic-other",
+      topics: ["ai-machine-learning"],
+    },
+  ];
+  const output = searchEvents(events, "free food", null);
+
+  assert.equal(output.plan.filters.topic, "free-food");
+  assert.equal(output.plan.filters.free, undefined);
+  assert.equal(output.plan.filters.category, undefined);
+  assert.deepEqual(output.plan.keywords, []);
+  assert.deepEqual(
+    output.results.map((event) => event.id),
+    ["topic-food"],
+  );
+});
+
+test("AI ethics ranks ethics-related events within the AI topic", () => {
+  const events = [
+    {
+      ...SYNTHETIC_EVENTS[7],
+      id: "topic-ethics",
+      title: "AI Ethics Forum",
+      topics: ["ai-machine-learning"],
+    },
+    {
+      ...SYNTHETIC_EVENTS[7],
+      id: "topic-other-ai",
+      title: "AI Systems Talk",
+      topics: ["ai-machine-learning"],
+    },
+  ];
+  const output = searchEvents(events, "AI ethics", null);
+
+  assert.equal(output.plan.filters.topic, "ai-machine-learning");
+  assert.deepEqual(output.plan.keywords, ["ethic"]);
+  assert.equal(output.results[0]?.id, "topic-ethics");
+});
+
+test("dismissing a topic removes its hard filter and reinjects its label for ranking", () => {
+  const output = searchEvents(
+    SYNTHETIC_EVENTS.map((event) => ({ ...event, topics: ["law"] })),
+    "AI",
+    null,
+    new Set(["topic:ai-machine-learning"]),
+  );
+
+  assert.equal(output.plan.filters.topic, undefined);
+  assert.deepEqual(output.plan.keywords, ["ai", "machine", "learn"]);
+  assert.ok(
+    output.plan.interpretations.every(
+      (chip) => chip.key !== "topic:ai-machine-learning",
+    ),
+  );
+});
+
+test("empty topic pools broaden with an explanatory fallback", () => {
+  const events = [
+    {
+      ...SYNTHETIC_EVENTS[7],
+      id: "topic-quantum",
+      title: "Quantum Talk",
+      topics: ["physics-math-quantum"],
+    },
+  ];
+  const output = searchEvents(events, "AI quantum", null);
+
+  assert.equal(output.fallbackUsed, true);
+  assert.match(output.fallbackMessage ?? "", /Showing all topics/);
+  assert.equal(output.results[0]?.id, "topic-quantum");
+});
+
+test("queries without a topic leave topic intent unset", () => {
+  const plan = buildSearchPlan("seminar");
+  assert.equal(plan.filters.topic, undefined);
+  assert.ok(
+    !plan.interpretations.some((chip) => chip.key.startsWith("topic:")),
+  );
 });
 
 test("AI hero preset searches all categories", () => {
@@ -776,7 +888,7 @@ test("fuzzy fallback recovers a typo when the index has no exact hit", () => {
 });
 
 test("category-drop fallback surfaces cross-category matches when the filtered category is empty", () => {
-  // "academic robotics" interprets to an Academic category filter, but the
+  // "academic research" interprets to an Academic category filter, but the
   // only keyword match here is tagged Science & Tech. The Academic-filtered
   // pool is empty, so the engine must drop the category and explain it.
   const futureDate = addDaysToDateKey(getCurrentPacificDateKey(), 5);
@@ -784,17 +896,17 @@ test("category-drop fallback surfaces cross-category matches when the filtered c
     {
       ...SYNTHETIC_EVENTS[4],
       id: "evt-doc-academic",
-      title: "Robotics Workshop",
+      title: "Research Workshop",
       organizer: "Engineering Department",
       date: futureDate,
       location: "Dwinelle Hall",
-      description: "A robotics workshop and panel discussion.",
+      description: "A research workshop and panel discussion.",
       tags: ["Science & Tech"],
       source: "livewhale",
     },
   ];
 
-  const output = searchEvents(events, "academic robotics", null);
+  const output = searchEvents(events, "academic research", null);
 
   assert.equal(output.plan.filters.category, "Academic");
   assert.equal(output.fallbackUsed, true);
