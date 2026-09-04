@@ -470,38 +470,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260904T183000Z-328693@events.berkeley.edu",
-      "title": "Lap Swim",
-      "organizer": "Recsports",
-      "date": "2026-09-04",
-      "time": "11:30 AM",
-      "location": "Spieker Pool",
-      "description": "Lap Swim",
-      "tags": [
-        "Student Life"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/recsports/event/328693-lap-swim",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260904T190000Z-327704@events.berkeley.edu",
-      "title": "Friday Faculty Lunch",
-      "organizer": "Berkeley Haas",
-      "date": "2026-09-04",
-      "time": "12:00 PM",
-      "location": "N340+344",
-      "description": "Friday Faculty Lunch",
-      "tags": [
-        "Entrepreneurship"
-      ],
-      "topics": [
-        "startups"
-      ],
-      "url": "https://events.berkeley.edu/haas/event/327704-friday-faculty-lunch",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20260904T190000Z-328742@events.berkeley.edu",
       "title": "IA BB Practice",
       "organizer": "Recsports",
@@ -517,20 +485,18 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260904T191000Z-324540@events.berkeley.edu",
-      "title": "Cardio Kickboxing",
-      "organizer": "University Health Services",
+      "id": "livewhale_20260904T190000Z-328744@events.berkeley.edu",
+      "title": "Lap Swim",
+      "organizer": "Recsports",
       "date": "2026-09-04",
-      "time": "12:10 PM",
-      "location": "251 Hearst Gymnasium",
-      "description": "Looking to get active and try something new? Join us for our Cardio Kickboxing workshop, where you can get a great workout and learn beginner kickboxing techniques. This no-contact class will incorporate kickboxing techniques with body weight exercises to provide a full body workout!",
+      "time": "12:00 PM",
+      "location": "GBRC Pool",
+      "description": "Lap Swim",
       "tags": [
-        "Academic"
+        "Student Life"
       ],
-      "topics": [
-        "health-medicine"
-      ],
-      "url": "https://events.berkeley.edu/uhs/event/324540-cardio-kickboxing",
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/328744-lap-swim",
       "source": "livewhale"
     },
     {
@@ -551,30 +517,13 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260904T191000Z-326330@events.berkeley.edu",
-      "title": "Rethinking Linking: Effects of Cap-and-Trade Integration Equilibrium Emissions and Welfare | Thor Larson",
-      "organizer": "Agricultural & Resource Economics",
-      "date": "2026-09-04",
-      "time": "12:10 PM",
-      "location": "241 Giannini Hall",
-      "description": "Job Candidate Presentation Abstract Conventional economic reasoning suggests that linking cap-and-trade programs creates efficiency gains by lowering costs while holding emissions constant. When cap-and-trade programs have price floors or ceilings, however, linking may increase emissions and decrease welfare. I investigate this phenomenon within California and Québec, where cap-and-trade linkage increased emissions by 17.5 million tons CO2e and reduced welfare by $331 million annually – an outcome that was ex-ante foreseeable. A reformed linked market could have remained emissions-neutral while instead increasing welfare by up to $32 million annually. I argue that political and institutional frictions prevented such reforms from being implemented and propose that policy makers prioritized cutting emissions cheaply over equating marginal damages and benefits. Given these constraints, linking with trading ratios remains incentive-compatible and recovers over three-fifths of potential emissions-neutral welfare gains.",
-      "tags": [
-        "Academic"
-      ],
-      "topics": [
-        "economics-policy"
-      ],
-      "url": "https://events.berkeley.edu/are/event/326330-rethinking-linking-effects-of-cap-and-trade-integrati",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260904T200000Z-328401@events.berkeley.edu",
+      "id": "berkeley_law_768816",
       "title": "[ASP] How to Read a Case and Prepare for Class",
-      "organizer": "Berkeley Law",
+      "organizer": "Academic Skills Program",
       "date": "2026-09-04",
       "time": "1:00 PM",
-      "location": "Berkeley, CA",
-      "description": "How do I get through all of the reading for class? Come to this workshop hosted by the Academic Skills Program to learn how to read cases without wasting time. You will leave with a structured briefing method that actually works for cold calls and for outlining. No more spending hours reading the same paragraph. And no fluff – just practical tools that will save your sanity.All J.D. and LL.M. students are welcome to attend. A variety of snacks will be provided! This workshop will be offered twice, on Monday, August 31, and Friday, September 4. It will not be recorded, but we would be happy to meet with you if you cannot attend or have questions. You can schedule a meeting here:BerkeleyLawASP.as.me. The slides will be posted on theASP website.",
+      "location": "130 Law Building",
+      "description": "How do I get through all of the reading for class? Come to this workshop hosted by the Academic Skills Program to learn how to read cases without wasting time. You will leave with a structured briefing method that actually works for cold calls and for outlining. No more spending hours reading the same paragraph. And no fluff – just practical tools that will save your sanity. All J.D. and LL.M. students are welcome to attend. A variety of snacks will be provided! This workshop will be offered twice, on Monday, August 31, and Friday, September 4. It will not be recorded, but we would be happy to meet with you if you cannot attend or have questions. You can schedule a meeting here: BerkeleyLawASP.as.me. The slides will be posted on the ASP website.",
       "tags": [
         "Academic"
       ],
@@ -582,8 +531,8 @@
         "law",
         "workshops-skills"
       ],
-      "url": "https://events.berkeley.edu/law/event/328401-asp-how-to-read-a-case-and-prepare-for-class",
-      "source": "livewhale"
+      "url": "https://www.law.berkeley.edu/event/asp-how-to-read-cases-and-prepare-for-class/",
+      "source": "berkeley_law"
     },
     {
       "id": "livewhale_20260904T200000Z-323517@events.berkeley.edu",
@@ -1717,9 +1666,7 @@
       "tags": [
         "Academic"
       ],
-      "topics": [
-        "physics-math-quantum"
-      ],
+      "topics": [],
       "url": "https://events.berkeley.edu/lhs/event/327069-five-dollar-day-labor-day",
       "source": "livewhale"
     },
@@ -1952,6 +1899,24 @@
         "workshops-skills"
       ],
       "url": "https://berkeley.libcal.com/event/17428825",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260908T164000Z-329480@events.berkeley.edu",
+      "title": "3-Manifold Seminar: Kronheimer-Mrowka invariants of bifolds",
+      "organizer": "Department of Mathematics",
+      "date": "2026-09-08",
+      "time": "9:40 AM",
+      "location": "939 Evans Hall",
+      "description": "Speaker: Ian Agol, UC BerkeleyWe will begin discussing the papers of Kronheimer-Mrowka on invariants of bifolds defined using instanton Floer homology. They define an invariant $J^#$ of webs and foams which are the singular loci of bifolds in 3- and 4-dimensions. When the web $W$ is planar in $S^3$, they conjecture that the dimension of $J^#(W)$ is the number of Tait colorings of $W$, which, if true, would imply a new proof of the 4-color theorem.",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [
+        "physics-math-quantum"
+      ],
+      "url": "https://events.berkeley.edu/math/event/329480-3-manifold-seminar-kronheimer-mrowka-invariants-of",
       "source": "livewhale"
     },
     {
@@ -3220,6 +3185,23 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260909T191000Z-326395@events.berkeley.edu",
+      "title": "Electricity Supply Shocks and Manufacturing: Evidence from the Fukushima Nuclear Accident | Takanao Tanaka",
+      "organizer": "Agricultural & Resource Economics",
+      "date": "2026-09-09",
+      "time": "12:10 PM",
+      "location": "241 Giannini Hall",
+      "description": "Job Market Presentation",
+      "tags": [
+        "Academic"
+      ],
+      "topics": [
+        "economics-policy"
+      ],
+      "url": "https://events.berkeley.edu/are/event/326395-electricity-supply-shocks-and-manufacturing-evidence-",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260909T191000Z-325917@events.berkeley.edu",
       "title": "Fail Better? The Computational Study of Character Types in Narratives",
       "organizer": "UC Berkeley",
@@ -3275,23 +3257,6 @@
         "social-clubs"
       ],
       "url": "https://events.berkeley.edu/live/events/326840-shigehiro-oishi-specialization-and-its-discontent",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260909T191000Z-326395@events.berkeley.edu",
-      "title": "Title forthcoming | Takanao Tanaka",
-      "organizer": "Agricultural & Resource Economics",
-      "date": "2026-09-09",
-      "time": "12:10 PM",
-      "location": "241 Giannini Hall",
-      "description": "Job Market Presentation",
-      "tags": [
-        "Academic"
-      ],
-      "topics": [
-        "economics-policy"
-      ],
-      "url": "https://events.berkeley.edu/are/event/326395-title-forthcoming-takanao-tanaka",
       "source": "livewhale"
     },
     {
@@ -3561,7 +3526,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260909T230000Z-329452@events.berkeley.edu",
+      "id": "livewhale_20260909T230000Z-329466@events.berkeley.edu",
       "title": "EECS Colloquium | Pursuing a \"Moore's Law\" for Power Electronics",
       "organizer": "EECS",
       "date": "2026-09-09",
@@ -3579,7 +3544,7 @@
         "climate-energy",
         "law"
       ],
-      "url": "https://events.berkeley.edu/eecs/event/329452-eecs-colloquium-pursuing-a-moores-law-for-power-elect",
+      "url": "https://events.berkeley.edu/live/events/329452-eecs-colloquium-pursuing-a-moores-law-for-power-elect",
       "source": "livewhale"
     },
     {
@@ -3632,6 +3597,24 @@
       "topics": [],
       "url": "https://callink.berkeley.edu/event/12700647",
       "source": "callink"
+    },
+    {
+      "id": "livewhale_20260909T233000Z-329479@events.berkeley.edu",
+      "title": "Combinatorics Seminar: Gröbner geometry of hybrid pipe dreams",
+      "organizer": "Department of Mathematics",
+      "date": "2026-09-09",
+      "time": "4:30 PM",
+      "location": "939 Evans Hall",
+      "description": "Speaker: Gabe Udell, UC Santa CruzMatrix Schubert varieties are subvarieties of the space of all n × n matrices which are defined by rank conditions on their submatrices. The equivariant cohomology classes of matrix Schubert varieties are given by double Schubert polynomials. They can be computed in terms of either pipe dreams (introduced by Bergeron–Billey), bumpless pipe dreams (introduced by Lam–Lee–Shimozono), or any of 2^n flavors of hybrid pipe dreams (introduced by Knutson–U) which interpolate between the two. In this talk I will discuss bijective proofs that the 2^n formulas agree and commutative algebraic proofs that hybrid pipe dreams index (with multiplicity) the irreducible components of Gröbner degenerations of matrix Schubert varieties for certain term orders. The latter topic is based on joint work with Tianyi Yu and Zach Hamaker and builds on work of Knutson–Miller in the pipe dream case and Klein–Weigandt in the bumpless pipe dream case.",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [
+        "physics-math-quantum"
+      ],
+      "url": "https://events.berkeley.edu/math/event/329479-combinatorics-seminar-grobner-geometry-of-hybrid",
+      "source": "livewhale"
     },
     {
       "id": "haas_3394070",
@@ -4128,6 +4111,24 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260910T195500Z-329183@events.berkeley.edu",
+      "title": "Women+ of Color Collective GBM",
+      "organizer": "Berkeley Law",
+      "date": "2026-09-10",
+      "time": "12:55 PM",
+      "location": "Berkeley, CA",
+      "description": "Join the Women+ of Color Collective for our first General Body Meeting of the 2026-2027 school year! We will discuss our plan for the year, board opportunities, and upcoming events. Lunch will be provided. RSVP HERE (https://forms.gle/eANP6DkcxWiqjDeE7)",
+      "tags": [
+        "Academic"
+      ],
+      "topics": [
+        "law",
+        "social-clubs"
+      ],
+      "url": "https://events.berkeley.edu/law/event/329183-wocc-september-gbm",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260910T200000Z-329179@events.berkeley.edu",
       "title": "[BCLT] 1L Career Prep: Intro to Firm Structures (BigLaw vs High-End Boutiques)",
       "organizer": "Berkeley Law",
@@ -4251,24 +4252,6 @@
       ],
       "topics": [],
       "url": "https://berkeley.libcal.com/event/17464525",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260910T200000Z-329183@events.berkeley.edu",
-      "title": "WOCC+ September GBM",
-      "organizer": "Berkeley Law",
-      "date": "2026-09-10",
-      "time": "1:00 PM",
-      "location": "Berkeley, CA",
-      "description": "Join the Women+ of Color Collective for our first General Body Meeting of the 2026-2027 school year! We will discuss our plan for the year, board opportunities, and upcoming events. Lunch will be provided. RSVP HERE (https://forms.gle/eANP6DkcxWiqjDeE7)",
-      "tags": [
-        "Academic"
-      ],
-      "topics": [
-        "law",
-        "social-clubs"
-      ],
-      "url": "https://events.berkeley.edu/law/event/329183-wocc-september-gbm",
       "source": "livewhale"
     },
     {
@@ -4772,6 +4755,23 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260911T190000Z-327705@events.berkeley.edu",
+      "title": "Friday Faculty Lunch",
+      "organizer": "Berkeley Haas",
+      "date": "2026-09-11",
+      "time": "12:00 PM",
+      "location": "N340+344",
+      "description": "Friday Faculty Lunch",
+      "tags": [
+        "Entrepreneurship"
+      ],
+      "topics": [
+        "startups"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/327705-friday-faculty-lunch",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260911T190000Z-324354@events.berkeley.edu",
       "title": "Professional Program in Regulatory Affairs Online Information Session",
       "organizer": "UC Berkeley Extension",
@@ -4885,6 +4885,25 @@
         "physics-math-quantum"
       ],
       "url": "https://events.berkeley.edu/math/event/329187-group-actions-and-dynamics-seminar-modular",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260911T220000Z-327404@events.berkeley.edu",
+      "title": "Caltrans' AI Journey",
+      "organizer": "Institute of Transportation Studies",
+      "date": "2026-09-11",
+      "time": "3:00 PM",
+      "location": "410 McLaughlin Hall",
+      "description": "Vidhu Shekar, Chief Data and Artificial Intelligence Officer at Caltrans, will present Caltrans' AI Journey at the ITS Berkeley Transportation Seminar on Sept. 11, 2026. Join us for cookie hour at 2:30 in the ITS Library, hosted by TRANSOC.",
+      "tags": [
+        "Academic",
+        "Science & Tech"
+      ],
+      "topics": [
+        "computer-science-data",
+        "ai-machine-learning"
+      ],
+      "url": "https://events.berkeley.edu/live/events/327395-caltrans-ai-journey",
       "source": "livewhale"
     },
     {
@@ -5098,9 +5117,7 @@
       "tags": [
         "Student Life"
       ],
-      "topics": [
-        "physics-math-quantum"
-      ],
+      "topics": [],
       "url": "https://events.berkeley.edu/lhs/event/327263-analog-saturdays",
       "source": "livewhale"
     },
@@ -6889,24 +6906,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260916T191000Z-326391@events.berkeley.edu",
-      "title": "Does Government Capacity Matter for Housing Regulation? Evidence from Los Angeles Bureaucrats | Suvy Qin",
-      "organizer": "Agricultural & Resource Economics",
-      "date": "2026-09-16",
-      "time": "12:10 PM",
-      "location": "241 Giannini Hall",
-      "description": "Job Market Presentation",
-      "tags": [
-        "Academic"
-      ],
-      "topics": [
-        "economics-policy",
-        "law"
-      ],
-      "url": "https://events.berkeley.edu/are/event/326333-does-government-capacity-matter-for-housing",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20260916T191000Z-326036@events.berkeley.edu",
       "title": "Introduction to Zotero (In person)",
       "organizer": "UC Berkeley",
@@ -7725,7 +7724,7 @@
       "date": "2026-09-17",
       "time": "3:30 PM",
       "location": "101 Barker Hall",
-      "description": "Neuroscience Seminar Series",
+      "description": "Glia make up about half the cells of the human brain and impact all aspects of neural circuit form, function and aging. How glia accomplish this molecularly is just starting to be decoded. We helped establish C. elegans as a powerful model to study glia in vivo at scale, from single-cell to whole-brain resolution, genes to behavior. I will summarize our prior work in developing the complete molecular atlas of C. elegans glia (first for a metazoan), finding novel regulators of glia-neuron aging, and discovering glial pruning in C. elegans. I will then focus on recent molecular insights into glial roles in Parkinson's disease, and our translational validation of these in human and murine cell-culture models and by human epidemiology studies.",
       "tags": [
         "Science & Tech",
         "Academic"
@@ -10148,8 +10147,7 @@
         "Academic"
       ],
       "topics": [
-        "climate-energy",
-        "social-sciences"
+        "climate-energy"
       ],
       "url": "https://events.berkeley.edu/geog/event/327389-the-futures-of-black-internationalism-and-global-sout",
       "source": "livewhale"
@@ -10161,7 +10159,7 @@
       "date": "2026-09-23",
       "time": "4:00 PM",
       "location": "Giannini Hall - UC Berkeley",
-      "description": "Register Here Artist and curator-led tour of photographs by Mark Klett alongside text by William Fox (founder, Institute for Art + Environment, Reno) from Radius Books' Remembering the Future in Giannini Hall. Welcome from Dean David Ackerly, climate change biologist and professor professor in the departments of Integrative Biology and Environmental Science, Policy, and Management and Dean of the Rausser College of Natural Resources at UC Berkeley. Mark Klett is a photographer interested in the intersection of places, history and time. His background includes working as a geologist before turning to photography. Klett has received fellowships from the Guggenheim Foundation, the Pollock-Krasner Foundation, the National Endowment for the Arts, and the Japan/US Friendship Commission. His work has been exhibited and published widely in the United States and internationally, and is held in over eighty museum collections worldwide. He is the author/co-author of twenty books.Klett is Regents' Professor Emeritus at Arizona State University where he taught for forty years. This event is part of Komij Mour Ijiin/Our Life is Here, a year-long series of exhibitions, installations, courses, and public programs across UC Berkeley during the 2026–27 academic year. Guided by the Environmental Arts and Humanities Initiative, the series centers Marshallese artists and acts of cultural return through satellite exhibitions and installations at Doe Library, BAMPFA, Giannini Hall, Memorial Glade, and Worth Ryder Gallery; a film screening at the School of Journalism featuring responses from faculty and artists; and allied events and courses across campus. Together, these programs invite the UC Berkeley community to engage with Marshallese histories and perspectives while exploring nuclear legacies, climate change, cultural resilience, and our shared futures. The initiative will culminate in Fall 2027 with the full Komij Mour Ijiin/Our Life is Here exhibition at the David Brower Center, incorporating critical and creative contributions from the UC Berkeley community. For questions or accessibility related inquiries please contact Iliana Morton - ilianamorton@berkeley.edu (mailto:ilianamorton@berkeley.edu)\"Remembering the Future\" photographs by Mark Klett and text by William Fox, Radius Books. Images presented in this video do not necessarily represent the collection of images that will be on view at Giannini Hall. — Presented by the UC Berkeley Environmental Arts and Humanities Initiative in partnership with the College of Natural Resources. The Kõmij Mour Ijin / Our Life Is Here expedition was organized by Kathy Jetñil-Kijiner, Michael Light, and David Buckland, and supported by Stellar Blue Fund and Cape Farewell. Special thanks to independent curators of UC Berkeley Kõmij Mour Ijin / Our Life Is Here exhibitions and events Amy Kisch and Svea Lin Soll. A reception and film screening of the documentary film, Kõmij Mour Ijin / Our Life is Here will take place following the tour. Please click here to learn more. (br/%20https://events.berkeley.edu/eahi/event/326586-film-screening-komij-mour-ijin-our-life-is-here)",
+      "description": "Register Here Artist and curator-led tour of photographs by Mark Klett alongside text by William Fox (founder, Institute for Art + Environment, Reno) from Radius Books' Remembering the Future in Giannini Hall. Welcome from Dean David Ackerly, climate change biologist and professor professor in the departments of Integrative Biology and Environmental Science, Policy, and Management and Dean of the Rausser College of Natural Resources at UC Berkeley. Mark Klett is a photographer interested in the intersection of places, history and time. His background includes working as a geologist before turning to photography. Klett has received fellowships from the Guggenheim Foundation, the Pollock-Krasner Foundation, the National Endowment for the Arts, and the Japan/US Friendship Commission. His work has been exhibited and published widely in the United States and internationally, and is held in over eighty museum collections worldwide. He is the author/co-author of twenty books.Klett is Regents' Professor Emeritus at Arizona State University where he taught for forty years. This event is part of Komij Mour Ijiin/Our Life is Here, a year-long series of exhibitions, installations, courses, and public programs across UC Berkeley during the 2026–27 academic year. Guided by the Environmental Arts and Humanities Initiative, the series centers Marshallese artists and acts of cultural return through satellite exhibitions and installations at Doe Library, BAMPFA, Giannini Hall, Memorial Glade, and Worth Ryder Gallery; a film screening at the School of Journalism featuring responses from faculty and artists; and allied events and courses across campus. Together, these programs invite the UC Berkeley community to engage with Marshallese histories and perspectives while exploring nuclear legacies, climate change, cultural resilience, and our shared futures. The initiative will culminate in Fall 2027 with the full Komij Mour Ijiin/Our Life is Here exhibition at the David Brower Center, incorporating critical and creative contributions from the UC Berkeley community. For questions or accessibility related inquiries please contact Iliana Morton - ilianamorton@berkeley.edu (mailto:ilianamorton@berkeley.edu)\"Remembering the Future\" photographs by Mark Klett and text by William Fox, Radius Books. Images presented in this video do not necessarily represent the collection of images that will be on view at Giannini Hall. —Presented by the UC Berkeley Environmental Arts and Humanities Initiative in partnership with the College of Natural Resources. The Kõmij Mour Ijin / Our Life Is Here expedition was organized by Kathy Jetñil-Kijiner, Michael Light, and David Buckland, and supported by Stellar Blue Fund and Cape Farewell. Special thanks to independent curators of UC Berkeley Kõmij Mour Ijin / Our Life Is Here exhibitions and events Amy Kisch and Svea Lin Soll.Kõmij Mour Ijin / Our Life Is Here at UC Berkeley is made possible with support from the Stellar Blue Fund, Cape Farewell, and the Kramlich Art Foundation. A reception and film screening of the documentary film, Kõmij Mour Ijin / Our Life is Here will take place following the tour. Please click here to learn more. (https://events.berkeley.edu/eahi/event/326586-film-screening-komij-mour-ijin-our-life-is-here)",
       "tags": [
         "Arts",
         "Academic",
@@ -10298,7 +10296,7 @@
       "date": "2026-09-23",
       "time": "5:15 PM",
       "location": "Northgate Hall - UC Berkeley Graduate School of Journalism",
-      "description": "Join us for a film screening of Kõmij Mour Ijin / Our Life is Here, followed by a talk-back with artists, filmmakers, curators and faculty. Register Here (https://forms.gle/45335qFWQb5YQ62C8)Event Timeline: 5:15 PM - Reception 6 PM - Film Screening 7:15 - 8 PM Talk BackKõmij Mour Ijin / Our Life is Here (2025) documents the 2023 journey that brought together Marshallese elders and youth with an international team of artists, writers, scientists, and filmmakers to consider the intertwined legacies of nuclear testing and a changing climate across the Marshall Islands. Filmed in 4K, featuring drone and underwater footage, and scored by Philip Glass, the film centers a week-long residency at Bikini Atoll, where the United States conducted 23 nuclear detonations, including Castle Bravo, its largest-ever nuclear explosion. Moving beyond a story of loss, the film centers Marshallese voices, cultural resilience, and enduring relationships with land and ocean, while asking what their experiences can teach us about the shared challenges of an uncertain climate future. A reception will be held prior to the screening. A talk-back with Mark Klett, Michael Light, David Buckland, and additional artists, curators, and faculty will take place at the conclusion of the film.Kõmij Mour Ijin / Our Life Is Here, David Buckland, dir. | 2025 | 70 min. | English / Marshallese. Preceding the screening, a guided tour of a photography installation at Giannini Hall featuring the work of Mark Klett will be led by Mark Klett and Bill Fox (https://williamlfox.com/), founder of the Institute for Art + Environment (https://www.nevadaart.org/art/the-institute/). Space is limited and separate registration is required. More Information Here (https://events.berkeley.edu/eahi/event/326599-remembering-the-future-artist-and-curator-led-tour). These events are part of Komij Mour Ijiin/Our Life is Here, a year-long series of exhibitions, installations, courses, and public programs across UC Berkeley during the 2026–27 academic year. Guided by the Environmental Arts and Humanities Initiative, the series centers Marshallese artists and acts of cultural return through satellite exhibitions and installations at Doe Library, BAMPFA, Giannini Hall, Memorial Glade, and Worth Ryder Gallery; a film screening at the School of Journalism featuring responses from faculty and artists; and allied events and courses across campus. Together, these programs invite the UC Berkeley community to engage with Marshallese histories and perspectives while exploring nuclear legacies, climate change, cultural resilience, and our shared futures. The initiative will culminate in Fall 2027 with the full Komij Mour Ijiin/Our Life is Here exhibition at the David Brower Center, incorporating critical and creative contributions from the UC Berkeley community. —Presented by the UC Berkeley Environmental Arts & Humanities Initiative, in partnership with UC Berkeley Journalism.The Kõmij Mour Ijin / Our Life Is Here expedition was organized by Kathy Jetñil-Kijiner, Michael Light, and David Buckland, and supported by Stellar Blue Fund and Cape Farewell. Special thanks to independent curators of UC Berkeley Kõmij Mour Ijin / Our Life Is Here exhibitions and events Amy Kisch and Svea Lin Soll.— Advance registration is requested to attend the film screening. Guests may reserve a maximum of two tickets per person. If you are no longer able to attend, please contact the event organizer so that your seats can be made available to other guests. For questions or accessibility related inquiries please contact Iliana Morton - ilianamorton@berkeley.edu",
+      "description": "Join us for a film screening of Kõmij Mour Ijin / Our Life is Here, followed by a talk-back with artists, filmmakers, curators and faculty.Register Here (https://forms.gle/45335qFWQb5YQ62C8)Event Timeline: 5:15 PM - Reception 6 PM - Film Screening 7:15 - 8 PM Talk BackKõmij Mour Ijin / Our Life is Here (2025) documents the 2023 journey that brought together Marshallese elders and youth with an international team of artists, writers, scientists, and filmmakers to consider the intertwined legacies of nuclear testing and a changing climate across the Marshall Islands. Filmed in 4K, featuring drone and underwater footage, and scored by Philip Glass, the film centers a week-long residency at Bikini Atoll, where the United States conducted 23 nuclear detonations, including Castle Bravo, its largest-ever nuclear explosion. Moving beyond a story of loss, the film centers Marshallese voices, cultural resilience, and enduring relationships with land and ocean, while asking what their experiences can teach us about the shared challenges of an uncertain climate future. A reception will be held prior to the screening. A talk-back with Mark Klett, Michael Light, David Buckland, and additional artists, curators, and faculty will take place at the conclusion of the film.Kõmij Mour Ijin / Our Life Is Here, David Buckland, dir. | 2025 | 70 min. | English / Marshallese. Preceding the screening, a guided tour of a photography installation at Giannini Hall featuring the work of Mark Klett will be led by Mark Klett and Bill Fox (https://williamlfox.com/), founder of the Institute for Art + Environment (https://www.nevadaart.org/art/the-institute/). Space is limited and separate registration is required. More Information Here (https://events.berkeley.edu/eahi/event/326599-remembering-the-future-artist-and-curator-led-tour). These events are part of Komij Mour Ijiin/Our Life is Here, a year-long series of exhibitions, installations, courses, and public programs across UC Berkeley during the 2026–27 academic year. Guided by the Environmental Arts and Humanities Initiative, the series centers Marshallese artists and acts of cultural return through satellite exhibitions and installations at Doe Library, BAMPFA, Giannini Hall, Memorial Glade, and Worth Ryder Gallery; a film screening at the School of Journalism featuring responses from faculty and artists; and allied events and courses across campus. Together, these programs invite the UC Berkeley community to engage with Marshallese histories and perspectives while exploring nuclear legacies, climate change, cultural resilience, and our shared futures. The initiative will culminate in Fall 2027 with the full Komij Mour Ijiin/Our Life is Here exhibition at the David Brower Center, incorporating critical and creative contributions from the UC Berkeley community. ��Presented by the UC Berkeley Environmental Arts & Humanities Initiative, in partnership with UC Berkeley Journalism.The Kõmij Mour Ijin / Our Life Is Here expedition was organized by Kathy Jetñil-Kijiner, Michael Light, and David Buckland, and supported by Stellar Blue Fund and Cape Farewell. Special thanks to independent curators of UC Berkeley Kõmij Mour Ijin / Our Life Is Here exhibitions and events Amy Kisch and Svea Lin Soll. Kõmij Mour Ijin / Our Life Is Here at UC Berkeley is made possible with support from the Stellar Blue Fund, Cape Farewell, and the Kramlich Art Foundation.— Advance registration is requested to attend the film screening. Guests may reserve a maximum of two tickets per person. If you are no longer able to attend, please contact the event organizer so that your seats can be made available to other guests. For questions or accessibility related inquiries please contact Iliana Morton - ilianamorton@berkeley.edu",
       "tags": [
         "Arts",
         "Academic",
@@ -10847,6 +10845,24 @@
         "career-jobs"
       ],
       "url": "https://www.law.berkeley.edu/event/1l-career-prep-emerging-companies-venture-capital-transactions/",
+      "source": "berkeley_law"
+    },
+    {
+      "id": "berkeley_law_773337",
+      "title": "[MVBL] Lunch Talk with a Navy JAG Officer",
+      "organizer": "Military and Veterans at Berkeley Law",
+      "date": "2026-09-24",
+      "time": "1:00 PM",
+      "location": "107 Law Building",
+      "description": "Join us for a lunch talk with two Navy Judge Advocate General (JAG) officers, LT Molly Nelson and LT Chris Day, for an info session on the JAG Corps — financial aid, practice areas, the commissioning process, and what day-to-day life as a military attorney looks like. Thursday, September 24th, 1:00–2:00 PM in room 107. RSVP here.",
+      "tags": [
+        "Academic",
+        "Student Life"
+      ],
+      "topics": [
+        "law"
+      ],
+      "url": "https://www.law.berkeley.edu/event/mvbl-lunch-talk-with-a-navy-jag-officer/",
       "source": "berkeley_law"
     },
     {
@@ -11755,6 +11771,23 @@
         "Entrepreneurship"
       ],
       "topics": [],
+      "url": "https://events.berkeley.edu/live/events/327401-transportation-seminar",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260925T220000Z-327405@events.berkeley.edu",
+      "title": "Transportation Seminar",
+      "organizer": "Institute of Transportation Studies",
+      "date": "2026-09-25",
+      "time": "3:00 PM",
+      "location": "410 McLaughlin Hall",
+      "description": "Gene Oh, CEO of Tanzito, will present at the ITS Berkeley Transportation Seminar on Sept. 25, 2026. Join us for cookie hour at 2:30 in the ITS Library, hosted by TRANSOC.",
+      "tags": [
+        "Academic"
+      ],
+      "topics": [
+        "computer-science-data"
+      ],
       "url": "https://events.berkeley.edu/live/events/327401-transportation-seminar",
       "source": "livewhale"
     },
@@ -13684,9 +13717,9 @@
         "Student Life"
       ],
       "topics": [
+        "history-humanities",
         "climate-energy",
-        "social-sciences",
-        "history-humanities"
+        "economics-policy"
       ],
       "url": "https://events.berkeley.edu/geog/event/327390-california-agriculture-and-the-seeding-of-silicon-val",
       "source": "livewhale"
@@ -13758,8 +13791,8 @@
         "Entrepreneurship"
       ],
       "topics": [
-        "visual-arts-exhibitions",
-        "climate-energy"
+        "climate-energy",
+        "visual-arts-exhibitions"
       ],
       "url": "https://events.berkeley.edu/ced/event/329019-michael-maltzan-scales-of-the-city-architecture",
       "source": "livewhale"
@@ -14183,6 +14216,22 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261001T230000Z-324419@events.berkeley.edu",
+      "title": "MSE Seminar: Prof. Marc Meyers (UCSD)",
+      "organizer": "Materials Science & Engineering",
+      "date": "2026-10-01",
+      "time": "4:00 PM",
+      "location": "Jarvis Auditorium, Grimes Engineering Center",
+      "description": "MSE Seminar: Prof. Marc Meyers (UCSD)",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/mse/event/324419-mse-seminar-prof-marc-meyer-ucsd",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261001T231000Z-328901@events.berkeley.edu",
       "title": "Mathematics Department Colloquium: TBA",
       "organizer": "Department of Mathematics",
@@ -14198,6 +14247,24 @@
         "physics-math-quantum"
       ],
       "url": "https://events.berkeley.edu/math/event/328901-mathematics-department-colloquium-tba",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261001T231000Z-326813@events.berkeley.edu",
+      "title": "PhD Mini Conference",
+      "organizer": "Berkeley Haas",
+      "date": "2026-10-01",
+      "time": "4:10 PM",
+      "location": "C320, Cheit Hall",
+      "description": "Speakers: TBAPaper: TBA",
+      "tags": [
+        "Entrepreneurship",
+        "Academic"
+      ],
+      "topics": [
+        "startups"
+      ],
+      "url": "https://events.berkeley.edu/haas/event/326813-phd-mini-conference",
       "source": "livewhale"
     },
     {
@@ -14255,6 +14322,24 @@
       ],
       "url": "https://www.law.berkeley.edu/event/1l-career-night-patent-law/",
       "source": "berkeley_law"
+    },
+    {
+      "id": "livewhale_20261002T020000Z-328097@events.berkeley.edu",
+      "title": "Film Screening: Italianamerican and American Boy: A Profile of Steven Prince",
+      "organizer": "BAMPFA",
+      "date": "2026-10-01",
+      "time": "7:00 PM",
+      "location": "BAMPFA",
+      "description": "Martin Scorsese's documentaries are like portals to his sources of inspiration, and Italianamerican takes us to the heart of the matter via a conversation with his parents. As his mother prepares meatballs, she and her husband tell the stories of their families' journeys from Sicily to Elizabeth Street, which speak volumes about the immigrant experience. American Boy is the realization of Scorsese's idea for a film in which \"a man sits down, tells his story, and little by little you see an era emerge, a way of life, a way of surviving.\" He found the perfect subject in Steven Prince, a great storyteller, who played the gun dealer in Taxi Driver, a role for which he provided his own guns.",
+      "tags": [
+        "Arts"
+      ],
+      "topics": [
+        "film",
+        "visual-arts-exhibitions"
+      ],
+      "url": "https://events.berkeley.edu/BAMPFA/event/328097-film-screening-italianamerican-and-american-boy-a",
+      "source": "livewhale"
     },
     {
       "id": "bampfa_italianamerican-and-american-boy-profile-steven-prince::2026-10-01",
@@ -14390,6 +14475,23 @@
         "theater-dance"
       ],
       "url": "https://events.berkeley.edu/music/event/328592-composition-colloquium-nicholas-isherwood",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261002T220000Z-327406@events.berkeley.edu",
+      "title": "Transportation Opportunities and Priorities for California Roundtable",
+      "organizer": "Institute of Transportation Studies",
+      "date": "2026-10-02",
+      "time": "3:00 PM",
+      "location": "Bauer Wurster Auditorium",
+      "description": "ITS Berkeley will present Transportation Opportunities and Priorities for CaliforniaRoundtable at 3 p.m. in the Bauer Wurster Hall Auditorium on Oct. 2, 2026. Panelists will examine the major challenges facing California, explore how state leaders may address them, and review work in progress by the current administration.",
+      "tags": [
+        "Academic"
+      ],
+      "topics": [
+        "computer-science-data"
+      ],
+      "url": "https://events.berkeley.edu/live/events/327402-transportation-opportunities-and-priorities-for",
       "source": "livewhale"
     },
     {
@@ -15183,24 +15285,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261007T190000Z-329102@events.berkeley.edu",
-      "title": "Bioengineering Seminar: Modeling Tumor Immunosurveillance",
-      "organizer": "Bioengineering",
-      "date": "2026-10-07",
-      "time": "12:00 PM",
-      "location": "Hearst Mining Building, Room 290",
-      "description": "Abstract: While cancer immunotherapy has provided unprecedented clinical outcomes in certain settings, only a subset of patients benefit. We are exploring the hypothesis that changes in physical properties, in particular viscoelasticity, of solid tumors alters immune cell phenotype and function. Using biomaterials that allow independent control over key variables, we find that the rate of matrix stress relaxation has dramatic effects on immune cells, including antigen presenting and T cells, and controls cell-cell interactions mediating immune cell responses.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [
-        "biology-life-sciences"
-      ],
-      "url": "https://events.berkeley.edu/bioe/event/329102-bioengineering-seminar-modeling-tumor",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261007T190000Z-323905@events.berkeley.edu",
       "title": "Noon Concert: Dan Flanagan & Friends",
       "organizer": "Department of Music",
@@ -15239,26 +15323,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261007T223000Z-327392@events.berkeley.edu",
-      "title": "Experiments in Art and Geography",
-      "organizer": "Geography Department",
-      "date": "2026-10-07",
-      "time": "3:30 PM",
-      "location": "575 McCone Hall",
-      "description": "In this lecture, Trevor Paglen presents a framework for thinking about what happens when artistic practice and geographic method are fused together. Drawing on his work on mass surveillance, computer vision and AI, psyops, and neuroscience, Paglen will discuss art-making not simply as a means of representing geographic research, but as a geographic research method in its own right. Artistic practice can function as a form of fieldwork: a way of investigating landscapes, infrastructures, technologies, and institutions while developing new forms through which to understand them. Paglen will explore how this hybrid practice creates opportunities for collaboration across disciplines and produces forms of knowledge that do not fit neatly within conventional academic or artistic categories. The talk argues that occupying a position neither fully within art nor geography can generate questions, methods, objects, and ways of seeing that neither discipline could produce on its own. Trevor Paglen is a multidisciplinary artist whose practice explores technology, infrastructure, and perception across exhibitions, publications, and public projects worldwide. A MacArthur Fellow and 2026 LG Guggenheim Award winner, he holds advanced degrees from UC Berkeley and the Art Institute of Chicago.",
-      "tags": [
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "climate-energy",
-        "social-sciences",
-        "ai-machine-learning"
-      ],
-      "url": "https://events.berkeley.edu/geog/event/327392-experiments-in-art-and-geography",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261007T230000Z-328241@events.berkeley.edu",
       "title": "California Spotlight: Wealth & Poverty",
       "organizer": "Social Science Matrix",
@@ -15277,6 +15341,25 @@
         "health-medicine"
       ],
       "url": "https://events.berkeley.edu/ssm/event/328241-california-spotlight-wealth-poverty",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261008T010000Z-329065@events.berkeley.edu",
+      "title": "Zoë Prillinger & Luke Ogrydziak: Openings | Architecture Lecture Series",
+      "organizer": "College of Environmental Design",
+      "date": "2026-10-07",
+      "time": "6:00 PM",
+      "location": "112 Bauer Wurster Auditorium",
+      "description": "Zoë Prillinger and Luke Ogrydziak (https://ced.berkeley.edu/people/luke-ogrydziak) are principals of OPA, a firm committed to forward-thinking built work driven by ideas and the innovative use of developing technologies. The firm specializes in crafting spatial experiences at multiple scales including installations, interiors, buildings, and urban proposals. OPA's work has been featured in publications such as Frame, Global Architecture (GA), Metropolis, The New York Times, Domus, Azure, Wallpaper*, Dwell, and The Architect's Newspaper. Their work has also been exhibited at the Smart Museum, Storefront for Art and Architecture, and the GA Gallery in Tokyo, Japan. The firm has received multiple international design awards and contributed papers to Advances in Architectural Geometry (AAG) and ACADIA. Both partners have taught at UC Berkeley and The Harvard Graduate School of Design. Both partners received their MArch and BA degrees from Princeton University.",
+      "tags": [
+        "Academic",
+        "Arts"
+      ],
+      "topics": [
+        "climate-energy",
+        "visual-arts-exhibitions"
+      ],
+      "url": "https://events.berkeley.edu/ced/event/329065-zoe-prillinger-luke-ogrydziak-openings-",
       "source": "livewhale"
     },
     {
@@ -16355,7 +16438,7 @@
     {
       "id": "livewhale_20261014T190000Z-326639@events.berkeley.edu",
       "title": "Berkeley Book Chat with Diana Martinez",
-      "organizer": "UC Berkeley",
+      "organizer": "Townsend",
       "date": "2026-10-14",
       "time": "12:00 PM",
       "location": "Geballe Room",
@@ -16388,6 +16471,25 @@
         "health-medicine"
       ],
       "url": "https://events.berkeley.edu/music/event/323906-noon-concert-university-baroque-ensemble",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261014T190000Z-327053@events.berkeley.edu",
+      "title": "PMB Seminar with Gautam Dantas | Understanding, Predicting, and Remediating Perturbations to Host-Microbe Interactions",
+      "organizer": "Plant & Microbial Biology",
+      "date": "2026-10-14",
+      "time": "12:00 PM",
+      "location": "101 Morgan Hall",
+      "description": "Antibiotics can acutely and persistently compromise microbiome stability and resilience, enabling enhanced colonization of pathogenic microbes, and loss of host-beneficial functions from depleted commensals. We interrogate resistome, taxonomic, and functional dynamics of microbiota of humans, animals, soils, and built-environments via high-throughput functional metagenomic selections, whole metagenome and transcriptome sequencing, and isolate phenotyping and whole genome sequencing. We use these datasets to model and predict the impact of various biotic and abiotic perturbations on the transmission and evolutionary dynamics of diverse microbiomes and their resistomes across time and habitats, through application of generalized linear mixed models and machine learning algorithms. By integrating community-level analyses of microbiome perturbation and response, with mechanistic analyses of novel microbial resilience functions, we are improving the accuracy and sensitivity of genomics-based methods for diagnosing and treating pathogens and their resistance properties in the clinic and maintaining or rescuing healthy microbiome states.",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [
+        "biology-life-sciences",
+        "ai-machine-learning"
+      ],
+      "url": "https://events.berkeley.edu/pmb/event/327053-pmb-seminar-with-gautam-dantas-understanding",
       "source": "livewhale"
     },
     {
@@ -16493,25 +16595,6 @@
         "economics-policy"
       ],
       "url": "https://events.berkeley.edu/ssm/event/328625-new-directions-green-transitions",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20261014T231000Z-328461@events.berkeley.edu",
-      "title": "Time as Space",
-      "organizer": "Gradiv",
-      "date": "2026-10-14",
-      "time": "4:10 PM",
-      "location": "Alumni House, UC Berkeley",
-      "description": "This lecture is part of the Howison Lectures in Philosophy series hosted by the Graduate Division. About this Lecture Augustine says, in Book 11 of his Confessions: \"What then is time? If no one asks me, I know: if I wish to explain it to him who asks, I know not.\" He never says anything like that about space. Nobody ever says anything like that about space. And (indeed) the thought that there is something infinitely deeper and more mysterious about the question of time than there is about the question of space is all over the place in the history of western philosophy. And all of this suggests that an understanding of time as space, or as somehow reducible to space, or as somehow emerging from space, might represent a significant advance in our understanding of the world. And I want to argue here that an offhand remark at the end of an old paper by D. C. Williams – a remark that gestures in the direction of a far more radical and less familiar version of what is often referred to as the \"spatialization\" of time in the modern physical project – contains the kernel of an understanding like that.About David Z. AlbertDavid Z. Albert is the Fredrick E. Woodbridge Professor of Philosophy at Columbia University in New York City. He has written extensively on various issues at the foundations of physics – particularly on the foundations of quantum mechanics and the direction of time. He received his Ph.D. in theoretical physics from the Rockefeller University in 1981, and his books include Quantum Mechanics and Experience, Time and Chance, After Physics, and A Guess at the Riddle. He is currently at work on a book about relationalism.",
-      "tags": [
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "physics-math-quantum",
-        "history-humanities"
-      ],
-      "url": "https://events.berkeley.edu/gradiv/event/328461-time-as-space",
       "source": "livewhale"
     },
     {
@@ -17752,6 +17835,24 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261021T190000Z-327183@events.berkeley.edu",
+      "title": "PMB Seminar with Adam Steinbrenner | Seeing like a plant: immune recognition and signaling by cell surface receptors",
+      "organizer": "Plant & Microbial Biology",
+      "date": "2026-10-21",
+      "time": "12:00 PM",
+      "location": "101 Morgan Hall",
+      "description": "Plants sense extracellular cues through several hundred cell surface receptors. The most rapidly evolving group of receptors is the leucine-rich repeat receptor-like proteins (RLPs), which transduce immune signals as a bipartite receptor complex with the adapter SOBIR1. In recent years many new examples of immunogenic patterns detected by specific RLPs have been described, highlighting their versatility as immune sensing modules. I will discuss unique features of the RLP family that mediate recognition and signaling functions. For recognition, RLPs encode an extracellular island domain, which allosterically couples ligand binding to co-receptor recruitment. For signaling, RLPs lack a kinase domain typical of most receptors, but the short cytoplasmic tail domain can encode signaling through different defense pathways. For both recognition and signaling functions, I will describe new insights from our study of Inceptin Receptor (INR), which detects caterpillar-derived peptide elicitors and evolved 28 mya in a single subtribe of legumes. Since both island and tail domains are small (~10-60 aa) shared features of all RLPs, they may represent modular, editable handles to engineer plant immune systems.",
+      "tags": [
+        "Academic",
+        "Science & Tech"
+      ],
+      "topics": [
+        "biology-life-sciences"
+      ],
+      "url": "https://events.berkeley.edu/pmb/event/327183-pmb-seminar-with-adam-steinbrenner-seeing-like-a-plan",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261021T190000Z-325987@events.berkeley.edu",
       "title": "RWAP: David Bateman, Cornell University",
       "organizer": "Institute of Governmental Studies",
@@ -17822,25 +17923,6 @@
       ],
       "url": "https://www.law.berkeley.edu/event/ll-m-networking-coaching-group-2/",
       "source": "berkeley_law"
-    },
-    {
-      "id": "livewhale_20261021T223000Z-327391@events.berkeley.edu",
-      "title": "Salt Lakes: An Unnatural History",
-      "organizer": "Geography Department",
-      "date": "2026-10-21",
-      "time": "3:30 PM",
-      "location": "575 McCone Hall",
-      "description": "Salt lakes are some of the world's most extraordinary ecosystems, but nearly all of them―from the Great Salt Lake to the Aral Sea��are drying up, a harbinger of dust storms, rising sea levels, and worsening human health. Caroline Tracey's book Salt Lakes: An Unnatural History, a hybrid work of memoir and geographic research, spans the American West, Mexico, Argentina, Kazakhstan and beyond, documenting salt lakes, their loss, and the efforts underway to save them, as well as Tracey's relationships to the lakes. In this talk she will describe the making of the book, including how it draws on her training in geographic methods and on additional creative sources such as Mormon diaries, Soviet realist novels, Australian Aboriginal paintings, and techniques of memoir and the personal essay. Caroline Tracey is the author of Salt Lakes: An Unnatural History (W.W. Norton, 2026). After receiving her PhD in Geography from the University of California, Berkeley, she became an independent writer and journalist specializing in the Southwestern US, Mexico, and their borderlands. Her work has appeared in numerous publications and has received a Fulbright fellowship, the Waterston Prize for Desert Writing, an Andy Warhol Foundation Arts Writer's Grant, and a Creative Capital State of the Arts Award.",
-      "tags": [
-        "Academic"
-      ],
-      "topics": [
-        "climate-energy",
-        "social-sciences",
-        "history-humanities"
-      ],
-      "url": "https://events.berkeley.edu/geog/event/327391-salt-lakes-an-unnatural-history",
-      "source": "livewhale"
     },
     {
       "id": "calbears_vcal_38736-admin.calbears.com",
@@ -18916,6 +18998,24 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261028T190000Z-327186@events.berkeley.edu",
+      "title": "PMB Seminar with Brian Gregory | A global analysis of miRNA processing and function",
+      "organizer": "Plant & Microbial Biology",
+      "date": "2026-10-28",
+      "time": "12:00 PM",
+      "location": "101 Morgan Hall",
+      "description": "Seminar details to be announced.",
+      "tags": [
+        "Academic",
+        "Science & Tech"
+      ],
+      "topics": [
+        "biology-life-sciences"
+      ],
+      "url": "https://events.berkeley.edu/pmb/event/327186-pmb-seminar-with-brian-gregory-a-global-analysis-of-m",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261028T190000Z-325988@events.berkeley.edu",
       "title": "RWAP: Seth Masket, University of Denver",
       "organizer": "Institute of Governmental Studies",
@@ -18953,26 +19053,6 @@
       "source": "berkeley_law"
     },
     {
-      "id": "livewhale_20261028T223000Z-327393@events.berkeley.edu",
-      "title": "All that is compute transforms into concrete: Monopoly rent and the fixity of AI's infrastructure",
-      "organizer": "Geography Department",
-      "date": "2026-10-28",
-      "time": "3:30 PM",
-      "location": "575 McCone Hall",
-      "description": "In the capitalist imaginary, artificial intelligence is narrated on dematerialization. In this telling, capital has escaped the weight of human labor via the frictionless circulation of data. This paper argues the opposite: the AI economy is a geography of fixity, where training large language models requires warehouse-scale data centers anchored to specific territories by the demands of energy, infrastructure, and available land. Two analytical categories theorize this fixity. The first concerns the monopoly control of location and network proximity: value is extracted from whoever sits closest to the data, controls the interconnection, and commands the lowest latency. The second concerns the monopoly control of computation itself: training frontier AI models is capital-intensive, technically scarce, and concentrated in a handful of firms who can extract a tribute that is not reducible to productivity but to infra/structural position. Both forms of extraction are rent. And both are responses to a profitability crisis in the AI sector driven by rising fixed capital requirements that outpace returns. We draw on financial filings, industry reports, and field observations in Northern Virginia's Data Center Alley to show that what appears as an agglomeration economy is better understood as rent extracted through the strategic fixity of capital in digital infrastructure. Dillon Mahmoudi (dillonm@umbc.edu) is an Associate Professor of Geography and Environmental Systems at the University of Maryland Baltimore County. and Alan Wiig (alanwiig@ufl.edu) is an Associate Professor of Geography at the University of Florida. They recently published a book chapter, Land for AI: Data Center Real Estate Markets in The Inner World of Artificial Intelligence (2026).",
-      "tags": [
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "climate-energy",
-        "ai-machine-learning",
-        "social-sciences"
-      ],
-      "url": "https://events.berkeley.edu/geog/event/327393-all-that-is-compute-transforms-into-concrete-monopoly",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261028T223000Z-328626@events.berkeley.edu",
       "title": "Matrix on Point: The State of U.S. Immigration Enforcement and Surveillance",
       "organizer": "Social Science Matrix",
@@ -18992,6 +19072,24 @@
         "economics-policy"
       ],
       "url": "https://events.berkeley.edu/ssm/event/328626-matrix-on-point-the-state-of-us-immigration",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261029T010000Z-329067@events.berkeley.edu",
+      "title": "Laura Sánchez Carrasco & Íñigo Cobeta: What Space Builds | Architecture Lecture Series",
+      "organizer": "College of Environmental Design",
+      "date": "2026-10-28",
+      "time": "6:00 PM",
+      "location": "112 Bauer Wurster Auditorium",
+      "description": "Laura Sánchez Carrasco is an architect and associate professor at the Escuela Técnica Superior de Arquitectura, UPM, where she has taught since 2018. She holds a degree in architecture (2007), a master's in analysis, theory, and history of architecture (2014), and a PhD cum laude (2017), all from UPM. Her research addresses postwar North American architecture and its connections with Spanish architecture, combining architectural history with digital methods of historiographic analysis. She is currently part of the research project \"Conexiones de la arquitectura española con las Américas (1976–2006)\" and has previously collaborated with MIT on the project \"Mapping Global Architectural Histories on Modernism\". Alongside her academic career, she practiced architecture professionally for nearly 20 years, both running her own studio and working within established firms, where she led competition-winning projects from design through construction. Íñigo Cobeta is a researcher and associate professor in the Department of Architectural Composition at the Escuela Técnica Superior de Arquitectura de Madrid (ETSAM), where he has taught since 2006. He has collaborated with specialized international publications such as ArquitecturaCOAM or RITA. He has also acted as an independent national curator (Bienal Iberoamericana de Arquitectura y Urbanismo 2006). For 20 years he worked as an architect, collaborating with MoneoBrockStudio on the Termas de Tiberio in the Panticosa Spa and developing his own practice. In 2019, the bicentennial of the Museo Nacional del Prado, he was invited to lecture on some of the conclusions of his thesis, The Prado, from Territory to Stage, directed by Rafael Moneo. He is currently part of the research project \"Conexiones de la arquitectura española con las Américas (1976–2006)\". Since 2020, he has focused on teaching, research, and developing experimental projects on public schools.",
+      "tags": [
+        "Academic"
+      ],
+      "topics": [
+        "climate-energy",
+        "history-humanities"
+      ],
+      "url": "https://events.berkeley.edu/ced/event/329067-laura-sanchez-carrasco-inigo-cobeta-what-space",
       "source": "livewhale"
     },
     {
@@ -20030,6 +20128,24 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261104T200000Z-327189@events.berkeley.edu",
+      "title": "2026 Tsujimoto Lecture",
+      "organizer": "Plant & Microbial Biology",
+      "date": "2026-11-04",
+      "time": "12:00 PM",
+      "location": "101 Morgan Hall",
+      "description": "Lecture details to be announced.",
+      "tags": [
+        "Academic",
+        "Science & Tech"
+      ],
+      "topics": [
+        "biology-life-sciences"
+      ],
+      "url": "https://events.berkeley.edu/pmb/event/327189-2026-tsujimoto-lecture",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261104T200000Z-324537@events.berkeley.edu",
       "title": "Berkeley Book Chat with Atreyee Gupta",
       "organizer": "Townsend",
@@ -20155,6 +20271,25 @@
         "social-clubs"
       ],
       "url": "https://events.berkeley.edu/geog/event/326380-teacher-organizing-across-the-americas-diverse-strate",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261105T020000Z-329081@events.berkeley.edu",
+      "title": "Julie Riley: Surface Conditions | Architecture Lecture Series",
+      "organizer": "College of Environmental Design",
+      "date": "2026-11-04",
+      "time": "6:00 PM",
+      "location": "112 Bauer Wurster Auditorium",
+      "description": "Julie Riley (https://ced.berkeley.edu/people/julie-riley) is the inaugural Creedon Fellow at the UC Berkeley Department of Architecture, a position established to connect early-career designers with academic teaching and research. She is a designer and educator whose work examines materials and tools of production through the lens of historical narratives, documents, and techniques. Bridging practice and pedagogy, her research engages contemporary design methods while critically revisiting the past. Riley has worked as a project designer at Welcome Projects and as a designer with d.esk, contributing to materially driven and research-oriented design work. From 2023 to 2024, Riley served as an adjunct instructor teaching undergraduate architecture studios at Woodbury University, where she received the Emerging Faculty Award in Architecture. In 2026, she was the Douglas Gillmor Visiting Co-Lecturer at the University of Calgary, collaborating with Anna Neimark. The Creedon Fellowship was endowed by Gerard \"Roddy\" Creedon (1959–2021), a founder and principal of Allied Architecture + Design and a longtime and beloved lecturer in the Department of Architecture.",
+      "tags": [
+        "Academic",
+        "Science & Tech",
+        "Entrepreneurship"
+      ],
+      "topics": [
+        "climate-energy"
+      ],
+      "url": "https://events.berkeley.edu/ced/event/329081-julie-riley-surface-conditions-architecture",
       "source": "livewhale"
     },
     {
@@ -22079,6 +22214,24 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261119T020000Z-329082@events.berkeley.edu",
+      "title": "Casper Mork-Ulnes: The Craft of Place | Architecture Lecture Series",
+      "organizer": "College of Environmental Design",
+      "date": "2026-11-18",
+      "time": "6:00 PM",
+      "location": "112 Bauer Wurster Auditorium",
+      "description": "Norwegian-born, Casper Mork-Ulnes (https://ced.berkeley.edu/people/casper-mork-ulnes) was raised in Italy, Scotland, and the United States, which has shaped the cultural and geographic perspective evident in the work of his eponymous practice. The firm explores the relationship between architecture, context, and material, developing work that responds to the specific cultural, environmental, and physical conditions of place. In 2015, Mork-Ulnes was named one of \"California's finest emerging talent\" by the American Institute of Architects California Council. He was selected by the Norwegian National Museum as one of \"the most noteworthy young architects in Norway\" with the exhibit Under 40. Young Norwegian Architecture 2013, and in 2019 was nominated for the European Union Prize for Contemporary Architecture – Mies van der Rohe Award. In 2020, he was awarded the Emerging Voices award by the Architectural League of New York.",
+      "tags": [
+        "Academic",
+        "Arts"
+      ],
+      "topics": [
+        "climate-energy"
+      ],
+      "url": "https://events.berkeley.edu/ced/event/329082-casper-mork-ulnes-the-craft-of-place-architecture",
+      "source": "livewhale"
+    },
+    {
       "id": "bampfa_black-hole-collective-film-lab::2026-11-18",
       "title": "Black Hole Collective Film Lab",
       "organizer": "BAMPFA",
@@ -23195,6 +23348,24 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261202T200000Z-327193@events.berkeley.edu",
+      "title": "PMB Seminar with Vivian Irish | Thorny questions: citrus development and disease",
+      "organizer": "Plant & Microbial Biology",
+      "date": "2026-12-02",
+      "time": "12:00 PM",
+      "location": "101 Morgan Hall",
+      "description": "Thorns are plant defensive structures that arise from axillary shoot apical meristems that proliferate for a time and then terminally differentiate into a sharp hard tip. Like other meristems, thorn meristems contain stem cells but, in the case of thorns, these stem cells undergo a programmed cessation of proliferative activity. Using citrus as a model system to examine this unusual form of stem cell regulation, we have characterized a transcriptional gene network necessary for thorn development. Not only has this work illuminated some of the molecular mechanisms controlling plant stem cell activity, but the methods we have developed have allowed us to tackle some of the challenges facing citrus agriculture today.",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [
+        "biology-life-sciences"
+      ],
+      "url": "https://events.berkeley.edu/pmb/event/327193-pmb-seminar-with-vivian-irish-thorny-questions",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261202T200000Z-325990@events.berkeley.edu",
       "title": "RWAP: Andrea Benjamin, University of Oklahoma",
       "organizer": "Institute of Governmental Studies",
@@ -23210,26 +23381,6 @@
         "workshops-skills"
       ],
       "url": "https://events.berkeley.edu/igs/event/325990-rwap-andrea-benjamin-university-of-oklahoma",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20261202T233000Z-327394@events.berkeley.edu",
-      "title": "Geography Colloquium with Luis Flores",
-      "organizer": "Geography Department",
-      "date": "2026-12-02",
-      "time": "3:30 PM",
-      "location": "575 McCone Hall",
-      "description": "Luis Flores is a historical sociologist engaged in economic, urban/regional, and social inequality research. His research examines the regulatory and social politics surrounding home-based moneymaking, as previously stigmatized forms of informality became increasingly popular.",
-      "tags": [
-        "Academic",
-        "Student Life"
-      ],
-      "topics": [
-        "climate-energy",
-        "social-sciences",
-        "social-clubs"
-      ],
-      "url": "https://events.berkeley.edu/geog/event/327394-geography-colloquium-with-luis-flores",
       "source": "livewhale"
     },
     {
@@ -26492,7 +26643,7 @@
       "uri": "https://brsl.berkeley.edu/events/"
     }
   ],
-  "lastUpdated": 1788549376427,
+  "lastUpdated": 1788561400845,
   "data_age_hours": 0,
   "degraded_sources": [],
   "topic_vocabulary": {
@@ -26654,6 +26805,7 @@
         "group": "interests",
         "synonyms": [
           "theater",
+          "theatre",
           "dance",
           "drama",
           "choreography"
