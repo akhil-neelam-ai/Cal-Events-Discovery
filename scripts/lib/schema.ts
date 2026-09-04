@@ -8,6 +8,13 @@
 
 import { z } from "zod";
 
+import {
+  TOPIC_GROUPS,
+  TOPIC_SLUGS,
+  TOPIC_VOCABULARY_VERSION,
+  type TopicSlug,
+} from "./topics.js";
+
 export const SourceNameSchema = z.enum([
   "livewhale",
   "callink",
@@ -130,35 +137,76 @@ export interface FetchResult {
   invalid: number;
 }
 
+const TOPIC_SLUG_TUPLE = TOPIC_SLUGS as readonly [TopicSlug, ...TopicSlug[]];
+
+export const TopicSlugSchema = z.enum(TOPIC_SLUG_TUPLE);
+export const TopicGroupSchema = z.enum(TOPIC_GROUPS);
+
+export const TopicDefinitionSchema = z.object({
+  slug: TopicSlugSchema,
+  label: z.string().min(1),
+  group: TopicGroupSchema,
+  synonyms: z.array(z.string().min(1)).min(1),
+});
+
+export const TopicVocabularySchema = z.object({
+  version: z.literal(TOPIC_VOCABULARY_VERSION),
+  topics: z.array(TopicDefinitionSchema).min(1),
+});
+
 /**
  * Legacy event shape — what public/events.json publishes and App.tsx reads.
  * Kept stable to avoid frontend churn during the source-adapter migration.
  */
-export interface LegacyCalEvent {
-  id: string;
-  title: string;
-  organizer: string;
-  date: string;
-  time: string;
-  location: string;
-  description: string;
-  tags: string[];
-  url: string;
+export const LegacyCalEventSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(2).max(300),
+  organizer: z.string().max(500),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  time: z.string(),
+  location: z.string().max(1000),
+  description: z.string().max(20000),
+  tags: z.array(z.string()),
+  topics: z
+    .array(TopicSlugSchema)
+    .max(3)
+    .refine((topics) => new Set(topics).size === topics.length, {
+      message: "topics must not contain duplicate slugs",
+    })
+    .optional(),
+  url: HttpUrlSchema,
   // Always set by projectToLegacy and required by the webmcp source filter.
   // The fallback-restore path reuses already-published events, which also
   // carry source, so every published LegacyCalEvent has it.
-  source: string;
+  source: z.string().min(1),
   // Multi-day events only (set by collapseMultiDay). `date` is the earliest
   // upcoming occurrence; `end_date` is the last; `dates` lists every upcoming
   // occurrence day (PT YYYY-MM-DD). Single-day events omit both.
-  end_date?: string;
-  dates?: string[];
-}
+  end_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  dates: z.array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)).optional(),
+});
+export type LegacyCalEvent = z.infer<typeof LegacyCalEventSchema>;
 
-export interface PublishedSource {
-  title: string;
-  uri: string;
-}
+export const PublishedSourceSchema = z.object({
+  title: z.string().min(1),
+  uri: HttpUrlSchema,
+});
+export type PublishedSource = z.infer<typeof PublishedSourceSchema>;
+
+export const PublishedEventsPayloadSchema = z.object({
+  events: z.array(LegacyCalEventSchema),
+  sources: z.array(PublishedSourceSchema),
+  lastUpdated: z.number().int().nonnegative(),
+  data_age_hours: z.number().nonnegative(),
+  degraded_sources: z.array(SourceNameSchema),
+  topic_vocabulary: TopicVocabularySchema,
+});
+export type PublishedEventsPayload = z.infer<
+  typeof PublishedEventsPayloadSchema
+>;
 
 /**
  * Per-source health record written to `public/status.json`.

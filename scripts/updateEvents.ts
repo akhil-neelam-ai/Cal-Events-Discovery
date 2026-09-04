@@ -30,6 +30,7 @@ import type {
   SourceStatus,
   StatusReport,
 } from "./lib/schema.js";
+import { PublishedEventsPayloadSchema } from "./lib/schema.js";
 import type { FetchOptions } from "./lib/abort.js";
 import { dedupeEvents } from "./lib/dedupe.js";
 import { collapseMultiDay } from "./lib/collapseMultiDay.js";
@@ -60,6 +61,7 @@ import { fetchSimons } from "./sources/simons.js";
 import { fetchLuma } from "./sources/luma.js";
 import { fetchAiRisk } from "./sources/ai_risk.js";
 import { buildSearchIndex } from "./lib/buildIndex.js";
+import { TOPIC_VOCABULARY } from "./lib/topics.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -659,13 +661,14 @@ async function main(): Promise<void> {
       : 0;
   const degradedSourceList = Array.from(recovery.degradedSources);
 
-  const outputData = {
+  const outputData = PublishedEventsPayloadSchema.parse({
     events: legacy,
     sources: uniqueSources,
     lastUpdated: Date.now(),
     data_age_hours: dataAgeHours,
     degraded_sources: degradedSourceList,
-  };
+    topic_vocabulary: TOPIC_VOCABULARY,
+  });
   atomicWriteJsonSync(eventsOutPath, outputData, 2);
   console.log(
     `[orchestrator] wrote ${legacy.length} events → ${eventsOutPath}`,
