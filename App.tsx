@@ -235,6 +235,7 @@ export default function App() {
     visibleSelectedEventId,
     selectedEvent,
     fallbackBannerCopy,
+    topicCounts,
     topicFilterNotice,
     emptyState,
   } = useEventBrowserState({
@@ -280,6 +281,7 @@ export default function App() {
     handleDismissChip,
     handleDateRangeChange,
     handleCategoryChange,
+    handleTopicChange,
     handleSourceChange,
     handleQuickPreset,
   } = useEventBrowserActions({
@@ -305,9 +307,12 @@ export default function App() {
         filters={filters}
         activeDateRange={effectiveDateRange}
         sourceOptions={sourceOptions}
+        topicVocabulary={topicVocabulary}
+        topicCounts={topicCounts}
         onSearchChange={handleSearchChange}
         onDateChange={handleDateRangeChange}
         onCategoryChange={handleCategoryChange}
+        onTopicChange={handleTopicChange}
         onSourceChange={handleSourceChange}
         onPresetSelect={handleQuickPreset}
         statusBanner={statusBanner}
@@ -320,7 +325,11 @@ export default function App() {
       />
 
       {/* Main Content */}
-      <main id={mainContentId} className="container mx-auto px-4 py-6 md:py-7">
+      <main
+        id={mainContentId}
+        tabIndex={-1}
+        className="container mx-auto px-4 py-6 md:py-7"
+      >
         {loading === LoadingState.LOADING && <LoadingStateView />}
 
         {loading === LoadingState.ERROR && (
