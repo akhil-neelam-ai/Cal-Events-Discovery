@@ -212,7 +212,6 @@ export default function App() {
     setFilters((prev) =>
       prev.topic === topic ? { ...prev, topic: DEFAULT_FILTERS.topic } : prev,
     );
-    setSelectedEventId(null);
   }, []);
 
   const emptyStateActions = useMemo(

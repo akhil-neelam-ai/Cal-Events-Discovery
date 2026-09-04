@@ -30,7 +30,7 @@
     {
       "id": "search-events",
       "name": "Search Berkeley events",
-      "description": "Find upcoming UC Berkeley events by keyword, date, category, source, organizer, or location."
+      "description": "Find upcoming UC Berkeley events by keyword, date, category, topic, source, organizer, or location. Topic slugs come from events.json.topic_vocabulary.topics."
     },
     {
       "id": "event-feed-status",

@@ -81,7 +81,7 @@ const CATEGORY_PATTERNS: Array<[string, RegExp]> = [
     "Sports",
     /\b(cal games?|bears games?|cal bears|athletics|basketball|football|baseball|volleyball|soccer|swim meet|swim team|tennis|gymnastics|rowing|crew|sports)\b/i,
   ],
-  ["Arts", /\b(arts?|performance|theatre|gallery|bampfa|exhibit)\b/i],
+  ["Arts", /\b(arts?|performance|gallery|bampfa|exhibit)\b/i],
   [
     "Science & Tech",
     /\b((?<!data )(?<!computer )science(?:\s*&\s*tech)?|tech(?:nology)?|hackathon|coding|engineering talk|tech talk)\b/i,
@@ -995,10 +995,6 @@ export function searchEvents(
 
   // Apply plan-level hard filters before relevance scoring.
   const pool = applyPoolFilters(events, plan, dismissedKeys);
-
-  if (!index && plan.expandedTokens.length === 0) {
-    return { results: pool, plan, fallbackUsed: false };
-  }
 
   const results = runScoring(pool, plan, index);
 

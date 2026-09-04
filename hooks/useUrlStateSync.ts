@@ -100,7 +100,7 @@ export function useUrlStateSync({
         defaultFilters: DEFAULT_FILTERS,
         allowedCategories: Categories,
         allowedSources: ALL_SOURCES,
-        allowedTopics: allowedTopicSlugs ?? [],
+        allowedTopics: allowedTopicSlugs,
       });
 
       setFilters(nextState.filters);

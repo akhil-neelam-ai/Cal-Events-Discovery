@@ -109,6 +109,90 @@ test("agent discovery JSON files are valid and internally linked", () => {
   assert.ok(openapi.paths["/status.json"]);
 });
 
+test("agent URL and search guidance includes the topic filter", () => {
+  const searchSkill = readText(
+    "public/.well-known/agent-skills/search-events/SKILL.md",
+  );
+  const shareSkill = readText(
+    "public/.well-known/agent-skills/share-event/SKILL.md",
+  );
+  const forAgents = readText("public/for-agents.html");
+  const agentCard = readJson("public/.well-known/agent-card.json");
+  const webMcpTools = readText("agent/webmcpTools.ts");
+  const searchCapability = agentCard.skills.find(
+    (skill) => skill.id === "search-events",
+  );
+
+  assert.match(
+    searchSkill,
+    /apply_ui_state[\s\S]*`q` \/ `date` \/ `category` \/ `topic` \/ `source`/,
+  );
+  assert.match(shareSkill, /\| `topic`\s+\|/);
+  assert.match(shareSkill, /events\.json\.topic_vocabulary\.topics/);
+  assert.match(forAgents, /<code>\?topic<\/code>/);
+  assert.match(forAgents, /events\.json\.topic_vocabulary\.topics/);
+  assert.match(searchCapability?.description ?? "", /topic/i);
+  assert.match(
+    searchCapability?.description ?? "",
+    /events\.json\.topic_vocabulary\.topics/,
+  );
+
+  for (const pattern of [
+    /name: "search_berkeley_events"[\s\S]{0,600}Optional category\/topic\/source\/date/,
+    /name: "get_ui_state"[\s\S]{0,600}q\/date\/category\/topic\/source/,
+    /name: "build_calevents_url"[\s\S]{0,600}q, date, category, topic, source, event/,
+    /name: "apply_ui_state"[\s\S]{0,600}q\/date\/category\/topic\/source\/event/,
+  ]) {
+    assert.match(webMcpTools, pattern);
+  }
+});
+
+test("OpenAPI and feed-health guidance expose topic assignment status", () => {
+  const openapi = readJson("public/openapi.json");
+  const serverCard = readJson("public/.well-known/mcp/server-card.json");
+  const feedStatusSkill = readText(
+    "public/.well-known/agent-skills/event-feed-status/SKILL.md",
+  );
+  const eventsSchema =
+    openapi.paths["/events.json"].get.responses["200"].content[
+      "application/json"
+    ].schema;
+  const statusSchema =
+    openapi.paths["/status.json"].get.responses["200"].content[
+      "application/json"
+    ].schema;
+  const topicStatus = openapi.components.schemas.TopicAssignmentStatus;
+  const healthPrompt = serverCard.capabilities.prompts[
+    "is-feed-healthy"
+  ].messages
+    .map((message) => message.content)
+    .join("\n");
+  const llmsFull = readText("public/llms-full.txt");
+
+  assert.ok(eventsSchema.required.includes("topic_vocabulary"));
+  assert.ok(statusSchema.required.includes("topics"));
+  assert.equal(
+    statusSchema.properties.topics.$ref,
+    "#/components/schemas/TopicAssignmentStatus",
+  );
+  assert.deepEqual(topicStatus.properties.outcome.enum, ["ok", "error"]);
+  for (const field of ["outcome", "assigned_count", "carried_forward_count"]) {
+    assert.ok(topicStatus.required.includes(field));
+  }
+  assert.equal(topicStatus.required.includes("error"), false);
+
+  for (const text of [feedStatusSkill, healthPrompt, llmsFull]) {
+    assert.match(text, /topics\.outcome/);
+    assert.match(text, /topics\.carried_forward_count/);
+    assert.match(text, /source health/i);
+  }
+
+  assert.match(
+    llmsFull,
+    /"lastUpdated": 1777560000000,\s*"topic_vocabulary": \{/,
+  );
+});
+
 test("agent skills index contains valid SHA-256 digests", () => {
   const index = readJson("public/.well-known/agent-skills/index.json");
   assert.equal(

@@ -45,9 +45,11 @@ function loadTools(payload, options = {}) {
   const tools = new Map();
   let locationSearch = options.locationSearch ?? "";
   const applied = [];
+  const fetchedPaths = [];
 
   const toolList = createWebMcpTools({
     fetchJson: async (requestPath) => {
+      fetchedPaths.push(requestPath);
       if (requestPath === "/events.json") {
         return payload;
       }
@@ -71,7 +73,7 @@ function loadTools(payload, options = {}) {
     tools.set(tool.name, tool);
   }
 
-  return { tools, applied, getSearch: () => locationSearch };
+  return { tools, applied, fetchedPaths, getSearch: () => locationSearch };
 }
 
 test("WebMCP ranked search returns AI matches with ranked flag", async () => {
@@ -263,6 +265,34 @@ test("WebMCP URL workspace tools build and apply shared state", async () => {
   assert.match(applied[0], /q=haas/);
   assert.match(applied[0], /date=tomorrow/);
   assert.match(applied[0], /source=haas/);
+});
+
+test("topic-free UI state and URL tools skip the event corpus", async () => {
+  const { tools, fetchedPaths } = loadTools(withTopics(makePayload([])), {
+    locationSearch: "?q=jazz&date=today",
+  });
+
+  const getUi = tools.get("get_ui_state");
+  const buildUrl = tools.get("build_calevents_url");
+  const applyUi = tools.get("apply_ui_state");
+
+  await getUi.execute({});
+  await buildUrl.execute({ q: "moffitt", date: "week" });
+  await applyUi.execute({ query: "haas", datePreset: "tomorrow" });
+
+  assert.equal(
+    fetchedPaths.filter((path) => path === "/events.json").length,
+    0,
+  );
+
+  const builtWithTopic = await buildUrl.execute({
+    topic: "ai-machine-learning",
+  });
+  assert.match(builtWithTopic.search, /topic=ai-machine-learning/);
+  assert.equal(
+    fetchedPaths.filter((path) => path === "/events.json").length,
+    1,
+  );
 });
 
 test("WebMCP get_event_directions returns maps URL", async () => {

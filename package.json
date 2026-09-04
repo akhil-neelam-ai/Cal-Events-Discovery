@@ -17,7 +17,7 @@
     "format:check": "prettier --check App.tsx appConfig.ts \"agent/**/*.ts\" \"components/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"scripts/**/*.{ts,mjs}\" \"tests/**/*.{ts,tsx}\" \"utils/**/*.ts\" eslint.config.js package.json tsconfig.json vitest.config.ts playwright.config.ts .github/workflows/*.yml",
     "format:fix": "prettier --write App.tsx appConfig.ts \"agent/**/*.ts\" \"components/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"scripts/**/*.{ts,mjs}\" \"tests/**/*.{ts,tsx}\" \"utils/**/*.ts\" eslint.config.js package.json tsconfig.json vitest.config.ts playwright.config.ts .github/workflows/*.yml",
     "test:ui": "vitest run",
-    "test:scripts": "node scripts/runScriptTests.mjs --exclude=search-quality.test.mjs",
+    "test:scripts": "node scripts/runScriptTests.mjs --exclude=search-quality.test.mjs --exclude=topic-quality.test.mjs",
     "test:search-quality": "node --import tsx/esm --test scripts/tests/search-quality.test.mjs",
     "test:topic-quality": "node --import tsx/esm --test scripts/tests/topic-quality.test.mjs",
     "install:browsers": "playwright install chromium",

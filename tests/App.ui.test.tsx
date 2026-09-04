@@ -12,6 +12,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "../App";
 import { DEFAULT_FILTERS } from "../appConfig";
 import { useEventBrowserActions } from "../hooks/useEventBrowserActions";
+import { useUrlStateSync } from "../hooks/useUrlStateSync";
 import type { CalEvent } from "../types";
 import { LoadingState } from "../types";
 import { TOPIC_VOCABULARY } from "../scripts/lib/topics";
@@ -178,6 +179,35 @@ describe("App UI regressions", () => {
     expect(onHistoryIntent).toHaveBeenNthCalledWith(3, "push");
   });
 
+  it("keeps a popstate topic provisional while the vocabulary is loading", () => {
+    const { result } = renderHook(() => {
+      const [filters, setFilters] = React.useState(DEFAULT_FILTERS);
+      const [selectedEventId, setSelectedEventId] = React.useState<
+        string | null
+      >(null);
+      const [, setUserSetDateRange] = React.useState(false);
+
+      useUrlStateSync({
+        filters,
+        allowedTopicSlugs: null,
+        selectedEventId,
+        setFilters,
+        setSelectedEventId,
+        setUserSetDateRange,
+      });
+
+      return filters;
+    });
+
+    act(() => {
+      window.history.pushState({}, "", "/?topic=provisional-topic");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+
+    expect(result.current.topic).toBe("provisional-topic");
+    expect(window.location.search).toBe("?topic=provisional-topic");
+  });
+
   it("restores shareable search and filter state from the URL", () => {
     mockFeedState = makeFeedState([
       makeEvent({
@@ -340,6 +370,47 @@ describe("App UI regressions", () => {
       ).toBeInTheDocument();
       expect(screen.getByText("Sports Law Talk")).toBeInTheDocument();
       expect(window.location.search).toContain("category=Sports");
+      expect(window.location.search).not.toContain("topic=");
+    });
+  });
+
+  it("keeps event details open when another filter auto-clears the topic", async () => {
+    const user = userEvent.setup();
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "academic-ai-detail",
+        title: "Academic AI Detail",
+        tags: ["Academic"],
+        topics: ["ai-machine-learning"],
+      }),
+      makeEvent({
+        id: "sports-law-detail",
+        title: "Sports Law Detail",
+        tags: ["Sports"],
+        topics: ["law"],
+      }),
+    ]);
+    window.history.replaceState({}, "", "/?topic=ai-machine-learning");
+
+    render(<App />);
+    await user.click(
+      screen.getByRole("button", { name: /academic ai detail/i }),
+    );
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Sports" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Topic cleared because no events match it with the other filters.",
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "Academic AI Detail" }),
+      ).toBeInTheDocument();
+      expect(window.location.search).toContain("event=academic-ai-detail");
       expect(window.location.search).not.toContain("topic=");
     });
   });

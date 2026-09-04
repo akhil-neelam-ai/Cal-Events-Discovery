@@ -14,7 +14,7 @@ For `topic`, use a slug from the published `topic_vocabulary.topics` block in
 `events.json`; the vocabulary is the source of truth and may change.
 
 To show the same results in the UI, call `apply_ui_state` with matching
-`q` / `date` / `category` / `source`.
+`q` / `date` / `category` / `topic` / `source`.
 
 ## Data Source (HTTP)
 

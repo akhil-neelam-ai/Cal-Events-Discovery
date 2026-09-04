@@ -120,7 +120,7 @@ export const TOPICS = [
     slug: "theater-dance",
     label: "Theater and Dance",
     group: "interests",
-    synonyms: ["theater", "dance", "drama", "choreography"],
+    synonyms: ["theater", "theatre", "dance", "drama", "choreography"],
   },
   {
     slug: "visual-arts-exhibitions",

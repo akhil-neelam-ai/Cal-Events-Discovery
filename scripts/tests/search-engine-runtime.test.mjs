@@ -566,6 +566,13 @@ test("free food is one topic hard filter, without free or category intent", () =
   );
 });
 
+test("theatre resolves to Theater and Dance instead of the broad Arts category", () => {
+  const plan = buildSearchPlan("theatre");
+
+  assert.equal(plan.filters.topic, "theater-dance");
+  assert.equal(plan.filters.category, undefined);
+});
+
 test("AI ethics ranks ethics-related events within the AI topic", () => {
   const events = [
     {
@@ -619,6 +626,20 @@ test("empty topic pools broaden with an explanatory fallback", () => {
   assert.equal(output.fallbackUsed, true);
   assert.match(output.fallbackMessage ?? "", /Showing all topics/);
   assert.equal(output.results[0]?.id, "topic-quantum");
+});
+
+test("pure-topic empty pools broaden without a search index", () => {
+  const event = {
+    ...SYNTHETIC_EVENTS[16],
+    id: "topic-law-only",
+    title: "Law Workshop",
+    topics: ["law"],
+  };
+  const output = searchEvents([event], "AI", null);
+
+  assert.equal(output.fallbackUsed, true);
+  assert.match(output.fallbackMessage ?? "", /Showing all topics/);
+  assert.deepEqual(output.results, [event]);
 });
 
 test("queries without a topic leave topic intent unset", () => {

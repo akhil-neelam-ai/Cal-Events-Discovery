@@ -165,6 +165,15 @@ function validateTopic(
   return topic;
 }
 
+function searchHasTopic(search: string): boolean {
+  const query = search.startsWith("?") ? search.slice(1) : search;
+  return Boolean(new URLSearchParams(query).get("topic")?.trim());
+}
+
+function inputHasTopic(input: Record<string, unknown>): boolean {
+  return typeof input.topic === "string" && Boolean(input.topic.trim());
+}
+
 export function createDefaultFetchJson(
   fetchImpl: typeof fetch = fetch,
 ): WebMcpDeps["fetchJson"] {
@@ -205,6 +214,13 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
     return payload;
   }
 
+  async function allowedTopicsIfNeeded(
+    needsVocabulary: boolean,
+  ): Promise<string[]> {
+    if (!needsVocabulary) return [];
+    return getPublishedTopicSlugs(await fetchEventsPayload());
+  }
+
   async function fetchSearchIndex(): Promise<SearchIndex | null> {
     const now = Date.now();
     if (
@@ -235,7 +251,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
   const searchBerkeleyEvents: WebMcpTool = {
     name: "search_berkeley_events",
     description:
-      "Search upcoming UC Berkeley campus events using the same ranked relevance engine as the CalEvents UI (search-index tokens, synonym expansion, intent chips, fuzzy fallback). Optional category/source/date filters match the UI. Prefer this for discovery; use get_event_by_id for a single known id.",
+      "Search upcoming UC Berkeley campus events using the same ranked relevance engine as the CalEvents UI (search-index tokens, synonym expansion, intent chips, fuzzy fallback). Optional category/topic/source/date filters match the UI. Topic slugs come from events.json.topic_vocabulary.topics. Prefer this for discovery; use get_event_by_id for a single known id.",
     inputSchema: {
       type: "object",
       properties: {
@@ -356,8 +372,12 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         ranked = output.results;
         fallbackUsed = output.fallbackUsed;
         // Older published fixtures may predate topic_vocabulary. Preserve
-        // their ranked-search behavior until the next feed publish.
-        if (ranked.length === 0 && allowedTopics.length === 0) {
+        // their text-search behavior when pure topic intent cannot be applied.
+        if (
+          allowedTopics.length === 0 &&
+          (ranked.length === 0 ||
+            (fallbackUsed && output.plan.expandedTokens.length === 0))
+        ) {
           const needle = query.toLowerCase();
           ranked = sortEventsChronologically(
             pool.filter((event) =>
@@ -490,7 +510,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
   const getUiState: WebMcpTool = {
     name: "get_ui_state",
     description:
-      "Read the current CalEvents UI workspace from the browser URL: filters (q/date/category/source), selected event id, and optional feed freshness from status.json.",
+      "Read the current CalEvents UI workspace from the browser URL: filters (q/date/category/topic/source), selected event id, and optional feed freshness from status.json. Topic slugs come from events.json.topic_vocabulary.topics.",
     inputSchema: {
       type: "object",
       properties: {
@@ -504,11 +524,14 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
     annotations: { readOnlyHint: true },
     execute: async function executeGetUiState(input) {
       input = input ?? {};
-      const urlState = parseUrlState(deps.getLocationSearch(), {
+      const locationSearch = deps.getLocationSearch();
+      const urlState = parseUrlState(locationSearch, {
         defaultFilters: DEFAULT_FILTERS,
         allowedCategories: Categories,
         allowedSources: ALL_SOURCES,
-        allowedTopics: getPublishedTopicSlugs(await fetchEventsPayload()),
+        allowedTopics: await allowedTopicsIfNeeded(
+          searchHasTopic(locationSearch),
+        ),
       });
 
       const result: Record<string, unknown> = {
@@ -534,7 +557,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
   const buildCaleventsUrl: WebMcpTool = {
     name: "build_calevents_url",
     description:
-      "Build a CalEvents deep-link URL from query/date/category/source/event without changing the open page. Query params: q, date, category, source, event.",
+      "Build a CalEvents deep-link URL from query/date/category/topic/source/event without changing the open page. Query params: q, date, category, topic, source, event. Topic slugs come from events.json.topic_vocabulary.topics.",
     inputSchema: {
       type: "object",
       properties: {
@@ -575,8 +598,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
     annotations: { readOnlyHint: true },
     execute: async function executeBuildUrl(input) {
       input = input ?? {};
-      const data = await fetchEventsPayload();
-      const allowedTopics = getPublishedTopicSlugs(data);
+      const allowedTopics = await allowedTopicsIfNeeded(inputHasTopic(input));
       try {
         validateTopic(input, allowedTopics);
       } catch (error) {
@@ -604,7 +626,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
   const applyUiState: WebMcpTool = {
     name: "apply_ui_state",
     description:
-      "Update the open CalEvents page to match shared URL workspace state (q/date/category/source/event). The React UI syncs via history + popstate.",
+      "Update the open CalEvents page to match shared URL workspace state (q/date/category/topic/source/event). Topic slugs come from events.json.topic_vocabulary.topics. The React UI syncs via history + popstate.",
     inputSchema: {
       type: "object",
       properties: {
@@ -631,8 +653,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
     annotations: { readOnlyHint: false },
     execute: async function executeApplyUiState(input) {
       input = input ?? {};
-      const data = await fetchEventsPayload();
-      const allowedTopics = getPublishedTopicSlugs(data);
+      const allowedTopics = await allowedTopicsIfNeeded(inputHasTopic(input));
       try {
         validateTopic(input, allowedTopics);
       } catch (error) {

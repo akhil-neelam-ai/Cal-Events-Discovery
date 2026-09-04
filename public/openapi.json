@@ -22,7 +22,12 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["events", "sources", "lastUpdated"],
+                  "required": [
+                    "events",
+                    "sources",
+                    "lastUpdated",
+                    "topic_vocabulary"
+                  ],
                   "properties": {
                     "events": {
                       "type": "array",
@@ -72,9 +77,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": ["topics"],
                   "properties": {
                     "generated_at": { "type": "string", "format": "date-time" },
                     "total_events": { "type": "integer" },
+                    "topics": {
+                      "$ref": "#/components/schemas/TopicAssignmentStatus",
+                      "description": "Topic assignment outcome and carry-forward counts. This is independent of per-source ingestion health."
+                    },
                     "fallback_used": { "type": "boolean" },
                     "last_good_used": { "type": "integer" },
                     "data_quality_blocked": { "type": "boolean" },
@@ -187,6 +197,27 @@
           "label": { "type": "string" },
           "group": { "type": "string", "enum": ["fields", "interests"] },
           "synonyms": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "TopicAssignmentStatus": {
+        "type": "object",
+        "required": ["outcome", "assigned_count", "carried_forward_count"],
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": ["ok", "error"]
+          },
+          "assigned_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "carried_forward_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "error": {
+            "type": "string"
+          }
         }
       },
       "SourceStatus": {

@@ -38,7 +38,7 @@
         "messages": [
           {
             "role": "user",
-            "content": "Call get_cal_events_feed_status. Report generated_at, total_events, fallback_used, data_quality_blocked, and any degraded sources in plain language."
+            "content": "Call get_cal_events_feed_status. Report generated_at, total_events, fallback_used, data_quality_blocked, and degraded sources as source health. Report topics.outcome and topics.carried_forward_count separately, plus topics.error when present. A topic assignment error does not make an event source degraded."
           }
         ]
       },

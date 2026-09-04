@@ -38,6 +38,9 @@ function readWorkflow(name) {
 
 const updateEvents = readWorkflow("update-events.yml");
 const productionSmoke = readWorkflow("production-smoke.yml");
+const packageJson = JSON.parse(
+  fs.readFileSync(path.join(rootDir, "package.json"), "utf8"),
+);
 
 function legacy(overrides = {}) {
   return {
@@ -136,6 +139,26 @@ test("production staleness is checked on a schedule, not only on push", () => {
     productionSmoke,
     /- cron: "[^"]+"/,
     "the schedule trigger needs a cron expression",
+  );
+});
+
+test("publish validation excludes non-blocking topic quality checks", () => {
+  const validateCommand = packageJson.scripts.validate;
+  const scriptTestCommand = packageJson.scripts["test:scripts"];
+
+  assert.match(validateCommand, /\bnpm run test:scripts\b/);
+  assert.doesNotMatch(
+    validateCommand,
+    /test:topic-quality|topic-quality\.test\.mjs/,
+  );
+  assert.match(
+    scriptTestCommand,
+    /--exclude=search-quality\.test\.mjs(?:\s|$)/,
+  );
+  assert.match(
+    scriptTestCommand,
+    /--exclude=topic-quality\.test\.mjs(?:\s|$)/,
+    "validate reaches test:scripts, so topic-quality must be excluded there and run only through its non-blocking workflow step",
   );
 });
 

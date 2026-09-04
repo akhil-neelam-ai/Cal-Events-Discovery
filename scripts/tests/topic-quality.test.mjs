@@ -126,7 +126,11 @@ test("published topic assignments are valid, bounded, and represented", () => {
   const counts = new Map(topicsModule.TOPIC_SLUGS.map((slug) => [slug, 0]));
 
   for (const event of published.events) {
-    const assigned = event.topics ?? [];
+    assert.ok(
+      Object.hasOwn(event, "topics"),
+      `${event.id} is missing a published topics field`,
+    );
+    const assigned = event.topics;
     assert.ok(Array.isArray(assigned), `${event.id} topics must be an array`);
     assert.ok(assigned.length <= 3, `${event.id} has more than 3 topics`);
     assert.equal(
