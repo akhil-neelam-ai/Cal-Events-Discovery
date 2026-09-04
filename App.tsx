@@ -76,6 +76,7 @@ export default function App() {
     loading,
     statusReport,
     searchIndex,
+    topicVocabulary,
     sourceOptions,
     sourceCount,
     loadEvents,
@@ -95,6 +96,10 @@ export default function App() {
     initialUrlState.hasExplicitDateRange,
   );
   const showBackToTop = useBackToTopVisibility();
+  const allowedTopicSlugs = useMemo(
+    () => topicVocabulary?.topics.map((topic) => topic.slug) ?? null,
+    [topicVocabulary],
+  );
 
   const handleEventClick = useCallback((event: CalEvent) => {
     setSelectedEventId(event.id);
@@ -203,6 +208,13 @@ export default function App() {
     setUserSetDateRange(true);
   }, []);
 
+  const clearUnavailableTopic = useCallback((topic: string) => {
+    setFilters((prev) =>
+      prev.topic === topic ? { ...prev, topic: DEFAULT_FILTERS.topic } : prev,
+    );
+    setSelectedEventId(null);
+  }, []);
+
   const emptyStateActions = useMemo(
     () => ({
       resetAll,
@@ -223,6 +235,7 @@ export default function App() {
     visibleSelectedEventId,
     selectedEvent,
     fallbackBannerCopy,
+    topicFilterNotice,
     emptyState,
   } = useEventBrowserState({
     allEvents,
@@ -234,6 +247,8 @@ export default function App() {
     tomorrowKey,
     nextWeekKey,
     userSetDateRange,
+    topicAvailabilityReady: allowedTopicSlugs !== null,
+    onUnavailableTopic: clearUnavailableTopic,
     emptyStateActions,
   });
 
@@ -253,6 +268,7 @@ export default function App() {
 
   const { onHistoryIntent } = useUrlStateSync({
     filters,
+    allowedTopicSlugs,
     selectedEventId: visibleSelectedEventId,
     setFilters,
     setSelectedEventId,
@@ -313,7 +329,7 @@ export default function App() {
 
         {loading === LoadingState.SUCCESS && (
           <EventsResultsSection
-            fallbackBannerCopy={fallbackBannerCopy}
+            fallbackBannerCopy={topicFilterNotice ?? fallbackBannerCopy}
             activeChips={activeChips}
             onDismissChip={handleDismissChip}
             category={filters.category}

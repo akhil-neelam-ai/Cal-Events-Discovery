@@ -134,6 +134,24 @@ export function useEventBrowserActions({
     [onHistoryIntent, setDismissedInterpretationKeys, setFilters],
   );
 
+  const handleTopicChange = useCallback(
+    (topic: string) => {
+      onHistoryIntent("push");
+      setFilters((prev) => ({
+        ...prev,
+        topic: prev.topic === topic ? "" : topic,
+      }));
+      setSelectedEventId(null);
+      setDismissedInterpretationKeys(new Set());
+    },
+    [
+      onHistoryIntent,
+      setDismissedInterpretationKeys,
+      setFilters,
+      setSelectedEventId,
+    ],
+  );
+
   const handleQuickPreset = useCallback(
     (preset: QuickFilterPreset) => {
       if (searchTimeoutRef.current) {
@@ -169,6 +187,7 @@ export function useEventBrowserActions({
     handleDismissChip,
     handleDateRangeChange,
     handleCategoryChange,
+    handleTopicChange,
     handleSourceChange,
     handleQuickPreset,
   };

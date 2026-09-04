@@ -76,6 +76,7 @@ export const DateRanges = [
 export const DEFAULT_FILTERS: SearchFilters = {
   dateRange: "week",
   category: "All",
+  topic: "",
   searchQuery: "",
   source: "All",
 };

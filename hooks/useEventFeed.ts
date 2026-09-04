@@ -3,7 +3,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ALL_SOURCES, SOURCE_LABELS } from "../appConfig";
 import type { SourceOption } from "../appConfig";
 import { fetchEventArtifacts } from "../services/eventsLoader";
-import { CalEvent, IngestionStatus, LoadingState } from "../types";
+import {
+  CalEvent,
+  IngestionStatus,
+  LoadingState,
+  type TopicVocabulary,
+} from "../types";
 import type { SearchIndex } from "../utils/textUtils";
 
 interface EventFeedState {
@@ -14,6 +19,7 @@ interface EventFeedState {
   loading: LoadingState;
   statusReport: IngestionStatus | null;
   searchIndex: SearchIndex | null;
+  topicVocabulary: TopicVocabulary | null;
   sourceOptions: SourceOption[];
   sourceCount: number;
   loadEvents: () => Promise<void>;
@@ -61,6 +67,8 @@ export function useEventFeed(): EventFeedState {
     null,
   );
   const [searchIndex, setSearchIndex] = useState<SearchIndex | null>(null);
+  const [topicVocabulary, setTopicVocabulary] =
+    useState<TopicVocabulary | null>(null);
 
   const loadEvents = useCallback(async () => {
     setLoading(LoadingState.LOADING);
@@ -80,6 +88,7 @@ export function useEventFeed(): EventFeedState {
     // wait on the ~215KB search index, which is only needed once a query
     // reaches 2+ characters.
     setAllEvents(data.events);
+    setTopicVocabulary(data.topic_vocabulary ?? null);
     setLastUpdated(data.lastUpdated ?? null);
     setDataAgeHours(
       typeof data.data_age_hours === "number" ? data.data_age_hours : 0,
@@ -143,6 +152,7 @@ export function useEventFeed(): EventFeedState {
     loading,
     statusReport,
     searchIndex,
+    topicVocabulary,
     sourceOptions,
     sourceCount: Math.max(sourceOptions.length - 1, 0),
     loadEvents,

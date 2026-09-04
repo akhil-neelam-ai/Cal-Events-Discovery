@@ -128,6 +128,7 @@ function buildFiltersFromInput(input: Record<string, unknown>): SearchFilters {
     category: Categories.includes(category)
       ? category
       : DEFAULT_FILTERS.category,
+    topic: DEFAULT_FILTERS.topic,
     source: ALL_SOURCES.includes(source) ? source : DEFAULT_FILTERS.source,
     searchQuery: String(searchQuery ?? "").trim(),
   };
@@ -446,6 +447,8 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         defaultFilters: DEFAULT_FILTERS,
         allowedCategories: Categories,
         allowedSources: ALL_SOURCES,
+        // U8 replaces this empty list with slugs from the loaded payload.
+        allowedTopics: [],
       });
 
       const result: Record<string, unknown> = {
