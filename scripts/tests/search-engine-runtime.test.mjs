@@ -1142,6 +1142,17 @@ test('"brsl" is a source lock; generic "security lab" is not', () => {
   assert.equal(generic.filters.source, undefined);
 });
 
+test('"cltc" is a source lock; generic "cybersecurity" is not', () => {
+  const locked = buildSearchPlan("cltc summit");
+  assert.equal(locked.filters.source, "cltc");
+
+  const named = buildSearchPlan("center for long-term cybersecurity");
+  assert.equal(named.filters.source, "cltc");
+
+  const generic = buildSearchPlan("cybersecurity");
+  assert.equal(generic.filters.source, undefined);
+});
+
 test('"student org" is not treated as a CalLink source lock', () => {
   const plan = buildSearchPlan("student org");
 

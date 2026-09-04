@@ -109,6 +109,11 @@ const SOURCE_PATTERNS: Array<[string, RegExp, string]> = [
     /\b(brsl|berkeley risk and security|berkeley risk & security)\b/i,
     "Berkeley Risk and Security Lab",
   ],
+  [
+    "cltc",
+    /\b(cltc|center for long-term cybersecurity|long-term cybersecurity|long term cybersecurity)\b/i,
+    "Center for Long-Term Cybersecurity",
+  ],
   ["livewhale", /\b(livewhale|uc berkeley events)\b/i, "UC Berkeley Events"],
 ];
 

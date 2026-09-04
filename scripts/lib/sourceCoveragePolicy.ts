@@ -17,6 +17,7 @@ export const SOURCE_EXPECTED_MIN_COUNTS: Record<string, number> = {
   begin: 1,
   ai_risk: 1,
   brsl: 1,
+  cltc: 1,
 };
 
 interface CoverageSource {

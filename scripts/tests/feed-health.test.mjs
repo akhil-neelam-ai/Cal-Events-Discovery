@@ -60,6 +60,7 @@ test("evaluateFeedHealth warns (does not block) on supplementary source degradat
     "simons",
     "ai_risk",
     "brsl",
+    "cltc",
   ]) {
     const result = evaluateFeedHealth(
       {
@@ -199,6 +200,7 @@ test("CRITICAL_SOURCES is backbone-only and shared by both gates", () => {
     "bampfa",
     "ai_risk",
     "brsl",
+    "cltc",
   ]) {
     assert.ok(
       !CRITICAL_SOURCES.has(source),
