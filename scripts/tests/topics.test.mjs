@@ -8,6 +8,7 @@ import {
   TopicVocabularySchema,
 } from "../../scripts/lib/schema.ts";
 import {
+  assignTopics,
   TOPICS,
   TOPIC_BY_SLUG,
   TOPIC_GROUPS,
@@ -15,6 +16,7 @@ import {
   TOPIC_VOCABULARY,
   TOPIC_VOCABULARY_VERSION,
 } from "../../scripts/lib/topics.ts";
+import { mergeLiveWhaleFeeds } from "../../scripts/sources/livewhale.ts";
 
 function baseEvent(overrides = {}) {
   return {
@@ -148,6 +150,131 @@ test("published events reject unknown and duplicate topic slugs", () => {
   assert.equal(
     LegacyCalEventSchema.safeParse(baseEvent({ topics: ["law", "law"] }))
       .success,
+    false,
+  );
+});
+
+test("LiveWhale department membership assigns a field without text keywords", () => {
+  assert.deepEqual(
+    assignTopics(
+      baseEvent({
+        title: "Weekly Department Colloquium",
+        description: "A faculty presentation.",
+        organizer: "UC Berkeley",
+        livewhale_groups: ["physics"],
+      }),
+    ),
+    ["physics-math-quantum"],
+  );
+});
+
+test("membership in two department feeds assigns both fields", () => {
+  const topics = assignTopics(
+    baseEvent({
+      title: "Cross-listed Faculty Talk",
+      description: "A faculty presentation.",
+      organizer: "UC Berkeley",
+      livewhale_groups: ["physics", "law"],
+    }),
+  );
+
+  assert.ok(topics.includes("physics-math-quantum"));
+  assert.ok(topics.includes("law"));
+});
+
+test("a strong title signal assigns a topic without group membership", () => {
+  assert.ok(
+    assignTopics(
+      baseEvent({
+        source: "luma",
+        title: "Artificial Intelligence Research Showcase",
+        organizer: "Independent Student Team",
+      }),
+    ).includes("ai-machine-learning"),
+  );
+});
+
+test("one incidental description mention stays below the confidence floor", () => {
+  assert.equal(
+    assignTopics(
+      baseEvent({
+        title: "Community Picnic",
+        description: "The day includes a short mention of AI.",
+        organizer: "Community Programs",
+      }),
+    ).includes("ai-machine-learning"),
+    false,
+  );
+});
+
+test("the Labor Day family event does not receive the AI topic", () => {
+  assert.equal(
+    assignTopics(
+      baseEvent({
+        title: "Five Dollar Day: Labor Day",
+        organizer: "Lawrence Hall of Science",
+        description:
+          "Bring the family for discounted admission, animal ambassadors, biotechnology, and artificial intelligence exhibits.",
+      }),
+    ).includes("ai-machine-learning"),
+    false,
+  );
+});
+
+test("topic assignment emits only the three strongest matches", () => {
+  const topics = assignTopics(
+    baseEvent({
+      title:
+        "Law, Economics, Public Health, Artificial Intelligence, Climate, and Physics Summit",
+      organizer: "UC Berkeley",
+    }),
+  );
+
+  assert.equal(topics.length, 3);
+  assert.deepEqual(topics, ["law", "economics-policy", "health-medicine"]);
+});
+
+test("LiveWhale UID merge keeps every group membership on the main record", () => {
+  const mainEvent = { type: "VEVENT", uid: "shared@events.berkeley.edu" };
+  const groupEvent = { type: "VEVENT", uid: "shared@events.berkeley.edu" };
+  const merged = mergeLiveWhaleFeeds({ main: mainEvent }, [
+    { group: "physics", parsed: { physicsCopy: groupEvent } },
+    { group: "law", parsed: { lawCopy: groupEvent } },
+  ]);
+
+  assert.equal(
+    Object.values(merged.parsed).filter((record) => record.type === "VEVENT")
+      .length,
+    1,
+  );
+  assert.deepEqual(merged.groupsByUid.get("shared@events.berkeley.edu"), [
+    "physics",
+    "law",
+  ]);
+});
+
+test("non-LiveWhale events assign from text without group metadata", () => {
+  assert.deepEqual(
+    assignTopics(
+      baseEvent({
+        source: "bampfa",
+        title: "Film Screening: New Voices",
+        organizer: "BAMPFA",
+      }),
+    ),
+    ["film", "visual-arts-exhibitions"],
+  );
+});
+
+test("LLM degree abbreviations do not receive the AI topic", () => {
+  assert.equal(
+    assignTopics(
+      baseEvent({
+        title: "Graduate Law Welcome Lunch",
+        organizer: "Berkeley Law",
+        description: "JDs, LLMs, and visiting scholars are welcome.",
+      }),
+    ).includes("ai-machine-learning"),
     false,
   );
 });

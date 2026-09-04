@@ -120,6 +120,10 @@ export const CanonicalEventSchema = z.object({
   // Categorization
   categories: z.array(z.string()).default([]),
   tags: z.array(z.string()).default([]),
+  // Internal-only provenance from department-specific LiveWhale feeds. The
+  // pipeline uses it for high-confidence topic assignment and does not publish
+  // it in the legacy event shape.
+  livewhale_groups: z.array(z.string()).optional(),
 
   // Quality / freshness
   last_seen_at: z.string(),

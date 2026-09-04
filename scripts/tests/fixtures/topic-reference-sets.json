@@ -1,0 +1,414 @@
+{
+  "version": 1,
+  "selectedFrom": {
+    "artifact": "public/events.json",
+    "lastUpdated": 1788447064508,
+    "eventCount": 1450
+  },
+  "selectionMethod": "Frozen keyword review of the published title, organizer, and description fields. The review used explicit AI, machine-learning, model-family, robotics, and data-science language. It did not call topic assignment code.",
+  "referenceSets": [
+    {
+      "topic": "ai-machine-learning",
+      "minimumRecall": 0.9,
+      "references": [
+        {
+          "id": "livewhale_324428@events.berkeley.edu",
+          "title": "Exhibition: \"Hidden Layers: AI Infrastructures and Hallucinations\"",
+          "date": "2026-09-03",
+          "source": "livewhale",
+          "signals": ["AI", "data science"]
+        },
+        {
+          "id": "livewhale_20260903T230000Z-328405@events.berkeley.edu",
+          "title": "Berkeley Art, Law, and Finance Project: Hidden Layers: AI Infrastructures and Hallucinations Opening Reception",
+          "date": "2026-09-03",
+          "source": "livewhale",
+          "signals": ["AI", "artificial intelligence", "machine learning"]
+        },
+        {
+          "id": "livewhale_20260903T230000Z-324427@events.berkeley.edu",
+          "title": "Exhibition Opening Reception: \"Hidden Layers: AI Infrastructures and Hallucinations\"",
+          "date": "2026-09-03",
+          "source": "livewhale",
+          "signals": ["AI", "data science"]
+        },
+        {
+          "id": "livewhale_20260904T013000Z-324458@events.berkeley.edu",
+          "title": "Artist Talk - Grégory Chatonsky: INFRALLUCINATION",
+          "date": "2026-09-03",
+          "source": "livewhale",
+          "signals": ["AI", "machine learning"]
+        },
+        {
+          "id": "livewhale_20260907T170000Z-327069@events.berkeley.edu",
+          "title": "Five Dollar Day: Labor Day",
+          "date": "2026-09-07",
+          "source": "livewhale",
+          "signals": ["artificial intelligence"]
+        },
+        {
+          "id": "livewhale_20260908T170000Z-327942@events.berkeley.edu",
+          "title": "Empowered by AI: Create a More Breathable, Sustainable Workday (2026 Fall NOW Encore Series)",
+          "date": "2026-09-08",
+          "source": "livewhale",
+          "signals": ["AI"]
+        },
+        {
+          "id": "livewhale_20260908T200000Z-328804@events.berkeley.edu",
+          "title": "Koreans at Berkeley Law: GBM & Welcome Lunch",
+          "date": "2026-09-08",
+          "source": "livewhale",
+          "signals": ["LLM"]
+        },
+        {
+          "id": "livewhale_20260908T230000Z-323820@events.berkeley.edu",
+          "title": "Seminar 237 - Macroeconomics/Monetary Economics: \"Artificial Intelligence and the Labor Market\"",
+          "date": "2026-09-08",
+          "source": "livewhale",
+          "signals": ["AI", "artificial intelligence", "machine learning"]
+        },
+        {
+          "id": "livewhale_20260909T190000Z-324950@events.berkeley.edu",
+          "title": "Demography Brown Bag Seminar with Mathew Hauer and Tyler McCormick: \"AI in Demography\"",
+          "date": "2026-09-09",
+          "source": "livewhale",
+          "signals": ["AI", "artificial intelligence", "data science"]
+        },
+        {
+          "id": "livewhale_20260910T020000Z-326232@events.berkeley.edu",
+          "title": "Film Screening: Push Buttons and AI",
+          "date": "2026-09-09",
+          "source": "livewhale",
+          "signals": ["AI"]
+        },
+        {
+          "id": "livewhale_20260910T020000Z-328921@events.berkeley.edu",
+          "title": "Push Buttons and AI",
+          "date": "2026-09-09",
+          "source": "livewhale",
+          "signals": ["AI"]
+        },
+        {
+          "id": "livewhale_328923@events.berkeley.edu",
+          "title": "Workshop: The Latent Spaces of Culture",
+          "date": "2026-09-10",
+          "source": "livewhale",
+          "signals": ["AI", "artificial intelligence"]
+        },
+        {
+          "id": "livewhale_20260910T170000Z-328925@events.berkeley.edu",
+          "title": "Hidden Layers: Curatorial Tour, led by Antonio Somaini",
+          "date": "2026-09-10",
+          "source": "livewhale",
+          "signals": ["AI", "data science"]
+        },
+        {
+          "id": "livewhale_20260911T220000Z-327425@events.berkeley.edu",
+          "title": "Caltrans' AI Journey",
+          "date": "2026-09-11",
+          "source": "livewhale",
+          "signals": ["AI", "artificial intelligence"]
+        },
+        {
+          "id": "livewhale_20260911T233000Z-328267@events.berkeley.edu",
+          "title": "Exhibition Curatorial Tour: \"Hidden Layers: AI Infrastructures and Hallucinations\"",
+          "date": "2026-09-11",
+          "source": "livewhale",
+          "signals": ["AI", "data science"]
+        },
+        {
+          "id": "livewhale_20260914T160000Z-325578@events.berkeley.edu",
+          "title": "BCNM Undergraduate Research Symposium",
+          "date": "2026-09-14",
+          "source": "livewhale",
+          "signals": ["artificial intelligence"]
+        },
+        {
+          "id": "livewhale_20260914T191500Z-326212@events.berkeley.edu",
+          "title": "CSLS Speaker Series: \"The Distribution of Federally-Insured Mortgages: 1935-1975, Evidence from Local Land Records\"",
+          "date": "2026-09-14",
+          "source": "livewhale",
+          "signals": ["large language model"]
+        },
+        {
+          "id": "livewhale_20260914T213000Z-327783@events.berkeley.edu",
+          "title": "Condensed Matter Seminar with Eli Yablonovitch: Can Physics Expedite Artificial Intelligence?",
+          "date": "2026-09-14",
+          "source": "livewhale",
+          "signals": ["artificial intelligence"]
+        },
+        {
+          "id": "livewhale_20260914T230000Z-328724@events.berkeley.edu",
+          "title": "Dissertation Talk: Verifying Secure Execution for Systems with Untrusted Components",
+          "date": "2026-09-14",
+          "source": "livewhale",
+          "signals": ["AI"]
+        },
+        {
+          "id": "livewhale_20260915T170000Z-324898@events.berkeley.edu",
+          "title": "Online Information Session - Master of Artificial Intelligence and Machine Learning",
+          "date": "2026-09-15",
+          "source": "livewhale",
+          "signals": ["artificial intelligence", "machine learning"]
+        },
+        {
+          "id": "berkeley_law_772656",
+          "title": "[Queer Caucus] Fall General Body Meeting",
+          "date": "2026-09-15",
+          "source": "berkeley_law",
+          "signals": ["LLM"]
+        },
+        {
+          "id": "livewhale_20260916T003000Z-329199@events.berkeley.edu",
+          "title": "Josette Melchor // Newtemporary: Designing in the Space Between New and Next",
+          "date": "2026-09-15",
+          "source": "livewhale",
+          "signals": ["AI"]
+        },
+        {
+          "id": "livewhale_20260916T230000Z-326389@events.berkeley.edu",
+          "title": "CLIMB + Neyman Seminar with Daniela Witten: Testing hypothesis via orthogonalization",
+          "date": "2026-09-16",
+          "source": "livewhale",
+          "signals": ["machine learning"]
+        },
+        {
+          "id": "livewhale_20260917T000000Z-328926@events.berkeley.edu",
+          "title": "World Literature: Christian Kracht's AI-novel AIR (2024)",
+          "date": "2026-09-16",
+          "source": "livewhale",
+          "signals": ["AI"]
+        },
+        {
+          "id": "livewhale_20260917T220000Z-327501@events.berkeley.edu",
+          "title": "OSPO Monthly Meetup: September",
+          "date": "2026-09-17",
+          "source": "livewhale",
+          "signals": ["data science"]
+        },
+        {
+          "id": "livewhale_20260923T003000Z-329191@events.berkeley.edu",
+          "title": "Kelsey Brennan // Found Problems and Made Problems: What Comes First?",
+          "date": "2026-09-22",
+          "source": "livewhale",
+          "signals": ["AI", "machine learning"]
+        },
+        {
+          "id": "livewhale_20260923T230000Z-324746@events.berkeley.edu",
+          "title": "CLIMB + Neyman Seminar with Susan Murphy: Online Reinforcement Learning for Digital Health Interventions in the Dyadic Setting",
+          "date": "2026-09-23",
+          "source": "livewhale",
+          "signals": ["reinforcement learning"]
+        },
+        {
+          "id": "luma_evt-ezQiQfLpSmPlbFD",
+          "title": "Club AI : 1 year birthday edition",
+          "date": "2026-09-24",
+          "source": "luma",
+          "signals": ["AI"]
+        },
+        {
+          "id": "livewhale_20260924T190000Z-328649@events.berkeley.edu",
+          "title": "NBC Universal Information Session (Virtual)",
+          "date": "2026-09-24",
+          "source": "livewhale",
+          "signals": ["data science"]
+        },
+        {
+          "id": "livewhale_20260924T190000Z-326397@events.berkeley.edu",
+          "title": "On-campus Info Session - Master of Artificial Intelligence and Machine Learning",
+          "date": "2026-09-24",
+          "source": "livewhale",
+          "signals": ["artificial intelligence", "machine learning"]
+        },
+        {
+          "id": "livewhale_20260925T000000Z-324717@events.berkeley.edu",
+          "title": "From Chaebols to Startups to BTS: The Strategic Evolution of Korea's Innovation Ecosystem",
+          "date": "2026-09-24",
+          "source": "livewhale",
+          "signals": ["AI"]
+        },
+        {
+          "id": "livewhale_20260925T183000Z-327955@events.berkeley.edu",
+          "title": "Architecting Human Power in the Age of AI (2026 Fall NOW Encore Series)",
+          "date": "2026-09-25",
+          "source": "livewhale",
+          "signals": ["AI", "artificial intelligence"]
+        },
+        {
+          "id": "livewhale_20260929T000000Z-325579@events.berkeley.edu",
+          "title": "AI & Disability: A Roundtable Discussion feat. Jeff Nagy, Renée Cummings, and Os Keyes",
+          "date": "2026-09-28",
+          "source": "livewhale",
+          "signals": [
+            "AI",
+            "artificial intelligence",
+            "machine learning",
+            "data science"
+          ]
+        },
+        {
+          "id": "livewhale_20260929T170000Z-328879@events.berkeley.edu",
+          "title": "Misumi Information Session",
+          "date": "2026-09-29",
+          "source": "livewhale",
+          "signals": ["robotics"]
+        },
+        {
+          "id": "livewhale_20260929T190000Z-326858@events.berkeley.edu",
+          "title": "Student Faculty Macro Lunch: \"How Artificial Intelligence Shapes Science: Evidence from AlphaFold\"",
+          "date": "2026-09-29",
+          "source": "livewhale",
+          "signals": ["AI", "artificial intelligence"]
+        },
+        {
+          "id": "livewhale_20260929T210000Z-323581@events.berkeley.edu",
+          "title": "Evolving approaches to open science and research transparency education (Bay Area Open Science Group)",
+          "date": "2026-09-29",
+          "source": "livewhale",
+          "signals": ["AI"]
+        },
+        {
+          "id": "livewhale_20260930T190000Z-328645@events.berkeley.edu",
+          "title": "Clearway Energy Group Information Session",
+          "date": "2026-09-30",
+          "source": "livewhale",
+          "signals": ["AI", "machine learning", "data science"]
+        },
+        {
+          "id": "luma_evt-z2JfnRDoYy06ONv",
+          "title": "Berkeley AI Researchers: LLMs, Robotics & Embodied Intelligence Lab to Launch",
+          "date": "2026-09-30",
+          "source": "luma",
+          "signals": ["AI", "LLM", "robotics"]
+        },
+        {
+          "id": "simons_workshops-trustworthy-ai-hallucinations-reliable-autonomy::2026-10-05",
+          "title": "Trustworthy AI: From Hallucinations to Reliable Autonomy",
+          "date": "2026-10-05",
+          "source": "simons",
+          "signals": ["AI"]
+        },
+        {
+          "id": "livewhale_20261007T223000Z-327392@events.berkeley.edu",
+          "title": "Experiments in Art and Geography",
+          "date": "2026-10-07",
+          "source": "livewhale",
+          "signals": ["AI", "computer vision"]
+        },
+        {
+          "id": "haas_3397280",
+          "title": "San Francisco Alumni: Beyond Big Tech: Reinventing Your Career in the Age of AI",
+          "date": "2026-10-08",
+          "source": "haas",
+          "signals": ["AI"]
+        },
+        {
+          "id": "haas_3372396",
+          "title": "Alumni and Parents Weekend at Homecoming",
+          "date": "2026-10-09",
+          "source": "haas",
+          "signals": ["AI"]
+        },
+        {
+          "id": "berkeley_law_769075",
+          "title": "[BCLB] 2026 Annual Berkeley Forum on Corporate Governance",
+          "date": "2026-10-13",
+          "source": "berkeley_law",
+          "signals": ["AI"]
+        },
+        {
+          "id": "berkeley_law_758843",
+          "title": "[BCLT] Hot Topics in Privacy, Cybersecurity & AI",
+          "date": "2026-10-13",
+          "source": "berkeley_law",
+          "signals": ["AI"]
+        },
+        {
+          "id": "livewhale_20261014T190000Z-327053@events.berkeley.edu",
+          "title": "PMB Seminar with Gautam Dantas | Understanding, Predicting, and Remediating Perturbations to Host-Microbe Interactions",
+          "date": "2026-10-14",
+          "source": "livewhale",
+          "signals": ["machine learning"]
+        },
+        {
+          "id": "berkeley_law_758847",
+          "title": "[BCLT] 1L Career Prep: Privacy, Cybersecurity & AI",
+          "date": "2026-10-15",
+          "source": "berkeley_law",
+          "signals": ["AI"]
+        },
+        {
+          "id": "berkeley_law_758852",
+          "title": "[BCLT] 1L Career Night: Privacy, Cybersecurity & AI",
+          "date": "2026-10-15",
+          "source": "berkeley_law",
+          "signals": ["AI"]
+        },
+        {
+          "id": "luma_evt-3Z3pKiLG9CG9Kld",
+          "title": "Lab to Launch: Robotics Pitch Night",
+          "date": "2026-10-15",
+          "source": "luma",
+          "signals": ["robotics"]
+        },
+        {
+          "id": "livewhale_20261028T223000Z-327393@events.berkeley.edu",
+          "title": "All that is compute transforms into concrete: Monopoly rent and the fixity of AI's infrastructure",
+          "date": "2026-10-28",
+          "source": "livewhale",
+          "signals": ["AI", "artificial intelligence", "large language model"]
+        },
+        {
+          "id": "livewhale_20261218T010000Z-316693@events.berkeley.edu",
+          "title": "Data Science Fall 2026 Capstone Project Showcase",
+          "date": "2026-12-17",
+          "source": "livewhale",
+          "signals": ["data science"]
+        },
+        {
+          "id": "livewhale_20270126T000000Z-321964@events.berkeley.edu",
+          "title": "Rhiju Das: \"De novo design of RNA with deep learning\"",
+          "date": "2027-01-25",
+          "source": "livewhale",
+          "signals": ["AI", "deep learning"]
+        },
+        {
+          "id": "simons_workshops-ai-risk-evaluation-governance::2027-03-31",
+          "title": "AI Risk Evaluation and Governance",
+          "date": "2027-03-31",
+          "source": "simons",
+          "signals": ["AI"]
+        },
+        {
+          "id": "simons_workshops-diffusion-generative-modeling-boot-camp::2027-08-30",
+          "title": "Diffusion Generative Modeling Boot Camp",
+          "date": "2027-08-30",
+          "source": "simons",
+          "signals": ["generative modeling"]
+        },
+        {
+          "id": "simons_workshops-engineering-diffusion-models-scaling-modalities-safety::2027-09-20",
+          "title": "Engineering of Diffusion Models: Scaling, Modalities, Safety",
+          "date": "2027-09-20",
+          "source": "simons",
+          "signals": ["diffusion model"]
+        },
+        {
+          "id": "simons_workshops-science-diffusion-models-speciation-creativity-new-testbeds::2027-10-18",
+          "title": "Science of Diffusion Models: Speciation, Creativity, New Testbeds",
+          "date": "2027-10-18",
+          "source": "simons",
+          "signals": ["diffusion model"]
+        },
+        {
+          "id": "simons_workshops-beyond-generative-modeling-steering-models-learning-sample::2027-11-15",
+          "title": "Beyond Generative Modeling: Steering Models and Learning to Sample",
+          "date": "2027-11-15",
+          "source": "simons",
+          "signals": ["generative modeling"]
+        }
+      ]
+    }
+  ]
+}

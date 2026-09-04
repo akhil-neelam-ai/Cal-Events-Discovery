@@ -61,7 +61,7 @@ import { fetchSimons } from "./sources/simons.js";
 import { fetchLuma } from "./sources/luma.js";
 import { fetchAiRisk } from "./sources/ai_risk.js";
 import { buildSearchIndex } from "./lib/buildIndex.js";
-import { TOPIC_VOCABULARY } from "./lib/topics.js";
+import { assignTopics, TOPIC_VOCABULARY } from "./lib/topics.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -544,7 +544,10 @@ async function main(): Promise<void> {
   active.sort((a, b) => a.start_at.localeCompare(b.start_at));
 
   // Project to legacy shape
-  const legacy: LegacyCalEvent[] = active.map(projectToLegacy);
+  const legacy: LegacyCalEvent[] = active.map((event) => ({
+    ...projectToLegacy(event),
+    topics: assignTopics(event),
+  }));
 
   const recovery: RecoveryState = {
     fallbackSources: new Set<SourceName>(),
@@ -561,6 +564,12 @@ async function main(): Promise<void> {
   for (const [name, reason] of cappedReasons) {
     recovery.degradedSources.add(name);
     recovery.degradedReasons.add(reason);
+  }
+  // Fallback rows are already in legacy form and never passed through the
+  // canonical projection above. Assign them from their published text so the
+  // per-event topics contract remains consistent on degraded source days.
+  for (const event of legacy) {
+    event.topics ??= assignTopics(event);
   }
   legacy.sort(compareLegacyEvents);
 
