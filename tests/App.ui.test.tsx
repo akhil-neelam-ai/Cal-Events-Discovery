@@ -29,7 +29,7 @@ type MockFeedState = {
   loading: LoadingState;
   statusReport: null;
   searchIndex: null;
-  topicVocabulary: typeof TOPIC_VOCABULARY;
+  topicVocabulary: typeof TOPIC_VOCABULARY | null;
   sourceOptions: Array<{ value: string; label: string; count: number }>;
   sourceCount: number;
   loadEvents: ReturnType<typeof vi.fn>;
@@ -115,7 +115,10 @@ function makeEvent(overrides: Partial<CalEvent> = {}): CalEvent {
   };
 }
 
-function makeFeedState(events: CalEvent[]): MockFeedState {
+function makeFeedState(
+  events: CalEvent[],
+  overrides: Partial<MockFeedState> = {},
+): MockFeedState {
   return {
     allEvents: events,
     lastUpdated: Date.parse("2026-04-22T19:00:00Z"),
@@ -131,6 +134,7 @@ function makeFeedState(events: CalEvent[]): MockFeedState {
       0,
     ),
     loadEvents: vi.fn().mockResolvedValue(undefined),
+    ...overrides,
   };
 }
 
@@ -986,5 +990,197 @@ describe("App UI regressions", () => {
         screen.getByRole("heading", { name: "Gallery Detail Event" }),
       ).toBeInTheDocument();
     });
+  });
+
+  it("keeps a Law hit when Fuse would otherwise cap it out", () => {
+    const events = [
+      ...Array.from({ length: 101 }, (_, index) =>
+        makeEvent({
+          id: `workshop-${index}`,
+          title: `Campus Workshop ${index}`,
+          topics: ["ai-machine-learning"],
+        }),
+      ),
+      makeEvent({
+        id: "law-workshop",
+        title: "Campus Workshop Law",
+        topics: ["law"],
+      }),
+    ];
+    mockFeedState = makeFeedState(events);
+    window.history.replaceState({}, "", "/?q=workshop&topic=law");
+
+    render(<App />);
+
+    expect(screen.getByText("Campus Workshop Law")).toBeInTheDocument();
+    expect(window.location.search).toContain("topic=law");
+  });
+
+  it("keeps Law through popstate from an AI query to a Law query", async () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "ai-talk",
+        title: "AI Systems Talk",
+        topics: ["ai-machine-learning"],
+      }),
+      makeEvent({
+        id: "law-talk",
+        title: "Law Colloquium",
+        topics: ["law"],
+      }),
+    ]);
+    window.history.replaceState({}, "", "/?q=AI");
+
+    render(<App />);
+    expect(screen.getByText("AI Systems Talk")).toBeInTheDocument();
+
+    act(() => {
+      window.history.pushState({}, "", "/?q=law&topic=law");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Law Colloquium")).toBeInTheDocument();
+      expect(window.location.search).toContain("topic=law");
+    });
+  });
+
+  it("dismisses inferred AI when auto-clear removes the explicit AI topic", async () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "livewhale-ai",
+        title: "LiveWhale AI Talk",
+        topics: ["ai-machine-learning"],
+        source: "livewhale",
+      }),
+      makeEvent({
+        id: "callink-law",
+        title: "CalLink Law Talk",
+        topics: ["law"],
+        source: "callink",
+      }),
+    ]);
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=AI&topic=ai-machine-learning&source=callink",
+    );
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText("CalLink Law Talk")).toBeInTheDocument();
+      expect(window.location.search).not.toContain("topic=");
+    });
+    expect(screen.queryByText("LiveWhale AI Talk")).not.toBeInTheDocument();
+  });
+
+  it("keeps Law enabled when AI is only ranking text", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "law-ai-text",
+        title: "Law lecture",
+        topics: ["law"],
+        description: "Includes AI policy discussion.",
+      }),
+      makeEvent({
+        id: "ai-seminar",
+        title: "AI seminar",
+        topics: ["ai-machine-learning"],
+      }),
+    ]);
+    window.history.replaceState({}, "", "/?q=AI");
+
+    render(<App />);
+
+    expect(
+      screen.getByRole("button", { name: /Law, \d+ event/i }),
+    ).toBeEnabled();
+  });
+
+  it("clears the URL topic when the interpretation chip is dismissed", async () => {
+    const user = userEvent.setup();
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "ai-talk",
+        title: "AI Systems Talk",
+        topics: ["ai-machine-learning"],
+      }),
+    ]);
+    window.history.replaceState({}, "", "/?q=AI&topic=ai-machine-learning");
+
+    render(<App />);
+    expect(window.location.search).toContain("topic=ai-machine-learning");
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /remove ai and machine learning filter/i,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(window.location.search).not.toContain("topic=");
+    });
+  });
+
+  it("does not flash an empty grid for a doomed topic", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "ai-only",
+        title: "AI Only Talk",
+        topics: ["ai-machine-learning"],
+      }),
+    ]);
+    window.history.replaceState({}, "", "/?topic=law");
+
+    render(<App />);
+
+    expect(screen.getByText("AI Only Talk")).toBeInTheDocument();
+  });
+
+  it("explains today plus AI when the only AI event is later", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "today-law",
+        title: "Today Law Lunch",
+        date: TODAY_KEY,
+        topics: ["law"],
+        description: "A law briefing.",
+      }),
+      makeEvent({
+        id: "later-ai",
+        title: "May AI Summit",
+        date: "2026-05-20",
+        topics: ["ai-machine-learning"],
+        description: "Artificial intelligence summit.",
+      }),
+    ]);
+    window.history.replaceState({}, "", "/?q=AI&date=today");
+
+    render(<App />);
+
+    expect(screen.getByText("Today Law Lunch")).toBeInTheDocument();
+    expect(screen.queryByText("May AI Summit")).not.toBeInTheDocument();
+  });
+
+  it("rejects a stuck topic on a legacy payload without vocabulary", async () => {
+    mockFeedState = makeFeedState(
+      [
+        makeEvent({
+          id: "legacy-event",
+          title: "Legacy Campus Talk",
+          topics: [],
+        }),
+      ],
+      { topicVocabulary: null },
+    );
+    window.history.replaceState({}, "", "/?topic=law");
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(window.location.search).not.toContain("topic=");
+    });
+    expect(screen.getByText("Legacy Campus Talk")).toBeInTheDocument();
   });
 });

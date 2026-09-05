@@ -129,19 +129,6 @@ export const TOPICS = [
     synonyms: ["visual arts", "exhibition", "exhibitions", "museum"],
   },
   {
-    slug: "free-food",
-    label: "Free Food",
-    group: "interests",
-    synonyms: [
-      "free food",
-      "free lunch",
-      "free dinner",
-      "pizza",
-      "snacks",
-      "refreshments",
-    ],
-  },
-  {
     slug: "social-clubs",
     label: "Social and Clubs",
     group: "interests",
@@ -301,7 +288,6 @@ const ASSIGNMENT_TERMS: Partial<Record<TopicSlug, readonly string[]>> = {
     "art exhibition",
     "installation",
   ],
-  "free-food": ["food provided", "lunch provided", "dinner provided"],
   "social-clubs": [
     "student org",
     "student club",
@@ -353,11 +339,11 @@ const ORGANIZER_TOPIC_PATTERNS: ReadonlyArray<
     ["health-medicine"],
   ],
   [
-    /\b(history|humanities|german|english|classics|buddhist studies|linguistics|library)\b/i,
+    /\b(history|humanities|german|english|classics|buddhist studies|linguistics)\b/i,
     ["history-humanities"],
   ],
   [
-    /\b(biology|bioengineering|botanical|plant & microbial|molecular|chemistry)\b/i,
+    /\b(biology|bioengineering|botanical|plant & microbial|molecular)\b/i,
     ["biology-life-sciences"],
   ],
   [
@@ -381,8 +367,7 @@ const ORGANIZER_TOPIC_PATTERNS: ReadonlyArray<
     ["social-sciences"],
   ],
   [/\b(career center|career engagement)\b/i, ["career-jobs"]],
-  [/\b(bampfa)\b/i, ["film", "visual-arts-exhibitions"]],
-  [/\b(department of music|cal performances)\b/i, ["music-performance"]],
+  [/\b(department of music)\b/i, ["music-performance"]],
   [
     /\b(theater, dance|theatre, dance|performance studies)\b/i,
     ["theater-dance"],
@@ -394,17 +379,14 @@ const ORGANIZER_TOPIC_PATTERNS: ReadonlyArray<
   [/\b(student organization|student club)\b/i, ["social-clubs"]],
   [/\b(recreational sports|wellness|counseling)\b/i, ["wellness"]],
   [
-    /\b(haas|skydeck|e-?hub|entrepreneurship|gateway accelerator|scet)\b/i,
+    /\b(skydeck|e-?hub|entrepreneurship|gateway accelerator|scet)\b/i,
     ["startups"],
   ],
 ];
 
 const SOURCE_TOPICS: Readonly<Record<string, readonly TopicSlug[]>> = {
   ai_risk: ["ai-machine-learning", "computer-science-data"],
-  bampfa: ["film", "visual-arts-exhibitions"],
   berkeley_law: ["law"],
-  cal_performances: ["music-performance"],
-  haas: ["startups"],
   simons: ["computer-science-data"],
 };
 
@@ -416,7 +398,6 @@ const GROUP_TOPICS: Readonly<Record<string, readonly TopicSlug[]>> = {
   bioengineering: ["biology-life-sciences"],
   "plant and microbial biology": ["biology-life-sciences"],
   "botanical garden": ["biology-life-sciences", "climate-energy"],
-  "college of chemistry": ["biology-life-sciences"],
   law: ["law"],
   economics: ["economics-policy"],
   "political science": ["social-sciences", "economics-policy"],
@@ -431,12 +412,9 @@ const GROUP_TOPICS: Readonly<Record<string, readonly TopicSlug[]>> = {
   "buddhist studies": ["history-humanities"],
   english: ["history-humanities"],
   scandinavian: ["history-humanities"],
-  library: ["history-humanities"],
   music: ["music-performance"],
   geography: ["climate-energy", "social-sciences"],
   "school of information": ["computer-science-data"],
-  "college of engineering": ["computer-science-data"],
-  "lawrence hall of science": ["physics-math-quantum"],
   "helen wills neuroscience institute": [
     "health-medicine",
     "biology-life-sciences",

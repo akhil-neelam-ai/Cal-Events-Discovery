@@ -129,6 +129,7 @@ interface AdapterRun {
   groundingSources?: PublishedSource[];
   filteredPast: number;
   invalid: number;
+  groupFeedsDegraded?: boolean;
 }
 
 interface RecoveryState {
@@ -139,6 +140,7 @@ interface RecoveryState {
   degradedReasons: Set<string>;
   lastGoodUsed: number;
   fallbackAgeHours?: number;
+  restoredIds: Set<string>;
 }
 
 interface RecoveryPolicy {
@@ -180,6 +182,7 @@ async function runAdapter<
     groundingSources?: PublishedSource[];
     filteredPast?: number;
     invalid?: number;
+    groupFeedsDegraded?: boolean;
   },
 >(name: SourceStatus["name"], fn: () => Promise<T>): Promise<AdapterRun> {
   const started = Date.now();
@@ -198,6 +201,7 @@ async function runAdapter<
       groundingSources: result.groundingSources,
       filteredPast: result.filteredPast ?? 0,
       invalid: result.invalid ?? 0,
+      groupFeedsDegraded: result.groupFeedsDegraded,
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -292,6 +296,7 @@ function markRecovery(
     return;
   }
 
+  const beforeIds = new Set(legacy.map((event) => event.id));
   const restored = appendLastGoodEvents(
     legacy,
     existing.events,
@@ -299,6 +304,11 @@ function markRecovery(
     today,
   );
   if (restored > 0) {
+    for (const event of legacy) {
+      if (!beforeIds.has(event.id)) {
+        recovery.restoredIds.add(event.id);
+      }
+    }
     run.status.fallback_used = true;
     run.status.fallback_count = restored;
     run.status.fallback_age_hours = ageHours;
@@ -561,6 +571,7 @@ async function main(): Promise<void> {
     staleFallbackSources: new Set<SourceName>(),
     degradedReasons: new Set<string>(),
     lastGoodUsed: 0,
+    restoredIds: new Set<string>(),
   };
 
   const today = todayPT();
@@ -571,12 +582,20 @@ async function main(): Promise<void> {
     recovery.degradedSources.add(name);
     recovery.degradedReasons.add(reason);
   }
+  const groupFeedsDegraded = runs.some((run) => run.groupFeedsDegraded);
   const topicAssignment = assignTopicsResiliently(
     legacy.map((event) => ({
       published: event,
       source: assignmentSources.get(event.id) ?? event,
     })),
     existing.events,
+    undefined,
+    {
+      preserveTopicIds: recovery.restoredIds,
+      forceError: groupFeedsDegraded
+        ? "LiveWhale group feeds failed; topic provenance incomplete"
+        : undefined,
+    },
   );
   legacy = topicAssignment.events;
   if (topicAssignment.status.outcome === "error") {

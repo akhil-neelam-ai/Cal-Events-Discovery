@@ -16,7 +16,10 @@ import {
   TOPIC_VOCABULARY,
   TOPIC_VOCABULARY_VERSION,
 } from "../../scripts/lib/topics.ts";
-import { mergeLiveWhaleFeeds } from "../../scripts/sources/livewhale.ts";
+import {
+  groupFeedsAreDegraded,
+  mergeLiveWhaleFeeds,
+} from "../../scripts/sources/livewhale.ts";
 
 function baseEvent(overrides = {}) {
   return {
@@ -234,6 +237,12 @@ test("topic assignment emits only the three strongest matches", () => {
   assert.deepEqual(topics, ["law", "economics-policy", "health-medicine"]);
 });
 
+test("all failed LiveWhale group feeds count as degraded provenance", () => {
+  assert.equal(groupFeedsAreDegraded([]), false);
+  assert.equal(groupFeedsAreDegraded([{ ok: true }, { ok: false }]), false);
+  assert.equal(groupFeedsAreDegraded([{ ok: false }, { ok: false }]), true);
+});
+
 test("LiveWhale UID merge keeps every group membership on the main record", () => {
   const mainEvent = { type: "VEVENT", uid: "shared@events.berkeley.edu" };
   const groupEvent = { type: "VEVENT", uid: "shared@events.berkeley.edu" };
@@ -262,7 +271,43 @@ test("non-LiveWhale events assign from text without group metadata", () => {
         organizer: "BAMPFA",
       }),
     ),
-    ["film", "visual-arts-exhibitions"],
+    ["film"],
+  );
+});
+
+test("broad container identity does not assign without event evidence", () => {
+  assert.equal(
+    assignTopics(
+      baseEvent({
+        source: "haas",
+        title: "Saturday Community Hike",
+        organizer: "Berkeley Haas",
+        description: "Meet at the trailhead for a campus hike.",
+      }),
+    ).includes("startups"),
+    false,
+  );
+  assert.deepEqual(
+    assignTopics(
+      baseEvent({
+        source: "bampfa",
+        title: "Cafe Hours",
+        organizer: "BAMPFA",
+        description: "The cafe is open 11am to 4pm.",
+      }),
+    ),
+    [],
+  );
+  assert.equal(
+    assignTopics(
+      baseEvent({
+        title: "Organic Chemistry Seminar",
+        organizer: "College of Chemistry",
+        livewhale_groups: ["college of chemistry"],
+        description: "Weekly organic chemistry seminar.",
+      }),
+    ).includes("biology-life-sciences"),
+    false,
   );
 });
 

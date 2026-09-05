@@ -155,22 +155,67 @@ test("published topic assignments are valid, bounded, and represented", () => {
     );
     assert.ok(count <= 200, `${slug} is too broad (${count} events)`);
   }
-
-  // Free Food is intentionally checked separately: raw descriptions contain
-  // many catering mentions, but only high-confidence assignments count.
-  assert.ok(counts.get("free-food") >= 1);
-  assert.ok(counts.get("free-food") <= 200);
 });
 
-test("deterministic samples retain assignment precision", () => {
-  const sampled = published.events.filter((_, index) => index % 97 === 0);
-  assert.ok(sampled.length >= 10, "published corpus is too small to sample");
-  for (const event of sampled) {
-    const expected = topicsModule.assignTopics(event);
-    assert.deepEqual(
-      event.topics ?? [],
-      expected,
-      `${event.id} topics drifted from deterministic assignment`,
-    );
+test("labeled samples keep assignment precision at or above 90%", () => {
+  const labeled = JSON.parse(
+    fs.readFileSync(
+      path.join(
+        rootDir,
+        "scripts",
+        "tests",
+        "fixtures",
+        "topic-labeled-samples.json",
+      ),
+      "utf8",
+    ),
+  );
+  assert.equal(labeled.minimumPrecision, 0.9);
+  assert.ok(labeled.samples.length >= 10);
+
+  let truePositives = 0;
+  let falsePositives = 0;
+  const mistakes = [];
+
+  for (const sample of labeled.samples) {
+    const assigned = topicsModule.assignTopics({
+      title: sample.title,
+      description: sample.description,
+      organizer: sample.organizer,
+      source: sample.source,
+      livewhale_groups: sample.livewhale_groups,
+    });
+    const relevant = new Set(sample.relevant);
+    const forbidden = new Set(sample.irrelevant ?? []);
+
+    for (const slug of assigned) {
+      if (forbidden.has(slug) || !relevant.has(slug)) {
+        falsePositives += 1;
+        mistakes.push(
+          `${sample.id} assigned ${slug} (relevant: ${sample.relevant.join(",") || "none"})`,
+        );
+      } else {
+        truePositives += 1;
+      }
+    }
+
+    for (const slug of forbidden) {
+      assert.equal(
+        assigned.includes(slug),
+        false,
+        `${sample.id} must not receive ${slug}`,
+      );
+    }
   }
+
+  const predicted = truePositives + falsePositives;
+  const precision = predicted === 0 ? 1 : truePositives / predicted;
+  assert.ok(
+    precision >= labeled.minimumPrecision,
+    [
+      `Precision ${(precision * 100).toFixed(1)}% is below ${(labeled.minimumPrecision * 100).toFixed(0)}%.`,
+      `False positives:`,
+      ...mistakes.map((line) => `  - ${line}`),
+    ].join("\n"),
+  );
 });

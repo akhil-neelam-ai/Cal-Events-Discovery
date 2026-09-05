@@ -107,6 +107,17 @@ test("agent discovery JSON files are valid and internally linked", () => {
   assert.equal(openapi.openapi, "3.1.0");
   assert.ok(openapi.paths["/events.json"]);
   assert.ok(openapi.paths["/status.json"]);
+  assert.equal(
+    openapi.info.version,
+    serverCard.serverInfo.version,
+    "OpenAPI and MCP server-card versions must stay equal",
+  );
+  assert.equal(
+    openapi.info.version,
+    agentCard.version,
+    "OpenAPI and agent-card versions must stay equal",
+  );
+  assert.equal(openapi.info.version, "1.2.0");
 });
 
 test("agent URL and search guidance includes the topic filter", () => {

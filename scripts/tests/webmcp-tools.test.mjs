@@ -2,6 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { createWebMcpTools } from "../../agent/webmcpTools.ts";
+import { TOPIC_VOCABULARY } from "../../scripts/lib/topics.ts";
+import {
+  buildSearchPlan,
+  dismissedKeysForExplicitTopic,
+  searchEvents,
+} from "../../utils/searchEngine.ts";
 
 function makePayload(events) {
   return {
@@ -145,6 +151,93 @@ test("WebMCP get_event_by_id returns directions and calendar links", async () =>
   const noId = await getById.execute({});
   assert.equal(noId.event, null);
   assert.match(noId.error, /id is required/);
+});
+
+test("WebMCP explicit topic overrides a different inferred topic like the UI", async () => {
+  const events = [
+    event({
+      id: "law-ai-text",
+      title: "Law forum",
+      description: "A law event that mentions AI once.",
+      topics: ["law"],
+    }),
+    event({
+      id: "ai-only",
+      title: "AI forum",
+      description: "Artificial intelligence research.",
+      topics: ["ai-machine-learning"],
+    }),
+  ];
+  const payload = {
+    ...makePayload(events),
+    topic_vocabulary: TOPIC_VOCABULARY,
+  };
+
+  for (const searchIndex of [
+    null,
+    { ids: [], eventCount: 0, t: {}, g: {}, o: {}, l: {}, d: {} },
+  ]) {
+    const { tools } = loadTools(payload, { searchIndex });
+    const search = tools.get("search_berkeley_events");
+    const agent = await search.execute({ topic: "law", query: "AI" });
+
+    const plan = buildSearchPlan("AI", { topics: TOPIC_VOCABULARY.topics });
+    const dismissed = dismissedKeysForExplicitTopic(plan, "law");
+    const pool = events.filter((item) => (item.topics ?? []).includes("law"));
+    const ui = searchEvents(pool, "AI", searchIndex, dismissed, {
+      topics: TOPIC_VOCABULARY.topics,
+    });
+
+    assert.deepEqual(
+      agent.events.map((item) => item.id),
+      ui.results.map((item) => item.id).slice(0, 10),
+    );
+    assert.equal(agent.fallbackUsed, ui.fallbackUsed);
+    assert.ok(agent.events.some((item) => item.id === "law-ai-text"));
+    assert.ok(!agent.events.some((item) => item.id === "ai-only"));
+  }
+});
+
+test("WebMCP date bounds apply before topic fallback", async () => {
+  const todayKey = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+  const [year, month, day] = todayKey.split("-").map(Number);
+  const tomorrow = new Date(Date.UTC(year, month - 1, day));
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  const tomorrowKey = tomorrow.toISOString().slice(0, 10);
+
+  const { tools } = loadTools({
+    ...makePayload([
+      event({
+        id: "today-law",
+        title: "Law today",
+        date: todayKey,
+        topics: ["law"],
+        description: "A law briefing.",
+      }),
+      event({
+        id: "tomorrow-ai",
+        title: "AI tomorrow",
+        date: tomorrowKey,
+        topics: ["ai-machine-learning"],
+        description: "Artificial intelligence talk.",
+      }),
+    ]),
+    topic_vocabulary: TOPIC_VOCABULARY,
+  });
+
+  const search = tools.get("search_berkeley_events");
+  const output = await search.execute({
+    query: "AI",
+    datePreset: "today",
+  });
+
+  assert.ok(output.count > 0, "today plus AI must not return an empty list");
+  assert.ok(!output.events.some((item) => item.id === "tomorrow-ai"));
 });
 
 test("WebMCP topic filtering uses the published vocabulary and projects topics", async () => {
