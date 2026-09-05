@@ -8,7 +8,12 @@ import {
 } from "../utils/eventDates";
 import { getDirectionsUrl } from "../utils/eventPresentation";
 import { buildEventIcs, buildGoogleCalendarUrl } from "../utils/icsExport";
-import { searchEvents } from "../utils/searchEngine";
+import {
+  buildSearchPlan,
+  dismissedKeysForExplicitTopic,
+  searchEvents,
+} from "../utils/searchEngine";
+import type { SearchTopicDefinition } from "../utils/searchIntent";
 import type { SearchIndex } from "../utils/textUtils";
 import { buildUrlStateSearch, parseUrlState } from "../utils/urlState";
 
@@ -144,11 +149,38 @@ function buildFiltersFromInput(
 }
 
 function getPublishedTopicSlugs(payload: EventsPayload): string[] {
-  return Array.isArray(payload.topic_vocabulary?.topics)
-    ? payload.topic_vocabulary.topics
-        .map((topic) => topic.slug)
-        .filter((slug) => typeof slug === "string")
-    : [];
+  return getPublishedTopics(payload).map((topic) => topic.slug);
+}
+
+function getPublishedTopics(payload: EventsPayload): SearchTopicDefinition[] {
+  if (!Array.isArray(payload.topic_vocabulary?.topics)) {
+    return [];
+  }
+
+  return payload.topic_vocabulary.topics
+    .filter(
+      (topic) =>
+        typeof topic?.slug === "string" &&
+        typeof topic.label === "string" &&
+        Array.isArray(topic.synonyms),
+    )
+    .map((topic) => ({
+      slug: topic.slug,
+      label: topic.label,
+      synonyms: topic.synonyms,
+    }));
+}
+
+function eventMatchesDateBounds(
+  event: CalEvent,
+  startDate?: string,
+  endDate?: string,
+): boolean {
+  const key = getPacificDateKey(event.date);
+  if (!key) return false;
+  if (startDate && key < startDate) return false;
+  if (endDate && key > endDate) return false;
+  return true;
 }
 
 function validateTopic(
@@ -336,7 +368,8 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         fetchSearchIndex(),
       ]);
       const allEvents = Array.isArray(data.events) ? data.events : [];
-      const allowedTopics = getPublishedTopicSlugs(data);
+      const publishedTopics = getPublishedTopics(data);
+      const allowedTopics = publishedTopics.map((item) => item.slug);
       let topic: string | null;
       try {
         topic = validateTopic(input, allowedTopics);
@@ -352,6 +385,11 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
       const source =
         typeof input.source === "string" ? input.source.trim() : "";
       const query = typeof input.query === "string" ? input.query.trim() : "";
+      const plan =
+        query.length >= 2
+          ? buildSearchPlan(query, { topics: publishedTopics })
+          : null;
+      const dismissedKeys = dismissedKeysForExplicitTopic(plan, topic);
 
       const pool = allEvents.filter((event) => {
         const primaryCategory = event.tags?.[0]?.toLowerCase() ?? "";
@@ -360,7 +398,8 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         const matchesSource = !source || event.source === source;
         const matchesTopic =
           !topic || (event.topics ?? []).some((slug) => slug === topic);
-        return matchesCategory && matchesSource && matchesTopic;
+        const matchesDate = eventMatchesDateBounds(event, startDate, endDate);
+        return matchesCategory && matchesSource && matchesTopic && matchesDate;
       });
 
       let ranked: CalEvent[];
@@ -368,7 +407,9 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
       if (query.length < 2) {
         ranked = sortEventsChronologically(pool);
       } else {
-        const output = searchEvents(pool, query, index);
+        const output = searchEvents(pool, query, index, dismissedKeys, {
+          topics: publishedTopics,
+        });
         ranked = output.results;
         fallbackUsed = output.fallbackUsed;
         // Older published fixtures may predate topic_vocabulary. Preserve
@@ -391,16 +432,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
 
       const todayKey = getCurrentPacificDateKey();
       const limit = parseLimit(input.limit);
-      const results = ranked
-        .filter((event) => {
-          const key = getPacificDateKey(event.date);
-          if (!key) return false;
-          if (startDate && key < startDate) return false;
-          if (endDate && key > endDate) return false;
-          return true;
-        })
-        .slice(0, limit)
-        .map(summarizeEvent);
+      const results = ranked.slice(0, limit).map(summarizeEvent);
 
       return {
         lastUpdated: data.lastUpdated,

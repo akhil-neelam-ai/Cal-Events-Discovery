@@ -510,10 +510,39 @@ test('natural-language query "founder talks tomorrow" preserves tomorrow intent 
 });
 
 test('live-corpus query "AI" ranks matches across categories without category intent', () => {
+  const fixture = JSON.parse(
+    fs.readFileSync(
+      path.join(
+        rootDir,
+        "scripts",
+        "tests",
+        "fixtures",
+        "topic-reference-sets.json",
+      ),
+      "utf8",
+    ),
+  );
+  const aiReferenceSet = fixture.referenceSets.find(
+    (referenceSet) => referenceSet.topic === "ai-machine-learning",
+  );
+  const knownNonAiHomonyms = new Set([
+    "livewhale_20260907T170000Z-327069@events.berkeley.edu",
+    "livewhale_20260908T200000Z-328804@events.berkeley.edu",
+    "berkeley_law_772656",
+    "livewhale_20260925T000000Z-324717@events.berkeley.edu",
+    "livewhale_20260929T210000Z-323581@events.berkeley.edu",
+  ]);
+  const publishedIds = new Set(published.events.map((event) => event.id));
+  const referenceIds = aiReferenceSet.references
+    .map((reference) => reference.id)
+    .filter((id) => publishedIds.has(id) && !knownNonAiHomonyms.has(id));
+
   const output = searchEvents(published.events, "AI", publishedSearchIndex);
   const categories = new Set(
     output.results.map((event) => event.tags?.[0]).filter(Boolean),
   );
+  const resultIds = new Set(output.results.map((event) => event.id));
+  const overlap = referenceIds.filter((id) => resultIds.has(id)).length;
 
   assert.equal(output.plan.filters.category, undefined);
   assert.ok(
@@ -521,7 +550,10 @@ test('live-corpus query "AI" ranks matches across categories without category in
       chip.key.startsWith("category:"),
     ),
   );
-  assert.ok(output.results.length >= 50);
+  assert.ok(
+    overlap >= Math.min(50, referenceIds.length),
+    `AI search overlapped ${overlap}/${referenceIds.length} reference events`,
+  );
   assert.ok(categories.size > 1);
 });
 
@@ -545,25 +577,54 @@ test("topic intent uses the first subject word and preserves later words for ran
   assert.deepEqual(lawFirst.plan.keywords, ["ai"]);
 });
 
-test("free food is one topic hard filter, without free or category intent", () => {
-  const events = [
-    { ...SYNTHETIC_EVENTS[5], id: "topic-food", topics: ["free-food"] },
+test("free food is a free filter, not a topic or category", () => {
+  const plan = buildSearchPlan("free food");
+
+  assert.equal(plan.filters.topic, undefined);
+  assert.equal(plan.filters.free, true);
+  assert.equal(plan.filters.category, undefined);
+});
+
+test("free lunch is not a topic or category", () => {
+  const plan = buildSearchPlan("free lunch");
+
+  assert.equal(plan.filters.topic, undefined);
+  assert.equal(plan.filters.category, undefined);
+});
+
+test("free concert keeps free plus the concert topic, not a category", () => {
+  const plan = buildSearchPlan("free concert");
+
+  assert.equal(plan.filters.topic, "music-performance");
+  assert.equal(plan.filters.free, true);
+  assert.equal(plan.filters.category, undefined);
+});
+
+test("later topic phrases stay ranking text, not a second hard filter", () => {
+  const aiFirst = buildSearchPlan("AI film");
+  assert.equal(aiFirst.filters.topic, "ai-machine-learning");
+  assert.equal(aiFirst.filters.category, undefined);
+  assert.ok(
+    aiFirst.keywords.includes("film") || aiFirst.cleaned.includes("film"),
+  );
+
+  const filmFirst = buildSearchPlan("film AI");
+  assert.equal(filmFirst.filters.topic, "film");
+  assert.equal(filmFirst.filters.category, undefined);
+  assert.ok(filmFirst.keywords.includes("ai"));
+});
+
+test("a fixture vocabulary that drops a synonym stops topic inference", () => {
+  const topics = [
     {
-      ...SYNTHETIC_EVENTS[7],
-      id: "topic-other",
-      topics: ["ai-machine-learning"],
+      slug: "theater-dance",
+      label: "Theater and Dance",
+      synonyms: ["theater", "dance"],
     },
   ];
-  const output = searchEvents(events, "free food", null);
+  const plan = buildSearchPlan("theatre", { topics });
 
-  assert.equal(output.plan.filters.topic, "free-food");
-  assert.equal(output.plan.filters.free, undefined);
-  assert.equal(output.plan.filters.category, undefined);
-  assert.deepEqual(output.plan.keywords, []);
-  assert.deepEqual(
-    output.results.map((event) => event.id),
-    ["topic-food"],
-  );
+  assert.equal(plan.filters.topic, undefined);
 });
 
 test("theatre resolves to Theater and Dance instead of the broad Arts category", () => {
@@ -817,6 +878,8 @@ test("future topic words remain searchable text instead of category intent", () 
     "demo day",
     "entrepreneur",
     "free food",
+    "free lunch",
+    "free concert",
     "club",
     "social",
     "mixer",

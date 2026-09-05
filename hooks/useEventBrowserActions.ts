@@ -93,9 +93,15 @@ export function useEventBrowserActions({
   const handleDismissChip = useCallback(
     (key: string) => {
       setDismissedInterpretationKeys((prev) => new Set([...prev, key]));
+      if (key.startsWith("topic:")) {
+        const slug = key.slice("topic:".length);
+        setFilters((prev) =>
+          prev.topic === slug ? { ...prev, topic: "" } : prev,
+        );
+      }
       setSelectedEventId(null);
     },
-    [setDismissedInterpretationKeys, setSelectedEventId],
+    [setDismissedInterpretationKeys, setFilters, setSelectedEventId],
   );
 
   const handleDateRangeChange = useCallback(

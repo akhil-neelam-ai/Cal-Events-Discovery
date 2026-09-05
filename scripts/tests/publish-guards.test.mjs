@@ -261,20 +261,94 @@ test("an unassigned new event publishes with an empty topics list", () => {
   });
 });
 
-test("an empty assignment keeps topics for an event seen yesterday", () => {
+test("a successful empty assignment clears topics for an event seen yesterday", () => {
   const event = legacy({ topics: [] });
   const result = assignTopicsResiliently(
     [candidate(event)],
-    [legacy({ topics: ["law"] })],
+    [legacy({ topics: ["ai-machine-learning"] })],
     () => [],
   );
 
-  assert.deepEqual(result.events[0].topics, ["law"]);
+  assert.deepEqual(result.events[0].topics, []);
   assert.deepEqual(result.status, {
     outcome: "ok",
     assigned_count: 0,
-    carried_forward_count: 1,
+    carried_forward_count: 0,
   });
+});
+
+test("invalid assignment arrays become a stage error and carry prior topics", () => {
+  const previous = [legacy({ topics: ["law"] })];
+  const cases = [
+    () => ["law", "film", "music-performance", "wellness"],
+    () => ["law", "law"],
+    () => ["unknown-topic"],
+    () => "law",
+  ];
+
+  for (const assigner of cases) {
+    const result = assignTopicsResiliently(
+      [candidate(legacy({ topics: [] }))],
+      previous,
+      assigner,
+    );
+
+    assert.equal(result.status.outcome, "error");
+    assert.deepEqual(result.events[0].topics, ["law"]);
+    assert.equal(
+      PublishedEventsPayloadSchema.safeParse({
+        events: result.events,
+        sources: [],
+        lastUpdated: Date.now(),
+        data_age_hours: 0,
+        degraded_sources: [],
+        topic_vocabulary: TOPIC_VOCABULARY,
+      }).success,
+      true,
+    );
+  }
+});
+
+test("last-good restored events keep their published topics", () => {
+  const restored = legacy({
+    id: "livewhale_restored",
+    topics: ["physics-math-quantum"],
+  });
+  const result = assignTopicsResiliently(
+    [
+      {
+        published: restored,
+        source: { ...restored, livewhale_groups: undefined },
+      },
+    ],
+    [restored],
+    () => ["career-jobs"],
+    { preserveTopicIds: new Set(["livewhale_restored"]) },
+  );
+
+  assert.deepEqual(result.events[0].topics, ["physics-math-quantum"]);
+  assert.equal(result.status.outcome, "ok");
+  assert.equal(result.status.assigned_count, 0);
+});
+
+test("degraded group-feed provenance carries prior topics without source banners", () => {
+  const result = assignTopicsResiliently(
+    [candidate(legacy({ topics: [] }))],
+    [legacy({ topics: ["law"] })],
+    () => ["startups"],
+    { forceError: "LiveWhale group feeds failed; topic provenance incomplete" },
+  );
+
+  assert.equal(result.status.outcome, "error");
+  assert.match(result.status.error ?? "", /group feeds failed/);
+  assert.deepEqual(result.events[0].topics, ["law"]);
+  assert.deepEqual(
+    {
+      degraded: false,
+      degraded_sources: [],
+    },
+    { degraded: false, degraded_sources: [] },
+  );
 });
 
 test("successful topic assignment reports assigned and carry-forward counts", () => {
@@ -314,5 +388,19 @@ test("topic assignment failures use only the data-quality issue path", () => {
     updateEvents.slice(updateEvents.indexOf("notify-failure:")),
     /topic_assignment|topics\.outcome/,
     "the publish-failure notifier must not treat a topic assignment failure as a pipeline failure",
+  );
+});
+
+test("orchestrator preserves last-good topics and group-feed provenance", () => {
+  const orchestrator = fs.readFileSync(
+    path.join(rootDir, "scripts", "updateEvents.ts"),
+    "utf8",
+  );
+
+  assert.match(orchestrator, /preserveTopicIds: recovery\.restoredIds/);
+  assert.match(orchestrator, /groupFeedsDegraded/);
+  assert.match(
+    orchestrator,
+    /LiveWhale group feeds failed; topic provenance incomplete/,
   );
 });

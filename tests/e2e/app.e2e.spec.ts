@@ -73,7 +73,7 @@ function buildFixtureEvents() {
       location: "MLK Student Union",
       description: "Free food and student social.",
       tags: ["Student Life"],
-      topics: ["free-food", "social-clubs"],
+      topics: ["social-clubs"],
       url: "https://example.com/pizza",
       source: "callink",
     },
@@ -333,11 +333,11 @@ test("mobile topic selection updates the filter badge and summary", async ({
   await page.goto("/");
 
   await page.getByRole("button", { name: /^Filters$/ }).click();
-  await page.getByRole("button", { name: /Free Food, 1 event/ }).click();
+  await page.getByRole("button", { name: /Social and Clubs, 1 event/ }).click();
 
   await expect(page.getByRole("button", { name: /Filters 1/ })).toBeVisible();
-  await expect(page.getByText("Topic: Free Food")).toBeVisible();
+  await expect(page.getByText("Topic: Social and Clubs")).toBeVisible();
   await expect(page.getByText("Free Pizza Mixer")).toBeVisible();
   await expect(page.getByText("Dreams Are Colder Than Death")).toHaveCount(0);
-  await expect(page).toHaveURL(/topic=free-food/);
+  await expect(page).toHaveURL(/topic=social-clubs/);
 });

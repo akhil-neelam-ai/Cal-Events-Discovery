@@ -18,6 +18,13 @@ export interface TopicAssignmentResult {
 
 export type TopicAssigner = (event: TopicAssignableEvent) => TopicSlug[];
 
+export interface TopicAssignmentOptions {
+  /** Last-good rows keep the topics already on the published event. */
+  preserveTopicIds?: ReadonlySet<string>;
+  /** Skip assignment and carry prior topics. Used when provenance is incomplete. */
+  forceError?: string;
+}
+
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
@@ -49,25 +56,77 @@ function applyPreviousTopics(
   return carriedForwardCount;
 }
 
+export function assertValidTopicAssignment(
+  assigned: unknown,
+  eventId: string,
+): TopicSlug[] {
+  if (!Array.isArray(assigned)) {
+    throw new Error(`topic assignment for ${eventId} returned a non-array`);
+  }
+  if (assigned.length > 3) {
+    throw new Error(
+      `topic assignment for ${eventId} returned ${assigned.length} slugs`,
+    );
+  }
+
+  const unique = new Set<string>();
+  const slugs: TopicSlug[] = [];
+  for (const slug of assigned) {
+    if (typeof slug !== "string" || !TOPIC_BY_SLUG.has(slug as TopicSlug)) {
+      throw new Error(
+        `topic assignment for ${eventId} returned unknown slug ${String(slug)}`,
+      );
+    }
+    if (unique.has(slug)) {
+      throw new Error(
+        `topic assignment for ${eventId} returned duplicate slug ${slug}`,
+      );
+    }
+    unique.add(slug);
+    slugs.push(slug as TopicSlug);
+  }
+  return slugs;
+}
+
 /**
- * Assign topics as one isolated stage. If any assignment throws, discard the
- * partial results and carry yesterday's valid topics forward by event id.
- * Projection, source recovery, schema validation, and file writes remain
- * outside this boundary so their failures still stop publication.
+ * Assign topics as one isolated stage. If any assignment throws or returns an
+ * invalid slug list, discard the partial results and carry yesterday's valid
+ * topics forward by event id. Projection, source recovery, schema validation,
+ * and file writes remain outside this boundary so their failures still stop
+ * publication.
  */
 export function assignTopicsResiliently(
   candidates: readonly TopicAssignmentCandidate[],
   previousEvents: readonly LegacyCalEvent[],
   assigner: TopicAssigner = assignTopics,
+  options: TopicAssignmentOptions = {},
 ): TopicAssignmentResult {
   const events = candidates.map(({ published }) => ({ ...published }));
   const previousById = new Map(
     previousEvents.map((event) => [event.id, event]),
   );
+  const preserveTopicIds = options.preserveTopicIds ?? new Set<string>();
 
-  let assignments: TopicSlug[][];
+  if (options.forceError) {
+    return {
+      events,
+      status: {
+        outcome: "error",
+        assigned_count: 0,
+        carried_forward_count: applyPreviousTopics(events, previousById),
+        error: options.forceError,
+      },
+    };
+  }
+
+  let assignments: Array<TopicSlug[] | "preserved">;
   try {
-    assignments = candidates.map(({ source }) => assigner(source));
+    assignments = candidates.map(({ published, source }) => {
+      if (preserveTopicIds.has(published.id)) {
+        return "preserved";
+      }
+      return assertValidTopicAssignment(assigner(source), published.id);
+    });
   } catch (error) {
     return {
       events,
@@ -81,18 +140,15 @@ export function assignTopicsResiliently(
   }
 
   let assignedCount = 0;
-  let carriedForwardCount = 0;
   for (const [index, event] of events.entries()) {
-    const assignedTopics = assignments[index] ?? [];
-    if (assignedTopics.length > 0) {
-      event.topics = assignedTopics;
-      assignedCount += 1;
+    const assignedTopics = assignments[index];
+    if (assignedTopics === "preserved") {
+      event.topics = validPreviousTopics(event);
       continue;
     }
 
-    const previousTopics = validPreviousTopics(previousById.get(event.id));
-    event.topics = previousTopics;
-    if (previousTopics.length > 0) carriedForwardCount += 1;
+    event.topics = assignedTopics ?? [];
+    if (event.topics.length > 0) assignedCount += 1;
   }
 
   return {
@@ -100,7 +156,7 @@ export function assignTopicsResiliently(
     status: {
       outcome: "ok",
       assigned_count: assignedCount,
-      carried_forward_count: carriedForwardCount,
+      carried_forward_count: 0,
     },
   };
 }

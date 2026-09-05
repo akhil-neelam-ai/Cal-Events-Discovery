@@ -96,9 +96,18 @@ export default function App() {
     initialUrlState.hasExplicitDateRange,
   );
   const showBackToTop = useBackToTopVisibility();
+  const feedSettled =
+    loading === LoadingState.SUCCESS || loading === LoadingState.ERROR;
   const allowedTopicSlugs = useMemo(
-    () => topicVocabulary?.topics.map((topic) => topic.slug) ?? null,
-    [topicVocabulary],
+    () =>
+      feedSettled
+        ? (topicVocabulary?.topics.map((topic) => topic.slug) ?? [])
+        : null,
+    [feedSettled, topicVocabulary],
+  );
+  const topicDefinitions = useMemo(
+    () => (feedSettled ? (topicVocabulary?.topics ?? []) : null),
+    [feedSettled, topicVocabulary],
   );
 
   const handleEventClick = useCallback((event: CalEvent) => {
@@ -212,6 +221,9 @@ export default function App() {
     setFilters((prev) =>
       prev.topic === topic ? { ...prev, topic: DEFAULT_FILTERS.topic } : prev,
     );
+    setDismissedInterpretationKeys(
+      (prev) => new Set([...prev, `topic:${topic}`]),
+    );
   }, []);
 
   const emptyStateActions = useMemo(
@@ -240,6 +252,7 @@ export default function App() {
   } = useEventBrowserState({
     allEvents,
     filters: browserStateFilters,
+    liveSearchQuery: filters.searchQuery,
     searchIndex,
     dismissedInterpretationKeys,
     selectedEventId,
@@ -248,6 +261,7 @@ export default function App() {
     nextWeekKey,
     userSetDateRange,
     topicAvailabilityReady: allowedTopicSlugs !== null,
+    topicDefinitions,
     onUnavailableTopic: clearUnavailableTopic,
     emptyStateActions,
   });

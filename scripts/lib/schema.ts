@@ -139,6 +139,11 @@ export interface FetchResult {
   rawCount: number;
   filteredPast: number;
   invalid: number;
+  /**
+   * LiveWhale-only: department group feeds failed. Topic assignment should
+   * carry prior topics. This is not a visitor-facing source degradation.
+   */
+  groupFeedsDegraded?: boolean;
 }
 
 const TOPIC_SLUG_TUPLE = TOPIC_SLUGS as readonly [TopicSlug, ...TopicSlug[]];

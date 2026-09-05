@@ -78,10 +78,10 @@ livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley
 
 Loads `events.json` and `search-index.json` at startup. Search is entirely client-side.
 
-**Search flow** (`utils/searchEngine.ts`):
+**Search flow** (`utils/searchIntent.ts` + `utils/searchEngine.ts`):
 
-1. `buildSearchPlan(query)` detects intent in a fixed detector order: temporal, time-of-day, modality, free, source, category, campus area. Each detector strips its matched words from the residual query text, **except the category branch, which does not**. That asymmetry is load-bearing and deliberate to know about: it is why a subject word like "AI" still ranks as text even while it locks a category.
-2. `searchEvents(events, plan, index)` applies plan filters as a hard pool filter, then scores against the inverted index, falls back to Fuse.js under 3 results, then broadens (relax date, then drop category) with an explanatory message.
+1. `buildSearchPlan(query, { topics })` detects intent in a fixed detector order: temporal, source, topic, time-of-day, modality, free, category, campus area. Topic uses the published vocabulary when the feed has loaded. Later topic phrases stay ranking text. Each detector strips its matched words from the residual query text, **except the category branch, which does not**. That asymmetry is load-bearing and deliberate to know about: it is why a subject word like "AI" still ranks as text even while it locks a category.
+2. `searchEvents` applies plan filters as a hard pool filter, then scores against the inverted index, falls back to Fuse.js, then broadens (relax date, then drop category, then drop topic) with an explanatory message.
 
 **Search index** (`scripts/lib/buildIndex.ts` → `public/search-index.json`): field-differentiated inverted index. Fields: `t` title (60), `g` tags (45), `o` organizer (30), `l` location (20), `d` description (10). Values are event-position integers into `ids[]`. Venue aliases are injected at build time.
 
@@ -135,13 +135,11 @@ Established in `docs/brainstorms/2026-08-17-publish-vs-quality-pipeline-requirem
 
 ## Current work in flight
 
-An approved plan is ready to implement:
+The topic filter layer from `docs/plans/2026-09-03-001-feat-topic-filter-layer-plan.md` is on `main` (PR 173). Do not re-implement U1 through U9.
 
-**`docs/plans/2026-09-03-001-feat-topic-filter-layer-plan.md`** adds a per-event `topics` field and a second independent filter beside the category pills. 9 implementation units, U1 through U9. Its upstream requirements doc is `docs/brainstorms/2026-09-03-topic-filter-layer-requirements.md`.
+Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` is implemented on `feat/topic-filter-review-fixes`. Successful empty assignments clear topics. Broad identity mappings are gone. The breadth cap stays 200. Public discovery versions are 1.2.0.
 
-Start at **U1**. It is self-contained, ships on its own, and delivers most of the pain relief: it removes subject words such as "AI" and "film" from the search engine's category trigger table so they rank as text across all categories instead of locking one category and hiding most matching events. Its main cost is rewriting six existing assertions in `scripts/tests/search-engine-runtime.test.mjs` that expect a category from those words.
-
-The plan's Sources and Research section carries the verified codebase facts behind each decision. Two corrections it records, against a stale April UX audit: the skip-to-content link already exists in `components/AppHeaderShell.tsx`, and the desktop filter bar already renders a visible thin scrollbar.
+The June full-repo audit is `docs/code-review-2026-06-02.md`. It is a different pass.
 
 ## Key files
 
@@ -153,7 +151,10 @@ The plan's Sources and Research section carries the verified codebase facts behi
 | `scripts/lib/normalize.ts` | `projectToLegacy`, `deriveFrontendTags`, `isoDateInPT`, `cleanTitle` |
 | `scripts/lib/buildIndex.ts` | Inverted index generator with venue alias expansion |
 | `scripts/lib/lastGoodFallback.ts` | Last-good restore, by id, with cancellation filtering |
-| `utils/searchEngine.ts` | `buildSearchPlan` and `searchEvents`: the entire client search logic |
+| `scripts/lib/topics.ts` | Topic vocabulary and deterministic assignment |
+| `docs/code-review-2026-09-04-topic-filter-layer.md` | Leftover topic-filter review items after PR 173 |
+| `utils/searchIntent.ts` | Query intent: `buildSearchPlan`, topic phrases, dismissed-key rebuild |
+| `utils/searchEngine.ts` | `searchEvents`: pool filters, scoring, and fallback |
 | `utils/textUtils.ts` | Stemmer, tokenizer, `DOMAIN_SYNONYMS`, venue aliases |
 | `hooks/useEventBrowserState.ts` | Pool filtering, date bucketing, empty and fallback state |
 | `components/FiltersBar.tsx` | Desktop bar and mobile drawer, both filter variants |

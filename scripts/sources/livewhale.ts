@@ -393,19 +393,35 @@ async function fetchFeed(
   );
 }
 
-/** Fetch a single group feed, returning an empty object on any error (non-fatal). */
+export interface LiveWhaleGroupFeedResult {
+  group: string;
+  parsed: Record<string, unknown>;
+  ok: boolean;
+}
+
+export function groupFeedsAreDegraded(
+  results: readonly { ok: boolean }[],
+): boolean {
+  return results.length > 0 && results.every((result) => !result.ok);
+}
+
+/** Fetch a single group feed. Failures are recorded; they are not visitor degradation. */
 async function fetchGroupFeed(
   group: string,
   options: FetchOptions,
-): Promise<Record<string, unknown>> {
+): Promise<LiveWhaleGroupFeedResult> {
   const url = `${GROUP_BASE}/${encodeURIComponent(group)}`;
   try {
-    return await fetchFeed(url, 0, options); // minEvents=0: any response is acceptable
+    return {
+      group,
+      parsed: await fetchFeed(url, 0, options),
+      ok: true,
+    };
   } catch (err) {
     console.warn(
       `[livewhale] group feed "${group}" failed: ${err instanceof Error ? err.message : err}`,
     );
-    return {};
+    return { group, parsed: {}, ok: false };
   }
 }
 
@@ -458,17 +474,16 @@ const GROUP_FEED_CONCURRENCY = 8;
  */
 async function fetchAllGroupFeeds(
   options: FetchOptions,
-): Promise<LiveWhaleGroupFeed[]> {
-  const results: LiveWhaleGroupFeed[] = new Array(LIVEWHALE_GROUPS.length);
+): Promise<LiveWhaleGroupFeedResult[]> {
+  const results: LiveWhaleGroupFeedResult[] = new Array(
+    LIVEWHALE_GROUPS.length,
+  );
   let nextIdx = 0;
   const worker = async (): Promise<void> => {
     while (nextIdx < LIVEWHALE_GROUPS.length) {
       const myIdx = nextIdx++;
       const group = LIVEWHALE_GROUPS[myIdx];
-      results[myIdx] = {
-        group,
-        parsed: await fetchGroupFeed(group, options),
-      };
+      results[myIdx] = await fetchGroupFeed(group, options);
     }
   };
   await Promise.all(
@@ -483,6 +498,7 @@ async function fetchAllGroupFeeds(
 export interface LiveWhaleGroupFeed {
   group: string;
   parsed: Record<string, unknown>;
+  ok?: boolean;
 }
 
 export interface MergedLiveWhaleFeeds {
@@ -547,6 +563,12 @@ export async function fetchLiveWhale(
     fetchFeed(FEED_URL, MIN_HEALTHY_EVENT_COUNT, options),
     fetchAllGroupFeeds(options),
   ]);
+  const groupFeedsDegraded = groupFeedsAreDegraded(groupResults);
+  if (groupFeedsDegraded) {
+    console.warn(
+      "[livewhale] every department group feed failed; topic assignment will carry prior topics",
+    );
+  }
 
   // Merge all iCal records by UID. The main record remains authoritative, but
   // every department feed that contained it is retained as assignment input.
@@ -691,5 +713,5 @@ export async function fetchLiveWhale(
   console.log(
     `[livewhale] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`,
   );
-  return { events, rawCount, filteredPast, invalid };
+  return { events, rawCount, filteredPast, invalid, groupFeedsDegraded };
 }

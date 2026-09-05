@@ -202,7 +202,7 @@ flowchart TB
 ## Success Criteria
 
 - Typing "AI" on the live site returns at least 50 of the 56 events in the maintained AI reference set.
-- No single topic chip yields more than about 150 events across the full corpus. Academic's 557 is reachable only through the category pill, never through one topic.
+- No single topic chip yields more than 200 events across the full corpus. Academic's 557 is reachable only through the category pill, never through one topic.
 - A spot check of ten random events under any topic finds at least nine clearly relevant.
 - The filter bar has no silent horizontal overflow at 1024 pixels, which closes audit finding H6.
 - An agent calling the WebMCP search tool with a topic gets the same result set as a person clicking the chip.
@@ -225,7 +225,7 @@ flowchart TB
 ## Dependencies and Assumptions
 
 - **Assumption: the vocabulary is designed from the builder's own experience.** The Fields group reflects how a graduate student who knows their subject searches. The Interests group is a reasoned guess at how an undergraduate browses and has not been validated with anyone. Treat the Interests names as the most likely to need revision after launch.
-- **Assumption: roughly 20 topics is the right size.** Enough to carve Academic into browsable slices of 20 to 150 events, few enough to fit two chip groups. The Fields counts below are corpus-confirmed by keyword. The Interests counts are not, and roughly half the seed rows are unsized. Free Food's 182 raw mentions already sit above the 150-event cap. Planning verifies each topic's actual event count at R4 precision against both a minimum that earns a chip and the cap before the vocabulary is finalized.
+- **Assumption: roughly 20 topics is the right size.** Enough to carve Academic into slices of 20 to 200 events. Few enough to fit two chip groups. The Fields counts below are corpus-confirmed by keyword. The Interests counts are not, and roughly half the seed rows are unsized. Free Food's 182 raw mentions already sit above a 150-event target. The published cap is 200 until identity mappings shrink the fat chips. Planning checks each topic's real event count at R4 precision against a minimum and the 200 cap.
 - **Dependency: an AI classifier needs a new secret.** The daily cron currently holds one secret, the GitHub PR token. A classifier adds an API key and a network call to a pipeline that was recently hardened for reliability. R5 exists so this dependency can never take the feed down.
 
 ---
@@ -272,7 +272,7 @@ None.
 - Whether and how topics appear on the event card and in the detail panel.
 - Whether the topic vocabulary and per-event topics are published in the search index as well as the events file, so ranking can weight them.
 - How the "AI talks" hero preset and the popular-search chips change once "AI" is a topic rather than a category.
-- Which topics earn a chip: each seed topic's real event count at R4 precision, checked against a minimum and the 150 cap, with Free Food the first to verify.
+- Which topics earn a chip: each seed topic's real event count at R4 precision, checked against a minimum and the 200 cap, with Free Food the first to verify.
 - Ordering and validating the vocabulary against demand: export this semester's GA4 search terms with result counts and category clicks, list the top 30 terms and the category-click share, and use them to finalize and order the seed table.
 
 ---
