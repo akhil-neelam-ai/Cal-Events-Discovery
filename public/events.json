@@ -1,10 +1,40 @@
 {
   "events": [
     {
+      "id": "livewhale_20260907T070000Z-324686@events.berkeley.edu",
+      "title": "Academic and Administrative Holiday - Labor Day",
+      "organizer": "Equity And Inclusion",
+      "date": "2026-09-07",
+      "time": "All day",
+      "location": "UC Berkeley Campus",
+      "description": "Academic and Administrative Holiday - Labor Day",
+      "tags": [
+        "Student Life"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/Equity-and-Inclusion/event/324686-academic-and-administrative-holiday-labor-day",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260907T070000Z-327318@events.berkeley.edu",
+      "title": "California Men's Golf vs USC",
+      "organizer": "Cal Athletics",
+      "date": "2026-09-07",
+      "time": "All day",
+      "location": "Chandler, AZ, Whirlwind GC",
+      "description": "California Men's Golf vs USC",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/sports/event/327318-california-mens-golf-vs-usc",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_288815@events.berkeley.edu",
       "title": "Exhibit | Centering Philippine and Filipinx American Histories: Selections from The Bancroft Library",
       "organizer": "UC Berkeley Library",
-      "date": "2026-09-06",
+      "date": "2026-09-07",
       "time": "All day",
       "location": "The Bancroft Library (corridor)",
       "description": "The Bancroft Library's collections of materials relating to the Philippines span nearly 500 years. Highlights in this exhibit include a transcript of an Inquisitorial trial from 1646, a prayer book written in the Cebuano language, and UC Berkeley Filipino student publications from 1905 to the present. The exhibit also features selections from the personal papers of acclaimed author Jessica Hagedorn, including typewritten drafts of her novels, poetry, song lyrics, and a screenplay, as well as childhood drawings and writings.Bancroft's renowned Latin American collections offer up intriguing examples of documents produced by the Spanish Empire as it exploited the islands' natural, cultural, and human resources. Examples include the transcript of the Inquisitorial trial of two women accused of being spiritual mediums, a manuscript written in the Jawi script, which is based on Arabic script promising religious freedom to the Muslim residents of the island of Mindanao, and materials regarding the trade between Manila and Mexico.The personal papers and published works of UC Berkeley professors Bernard Moses (1846-1931) and David Barrows (1873-1954) document their early involvement with American colonialism in the Philippines, especially their work in redesigning the Filipino education system. In the aftermath of a brutal war, Americans viewed education as a tool for pacifying a conquered population. Documentation of these professors' white supremacist views is contrasted with the work of Filipinx and Asian American scholars who use their words to critique colonialism and its racist underpinnings.Educational opportunities have brought students from the Philippines, and later Filipinx American students, to Berkeley since the early 20th century. The exhibit includes examples of four student publications — two published in the first two decades of the 1900s and two more contemporary examples — that provide evidence of these students' political engagement and their determination to make their voices heard.Selections from the personal papers of acclaimed author and performance artist Jessica Hagedorn are also on display, including examples of her novels, plays, poetry, song lyrics, a screenplay, childhood drawings, and writings. Hagedorn employs a kaleidoscope of pop culture references, songs, images, and quotes from historical figures, and a galaxy of characters representing various cultures, classes, genders, races, and nationalities in her depictions of the Philippines and Filipinx America.Open hours may vary. Please view the The Bancroft Library hours (https://www.lib.berkeley.edu/visit/bancroft) page for the most up-to-date information.",
@@ -19,7 +49,6 @@
       "source": "livewhale",
       "end_date": "2026-12-18",
       "dates": [
-        "2026-09-06",
         "2026-09-07",
         "2026-09-08",
         "2026-09-09",
@@ -129,7 +158,7 @@
       "id": "livewhale_309073@events.berkeley.edu",
       "title": "Exhibit | Divestment Now! Student Activism and the Anti-Apartheid Movement at UC Berkeley",
       "organizer": "UC Berkeley Library",
-      "date": "2026-09-06",
+      "date": "2026-09-07",
       "time": "All day",
       "location": "The Rowell Exhibition Cases, Doe Library, 2nd floor",
       "description": "In 1985, UC Berkeley students, with support from faculty, staff, and labor unions, transformed the campus into the heart of a powerful anti-apartheid divestment campaign. They organized rallies, teach-ins, and shantytown encampments to protest the university's financial ties to companies profiting from South Africa's system of racial segregation. Divestment Now! Student Activism and the Anti-Apartheid Movement at UC Berkeley highlights a movement that mobilized thousands, politicized a new generation, and laid the groundwork for ongoing struggles for racial and economic justice.",
@@ -141,7 +170,6 @@
       "source": "livewhale",
       "end_date": "2027-02-22",
       "dates": [
-        "2026-09-06",
         "2026-09-07",
         "2026-09-08",
         "2026-09-09",
@@ -314,25 +342,10 @@
       ]
     },
     {
-      "id": "livewhale_20260906T070000Z-326168@events.berkeley.edu",
-      "title": "Exhibit Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-09-06",
-      "time": "All day",
-      "location": "2155 Center Street Berkeley, CA",
-      "description": "Graduate students from the Departments of African American and African Diaspora Studies and History of Art offer exhibition tours on selected Wednesdays at 12:15 PM, Sundays at 2 PM, and Free First Thursdays at 1:15 PM.",
-      "tags": [
-        "Arts"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/BAMPFA/event/326168-exhibit-tour-maren-hassinger-living-moving-growing",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_324428@events.berkeley.edu",
       "title": "Exhibition: \"Hidden Layers: AI Infrastructures and Hallucinations\"",
       "organizer": "Department of Art Practice",
-      "date": "2026-09-06",
+      "date": "2026-09-07",
       "time": "All day",
       "location": "Worth Ryder Art Gallery, Anthropology & Art Building, Rm 116",
       "description": "The Department of German and the Department of Art Practice are excited to announce the opening of Hidden Layers: AI Infrastructures and Hallucinations, curated by Antonio Somaini with Hannes Bajohr and Sonja Thiel, in dialogue with the France–Berkeley research initiative The Latent Spaces of Culture, and on display at the Worth Ryder Art Gallery. This exhibition examines some of the concealed dimensions of contemporary AI culture — the planetary infrastructures of extraction and computation, the often invisible human labor, the latent vector spaces within which culture is compressed and processed, and the models' hallucinations. Hidden Layers tackles these phenomena from two different perspectives: AI Infrastructures and AI Hallucinations. Featuring works by Nouf Aljowaysir; Gašper and Nina Beguš & Metahaven; Grégory Chatonsky; Kate Crawford & Vladan Joler; Asma Kazmi & Jill Miller; Andrea Khôra; Occitane Lacurie & Barnabé Sauvage; Greg Niemeyer; and Mario Santamaria & Alex Saum-Pascual. The project is a collaboration between the Department of German and the Worth Ryder Art Gallery at the Department of Art Practice.Exhibition Dates: September 3 - October 3, 2026Opening Reception: Thursday, September 3, 4-6:30pm, Worth Ryder Art Gallery RSVP here (https://docs.google.com/forms/d/e/1FAIpQLSd_OOMe7YQHw3CYbSr673UCSlQ0f4mn4lZ7g46KhRUTRpC5qQ/viewform?usp=dialog)Artist Talk, Gregory Chatonsky: Thursday, September 3, 6:30-8:00pm, AAPB 285 RSVP here (https://docs.google.com/forms/d/e/1FAIpQLSd_OOMe7YQHw3CYbSr673UCSlQ0f4mn4lZ7g46KhRUTRpC5qQ/viewform?usp=dialog)Related programming:Film Program: September 9, 7 pm, BAMPFAWorkshop on Latent Spaces of Culture: September 9, 2pm-4pm; September 10/11, 9:30 am-4pm on both days, 470 Stephens Additional events and more details to be announced. Times subject to change, please also check the campus calendar. This exhibition is supported by the France-Berkeley Fund of the Institute of European Studies, the Department of German and the Department of Art Practice, together with the Berkeley Center for New Media, the Berkeley Institute for Data Science (BIDS), Department of Rhetoric; Antikythera, the Pamela P. Fong and Family Distinguished Chair in China Studies, the Division of Arts & Humanities, the Townsend Center for the Humanities and the School of Information, the Technology Network of the Berkeley Economy and Society Initiative (BESI); and the Berkeley Art, Law, and Finance Project, hosted by the Berkeley Center for Law and Business at Berkeley Law. In conjunction with the exhibition, additional programming is developed in collaboration with Berkeley Art Museum and Pacific Film Archive (BAMPFA) and the Institute for Contemporary Art San Jose.",
@@ -351,7 +364,6 @@
       "source": "livewhale",
       "end_date": "2026-10-03",
       "dates": [
-        "2026-09-06",
         "2026-09-07",
         "2026-09-08",
         "2026-09-09",
@@ -380,380 +392,6 @@
         "2026-10-02",
         "2026-10-03"
       ]
-    },
-    {
-      "id": "livewhale_20260906T150000Z-328930@events.berkeley.edu",
-      "title": "Bouldering",
-      "organizer": "Recsports",
-      "date": "2026-09-06",
-      "time": "8:00 AM",
-      "location": "RSF Climbing Wall - Bouldering",
-      "description": "Bouldering",
-      "tags": [
-        "Student Life"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/recsports/event/328930-bouldering",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260906T150000Z-328931@events.berkeley.edu",
-      "title": "Building Hours - RSF",
-      "organizer": "Recsports",
-      "date": "2026-09-06",
-      "time": "8:00 AM",
-      "location": "Recreational Sports Facility Building Hours",
-      "description": "Building Hours - RSF",
-      "tags": [
-        "Student Life"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/recsports/event/328931-building-hours-rsf",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260906T150000Z-328481@events.berkeley.edu",
-      "title": "California Men's Water Polo vs Cuesta College (exhibition)",
-      "organizer": "Cal Athletics",
-      "date": "2026-09-06",
-      "time": "8:00 AM",
-      "location": "Davis, CA, Schaal Aquatics Center",
-      "description": "California Men's Water Polo vs Cuesta College (exhibition)",
-      "tags": [
-        "Sports",
-        "Arts"
-      ],
-      "topics": [
-        "visual-arts-exhibitions"
-      ],
-      "url": "https://events.berkeley.edu/sports/event/328481-california-mens-water-polo-vs-cuesta-college",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260906T150000Z-328932@events.berkeley.edu",
-      "title": "Open Rec Badminton",
-      "organizer": "Recsports",
-      "date": "2026-09-06",
-      "time": "8:00 AM",
-      "location": "RSF Fieldhouse Court C",
-      "description": "Open Rec Badminton",
-      "tags": [
-        "Student Life"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/recsports/event/328932-open-rec-badminton",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260906T150000Z-328933@events.berkeley.edu",
-      "title": "Open Rec Basketball",
-      "organizer": "Recsports",
-      "date": "2026-09-06",
-      "time": "8:00 AM",
-      "location": "RSF Gold Gym Court A",
-      "description": "Open Rec Basketball",
-      "tags": [
-        "Sports"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/recsports/event/328933-open-rec-basketball",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260906T150000Z-328987@events.berkeley.edu",
-      "title": "Open Rec Field Use",
-      "organizer": "Recsports",
-      "date": "2026-09-06",
-      "time": "8:00 AM",
-      "location": "La Loma Field",
-      "description": "Open Rec Field Use",
-      "tags": [
-        "Student Life"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/recsports/event/328987-open-rec-field-use",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260906T150000Z-328990@events.berkeley.edu",
-      "title": "Open Rec Volleyball",
-      "organizer": "Recsports",
-      "date": "2026-09-06",
-      "time": "8:00 AM",
-      "location": "RSF Gold Gym Court B",
-      "description": "Open Rec Volleyball",
-      "tags": [
-        "Sports"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/recsports/event/328990-open-rec-volleyball",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260906T170000Z-328984@events.berkeley.edu",
-      "title": "Building Hours - RFS",
-      "organizer": "Recsports",
-      "date": "2026-09-06",
-      "time": "10:00 AM",
-      "location": "Recwell Fitness Studio Building Hours",
-      "description": "Building Hours - RFS",
-      "tags": [
-        "Student Life"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/recsports/event/328984-building-hours-rfs",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260906T170000Z-327254@events.berkeley.edu",
-      "title": "Exploration of Forms: Movement as Creative Practice, a three-part workshop with Randee Paufve",
-      "organizer": "Theater, Dance, and Performance Studies",
-      "date": "2026-09-06",
-      "time": "10:00 AM",
-      "location": "Bancroft Dance Studio, 2401 Bancroft Way",
-      "description": "About Exploration of Forms: Exploration of Forms is a public workshop series that centers embodiment, transformation, and creativity. All workshops are free for students. Guests are encouraged to make a donation of $25 at the door, but no one will be turned away for lack of funds.Signups are available here: https://tdps.link/explorationAbout This Workshop:This workshop series investigates movement not as a set of skills to acquire, but as a creative and expressive practice to inhabit and sustain. Drawing on modern/contemporary and jazz dance techniques and performance practices, each session builds on the last — offering dancers a framework for thinking about their relationship to technique, expression, and the long arc of a life in movement.September 6th - Session 1:Technique as a Tool for Expression - What is technique for? This session uses rigorous contemporary movement — warmup, floor progressions, combinations — as a lens for examining how technical training shapes (and can liberate) individual expression. Dancers are invited to bring their bodies and their questions. September 13th - Session 2:Performance Presence and the Moving Body - How does a dancer inhabit a moment rather than execute it? This session explores performance technique not as a set of presentational skills but as a practice of attention — to space, to music, to other bodies, and to the intelligence moving through your own. September 20th - Session 3: Sustaining a Creative Practice - What keeps us dancing? This session addresses the longer questions beneath the work: how dancers build and maintain a creative practice over time, how they stay curious, how they metabolize influences, and how they find their own movement voice. Includes movement work alongside structured reflection. About the Teacher: Randee Paufve is a choreographer, dancer, teacher, and Artistic Director of Paufve Dance. A 2019 Fulbright Scholar and recipient of the Isadora Duncan Dance Award for Outstanding Individual Performance, she has been featured on NPR's All Things Considered and honored with the inaugural Della Davidson Prize for Innovations in Dance-Theater. Her work has been presented nationally at ODC Theater, SFMOMA, the Mondavi Center, On the Boards, and the Portland Institute for Contemporary Art, and internationally in India, Austria, and Portugal. She has taught on the faculties of UC Davis, CSU Sacramento, St. Mary's College of California, University of San Francisco and Lewis and Clark College, and Shawl-Anderson Dance Center. Accessibility: If you require an accommodation for effective communication or information about campus mobility access features in order to fully participate in this event, please contact us with as much advance notice as possible and at least 7–10 days in advance of the event.",
-      "tags": [
-        "Arts",
-        "Academic"
-      ],
-      "topics": [
-        "theater-dance",
-        "workshops-skills"
-      ],
-      "url": "https://events.berkeley.edu/TDPS/event/327254-exploration-of-forms-movement-as-creative-practice-a-",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260906T170000Z-328985@events.berkeley.edu",
-      "title": "Lap Swim",
-      "organizer": "Recsports",
-      "date": "2026-09-06",
-      "time": "10:00 AM",
-      "location": "Spieker Pool",
-      "description": "Lap Swim",
-      "tags": [
-        "Student Life"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/recsports/event/328985-lap-swim",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260906T180000Z-328480@events.berkeley.edu",
-      "title": "California Men's Water Polo vs American River (exhibition)",
-      "organizer": "Cal Athletics",
-      "date": "2026-09-06",
-      "time": "11:00 AM",
-      "location": "Davis, CA, Schaal Aquatics Center",
-      "description": "California Men's Water Polo vs American River (exhibition)",
-      "tags": [
-        "Sports",
-        "Arts"
-      ],
-      "topics": [
-        "visual-arts-exhibitions"
-      ],
-      "url": "https://events.berkeley.edu/sports/event/328480-california-mens-water-polo-vs-american-river",
-      "source": "livewhale"
-    },
-    {
-      "id": "calbears_vcal_38711-admin.calbears.com",
-      "title": "California Field Hockey vs Columbia",
-      "organizer": "Cal Athletics",
-      "date": "2026-09-06",
-      "time": "1:00 PM",
-      "location": ", Underhill Field",
-      "description": "California Field Hockey vs Columbia",
-      "tags": [
-        "Sports"
-      ],
-      "topics": [],
-      "url": "https://admin.calbears.com/calendar.aspx?game_id=38711&sport_id=3",
-      "source": "calbears"
-    },
-    {
-      "id": "livewhale_20260906T200000Z-323794@events.berkeley.edu",
-      "title": "California Women's Soccer vs Columbia",
-      "organizer": "Cal Athletics",
-      "date": "2026-09-06",
-      "time": "1:00 PM",
-      "location": "Berkeley, CA, Edwards Stadium",
-      "description": "California Women's Soccer vs ColumbiaStreaming Video: https://www.espn.com/watch/player/_/id/45f9d10a-23cc-4cd0-8f09-48cf3a190b17 (https://www.espn.com/watch/player/_/id/45f9d10a-23cc-4cd0-8f09-48cf3a190b17)",
-      "tags": [
-        "Sports"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/sports/event/323794-california-womens-soccer-vs-columbia",
-      "source": "livewhale"
-    },
-    {
-      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing",
-      "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-09-06",
-      "time": "2:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
-      "tags": [
-        "Arts"
-      ],
-      "topics": [
-        "visual-arts-exhibitions"
-      ],
-      "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
-      "source": "bampfa",
-      "end_date": "2026-11-29",
-      "dates": [
-        "2026-09-06",
-        "2026-09-09",
-        "2026-09-16",
-        "2026-09-23",
-        "2026-09-27",
-        "2026-10-01",
-        "2026-10-04",
-        "2026-10-14",
-        "2026-10-18",
-        "2026-10-21",
-        "2026-10-25",
-        "2026-11-01",
-        "2026-11-04",
-        "2026-11-05",
-        "2026-11-11",
-        "2026-11-15",
-        "2026-11-22",
-        "2026-11-25",
-        "2026-11-29"
-      ]
-    },
-    {
-      "id": "livewhale_20260906T230000Z-324006@events.berkeley.edu",
-      "title": "California Men's Soccer vs North Carolina",
-      "organizer": "Cal Athletics",
-      "date": "2026-09-06",
-      "time": "4:00 PM",
-      "location": ", Edwards Stadium",
-      "description": "California Men's Soccer vs North CarolinaStreaming Video: https://www.espn.com/watch/player/_/id/515cdfbe-d240-44db-91ce-dc043fb0ed70 (https://www.espn.com/watch/player/_/id/515cdfbe-d240-44db-91ce-dc043fb0ed70)",
-      "tags": [
-        "Sports"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/sports/event/324006-california-mens-soccer-vs-north-carolina",
-      "source": "livewhale"
-    },
-    {
-      "id": "bampfa_woman-woman",
-      "title": "A Woman Is a Woman",
-      "organizer": "BAMPFA",
-      "date": "2026-09-06",
-      "time": "4:30 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "A Woman Is a Woman",
-      "tags": [
-        "Arts"
-      ],
-      "topics": [],
-      "url": "https://bampfa.org/event/woman-woman",
-      "source": "bampfa",
-      "end_date": "2026-10-30",
-      "dates": [
-        "2026-09-06",
-        "2026-10-30"
-      ]
-    },
-    {
-      "id": "livewhale_20260906T233000Z-328053@events.berkeley.edu",
-      "title": "Film Screening: A Woman is a Woman",
-      "organizer": "BAMPFA",
-      "date": "2026-09-06",
-      "time": "4:30 PM",
-      "location": "BAMPFA",
-      "description": "Jean-Luc Godard's third feature was conceived \"within the framework of a neorealist musical,\" with nods to René Clair and Ernst Lubitsch. Anna Karina is Angela, an occasional stripper in a shabby club called the Zodiac. She is determined to have a baby and soon; when her lover Emile (Jean-Claude Brialy) won't, she turns to his friend Alfred Lubitsch (Jean-Paul Belmondo), who will. There is magic in this film, from actual hat tricks to the famous egg-frying gag to the mesmerizing traveling shots. Godard's sense of woman as mystery is a part of that magic. (Even the title throws up its hands.)",
-      "tags": [
-        "Arts",
-        "Student Life"
-      ],
-      "topics": [
-        "film"
-      ],
-      "url": "https://events.berkeley.edu/BAMPFA/event/328053-film-screening-a-woman-is-a-woman",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260907T000000Z-327470@events.berkeley.edu",
-      "title": "CrafterDark at Anchor House",
-      "organizer": "ASUC",
-      "date": "2026-09-06",
-      "time": "5:00 PM",
-      "location": "1950 Oxford St, Berkeley, CA",
-      "description": "CrafterDark is getting bigger and better! We're hosting another bi-weekly craft session every Sunday Night at Anchor House. Free crafting and art-making",
-      "tags": [
-        "Student Life"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/live/events/327463-crafterdark-at-anchor-house",
-      "source": "livewhale"
-    },
-    {
-      "id": "bampfa_alice-doesnt-live-here-anymore::2026-09-06",
-      "title": "Alice Doesn’t Live Here Anymore",
-      "organizer": "BAMPFA",
-      "date": "2026-09-06",
-      "time": "7:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Alice Doesn’t Live Here Anymore",
-      "tags": [
-        "Arts"
-      ],
-      "topics": [],
-      "url": "https://bampfa.org/event/alice-doesnt-live-here-anymore",
-      "source": "bampfa"
-    },
-    {
-      "id": "livewhale_20260907T020000Z-328054@events.berkeley.edu",
-      "title": "Film Screening: Alice Doesn't Live Here Anymore",
-      "organizer": "BAMPFA",
-      "date": "2026-09-06",
-      "time": "7:00 PM",
-      "location": "BAMPFA",
-      "description": "A departure from the urban underworld of Mean Streets, Martin Scorsese's first studio film, set in the Southwest with a female lead, afforded him the opportunity to show his versatility. Alice earned Academy Award nominations for writer Robert Getchell and actress Diane Ladd, as well as a Best Actress win for Ellen Burstyn for her nuanced performance as a widowed mother who hits the road with her preteen son in the hope of finding work as a singer. Scorsese and Burstyn bonded over Alice's emotional journey while leaving space for the rest of the excellent cast��including Jodie Foster, Harvey Keitel, and Kris Kristofferson—to shine.",
-      "tags": [
-        "Arts"
-      ],
-      "topics": [
-        "film"
-      ],
-      "url": "https://events.berkeley.edu/BAMPFA/event/328054-film-screening-alice-doesnt-live-here-anymore",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260907T070000Z-324686@events.berkeley.edu",
-      "title": "Academic and Administrative Holiday - Labor Day",
-      "organizer": "Equity And Inclusion",
-      "date": "2026-09-07",
-      "time": "All day",
-      "location": "UC Berkeley Campus",
-      "description": "Academic and Administrative Holiday - Labor Day",
-      "tags": [
-        "Student Life"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/Equity-and-Inclusion/event/324686-academic-and-administrative-holiday-labor-day",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260907T070000Z-327318@events.berkeley.edu",
-      "title": "California Men's Golf vs USC",
-      "organizer": "Cal Athletics",
-      "date": "2026-09-07",
-      "time": "All day",
-      "location": "Chandler, AZ, Whirlwind GC",
-      "description": "California Men's Golf vs USC",
-      "tags": [
-        "Sports"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/sports/event/327318-california-mens-golf-vs-usc",
-      "source": "livewhale"
     },
     {
       "id": "livewhale_20260907T131500Z-328981@events.berkeley.edu",
@@ -1479,6 +1117,23 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260908T200000Z-329601@events.berkeley.edu",
+      "title": "Kaffeeklatsch",
+      "organizer": "German",
+      "date": "2026-09-08",
+      "time": "1:00 PM",
+      "location": "Dwinelle 5337",
+      "description": "Kaffeeklatsch is a weekly event allowing students and speakers of German of all language levels to gather over coffee and pastries. This get-together offers students the chance to practice their German through casual conversation.",
+      "tags": [
+        "Student Life"
+      ],
+      "topics": [
+        "history-humanities"
+      ],
+      "url": "https://events.berkeley.edu/German/event/329601-kaffeeklatsch",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260908T200000Z-328804@events.berkeley.edu",
       "title": "Koreans at Berkeley Law: GBM & Welcome Lunch",
       "organizer": "Berkeley Law",
@@ -1718,8 +1373,8 @@
         "Academic"
       ],
       "topics": [
-        "law",
-        "physics-math-quantum"
+        "physics-math-quantum",
+        "law"
       ],
       "url": "https://events.berkeley.edu/math/event/326937-operator-algebras-seminar-the-lima-bean-law",
       "source": "livewhale"
@@ -2011,6 +1666,21 @@
       ],
       "url": "https://callink.berkeley.edu/event/12683221",
       "source": "callink"
+    },
+    {
+      "id": "livewhale_20260909T070000Z-326169@events.berkeley.edu",
+      "title": "Exhibit Tour: Maren Hassinger: Living Moving Growing",
+      "organizer": "BAMPFA",
+      "date": "2026-09-09",
+      "time": "All day",
+      "location": "2155 Center Street Berkeley, CA",
+      "description": "Graduate students from the Departments of African American and African Diaspora Studies and History of Art offer exhibition tours on selected Wednesdays at 12:15 PM, Sundays at 2 PM, and Free First Thursdays at 1:15 PM.",
+      "tags": [
+        "Arts"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/BAMPFA/event/326169-exhibit-tour-maren-hassinger-living-moving-growing",
+      "source": "livewhale"
     },
     {
       "id": "livewhale_20260909T133000Z-329318@events.berkeley.edu",
@@ -2542,6 +2212,44 @@
       "source": "livewhale"
     },
     {
+      "id": "bampfa_exhibition-tour-maren-hassinger-living-moving-growing",
+      "title": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
+      "organizer": "BAMPFA",
+      "date": "2026-09-09",
+      "time": "12:15 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "Exhibition Tour: Maren Hassinger: Living Moving Growing",
+      "tags": [
+        "Arts"
+      ],
+      "topics": [
+        "visual-arts-exhibitions"
+      ],
+      "url": "https://bampfa.org/event/exhibition-tour-maren-hassinger-living-moving-growing",
+      "source": "bampfa",
+      "end_date": "2026-11-29",
+      "dates": [
+        "2026-09-09",
+        "2026-09-16",
+        "2026-09-23",
+        "2026-09-27",
+        "2026-10-01",
+        "2026-10-04",
+        "2026-10-14",
+        "2026-10-18",
+        "2026-10-21",
+        "2026-10-25",
+        "2026-11-01",
+        "2026-11-04",
+        "2026-11-05",
+        "2026-11-11",
+        "2026-11-15",
+        "2026-11-22",
+        "2026-11-25",
+        "2026-11-29"
+      ]
+    },
+    {
       "id": "livewhale_20260909T193000Z-325686@events.berkeley.edu",
       "title": "College of Environmental Design's Library and Archives: A Deeper Dive!",
       "organizer": "UC Berkeley",
@@ -2625,8 +2333,8 @@
         "Academic"
       ],
       "topics": [
-        "career-jobs",
-        "law"
+        "law",
+        "career-jobs"
       ],
       "url": "https://events.berkeley.edu/law/event/329005-llm-job-fairs-and-other-resources",
       "source": "livewhale"
@@ -2777,7 +2485,7 @@
       "date": "2026-09-09",
       "time": "4:00 PM",
       "location": ", Edwards Stadium",
-      "description": "California Men's Soccer vs Cal State Fullerton",
+      "description": "California Men's Soccer vs Cal State FullertonStreaming Video: https://www.espn.com/watch/player/_/id/6b894221-aae5-4239-9420-3027077a463f (https://www.espn.com/watch/player/_/id/6b894221-aae5-4239-9420-3027077a463f)",
       "tags": [
         "Sports"
       ],
@@ -4316,6 +4024,51 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260911T150000Z-329675@events.berkeley.edu",
+      "title": "Open Rec Field Use",
+      "organizer": "Recsports",
+      "date": "2026-09-11",
+      "time": "8:00 AM",
+      "location": "UVA Fielding Field East, UVA Fielding Field West",
+      "description": "Open Rec Field Use",
+      "tags": [
+        "Student Life"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/329675-open-rec-field-use",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260911T153000Z-329674@events.berkeley.edu",
+      "title": "IA WWP Practice",
+      "organizer": "Recsports",
+      "date": "2026-09-11",
+      "time": "8:30 AM",
+      "location": "Spieker Pool",
+      "description": "IA WWP Practice",
+      "tags": [
+        "Student Life"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/329674-ia-wwp-practice",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260911T160000Z-329673@events.berkeley.edu",
+      "title": "IA MWP Practice",
+      "organizer": "Recsports",
+      "date": "2026-09-11",
+      "time": "9:00 AM",
+      "location": "Legends Aquatics Center",
+      "description": "IA MWP Practice",
+      "tags": [
+        "Student Life"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/329673-ia-mwp-practice",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260911T160000Z-327022@events.berkeley.edu",
       "title": "UC Carpentries Workshop: OpenRefine",
       "organizer": "UC Berkeley",
@@ -4332,6 +4085,21 @@
         "computer-science-data"
       ],
       "url": "https://berkeley.libcal.com/event/17430248",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260911T170000Z-329672@events.berkeley.edu",
+      "title": "Building Hours - CMS",
+      "organizer": "Recsports",
+      "date": "2026-09-11",
+      "time": "10:00 AM",
+      "location": "CMS Fitness Center Building Hours",
+      "description": "Building Hours - CMS",
+      "tags": [
+        "Student Life"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/329672-building-hours-cms",
       "source": "livewhale"
     },
     {
@@ -4387,6 +4155,21 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20260911T190000Z-329668@events.berkeley.edu",
+      "title": "IA BB Practice",
+      "organizer": "Recsports",
+      "date": "2026-09-11",
+      "time": "12:00 PM",
+      "location": "Haas Pavilion Arena",
+      "description": "IA BB Practice",
+      "tags": [
+        "Student Life"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/329668-ia-bb-practice",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260911T190000Z-324354@events.berkeley.edu",
       "title": "Professional Program in Regulatory Affairs Online Information Session",
       "organizer": "UC Berkeley Extension",
@@ -4403,7 +4186,7 @@
     },
     {
       "id": "livewhale_20260911T191000Z-326396@events.berkeley.edu",
-      "title": "Title forthcoming | Kaleb Kanoa Javier",
+      "title": "Cheap to Keep: Insurance Pricing and the Retirement of Hazardous Capital | Kaleb Kanoa Javier",
       "organizer": "Agricultural & Resource Economics",
       "date": "2026-09-11",
       "time": "12:10 PM",
@@ -4415,7 +4198,7 @@
       "topics": [
         "economics-policy"
       ],
-      "url": "https://events.berkeley.edu/are/event/326396-title-forthcoming-kaleb-kanoa-javier",
+      "url": "https://events.berkeley.edu/are/event/326396-cheap-to-keep-insurance-pricing-and-the-retirement-of",
       "source": "livewhale"
     },
     {
@@ -4503,24 +4286,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260911T220000Z-327404@events.berkeley.edu",
-      "title": "Caltrans' AI Journey",
-      "organizer": "Institute of Transportation Studies",
-      "date": "2026-09-11",
-      "time": "3:00 PM",
-      "location": "410 McLaughlin Hall",
-      "description": "Vidhu Shekar, Chief Data and Artificial Intelligence Officer at Caltrans, will present Caltrans' AI Journey at the ITS Berkeley Transportation Seminar on Sept. 11, 2026. Join us for cookie hour at 2:30 in the ITS Library, hosted by TRANSOC.",
-      "tags": [
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "ai-machine-learning"
-      ],
-      "url": "https://events.berkeley.edu/live/events/327395-caltrans-ai-journey",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20260911T220000Z-327425@events.berkeley.edu",
       "title": "Overview of Artificial Intelligence at Caltrans: A Framework for Enterprise Governance and Adoption",
       "organizer": "Institute of Transportation Studies",
@@ -4538,6 +4303,39 @@
         "economics-policy"
       ],
       "url": "https://events.berkeley.edu/live/events/327395-caltrans-ai-journey",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260911T220000Z-329664@events.berkeley.edu",
+      "title": "Student Probability/PDE Seminar: The KPZ Fixed Point and the Directed Landscape",
+      "organizer": "Department of Mathematics",
+      "date": "2026-09-11",
+      "time": "3:00 PM",
+      "location": "891 Evans Hall",
+      "description": "Speaker: Fraydoun Rezakhanlou, UC BerkeleyThe KPZ equation was proposed in 1986 by Kardar, Parisi and Zhang as a model for stochastic growth interfaces. It is conjectured that many stochastic height functions will converge to KPZ fixed point under 1:2:3 scaling. Simultaneous construction of KPZ fixed points for different initial data yields the directed landscape. In these talks I will give an overview of the existing results for the KPZ fixed points and their associated directed landscape.",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [
+        "physics-math-quantum"
+      ],
+      "url": "https://events.berkeley.edu/math/event/329664-student-probabilitypde-seminar-the-kpz-fixed-point",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260911T230000Z-329666@events.berkeley.edu",
+      "title": "Building Hours - RFS",
+      "organizer": "Recsports",
+      "date": "2026-09-11",
+      "time": "4:00 PM",
+      "location": "Recwell Fitness Studio Building Hours",
+      "description": "Building Hours - RFS",
+      "tags": [
+        "Student Life"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/329666-building-hours-rfs",
       "source": "livewhale"
     },
     {
@@ -4577,6 +4375,21 @@
         "law"
       ],
       "url": "https://events.berkeley.edu/live/events/328238-exhibition-curatorial-tour-hidden-layers-ai-infrastru",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260912T000000Z-329665@events.berkeley.edu",
+      "title": "Building Hours - Esports",
+      "organizer": "Recsports",
+      "date": "2026-09-11",
+      "time": "5:00 PM",
+      "location": "Esport Center Building Hours",
+      "description": "Building Hours - Esports",
+      "tags": [
+        "Student Life"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/329665-building-hours-esports",
       "source": "livewhale"
     },
     {
@@ -5015,6 +4828,25 @@
       "source": "calbears"
     },
     {
+      "id": "livewhale_20260913T170000Z-327255@events.berkeley.edu",
+      "title": "Exploration of Forms: Movement as Creative Practice, a three-part workshop with Randee Paufve",
+      "organizer": "Theater, Dance, and Performance Studies",
+      "date": "2026-09-13",
+      "time": "10:00 AM",
+      "location": "Bancroft Dance Studio, 2401 Bancroft Way",
+      "description": "About Exploration of Forms: Exploration of Forms is a public workshop series that centers embodiment, transformation, and creativity. All workshops are free for students. Guests are encouraged to make a donation of $25 at the door, but no one will be turned away for lack of funds.Signups are available here: https://tdps.link/explorationAbout This Workshop:This workshop series investigates movement not as a set of skills to acquire, but as a creative and expressive practice to inhabit and sustain. Drawing on modern/contemporary and jazz dance techniques and performance practices, each session builds on the last — offering dancers a framework for thinking about their relationship to technique, expression, and the long arc of a life in movement.September 6th - Session 1:Technique as a Tool for Expression - What is technique for? This session uses rigorous contemporary movement — warmup, floor progressions, combinations — as a lens for examining how technical training shapes (and can liberate) individual expression. Dancers are invited to bring their bodies and their questions. September 13th - Session 2:Performance Presence and the Moving Body - How does a dancer inhabit a moment rather than execute it? This session explores performance technique not as a set of presentational skills but as a practice of attention — to space, to music, to other bodies, and to the intelligence moving through your own. September 20th - Session 3: Sustaining a Creative Practice - What keeps us dancing? This session addresses the longer questions beneath the work: how dancers build and maintain a creative practice over time, how they stay curious, how they metabolize influences, and how they find their own movement voice. Includes movement work alongside structured reflection. About the Teacher: Randee Paufve is a choreographer, dancer, teacher, and Artistic Director of Paufve Dance. A 2019 Fulbright Scholar and recipient of the Isadora Duncan Dance Award for Outstanding Individual Performance, she has been featured on NPR's All Things Considered and honored with the inaugural Della Davidson Prize for Innovations in Dance-Theater. Her work has been presented nationally at ODC Theater, SFMOMA, the Mondavi Center, On the Boards, and the Portland Institute for Contemporary Art, and internationally in India, Austria, and Portugal. She has taught on the faculties of UC Davis, CSU Sacramento, St. Mary's College of California, University of San Francisco and Lewis and Clark College, and Shawl-Anderson Dance Center. Accessibility: If you require an accommodation for effective communication or information about campus mobility access features in order to fully participate in this event, please contact us with as much advance notice as possible and at least 7–10 days in advance of the event.",
+      "tags": [
+        "Arts",
+        "Academic"
+      ],
+      "topics": [
+        "theater-dance",
+        "workshops-skills"
+      ],
+      "url": "https://events.berkeley.edu/TDPS/event/327255-exploration-of-forms-movement-as-creative-practice",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20260913T170000Z-328463@events.berkeley.edu",
       "title": "FAMILY PROGRAM: Succulent Potting and Desert Exploration",
       "organizer": "UC Botanical Garden",
@@ -5074,7 +4906,7 @@
       "date": "2026-09-13",
       "time": "12:00 PM",
       "location": "Louisville, KY",
-      "description": "California Men's Soccer at Louisville",
+      "description": "California Men's Soccer at LouisvilleStreaming Video: https://www.espn.com/watch/player/_/id/a8e7c9f0-08ca-4cb0-afd4-1a3237c6511e (https://www.espn.com/watch/player/_/id/a8e7c9f0-08ca-4cb0-afd4-1a3237c6511e)",
       "tags": [
         "Sports"
       ],
@@ -6236,6 +6068,24 @@
       "source": "livewhale"
     },
     {
+      "id": "haas_3398721",
+      "title": "San Diego Alumni: MBASD September Event “Building Fluency from Chaos” Hosted By Booth",
+      "organizer": "Berkeley Haas",
+      "date": "2026-09-15",
+      "time": "5:30 PM",
+      "location": "Bivouac Ciderworks, 3986 30th St, San Diego, CA 92104, USA",
+      "description": "The MBASD September 2026 event is titled, “Building Fluency from Chaos”, hosted by Booth Success rarely follows a straight path. In this engaging and inspiring 30-minute interactive conversation followed by the signature MBASD networking session, discover powerful lessons about resilience, reinvention, and embracing change from two uniquely successful professionals. Our conversation will include insights from Lara Worm, Founder of Bivouac Ciderworks and former federal prosecutor, and Nikhil Torsekar, a Chicago Booth MBA, technology executive, and host of the award-winning Untether Your Life podcast Through compelling stories, real-world experiences, and hard-earned insights, attendees will learn how to recognize new opportunities, navigate uncertainty with confidence, and transform unexpected challenges into meaningful success. Whether you’re considering a career pivot, growing a business, leading through change, or simply looking for fresh inspiration, this session offers practical strategies for adapting, evolving, and thriving in an ever-changing world. Join us for a memorable and brief conversation that proves the skills you develop in one chapter of life can become the foundation for extraordinary success in the next. Note: Parking is available for $1 per hour at the North Park Parking Garage located at 3829 29th St, San Diego, CA 92104. Questions? Contact Bari Berman – barib@sbcglobal.net. Register",
+      "tags": [
+        "Entrepreneurship",
+        "Student Life"
+      ],
+      "topics": [
+        "workshops-skills"
+      ],
+      "url": "https://haas.berkeley.edu/event/san-diego-alumni-mbasd-september-event-building-fluency-from-chaos-hosted-by-booth/",
+      "source": "haas"
+    },
+    {
       "id": "livewhale_20260916T010000Z-324657@events.berkeley.edu",
       "title": "An Evening with Leigh Steinberg",
       "organizer": "CAA",
@@ -6559,7 +6409,7 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20260916T191000Z-329188@events.berkeley.edu",
+      "id": "livewhale_20260916T191000Z-329250@events.berkeley.edu",
       "title": "Matthew V. Elliott, Ariana Andrea Castro Leon, and Nathalia Carvalho | Postdoctoral research talks",
       "organizer": "IPSR",
       "date": "2026-09-16",
@@ -6571,8 +6421,8 @@
         "Student Life"
       ],
       "topics": [
-        "social-sciences",
         "health-medicine",
+        "social-sciences",
         "law"
       ],
       "url": "https://events.berkeley.edu/live/events/329153-matthew-v-elliott-ariana-andrea-castro-leon-and",
@@ -8405,7 +8255,7 @@
       "date": "2026-09-20",
       "time": "1:00 PM",
       "location": "Berkeley, CA, Edwards Stadium",
-      "description": "California Women's Soccer vs Louisville",
+      "description": "California Women's Soccer vs LouisvilleStreaming Video: https://www.espn.com/watch/player/_/id/ea82a65a-d853-4d81-93bb-3ad400fe9f58 (https://www.espn.com/watch/player/_/id/ea82a65a-d853-4d81-93bb-3ad400fe9f58)",
       "tags": [
         "Sports"
       ],
@@ -8508,6 +8358,21 @@
         "film"
       ],
       "url": "https://events.berkeley.edu/BAMPFA/event/328083-film-screening-bellissima",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20260921T000000Z-327471@events.berkeley.edu",
+      "title": "CrafterDark at Anchor House",
+      "organizer": "ASUC",
+      "date": "2026-09-20",
+      "time": "5:00 PM",
+      "location": "1950 Oxford St, Berkeley, CA",
+      "description": "CrafterDark is getting bigger and better! We're hosting another bi-weekly craft session every Sunday Night at Anchor House. Free crafting and art-making",
+      "tags": [
+        "Student Life"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/live/events/327464-crafterdark-at-anchor-house",
       "source": "livewhale"
     },
     {
@@ -9725,8 +9590,7 @@
         "Academic"
       ],
       "topics": [
-        "climate-energy",
-        "social-sciences"
+        "climate-energy"
       ],
       "url": "https://events.berkeley.edu/geog/event/327389-the-futures-of-black-internationalism-and-global-sout",
       "source": "livewhale"
@@ -10792,6 +10656,22 @@
       "source": "livewhale"
     },
     {
+      "id": "haas_3398728",
+      "title": "Santa Barbara Alumni: Berkeley Haas Alumni Network of the Santa Barbara-Ventura Region Event",
+      "organizer": "Berkeley Haas",
+      "date": "2026-09-24",
+      "time": "5:00 PM",
+      "location": "Benchmark Eatery, 1201 State St, Santa Barbara, CA 93101, USA",
+      "description": "Berkeley Haas Alumni of the Santa Barbara-Ventura Region invite you to a casual networking event. Join Haas alumni for a social gathering at Benchmark Eatery. This event offers a great opportunity to meet and network with fellow alumni from the region. Questions? Contact Karin DeGraffenreid – kary13@aol.com. Register",
+      "tags": [
+        "Entrepreneurship",
+        "Student Life"
+      ],
+      "topics": [],
+      "url": "https://haas.berkeley.edu/event/santa-barbara-alumni-berkeley-haas-alumni-network-of-the-santa-barbara-ventura-region-event/",
+      "source": "haas"
+    },
+    {
       "id": "livewhale_20260925T000000Z-328598@events.berkeley.edu",
       "title": "This Death is Not One",
       "organizer": "CSSC",
@@ -10886,7 +10766,7 @@
       "date": "2026-09-24",
       "time": "6:00 PM",
       "location": "Chestnut Hill, MA",
-      "description": "California Women's Soccer at Boston College",
+      "description": "California Women's Soccer at Boston CollegeStreaming Video: https://www.espn.com/watch/player/_/id/9b74b4b9-6f1e-4f03-9f85-676c3180c0ff (https://www.espn.com/watch/player/_/id/9b74b4b9-6f1e-4f03-9f85-676c3180c0ff)",
       "tags": [
         "Sports"
       ],
@@ -11340,21 +11220,6 @@
       "tags": [
         "Academic",
         "Entrepreneurship"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/live/events/327401-transportation-seminar",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20260925T220000Z-327405@events.berkeley.edu",
-      "title": "Transportation Seminar",
-      "organizer": "Institute of Transportation Studies",
-      "date": "2026-09-25",
-      "time": "3:00 PM",
-      "location": "410 McLaughlin Hall",
-      "description": "Gene Oh, CEO of Tanzito, will present at the ITS Berkeley Transportation Seminar on Sept. 25, 2026. Join us for cookie hour at 2:30 in the ITS Library, hosted by TRANSOC.",
-      "tags": [
-        "Academic"
       ],
       "topics": [],
       "url": "https://events.berkeley.edu/live/events/327401-transportation-seminar",
@@ -12062,7 +11927,7 @@
       "date": "2026-09-27",
       "time": "2:00 PM",
       "location": "Berkeley, CA, Edwards Stadium",
-      "description": "California Women's Soccer vs Fresno State",
+      "description": "California Women's Soccer vs Fresno StateStreaming Video: https://www.espn.com/watch/player/_/id/03074aff-57e3-4371-847a-b9ca4dee13f9 (https://www.espn.com/watch/player/_/id/03074aff-57e3-4371-847a-b9ca4dee13f9)",
       "tags": [
         "Sports"
       ],
@@ -13237,9 +13102,9 @@
         "Student Life"
       ],
       "topics": [
+        "history-humanities",
         "climate-energy",
-        "social-sciences",
-        "history-humanities"
+        "economics-policy"
       ],
       "url": "https://events.berkeley.edu/geog/event/327390-california-agriculture-and-the-seeding-of-silicon-val",
       "source": "livewhale"
@@ -14010,6 +13875,38 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261002T200000Z-326662@events.berkeley.edu",
+      "title": "Advanced Biosciences Program Online Information Session",
+      "organizer": "UC Berkeley Extension",
+      "date": "2026-10-02",
+      "time": "1:00 PM",
+      "location": "Online via Zoom",
+      "description": "Get an overview of recent research advances, whether you're applying to grad school, trying to move ahead in your career, or updating your knowledge base. After completing the required course, you can tailor the program's electives to meet your specific career needs.",
+      "tags": [
+        "Academic"
+      ],
+      "topics": [
+        "career-jobs"
+      ],
+      "url": "https://events.berkeley.edu/extension/event/326662-advanced-biosciences-program-online-information-sessi",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261002T200000Z-329355@events.berkeley.edu",
+      "title": "SSL Colloquium: Speaker TBA",
+      "organizer": "Space Sciences Laboratory",
+      "date": "2026-10-02",
+      "time": "1:00 PM",
+      "location": "Simon Laufer Mathematical Sciences Institute",
+      "description": "Title: TBA Abstract: TBA Bio: TBA After the presentation, we will host a coffee hour and encourage people to join from campus and LBL! If you require an accommodation for effective communication (ASL interpreting/CART captioning, alternative media formats, etc.) or information about campus mobility access features in order to fully participate in this event, please contact Jennifer Satow at jsatow@berkeley.edu with as much advance notice as possible.",
+      "tags": [
+        "Academic"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/ssl/event/329355-ssl-colloquium-speaker-tba",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261002T220000Z-328592@events.berkeley.edu",
       "title": "Composition Colloquium: Nicholas Isherwood",
       "organizer": "Department of Music",
@@ -14030,34 +13927,74 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261002T220000Z-327406@events.berkeley.edu",
-      "title": "Transportation Opportunities and Priorities for California Roundtable",
+      "id": "livewhale_20261002T220000Z-327257@events.berkeley.edu",
+      "title": "Partner Event: Ukulele Band \"Sentimental Strummers\" Performs",
+      "organizer": "Berkeley Retirement Center",
+      "date": "2026-10-02",
+      "time": "3:00 PM",
+      "location": "Fellowship Hall at Epworth Church, 1953 Hopkins St, Berkeley, CA 94707",
+      "description": "Hosted by the Retirement Center and Ashby Village. Sentimental Strummers is a Berkeley-based ukulele ensemble bringing warmth, harmony, and good cheer. With a lively mix of American standards, classic doo wop favorites, and beloved Hawaiian melodies, the group creates the kind of feel-good musical experience that invites listeners to sing along, tap their feet, and reminisce. Their performances blend sweet vocal harmonies, playful rhythms, and the unmistakable charm of the ukulele. Whether performing treasured songs from the Great American Songbook, beachside island tunes, or the irresistible harmonies of the 1950s and '60s, Sentimental Strummers offers a welcoming and joyful atmosphere that turns every gathering into a celebration. The Sentimental Strummers are an East Bay/SF Bay Area Asian American ukulele and vocal band founded in 2011 by Japanese American activist Eloy Maoki.",
+      "tags": [
+        "Academic",
+        "Student Life"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/brc/event/327257-partner-event-ukulele-band-sentimental-strummers-perf",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261002T220000Z-327423@events.berkeley.edu",
+      "title": "Transportation Opportunities and Priorities for a New California Governor",
       "organizer": "Institute of Transportation Studies",
       "date": "2026-10-02",
       "time": "3:00 PM",
       "location": "Bauer Wurster Auditorium",
-      "description": "ITS Berkeley will present Transportation Opportunities and Priorities for CaliforniaRoundtable at 3 p.m. in the Bauer Wurster Hall Auditorium on Oct. 2, 2026. Panelists will examine the major challenges facing California, explore how state leaders may address them, and review work in progress by the current administration.",
+      "description": "ITS Berkeley will present Transportation Opportunities and Priorities for CaliforniaRoundtable at 3 p.m. in the Bauer Wurster Hall Auditorium on Oct. 2, 2026. ITS Berkeley will present the Transportation Opportunities and Priorities for a New California Governor Roundtable at 3 p.m. in the Bauer Wurster Hall Auditorium (room 112) on Oct. 2, 2026. Panelists will examine the major challenges facing California, explore how state leaders may address them, and review work in progress by the current administration. The conversation aims to identify lessons learned to better understand the immediate policy issues and responses. Key topics for the discussion include transportation funding, the future of transit ridership, state and national electric vehicle policies, deployment of autonomous vehicles, using vehicle miles traveled as a metric to evaluate climate impacts from transportation projects, along with progress in land use planning to help mitigate broader system impacts. Moderator: Egon Terplan, Senior Policy Advisor Panelists: Ken Alex, Director of the Project Climate at UC Berkeley Scott Moura, UC Berkeley Civil and Environmental Engineering Professor and Partners for Advanced Transportation Technology Director Susan Shaheen, UC Berkeley Civil and Environmental Engineering Professor and Transportation Sustainability Research Center Director Laura Tolkoff, SPUR Transportation Policy Director Bios:Ken Alex is the Director of Project Climate at the University of California, Berkeley, focusing on the most promising climate solutions and moving them more quickly to policy and scale. From 2011 to 2018, Ken was a Senior Policy Adviser to Governor Jerry Brown, Director of the Governor's Office of Planning and Research, and Chair of the Strategic Growth Council, focusing on climate, energy, environment, and land use issues. Before joining the Governor's Office, Ken was the Senior Assistant Attorney General heading the environment section of the California Attorney General's Office, and the co-head of the Office's global warming unit. From 2000 to 2006, Ken led the California Attorney General's energy task force, investigating price and supply issues related to California's energy crisis. Ken is a graduate of Harvard Law School and holds a B.A. in political theory from the University of California at Santa Cruz.Scott Moura is a Professor in Civil & Environmental Engineering (http://ce.berkeley.edu/), Director of the Energy, Controls, & Applications Lab (eCAL), and Faculty Director of PATH (https://path.berkeley.edu/). He received the B.S. degree from the University of California, Berkeley, CA, USA, and the M.S. and Ph.D. degrees from the University of Michigan, Ann Arbor (http://www.umich.edu/), in 2006, 2008, and 2011, respectively, all in mechanical engineering. From 2011 to 2013, he was a Post-Doctoral Fellow at the Cymer Center for Control Systems and Dynamics (http://ccsd.ucsd.edu/), University of California, San Diego (https://ecal.berkeley.edu/www.ucsd.edu) and a Visiting Researcher at the Centre Automatique et Systèmes (http://cas.ensmp.fr/), MINES ParisTech (http://www.mines-paristech.fr/), Paris, France in 2013. His research interests include control, optimization, and AI for batteries, electrified vehicles, and distributed energy resources.Susan Shaheen is a professor in Civil and Environmental Engineering at the University of California, Berkeley. She also co-directs the Transportation Sustainability Research Center of the Institute of Transportation Studies (ITS)-Berkeley and is the director of the UC ITS' Resilient and Innovative Mobility Initiative. Throughout her more than 25-year career, Shaheen has focused on sustainable transportation technologies, environmental/energy policy, behavioral understanding and environmental impacts. She is recognized as a leading international expert in innovative mobility strategies and was among the first to research and write about the changing dynamics in several areas, including shared mobility and autonomy. Her research focuses on electrification and alternative fuels, innovative mobility strategies, behavioral dynamics and public policy as it relates to sustainable transportation and social equity. Shaheen earned a Ph.D. from UC Davis and a M.S. from the University of Rochester. She is a member of the Transportation Research Board's (TRB) Executive Committee – serving as chair in 2021 and vice-chair in 2020 – and the California Transportation Foundation Board since 2022, where she serves as co-chair of the Scholarship Committee. Shaheen received the 2017 Roy W. Crum award from TRB for her distinguished achievements in transportation research. In 2016, she was named one of the top 10 academic thought leaders in transportation by the Eno Transportation Foundation. She has co-authored and edited three books focused on innovative and sustainable mobility, as well as authored or co-authored over 85 journal articles, 35 book chapters, and 200 technical papers and reports. Living in Orinda, California, Shaheen loves spending time with her husband, two boys, two cats, family, students and friends. She is grateful to live in such a beautiful place that reminds her every day of her deep passion for preserving the environment and planet for everyone to enjoy, especially future generations.Egon Terplan is CA FWD's Regionalism Fellow. In that role he researches and writes about opportunities to strengthen and improve California's system of regional economic development and planning. He has served as an advisor and consultant to CA FWD since 2022. He is concurrently a Senior Fellow at UC Berkeley's Institute of Transportation Studies where he studies and writes about the future of transit, downtowns, and cities. He continues to maintain a portfolio of external clients focused strategy and policy advisory services. Prior to 2022, Egon was the Senior Advisor for Economic Development and Transportation within the Governor's Office of Planning and Research and the California Strategic Growth Council. In that role he helped launch and manage \"Regions Rise Together\" a Governor's initiative which resulted in the creation of the Community Economic Resilience Fund (now California Jobs First) and the Regional Early Action Planning Grants 2.0. He also led interagency efforts around the future of regional planning and transportation investment. Prior to joining the Governor's office, Egon was the Regional Planning Director at San Francisco Planning and Urban Research (SPUR), the Bay Area's urban policy think tank. While at SPUR, Egon authored or co-authored dozens of reports and policy studies on the intersections of economic development, regional planning, workforce preparation, land use, transportation, and governance. Egon also spent more than five years with ICF International managing regional economic development strategy projects and advising cities and regions throughout the world on economic development and competitiveness. Egon received a Master of City Planning from UC Berkeley's College of Environmental Design and graduated Phi Beta Kappa from Swarthmore College in Pennsylvania. He has been a visiting professor and lecturer at UC Berkeley, Stanford University, the University of San Francisco, and San Jose State University. From 2021 to 2023 he held the Robert S. Cornish Endowed Chair of Regional Planning and Lecturer in City & Regional Planning at UC Berkeley.Laura Tolkoff is SPUR's transportation policy director. She believes that a sustainable transportation system is the scaffolding for a society that cares for the environment, that embraces public life, and that is healthier, more just, and more prosperous. In addition to overseeing SPUR's transportation portfolio, her areas of focus include public transit, land use integration, project delivery, governance change, and interregional coordination. Laura has worked for SPUR since 2015 in various roles, overseeing several strategic local and regional initiatives and was SPUR's first San Jos�� policy director from 2015 to 2017. Prior to joining SPUR, Laura held a senior role managing the energy and environment program at Regional Plan Association (RPA) in the New York Metropolitan area during and after Hurricane Sandy. She spearheaded federal, state, and regional reforms and worked in coalition to launch a federal design competition that brought over $1 billion to local climate resilience projects. Laura earned a Master's degree in urban and environmental policy and planning from Tufts University and a Bachelor's degree in media studies from the University of California at Berkeley. She is an American Leadership Forum senior fellow and was named to Mass Transit magazine's \"Top 40 under 40\" in 2019.",
       "tags": [
-        "Academic"
+        "Academic",
+        "Science & Tech",
+        "Student Life",
+        "Entrepreneurship"
       ],
-      "topics": [],
+      "topics": [
+        "climate-energy",
+        "economics-policy",
+        "career-jobs"
+      ],
       "url": "https://events.berkeley.edu/live/events/327402-transportation-opportunities-and-priorities-for",
       "source": "livewhale"
     },
     {
-      "id": "calbears_vcal_38678-admin.calbears.com",
+      "id": "livewhale_20261003T020000Z-324107@events.berkeley.edu",
       "title": "California Volleyball vs Virginia",
       "organizer": "Cal Athletics",
       "date": "2026-10-02",
       "time": "7:00 PM",
-      "location": "Haas Pavilion",
+      "location": "Berkeley, CA, Haas Pavilion",
       "description": "California Volleyball vs Virginia",
       "tags": [
         "Sports"
       ],
       "topics": [],
-      "url": "https://admin.calbears.com/calendar.aspx?game_id=38678&sport_id=30",
-      "source": "calbears"
+      "url": "https://events.berkeley.edu/sports/event/324107-california-volleyball-vs-virginia",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261003T020000Z-328098@events.berkeley.edu",
+      "title": "Film Screening: Wet Sand",
+      "organizer": "BAMPFA",
+      "date": "2026-10-02",
+      "time": "7:00 PM",
+      "location": "BAMPFA",
+      "description": "A seaside community is rocked after an elder dies by suicide. \"[Elene] Naveriani's beautifully realized, award-winning drama unfolds with quiet power, as the tensions and long-held prejudices within the sleepy Black Sea village build inexorably to their dramatic denouement. Granddaughter Moe—an urban outlier with a rebellious streak—finds only a few compassionate souls to take her side—among them the alluring café server Fleshka and her employer, the dapper Amnon. They form a trio of quiet defiance in this film that reminds us of how deep the roots of fear, homophobia, and prejudice still run\" (Celeste Wong, Frameline).",
+      "tags": [
+        "Arts"
+      ],
+      "topics": [
+        "film"
+      ],
+      "url": "https://events.berkeley.edu/BAMPFA/event/328098-film-screening-wet-sand",
+      "source": "livewhale"
     },
     {
       "id": "bampfa_wet-sand::2026-10-02",
@@ -14073,6 +14010,23 @@
       "topics": [],
       "url": "https://bampfa.org/event/wet-sand",
       "source": "bampfa"
+    },
+    {
+      "id": "livewhale_20261003T023000Z-329009@events.berkeley.edu",
+      "title": "Concert Series: Nicholas Isherwood",
+      "organizer": "Cnmat",
+      "date": "2026-10-02",
+      "time": "7:30 PM",
+      "location": "CNMAT (1750 Arch St)",
+      "description": "Nicholas Isherwood has sung in the world's leading festivals (Salzburg, Aix, Festival d'Automne, Avignon, Almeida, Biennale di Venezia, Holland Festival, Munich Biennale, Wien Modern, Händel Festivals in Göttingen and Halle, Tanglewood, Ravinia, etc.) and opera houses (Royal Opera House, Berlin, Frankfurt, Stuttgart, Amsterdam, Lyon, Châtelet, Théatre des Champs Elysées, Rome, Torino, Genova, La Fenice, La Scala, etc.), working with conductors such as Joel Cohen, William Christie, Peter Eötvös, Gabriele Ferro, Nicholas McGegan, Paul McCreesh, Zubin Mehta, Kent Nagano, Helmuth Rilling, David Robertson, Gennadi Rozhdestvensky , Marco Angius and Arturo Tamayo. Isherwood has worked closely with composers such as Sylvano Bussotti, Elliott Carter, George Crumb. Hans Werner Henze, Mauricio Kagel, György Kurtág, Steve Lacy, Olivier Messiaen, Giacinto Scelsi and Iannis Xenakis, as well as Pascal Dusapin, Luca Francesconi, Wolfgang Rihm and Francesco Filidei, Vittorio Montalti and Matteo Franceschini. Isherwood collaborated with Karlheinz Stockhausen for 23 years, singing numerous world premieres. He has improvised with Steve Lacy, Joelle Léandre, David Moss and Sainkho Namtchilak. He has made over 65 compact discs for labels such as Erato, Stockhausen Verlag, Naxos and Harmonia Mundi and has appeared in three films for television. An active pedagogue, he has taught master classes at schools such as the Paris Conservatoire, Musikhochschule K��ln, Salzburg Mozarteum and Conservatorio Giuseppe Verdi and held positions at SUNY Buffalo, Notre Dame, Calarts, the Ecole Normale de Musique and the CNSMD in Lyon. He is currently professor of singing and chamber music at the conservatory in Montbéliard. He has published several peer reviewed articles and a book, \"The Techniques of Singing\" (Bärenreiter, 2012), which will soon appear in a new franco/italian version released by Elara Libri (www.elaralibri.it).",
+      "tags": [
+        "Arts"
+      ],
+      "topics": [
+        "music-performance"
+      ],
+      "url": "https://events.berkeley.edu/cnmat/event/329009-concert-series-nicholas-isherwood",
+      "source": "livewhale"
     },
     {
       "id": "livewhale_20261003T023000Z-326562@events.berkeley.edu",
@@ -14091,6 +14045,27 @@
         "health-medicine"
       ],
       "url": "https://events.berkeley.edu/music/event/326562-uc-berkeley-symphony-orchestra",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261003T070000Z-327214@events.berkeley.edu",
+      "title": "BWLP PD | Practical Strategies & Real Classroom Impact (Strands A & B)",
+      "organizer": "BLC",
+      "date": "2026-10-03",
+      "time": "All day",
+      "location": "33 Dwinelle",
+      "description": "Berkeley World Language Project - 2026-2027 LEARN | CONNECT | INSPIREJoin us for a year of learning in community! Practical Strategies & Real Classroom Impact Engaging Workshops: Practical ideas you can use right away Supportive Community: Collaborate with educators who inspire Student Success: Build world language skills that last Office Hours: Collaborate between workshop sessions! Strand A: Building Lessons for Real World Competence Collaborate, Innovate, Invigorate: Next-level Lessons for every classroom. Invigorate your teaching this year! This strand is for all language teachers who want to take their instruction to the next level, whether beginning or experienced. You will collaborate to develop lessons that focus on teaching in the target language with comprehensible input, guided practice, grammar in context and formative assessment for all levels of proficiency. You will build a complete Lesson over time while learning and practicing strategies to implement immediately. Prerequisite: an open mind, curiosity, and a desire to grow. Strand B: Creating Authentic Themed Units for Today's Learners Develop meaningful, real-life themed Units for modern language learners. Build a thematic unit grounded in authentic materials that reflect real language and culture. You will learn how to design a unit that aligns with UN Sustainable Development Goals (SDGs), AP themes and CA World Languages Standards while integrating global competence, social justice, and social-emotional learning. Using backward design, you'll craft essential questions, Can-Do statements, and assessments that support meaningful communication across all modes—creating immersive, relevant learning experiences that connect students to the real world and help them grow as confident, culturally aware language users. Prerequisite: Strand A or equivalent recommended. Program Dates: 2026-2027 October 3 November 7 December 5 January 30 March 13 Cost:Complete 5-Day Program:Early Bird Registration: $350 (by September 12) Standard Registration: $400 4 Stanford Continuing Studies units available for an extra fee 3-Day Program:Early Bird Registration: $250 (by September 12) Standard Registration: $300 Choose the dates that work for you Day 1 is strongly recommended No Stanford Continuing Studies units available Registration:Click here to register for the current programming year (https://blc.berkeley.edu/initiatives/berkeley-world-language-project/bwlp-registration-2026-27-strands-b)",
+      "tags": [
+        "Academic",
+        "Student Life",
+        "Science & Tech"
+      ],
+      "topics": [
+        "history-humanities",
+        "workshops-skills",
+        "social-clubs"
+      ],
+      "url": "https://events.berkeley.edu/live/events/326876-bwlp-pd-practical-strategies-real-classroom",
       "source": "livewhale"
     },
     {
@@ -14823,24 +14798,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261007T190000Z-329102@events.berkeley.edu",
-      "title": "Bioengineering Seminar: Modeling Tumor Immunosurveillance",
-      "organizer": "Bioengineering",
-      "date": "2026-10-07",
-      "time": "12:00 PM",
-      "location": "Hearst Mining Building, Room 290",
-      "description": "Abstract: While cancer immunotherapy has provided unprecedented clinical outcomes in certain settings, only a subset of patients benefit. We are exploring the hypothesis that changes in physical properties, in particular viscoelasticity, of solid tumors alters immune cell phenotype and function. Using biomaterials that allow independent control over key variables, we find that the rate of matrix stress relaxation has dramatic effects on immune cells, including antigen presenting and T cells, and controls cell-cell interactions mediating immune cell responses.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [
-        "biology-life-sciences"
-      ],
-      "url": "https://events.berkeley.edu/bioe/event/329102-bioengineering-seminar-modeling-tumor",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261007T190000Z-323905@events.berkeley.edu",
       "title": "Noon Concert: Dan Flanagan & Friends",
       "organizer": "Department of Music",
@@ -14876,26 +14833,6 @@
         "workshops-skills"
       ],
       "url": "https://events.berkeley.edu/igs/event/325985-rwap-nate-monroe-uc-merced",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20261007T223000Z-327392@events.berkeley.edu",
-      "title": "Experiments in Art and Geography",
-      "organizer": "Geography Department",
-      "date": "2026-10-07",
-      "time": "3:30 PM",
-      "location": "575 McCone Hall",
-      "description": "In this lecture, Trevor Paglen presents a framework for thinking about what happens when artistic practice and geographic method are fused together. Drawing on his work on mass surveillance, computer vision and AI, psyops, and neuroscience, Paglen will discuss art-making not simply as a means of representing geographic research, but as a geographic research method in its own right. Artistic practice can function as a form of fieldwork: a way of investigating landscapes, infrastructures, technologies, and institutions while developing new forms through which to understand them. Paglen will explore how this hybrid practice creates opportunities for collaboration across disciplines and produces forms of knowledge that do not fit neatly within conventional academic or artistic categories. The talk argues that occupying a position neither fully within art nor geography can generate questions, methods, objects, and ways of seeing that neither discipline could produce on its own. Trevor Paglen is a multidisciplinary artist whose practice explores technology, infrastructure, and perception across exhibitions, publications, and public projects worldwide. A MacArthur Fellow and 2026 LG Guggenheim Award winner, he holds advanced degrees from UC Berkeley and the Art Institute of Chicago.",
-      "tags": [
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "climate-energy",
-        "social-sciences",
-        "ai-machine-learning"
-      ],
-      "url": "https://events.berkeley.edu/geog/event/327392-experiments-in-art-and-geography",
       "source": "livewhale"
     },
     {
@@ -14973,22 +14910,6 @@
         "2026-10-09",
         "2026-10-10"
       ]
-    },
-    {
-      "id": "livewhale_20261008T180000Z-326924@events.berkeley.edu",
-      "title": "Graduate Research Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2026-10-08",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/326924-graduate-research-seminar",
-      "source": "livewhale"
     },
     {
       "id": "berkeley_law_766279",
@@ -15111,22 +15032,6 @@
       "topics": [],
       "url": "https://admin.calbears.com/calendar.aspx?game_id=38676&sport_id=30",
       "source": "calbears"
-    },
-    {
-      "id": "livewhale_20261008T230000Z-326926@events.berkeley.edu",
-      "title": "Graduate Research Conference",
-      "organizer": "Department of Chemistry",
-      "date": "2026-10-08",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/326926-graduate-research-conference",
-      "source": "livewhale"
     },
     {
       "id": "livewhale_20261008T230000Z-327636@events.berkeley.edu",
@@ -15311,25 +15216,6 @@
       "source": "calbears"
     },
     {
-      "id": "livewhale_20261009T160000Z-327726@events.berkeley.edu",
-      "title": "CRB60 Symposium Celebrating Carolyn Bertozzi's Legacy and Impact on Chemical Biology",
-      "organizer": "Department of Chemistry",
-      "date": "2026-10-09",
-      "time": "9:00 AM",
-      "location": "Paul Berg Auditorium, Stanford University",
-      "description": "Join us for a day-long celebration of chemical biology and of Carolyn Bertozzi's extraordinary impact as both a scientist and a mentor. Held at Stanford University, the symposium will feature talks by Bertozzi group alumni from around the world whose research spans the chemical and biological sciences, from fundamental discoveries to translational innovations across academia and industry. The symposium will conclude with a poster session and networking reception in the ChEM-H courtyard. Attendance is limited, so we encourage you to register soon.",
-      "tags": [
-        "Science & Tech",
-        "Academic",
-        "Student Life"
-      ],
-      "topics": [
-        "biology-life-sciences"
-      ],
-      "url": "https://events.berkeley.edu/chem/event/327726-crb60-symposium-celebrating-carolyn-bertozzi",
-      "source": "livewhale"
-    },
-    {
       "id": "berkeley_law_766292",
       "title": "[CDO] 1L Launch Persuasive Communication Workshop Part 1: Cover Letter",
       "organizer": "Berkeley Law",
@@ -15405,7 +15291,7 @@
       "date": "2026-10-09",
       "time": "4:00 PM",
       "location": "120 Latimer Hall",
-      "description": "Erwin Reisner, Professor of Energy and Sustainability, University of CambridgeSolar Chemical TechnologiesInspired by the blueprint of photosynthesis, creating synthetic systems for the direct conversion of sunlight into sustainable fuels has long been a defining ambition of chemistry. While decades of research have been spent on developing solar water splitting catalysts to produce green hydrogen, recently a new generation of photosynthesis-inspired architectures capable of directly converting sunlight, carbon dioxide and carbon waste streams has emerged. This advance has been made possible by developing and integrating metal complex and biological catalysts with semiconductor materials and electrodes, together with the engineering of bespoke devices. This lecture will first introduce functional mimics of photosynthesis, which couple semiconductor light absorbers with immobilised (bio)catalysts to achieve solar-driven carbon dioxide fixation alongside water oxidation to oxygen. Next, an alternative strategy will be presented that replaces the challenging water oxidation reaction by the oxidation of waste biomass and plastics. This concept, termed solar reforming, simultaneously improves reaction thermodynamics, enhances overall rate of catalysis, and creates economic value through oxidative valorisation while simultaneously generating clean fuel. The ongoing demonstration of outdoor solar plastic reforming at the kilogram and square-metre scale illustrates the growing potential of this approach as a practical route towards circular solar-powered manufacturing. The lecture will close by giving an overview of emerging frontiers in integrated solar chemistry, including atmospheric CO₂ utilisation, advanced light-management strategies, and solar-powered cascade catalysis for selective chemical organic synthesis. Together, this presentation aims to provide a compelling vision for a new generation of solar technologies that combine carbon capture, plastic and biomass waste valorisation, and renewable chemical manufacturing in integrated, scalable systems. More information: https://www-reisner.ch.cam.ac.uk/",
+      "description": "Erwin Reisner, Professor of Energy and Sustainability, University of Cambridge Title: TBD",
       "tags": [
         "Science & Tech",
         "Academic"
@@ -15475,22 +15361,6 @@
       "topics": [],
       "url": "https://admin.calbears.com/calendar.aspx?game_id=39034&sport_id=12",
       "source": "calbears"
-    },
-    {
-      "id": "livewhale_20261010T163000Z-329100@events.berkeley.edu",
-      "title": "College of Chemistry Homecoming Lecture",
-      "organizer": "Department of Chemistry",
-      "date": "2026-10-10",
-      "time": "9:30 AM",
-      "location": "120 Latimer Hall",
-      "description": "The College of Chemistry is pleased to welcome our alumni, parents, and friends back to campus for a for a lecture exploring special topics and the latest research with assistant professor Ashok Ajoy. The lecture topic will be announced in late August/early September. Coffee & donuts will be served in the Plaza at check-in starting at 9:30am, to kick off the lecture. Hosted by the College of Chemistry.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/329100-college-of-chemistry-homecoming-lecture",
-      "source": "livewhale"
     },
     {
       "id": "bampfa_gallery-studio-wind-chime-sculpture::2026-10-10",
@@ -15811,22 +15681,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261013T180000Z-317641@events.berkeley.edu",
-      "title": "Organic Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2026-10-13",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Jared Shaw, Professor, UC DavisStereoselective Synthesis with Rhodium Carbenes and NitrenesLow-valent reactive intermediates of carbon and nitrogen—namely, transition-metal complexes of carbenes and nitrenes—display diverse and powerful reactivity in the synthesis of complex organic molecules. Our group has focused on rhodium carbene complexes derived from substrates that lack electron-withdrawing groups. The diminished electrophilicity of these intermediates imparts exceptional functional group tolerance, enabling the construction of architecturally complex organic frameworks. The development of new methods and their application to the synthesis of a variety of heterocycles, including several natural products, will be presented. In parallel, analogous transformations involving rhodium nitrenes have been employed to generate complex heterocycles. The discovery of the first five-membered aromatic heterocycles featuring point chirality within the ring will be described, along with discussion of their distinctive structural characteristics.The Organic Seminar Series is sponsored by the William G. Dauben lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317641-organic-chemistry-seminar",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261013T190000Z-326860@events.berkeley.edu",
       "title": "Student Faculty Macro Lunch: TBD",
       "organizer": "Department of Economics",
@@ -15986,7 +15840,7 @@
     {
       "id": "livewhale_20261014T190000Z-326639@events.berkeley.edu",
       "title": "Berkeley Book Chat with Diana Martinez",
-      "organizer": "Townsend",
+      "organizer": "UC Berkeley",
       "date": "2026-10-14",
       "time": "12:00 PM",
       "location": "Geballe Room",
@@ -16019,6 +15873,25 @@
         "health-medicine"
       ],
       "url": "https://events.berkeley.edu/music/event/323906-noon-concert-university-baroque-ensemble",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261014T190000Z-327053@events.berkeley.edu",
+      "title": "PMB Seminar with Gautam Dantas | Understanding, Predicting, and Remediating Perturbations to Host-Microbe Interactions",
+      "organizer": "Plant & Microbial Biology",
+      "date": "2026-10-14",
+      "time": "12:00 PM",
+      "location": "101 Morgan Hall",
+      "description": "Antibiotics can acutely and persistently compromise microbiome stability and resilience, enabling enhanced colonization of pathogenic microbes, and loss of host-beneficial functions from depleted commensals. We interrogate resistome, taxonomic, and functional dynamics of microbiota of humans, animals, soils, and built-environments via high-throughput functional metagenomic selections, whole metagenome and transcriptome sequencing, and isolate phenotyping and whole genome sequencing. We use these datasets to model and predict the impact of various biotic and abiotic perturbations on the transmission and evolutionary dynamics of diverse microbiomes and their resistomes across time and habitats, through application of generalized linear mixed models and machine learning algorithms. By integrating community-level analyses of microbiome perturbation and response, with mechanistic analyses of novel microbial resilience functions, we are improving the accuracy and sensitivity of genomics-based methods for diagnosing and treating pathogens and their resistance properties in the clinic and maintaining or rescuing healthy microbiome states.",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [
+        "biology-life-sciences",
+        "ai-machine-learning"
+      ],
+      "url": "https://events.berkeley.edu/pmb/event/327053-pmb-seminar-with-gautam-dantas-understanding",
       "source": "livewhale"
     },
     {
@@ -16107,23 +15980,20 @@
       "source": "calbears"
     },
     {
-      "id": "livewhale_20261014T231000Z-328461@events.berkeley.edu",
-      "title": "Time as Space",
-      "organizer": "Gradiv",
+      "id": "haas_3398741",
+      "title": "Berkeley Haas Chicanx/Latinx Heritage Month Celebration 2026",
+      "organizer": "Berkeley Haas",
       "date": "2026-10-14",
-      "time": "4:10 PM",
-      "location": "Alumni House, UC Berkeley",
-      "description": "This lecture is part of the Howison Lectures in Philosophy series hosted by the Graduate Division. About this Lecture Augustine says, in Book 11 of his Confessions: \"What then is time? If no one asks me, I know: if I wish to explain it to him who asks, I know not.\" He never says anything like that about space. Nobody ever says anything like that about space. And (indeed) the thought that there is something infinitely deeper and more mysterious about the question of time than there is about the question of space is all over the place in the history of western philosophy. And all of this suggests that an understanding of time as space, or as somehow reducible to space, or as somehow emerging from space, might represent a significant advance in our understanding of the world. And I want to argue here that an offhand remark at the end of an old paper by D. C. Williams – a remark that gestures in the direction of a far more radical and less familiar version of what is often referred to as the \"spatialization\" of time in the modern physical project – contains the kernel of an understanding like that.About David Z. AlbertDavid Z. Albert is the Fredrick E. Woodbridge Professor of Philosophy at Columbia University in New York City. He has written extensively on various issues at the foundations of physics – particularly on the foundations of quantum mechanics and the direction of time. He received his Ph.D. in theoretical physics from the Rockefeller University in 1981, and his books include Quantum Mechanics and Experience, Time and Chance, After Physics, and A Guess at the Riddle. He is currently at work on a book about relationalism.",
+      "time": "5:30 PM",
+      "location": "alaMar Dominican Kitchen, 100 Grand Ave #111, Oakland, CA 94612, USA",
+      "description": "Join Somos Haas Alumni and the Berkeley Haas Chicanx/Latinx community for an evening of community, connection, and celebration in honor of Hispanic Heritage Month. The entire Berkeley Haas community including alumni, staff, faculty and students of all Berkeley Haas degree programs are invited to join us at alaMar in Oakland for an evening of festivities as we come together to celebrate our unique stories and strengthen our connection with one another. We look forward to celebrating with you! Appetizers and drinks included. Register Here by October 12 Questions? Contact alumni@haas.berkeley.edu This event is brought to you in partnership with the Berkeley Haas Development & Alumni Relations Office and DEIJB team. This event is open to all UC Berkeley community members, regardless of race, color, national origin, ethnicity, age, gender, gender identity, sexual orientation, disability, religion, or any other protected class status. UC Berkeley and the Haas School of Business are committed to fostering an inclusive environment that welcomes participants from all backgrounds.",
       "tags": [
-        "Academic",
-        "Science & Tech"
+        "Entrepreneurship",
+        "Student Life"
       ],
-      "topics": [
-        "physics-math-quantum",
-        "history-humanities"
-      ],
-      "url": "https://events.berkeley.edu/gradiv/event/328461-time-as-space",
-      "source": "livewhale"
+      "topics": [],
+      "url": "https://haas.berkeley.edu/event/berkeley-haas-chicanx-latinx-heritage-month-celebration-2026/",
+      "source": "haas"
     },
     {
       "id": "bampfa_remembering-harun-farocki::2026-10-14",
@@ -16173,22 +16043,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261015T180000Z-327196@events.berkeley.edu",
-      "title": "Graduate Research Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2026-10-15",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327196-graduate-research-seminar",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261015T190000Z-326617@events.berkeley.edu",
       "title": "Bancroft Library Roundtable",
       "organizer": "UC Berkeley Library",
@@ -16208,19 +16062,18 @@
     },
     {
       "id": "livewhale_20261015T193000Z-324704@events.berkeley.edu",
-      "title": "The neural basis of cuttlefish camouflage and social behavior",
+      "title": "Tessa Montague: Integrative Biology Seminar",
       "organizer": "Integrative Biology",
       "date": "2026-10-15",
       "time": "12:30 PM",
       "location": "2040 VLSB",
-      "description": "All animals form internal neural representations of the external world that guide their behavior. Cuttlefish, coleoid cephalopods related to octopus and squid, perform visually driven adaptive camouflage by dynamically altering the color, pattern, and texture of their skin to create an approximation of their surroundings – a process directly controlled by the brain. Thus, cuttlefish perform a remarkable sensorimotor transformation: they recreate what they see on their skin, generating a motor output that approximates the sensory input itself. In addition to camouflage, cuttlefish use their dynamic skin to communicate with conspecifics using a series of innate skin patterns that reveal the animal's internal state. We are using the cuttlefish skin behaviors to understand how the physical properties of the visual world are represented by patterns of neural activity in the brain, and how this representation is transformed into an approximation of the physical world on the skin. We have performed a series of experiments to develop the dwarf cuttlefish, Ascarosepion bandense, as a model to investigate the neural basis of camouflage and social communication. We have sequenced the genome, developed gene editing techniques, completed a 3D brain atlas, developed camouflage and social behavior paradigms, examined dwarf cuttlefish behavior in the wild, and adapted miniscopes for underwater imaging. Furthermore, we recently succeeded in generating transgenic cuttlefish that express genetically-encoded calcium indicators in the brain, permitting the live imaging of neural activity. We are now using these technologies to simultaneously record neural activity and measure behavior to uncover how visual information is deconstructed in the brain, and then reconstructed into an image of the physical world on the skin.",
+      "description": "Tessa Montague: Integrative Biology Seminar",
       "tags": [
-        "Student Life",
-        "Science & Tech"
+        "Science & Tech",
+        "Academic"
       ],
       "topics": [
-        "biology-life-sciences",
-        "social-clubs"
+        "biology-life-sciences"
       ],
       "url": "https://events.berkeley.edu/ib/event/324704-tessa-montague-integrative-biology-seminar",
       "source": "livewhale"
@@ -16299,22 +16152,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261015T230000Z-327194@events.berkeley.edu",
-      "title": "Graduate Research Conference",
-      "organizer": "Department of Chemistry",
-      "date": "2026-10-15",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327194-graduate-research-conference",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261015T230000Z-327640@events.berkeley.edu",
       "title": "Seminar 242, Econometrics Seminar: Bin Yu (University of California, Berkeley) - TBD",
       "organizer": "Department of Economics",
@@ -16329,6 +16166,24 @@
         "economics-policy"
       ],
       "url": "https://events.berkeley.edu/econ/event/327640-seminar-242-econometrics-seminar-bin-yu-university",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261015T231000Z-328900@events.berkeley.edu",
+      "title": "Mathematics Department Colloquium: TBA",
+      "organizer": "Department of Mathematics",
+      "date": "2026-10-15",
+      "time": "4:10 PM",
+      "location": "129 Undergraduate Academic Building",
+      "description": "Speaker: Mayuko Yamashita, Perimeter Institute for Theoretical Physics, Waterloo",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [
+        "physics-math-quantum"
+      ],
+      "url": "https://events.berkeley.edu/math/event/328900-mathematics-department-colloquium-tba",
       "source": "livewhale"
     },
     {
@@ -16511,11 +16366,10 @@
       "date": "2026-10-16",
       "time": "4:00 PM",
       "location": "120 Latimer Hall",
-      "description": "Erwin Reisner, Professor of Energy and Sustainability, University of CambridgeSemi-artificial Photosynthesis using Formate Dehydrogenase Semi-artificial photosynthesis interfaces biological catalysts with synthetic light absorbers to overcome the inherent limitations of both artificial and natural photosynthesis. Furthermore, this emerging approach can also unlock novel reaction pathways and chemistries with significant technological potential and thus provides new opportunities that are currently not available in solar fuels or algae research. This presentation will summarise our progress in integrating the redox enzyme formate dehydrogenase into bespoke hierarchical 3D electrode scaffolds, photoelectrodes and semiconductor powders. Specifically, formate dehydrogenase immobilised on electrodes enables catalytic CO₂ reduction to formate with electrochemical reversibility and can thus operate at very low overpotential with high selectivity. The design principles for the integration of formate dehydrogenase in bespoke synthetic 3D electrode scaffolds and a detailed analysis of the biocatalyst-material interface will be presented. The understanding of the biotic-abiotic interface ultimately allows for the rational wiring of the biocatalyst into photoelectrochemical and photocatalytic systems for the solar synthesis of fuels and chemicals. Overall, the lecture aims to demonstrate that formate dehydrogenase should be considered as unique model electrocatalyst for CO₂-to-formate conversion in solar catalysis as it enables performance currently not achievable by synthetic catalysts. A recent review on this topic is available: Liu et al., Chem. Rev., 2026, 126, 8034–8088 (https://doi.org/10.1021/acs.chemrev.6c00095).",
+      "description": "Erwin Reisner, Professor of Energy and Sustainability, University of Cambridge Title: TBD",
       "tags": [
         "Science & Tech",
-        "Academic",
-        "Arts"
+        "Academic"
       ],
       "topics": [
         "climate-energy"
@@ -17320,6 +17174,24 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261021T190000Z-327183@events.berkeley.edu",
+      "title": "PMB Seminar with Adam Steinbrenner | Seeing like a plant: immune recognition and signaling by cell surface receptors",
+      "organizer": "Plant & Microbial Biology",
+      "date": "2026-10-21",
+      "time": "12:00 PM",
+      "location": "101 Morgan Hall",
+      "description": "Plants sense extracellular cues through several hundred cell surface receptors. The most rapidly evolving group of receptors is the leucine-rich repeat receptor-like proteins (RLPs), which transduce immune signals as a bipartite receptor complex with the adapter SOBIR1. In recent years many new examples of immunogenic patterns detected by specific RLPs have been described, highlighting their versatility as immune sensing modules. I will discuss unique features of the RLP family that mediate recognition and signaling functions. For recognition, RLPs encode an extracellular island domain, which allosterically couples ligand binding to co-receptor recruitment. For signaling, RLPs lack a kinase domain typical of most receptors, but the short cytoplasmic tail domain can encode signaling through different defense pathways. For both recognition and signaling functions, I will describe new insights from our study of Inceptin Receptor (INR), which detects caterpillar-derived peptide elicitors and evolved 28 mya in a single subtribe of legumes. Since both island and tail domains are small (~10-60 aa) shared features of all RLPs, they may represent modular, editable handles to engineer plant immune systems.",
+      "tags": [
+        "Academic",
+        "Science & Tech"
+      ],
+      "topics": [
+        "biology-life-sciences"
+      ],
+      "url": "https://events.berkeley.edu/pmb/event/327183-pmb-seminar-with-adam-steinbrenner-seeing-like-a-plan",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261021T190000Z-325987@events.berkeley.edu",
       "title": "RWAP: David Bateman, Cornell University",
       "organizer": "Institute of Governmental Studies",
@@ -17391,25 +17263,6 @@
       "source": "berkeley_law"
     },
     {
-      "id": "livewhale_20261021T223000Z-327391@events.berkeley.edu",
-      "title": "Salt Lakes: An Unnatural History",
-      "organizer": "Geography Department",
-      "date": "2026-10-21",
-      "time": "3:30 PM",
-      "location": "575 McCone Hall",
-      "description": "Salt lakes are some of the world's most extraordinary ecosystems, but nearly all of them―from the Great Salt Lake to the Aral Sea��are drying up, a harbinger of dust storms, rising sea levels, and worsening human health. Caroline Tracey's book Salt Lakes: An Unnatural History, a hybrid work of memoir and geographic research, spans the American West, Mexico, Argentina, Kazakhstan and beyond, documenting salt lakes, their loss, and the efforts underway to save them, as well as Tracey's relationships to the lakes. In this talk she will describe the making of the book, including how it draws on her training in geographic methods and on additional creative sources such as Mormon diaries, Soviet realist novels, Australian Aboriginal paintings, and techniques of memoir and the personal essay. Caroline Tracey is the author of Salt Lakes: An Unnatural History (W.W. Norton, 2026). After receiving her PhD in Geography from the University of California, Berkeley, she became an independent writer and journalist specializing in the Southwestern US, Mexico, and their borderlands. Her work has appeared in numerous publications and has received a Fulbright fellowship, the Waterston Prize for Desert Writing, an Andy Warhol Foundation Arts Writer's Grant, and a Creative Capital State of the Arts Award.",
-      "tags": [
-        "Academic"
-      ],
-      "topics": [
-        "climate-energy",
-        "social-sciences",
-        "history-humanities"
-      ],
-      "url": "https://events.berkeley.edu/geog/event/327391-salt-lakes-an-unnatural-history",
-      "source": "livewhale"
-    },
-    {
       "id": "calbears_vcal_38736-admin.calbears.com",
       "title": "California Men's Water Polo vs Princeton",
       "organizer": "Cal Athletics",
@@ -17453,22 +17306,6 @@
       "topics": [],
       "url": "https://admin.calbears.com/calendar.aspx?game_id=38920&sport_id=28",
       "source": "calbears"
-    },
-    {
-      "id": "livewhale_20261022T180000Z-327222@events.berkeley.edu",
-      "title": "Graduate Research Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2026-10-22",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327222-graduate-research-seminar",
-      "source": "livewhale"
     },
     {
       "id": "livewhale_20261022T180000Z-324219@events.berkeley.edu",
@@ -17558,22 +17395,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261022T230000Z-327209@events.berkeley.edu",
-      "title": "Graduate Research Conference",
-      "organizer": "Department of Chemistry",
-      "date": "2026-10-22",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327209-graduate-research-conference",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261022T230000Z-327639@events.berkeley.edu",
       "title": "Seminar 242, Econometrics Seminar: Filip Obradovic (University of California, Los Angeles) - TBD",
       "organizer": "Department of Economics",
@@ -17588,6 +17409,24 @@
         "economics-policy"
       ],
       "url": "https://events.berkeley.edu/econ/event/327639-seminar-242-econometrics-seminar-filip-obradovic",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261022T231000Z-328899@events.berkeley.edu",
+      "title": "Mathematics Department Colloquium: TBA",
+      "organizer": "Department of Mathematics",
+      "date": "2026-10-22",
+      "time": "4:10 PM",
+      "location": "129 Undergraduate Academic Building",
+      "description": "Speaker: Sanath Devalapurkar, IAS and Johns Hopkins",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [
+        "physics-math-quantum"
+      ],
+      "url": "https://events.berkeley.edu/math/event/328899-mathematics-department-colloquium-tba",
       "source": "livewhale"
     },
     {
@@ -17752,22 +17591,6 @@
       "topics": [],
       "url": "https://admin.calbears.com/calendar.aspx?game_id=38672&sport_id=30",
       "source": "calbears"
-    },
-    {
-      "id": "livewhale_20261023T230000Z-327387@events.berkeley.edu",
-      "title": "Inorganic Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2026-10-23",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Brandon Barnett, Assistant Professor, University of RochesterNon-Heme Iron Enzyme Mimicry Through Confinement Biological enzymes have evolved over billions of years to mediate kinetically challenging transformations under mild conditions and with excellent selectivities. Inspired by nature, our group works at the interface of bioinorganic chemistry and materials science toward the precise engineering of void spaces that can kinetically stabilize high-valent, bio-inspired complexes. This talk will focus principally on the chemistry of bio-inspired high-valent iron-oxo and iron-nitrosyl species that have been kinetically stabilized through confinement within a rigid macrocycle. The unique thermal stabilities of these species enable novel investigations of their photochemical behaviors both in solution and in the solid state. Most notably, photocrystallographic studies have illuminated novel C–C cleavage reactions mediated by \"oxyl\"-type excited states of a confined high-spin iron(IV)-oxo. Mechanistic studies of reactions arising from direct photoexcitation of this complex will be discussed. At the end of the talk, I will briefly highlight our work using dynamic porous solids for separation science and energy storage.The Inorganic Seminar Series is sponsored by Earl L. Muetterties lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327387-inorganic-chemistry-seminar",
-      "source": "livewhale"
     },
     {
       "id": "livewhale_20261023T233000Z-328533@events.berkeley.edu",
@@ -18272,22 +18095,6 @@
       "source": "calbears"
     },
     {
-      "id": "livewhale_20261027T180000Z-327388@events.berkeley.edu",
-      "title": "Organic Chemistry Seminar (Postdoc)",
-      "organizer": "Department of Chemistry",
-      "date": "2026-10-27",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Cris Woroch, Postdoc, UC BerkeleyTitle: TDBThe Organic Seminar Series is sponsored by the William G. Dauben lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327388-organic-chemistry-seminar-postdoc",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261027T190000Z-326862@events.berkeley.edu",
       "title": "Student Faculty Macro Lunch: TBD",
       "organizer": "Department of Economics",
@@ -18441,6 +18248,24 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261028T190000Z-327186@events.berkeley.edu",
+      "title": "PMB Seminar with Brian Gregory | A global analysis of miRNA processing and function",
+      "organizer": "Plant & Microbial Biology",
+      "date": "2026-10-28",
+      "time": "12:00 PM",
+      "location": "101 Morgan Hall",
+      "description": "Seminar details to be announced.",
+      "tags": [
+        "Academic",
+        "Science & Tech"
+      ],
+      "topics": [
+        "biology-life-sciences"
+      ],
+      "url": "https://events.berkeley.edu/pmb/event/327186-pmb-seminar-with-brian-gregory-a-global-analysis-of-m",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261028T190000Z-325988@events.berkeley.edu",
       "title": "RWAP: Seth Masket, University of Denver",
       "organizer": "Institute of Governmental Studies",
@@ -18476,26 +18301,6 @@
       ],
       "url": "https://www.law.berkeley.edu/event/critical-foundations-critical-race-theory/",
       "source": "berkeley_law"
-    },
-    {
-      "id": "livewhale_20261028T223000Z-327393@events.berkeley.edu",
-      "title": "All that is compute transforms into concrete: Monopoly rent and the fixity of AI's infrastructure",
-      "organizer": "Geography Department",
-      "date": "2026-10-28",
-      "time": "3:30 PM",
-      "location": "575 McCone Hall",
-      "description": "In the capitalist imaginary, artificial intelligence is narrated on dematerialization. In this telling, capital has escaped the weight of human labor via the frictionless circulation of data. This paper argues the opposite: the AI economy is a geography of fixity, where training large language models requires warehouse-scale data centers anchored to specific territories by the demands of energy, infrastructure, and available land. Two analytical categories theorize this fixity. The first concerns the monopoly control of location and network proximity: value is extracted from whoever sits closest to the data, controls the interconnection, and commands the lowest latency. The second concerns the monopoly control of computation itself: training frontier AI models is capital-intensive, technically scarce, and concentrated in a handful of firms who can extract a tribute that is not reducible to productivity but to infra/structural position. Both forms of extraction are rent. And both are responses to a profitability crisis in the AI sector driven by rising fixed capital requirements that outpace returns. We draw on financial filings, industry reports, and field observations in Northern Virginia's Data Center Alley to show that what appears as an agglomeration economy is better understood as rent extracted through the strategic fixity of capital in digital infrastructure. Dillon Mahmoudi (dillonm@umbc.edu) is an Associate Professor of Geography and Environmental Systems at the University of Maryland Baltimore County. and Alan Wiig (alanwiig@ufl.edu) is an Associate Professor of Geography at the University of Florida. They recently published a book chapter, Land for AI: Data Center Real Estate Markets in The Inner World of Artificial Intelligence (2026).",
-      "tags": [
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "climate-energy",
-        "ai-machine-learning",
-        "social-sciences"
-      ],
-      "url": "https://events.berkeley.edu/geog/event/327393-all-that-is-compute-transforms-into-concrete-monopoly",
-      "source": "livewhale"
     },
     {
       "id": "livewhale_20261029T010000Z-329067@events.berkeley.edu",
@@ -18615,22 +18420,6 @@
       "source": "berkeley_law"
     },
     {
-      "id": "livewhale_20261029T180000Z-327224@events.berkeley.edu",
-      "title": "Graduate Research Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2026-10-29",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327224-graduate-research-seminar",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261029T180000Z-324218@events.berkeley.edu",
       "title": "Marius Wernig: Human iPS cell-derived microtissues to study neurodegenerative disease",
       "organizer": "Molecular & Cell Biology",
@@ -18700,22 +18489,6 @@
       "source": "calbears"
     },
     {
-      "id": "livewhale_20261029T230000Z-327226@events.berkeley.edu",
-      "title": "Graduate Research Conference",
-      "organizer": "Department of Chemistry",
-      "date": "2026-10-29",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327226-graduate-research-conference",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261029T230000Z-327638@events.berkeley.edu",
       "title": "Seminar 242, Econometrics Seminar: Federico Crippa (University of California, Berkeley) - TBD",
       "organizer": "Department of Economics",
@@ -18730,6 +18503,24 @@
         "economics-policy"
       ],
       "url": "https://events.berkeley.edu/econ/event/327638-seminar-242-econometrics-seminar-federico-crippa",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261029T231000Z-328898@events.berkeley.edu",
+      "title": "Mathematics Department Colloquium: TBA",
+      "organizer": "Department of Mathematics",
+      "date": "2026-10-29",
+      "time": "4:10 PM",
+      "location": "129 Undergraduate Academic Building",
+      "description": "Speaker: Melanie Wood, Harvard",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [
+        "physics-math-quantum"
+      ],
+      "url": "https://events.berkeley.edu/math/event/328898-mathematics-department-colloquium-tba",
       "source": "livewhale"
     },
     {
@@ -18957,6 +18748,21 @@
       "topics": [],
       "url": "https://admin.calbears.com/calendar.aspx?game_id=38669&sport_id=30",
       "source": "calbears"
+    },
+    {
+      "id": "bampfa_woman-woman::2026-10-30",
+      "title": "A Woman Is a Woman",
+      "organizer": "BAMPFA",
+      "date": "2026-10-30",
+      "time": "7:30 PM",
+      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      "description": "A Woman Is a Woman",
+      "tags": [
+        "Arts"
+      ],
+      "topics": [],
+      "url": "https://bampfa.org/event/woman-woman",
+      "source": "bampfa"
     },
     {
       "id": "calbears_vcal_38599-admin.calbears.com",
@@ -19474,7 +19280,7 @@
       "date": "2026-11-03",
       "time": "4:00 PM",
       "location": "120 Latimer Hall",
-      "description": "Steven Brown, Deputy Director, NOAA Chemical Sciences LaboratoryPyrogenic Skies: Photochemistry, heterogeneous chemistry and air quality impacts of wildfire smoke As wildfires have increased in frequency and intensity across North America, their emissions have become a driver of regional air quality degradation. Biomass burning is a large source of ozone precursors, nitrogen oxides (NOx) and volatile organic compounds (VOCs), as well as particulate matter that impacts air quality directly and also drives heterogeneous chemical processes. Photochemistry within smoke plumes creates pyrogenic ozone over a variety of timescales, leading to short- and long-range transport and widespread increases in the ozone background. Mixing and entrainment of smoke that is rich in pyrogenic VOCs into NOx-rich urban areas alters regional photochemistry and can further enhance ozone production. However, aerosol loads associated with smoke layers may also suppress photochemistry. Heterogeneous chemistry in smoke plumes influences atmospheric composition through a different set of chemical cycles that affect both the lower and upper atmosphere. A series of recent airborne and ground-based field studies has investigated these chemical processes in biomass burning influenced air. These include the 2019 Fire Influence on Regional to Global Environments and Air Quality (FIREX-AQ), the 2022 California Fire Dynamics Experiment (CalFiDE), the 2023 Atmospheric Emissions and Reactivity Observed from Megacities to Marine Areas (AEROMMA) campaign, the 2024 Utah Summer Ozone study, and others. These studies provide new insights into the biomass burning influence on tropospheric ozone at all scales, from near field plume chemistry to the global remote troposphere, and from the continental background to local urban influence.",
+      "description": "Steven Brown, Deputy Director, NOAA Chemical Sciences Laboratory Title: TBD",
       "tags": [
         "Science & Tech",
         "Academic"
@@ -19499,6 +19305,24 @@
         "law"
       ],
       "url": "https://events.berkeley.edu/crg/event/315487-fawzia-afzal-khan-angana-p-chatterji-jyoti-puri-ather",
+      "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261104T200000Z-327189@events.berkeley.edu",
+      "title": "2026 Tsujimoto Lecture",
+      "organizer": "Plant & Microbial Biology",
+      "date": "2026-11-04",
+      "time": "12:00 PM",
+      "location": "101 Morgan Hall",
+      "description": "Lecture details to be announced.",
+      "tags": [
+        "Academic",
+        "Science & Tech"
+      ],
+      "topics": [
+        "biology-life-sciences"
+      ],
+      "url": "https://events.berkeley.edu/pmb/event/327189-2026-tsujimoto-lecture",
       "source": "livewhale"
     },
     {
@@ -19712,22 +19536,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261105T190000Z-327496@events.berkeley.edu",
-      "title": "Graduate Research Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2026-11-05",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327496-graduate-research-seminar",
-      "source": "livewhale"
-    },
-    {
       "id": "bampfa_curators-tour-anthony-graham-maren-hassinger::2026-11-05",
       "title": "Curator’s Tour: Anthony Graham on Maren Hassinger: Living Moving Growing",
       "organizer": "BAMPFA",
@@ -19758,6 +19566,39 @@
       ],
       "url": "https://events.berkeley.edu/econ/event/322229-seminar-251-labor-evan-soltas-how-costly-is-permittin",
       "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261106T001000Z-328897@events.berkeley.edu",
+      "title": "Mathematics Department Colloquium: TBA",
+      "organizer": "Department of Mathematics",
+      "date": "2026-11-05",
+      "time": "4:10 PM",
+      "location": "129 Undergraduate Academic Building",
+      "description": "Speaker: Giovanni Forni, University of Maryland",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [
+        "physics-math-quantum"
+      ],
+      "url": "https://events.berkeley.edu/math/event/328897-mathematics-department-colloquium-tba",
+      "source": "livewhale"
+    },
+    {
+      "id": "haas_3398744",
+      "title": "BC/EMBA Alumni: Celebrating Marjorie’s Retirement!",
+      "organizer": "Berkeley Haas",
+      "date": "2026-11-05",
+      "time": "5:00 PM",
+      "location": "Wells Fargo Room, Haas School of Business",
+      "description": "Dear Executive MBA Community and Friends of Marjorie, Over her 25 years at UC Berkeley Haas, Marjorie DeGraca has uniquely shaped our community. Marjorie enrolled more than 8,000 MBA students during her tenure (2002-2026), directly contributing to roughly 20% of the entire Haas Alumni Network. Her exceptional talent for identifying transformative leaders has left an indelible mark on our school and the broader business world. She has an unrivaled ability to select the most capable individuals and shape powerful MBA communities. We are deeply grateful for Marjorie’s impact on our school, students, alums and, more broadly, business and the world around us. Please join the BC/EMBA community to thank and celebrate her 25 incredible years of impact at Haas and beyond. Details: Date: Thursday, November 5 Time: 5:00-7:00pm Location: Wells Fargo Room, Haas School of Business Light refreshments and beverages will be served. Self-pay parking available at the Stadium Parking Garage across from Haas. Please RSVP via this link as soon as possible. There will very likely be a waitlist, so please let us know if you have RSVP’d yes and your plans change. Please also share a message of appreciation and thanks to Marjorie on this online Kudoboard by November 1st. Questions? Contact Anita Ratnathicam – anitar@berkeley.edu. Register",
+      "tags": [
+        "Entrepreneurship"
+      ],
+      "topics": [],
+      "url": "https://haas.berkeley.edu/event/bc-emba-alumni-celebrating-marjories-retirement/",
+      "source": "haas"
     },
     {
       "id": "calbears_vcal_38783-admin.calbears.com",
@@ -20047,6 +19888,28 @@
       "topics": [],
       "url": "https://admin.calbears.com/calendar.aspx?game_id=38929&sport_id=28",
       "source": "calbears"
+    },
+    {
+      "id": "livewhale_326891@events.berkeley.edu",
+      "title": "The Grammar of the Mandala: The Five Families in Buddhist Thought and Practice",
+      "organizer": "Buddhist Studies",
+      "date": "2026-11-07",
+      "time": "All day",
+      "location": "370 Dwinelle Hall",
+      "description": "The Grammar of the Mandala: The Five Families in Buddhist Thought and Practice By the seventh century, Mahāyāna Buddhists had begun to classify their buddhas by type. Within decades, the five buddha-families (pañcakula) emerged as the preeminent typology, one that went on to dominate tantric Buddhist thought and practice into the present. This workshop brings together Buddhist studies scholars from a range of disciplines, geographic regions, and historical periods to examine how Buddhists from India to Japan used and interpreted the five families across art, medicine, cosmology, myth, and society. Schedule TBA",
+      "tags": [
+        "Academic"
+      ],
+      "topics": [
+        "history-humanities"
+      ],
+      "url": "https://events.berkeley.edu/bs/event/326891-the-grammar-of-the-mandala-the-five-families-in",
+      "source": "livewhale",
+      "end_date": "2026-11-08",
+      "dates": [
+        "2026-11-07",
+        "2026-11-08"
+      ]
     },
     {
       "id": "haas_3381439",
@@ -20537,22 +20400,6 @@
       "source": "calbears"
     },
     {
-      "id": "livewhale_20261112T190000Z-327498@events.berkeley.edu",
-      "title": "Graduate Research Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2026-11-12",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327498-graduate-research-seminar",
-      "source": "livewhale"
-    },
-    {
       "id": "berkeley_law_766054",
       "title": "[CDO] Faculty Clerkship Committee Q&A",
       "organizer": "Berkeley Law",
@@ -20588,19 +20435,21 @@
       "source": "berkeley_law"
     },
     {
-      "id": "livewhale_20261113T000000Z-327499@events.berkeley.edu",
-      "title": "Graduate Research Conference",
-      "organizer": "Department of Chemistry",
+      "id": "livewhale_20261113T001000Z-328896@events.berkeley.edu",
+      "title": "Mathematics Department Colloquium: TBA",
+      "organizer": "Department of Mathematics",
       "date": "2026-11-12",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
+      "time": "4:10 PM",
+      "location": "129 Undergraduate Academic Building",
+      "description": "Speaker: Katya Krupchyk, UC Irvine",
       "tags": [
         "Science & Tech",
         "Academic"
       ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327499-graduate-research-conference",
+      "topics": [
+        "physics-math-quantum"
+      ],
+      "url": "https://events.berkeley.edu/math/event/328896-mathematics-department-colloquium-tba",
       "source": "livewhale"
     },
     {
@@ -20740,22 +20589,6 @@
         "theater-dance"
       ],
       "url": "https://events.berkeley.edu/music/event/328906-composition-colloquium-andrea-agostini",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20261114T000000Z-317670@events.berkeley.edu",
-      "title": "Inorganic Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2026-11-13",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Josh Figueroa, Professor, UC San DiegoTitle: TBDThe Inorganic Seminar Series is sponsored by Earl L. Muetterties lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317670-inorganic-chemistry-seminar",
       "source": "livewhale"
     },
     {
@@ -21286,22 +21119,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20261118T000000Z-317659@events.berkeley.edu",
-      "title": "Physical Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2026-11-17",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "David Limmer, Associate Professor, UC BerkeleyTitle: TBDThe Physical Seminar Series is sponsored by the George C. Pimentel lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317659-physical-chemistry-seminar",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261118T000000Z-323830@events.berkeley.edu",
       "title": "Seminar 237 - Macroeconomics/Monetary Economics: TBD",
       "organizer": "Department of Economics",
@@ -21734,22 +21551,6 @@
       ],
       "url": "https://www.law.berkeley.edu/event/asp-in-person-practice-exam-10/",
       "source": "berkeley_law"
-    },
-    {
-      "id": "livewhale_20261121T000000Z-317671@events.berkeley.edu",
-      "title": "Earl L. Muetterties Lectures in Chemistry",
-      "organizer": "Department of Chemistry",
-      "date": "2026-11-20",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Joesp Cornella, Director, Max-Plank InstituteTitle: TBDLecture 2 of 2",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317671-earl-l-muetterties-lectures-in-chemistry",
-      "source": "livewhale"
     },
     {
       "id": "calbears_vcal_38617-admin.calbears.com",
@@ -22399,15 +22200,12 @@
       "date": "2026-12-01",
       "time": "11:00 AM",
       "location": "120 Latimer Hall",
-      "description": "Amy Weeks, Assistant Professor, University of Wisconsin, MadisonNew enzyme chemistry to decipher post-translational modification function Spatial organization and temporal dynamics are essential properties of cellular signaling. Post-translational modifications (PTMs) to proteins relay biological signals by exerting precise spatiotemporal control over protein function, localization, and lifetime. A systems-level experimental map of post-translationally modified proteins across subcellular space and time would transform our understanding of how PTMs orchestrate complex cellular functions in response to biological stimuli. However, such a map is inaccessible with current technologies. To meet this challenge, the Weeks lab is focused on developing new chemical and enzymatic tools for PTM proteomics with subcellular spatial and temporal resolution. We develop chemical probes and genetically targetable, PTM-selective proximity labeling enzymes to covalently tag post-translationally modified proteins in specific subcellular locations, enabling their enrichment and analysis with mass spectrometry-based proteomics experiments. We focus on two pervasive PTMs, proteolysis and phosphorylation, both of which play critical roles in myriad biological signaling pathways relevant to human health and disease. Our technologies are broadly applicable to a wide variety of protease and kinase signaling pathways and provide an integrated view of cellular signaling with implications for both fundamental biological discovery and therapeutic innovation.The Organic Seminar Series is sponsored by the William G. Dauben lecture fund",
+      "description": "Amy Weeks, Assistant Professor, University of Wisconsin, Madison Title: TBDThe Organic Seminar Series is sponsored by the William G. Dauben lecture fund",
       "tags": [
         "Science & Tech",
-        "Academic",
-        "Entrepreneurship"
+        "Academic"
       ],
-      "topics": [
-        "biology-life-sciences"
-      ],
+      "topics": [],
       "url": "https://events.berkeley.edu/chem/event/317647-organic-chemistry-seminar",
       "source": "livewhale"
     },
@@ -22586,6 +22384,24 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261202T200000Z-327193@events.berkeley.edu",
+      "title": "PMB Seminar with Vivian Irish | Thorny questions: citrus development and disease",
+      "organizer": "Plant & Microbial Biology",
+      "date": "2026-12-02",
+      "time": "12:00 PM",
+      "location": "101 Morgan Hall",
+      "description": "Thorns are plant defensive structures that arise from axillary shoot apical meristems that proliferate for a time and then terminally differentiate into a sharp hard tip. Like other meristems, thorn meristems contain stem cells but, in the case of thorns, these stem cells undergo a programmed cessation of proliferative activity. Using citrus as a model system to examine this unusual form of stem cell regulation, we have characterized a transcriptional gene network necessary for thorn development. Not only has this work illuminated some of the molecular mechanisms controlling plant stem cell activity, but the methods we have developed have allowed us to tackle some of the challenges facing citrus agriculture today.",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [
+        "biology-life-sciences"
+      ],
+      "url": "https://events.berkeley.edu/pmb/event/327193-pmb-seminar-with-vivian-irish-thorny-questions",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261202T200000Z-325990@events.berkeley.edu",
       "title": "RWAP: Andrea Benjamin, University of Oklahoma",
       "organizer": "Institute of Governmental Studies",
@@ -22601,26 +22417,6 @@
         "workshops-skills"
       ],
       "url": "https://events.berkeley.edu/igs/event/325990-rwap-andrea-benjamin-university-of-oklahoma",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20261202T233000Z-327394@events.berkeley.edu",
-      "title": "Geography Colloquium with Luis Flores",
-      "organizer": "Geography Department",
-      "date": "2026-12-02",
-      "time": "3:30 PM",
-      "location": "575 McCone Hall",
-      "description": "Luis Flores is a historical sociologist engaged in economic, urban/regional, and social inequality research. His research examines the regulatory and social politics surrounding home-based moneymaking, as previously stigmatized forms of informality became increasingly popular.",
-      "tags": [
-        "Academic",
-        "Student Life"
-      ],
-      "topics": [
-        "climate-energy",
-        "social-sciences",
-        "social-clubs"
-      ],
-      "url": "https://events.berkeley.edu/geog/event/327394-geography-colloquium-with-luis-flores",
       "source": "livewhale"
     },
     {
@@ -22705,6 +22501,24 @@
       "source": "livewhale"
     },
     {
+      "id": "livewhale_20261204T001000Z-328895@events.berkeley.edu",
+      "title": "Mathematics Department Colloquium: TBA",
+      "organizer": "Department of Mathematics",
+      "date": "2026-12-03",
+      "time": "4:10 PM",
+      "location": "129 Undergraduate Academic Building",
+      "description": "Speaker: Lauren Williams, Harvard",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [
+        "physics-math-quantum"
+      ],
+      "url": "https://events.berkeley.edu/math/event/328895-mathematics-department-colloquium-tba",
+      "source": "livewhale"
+    },
+    {
       "id": "livewhale_20261204T010000Z-322886@events.berkeley.edu",
       "title": "Reactionary Politics in South Korea: Historical Legacies, Far-Right Intellectuals, and Political Mobilization",
       "organizer": "Center for Korean Studies",
@@ -22740,22 +22554,6 @@
         "music-performance"
       ],
       "url": "https://events.berkeley.edu/music/event/328907-composition-colloquium-aiyun-huang",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20261205T000000Z-317672@events.berkeley.edu",
-      "title": "Inorganic Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2026-12-04",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Stefan Minasian, Staff Chemist, LBNLTitle: TBDThe Inorganic Seminar Series is sponsored by Earl L. Muetterties lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317672-inorganic-chemistry-seminar",
       "source": "livewhale"
     },
     {
@@ -23352,22 +23150,6 @@
       "source": "berkeley_law"
     },
     {
-      "id": "livewhale_20270112T190000Z-328483@events.berkeley.edu",
-      "title": "Organic Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-01-12",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Tom Maimone, Professor, UC BerkeleyTitle: TBDThe Organic Seminar Series is sponsored by the William G. Dauben lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/328483-organic-chemistry-seminar",
-      "source": "livewhale"
-    },
-    {
       "id": "calbears_vcal_39019-admin.calbears.com",
       "title": "California Women's Basketball at Duke",
       "organizer": "Cal Athletics",
@@ -23430,38 +23212,6 @@
       "source": "simons"
     },
     {
-      "id": "livewhale_20270119T190000Z-317674@events.berkeley.edu",
-      "title": "Organic Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-01-19",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Filippo Romiti, Assistant Professor, University of Texas - DallasTitle: TBDThe Organic Seminar Series is sponsored by the William G. Dauben lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317674-organic-chemistry-seminar",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20270120T000000Z-317690@events.berkeley.edu",
-      "title": "Physical Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-01-19",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Bingqing Cheng, Assistant Professor, UC BerkeleyTitle: TBDThe Physical Seminar Series is sponsored by the George C. Pimentel lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317690-physical-chemistry-seminar",
-      "source": "livewhale"
-    },
-    {
       "id": "calbears_vcal_39021-admin.calbears.com",
       "title": "California Women's Basketball vs North Carolina",
       "organizer": "Cal Athletics",
@@ -23477,19 +23227,21 @@
       "source": "calbears"
     },
     {
-      "id": "livewhale_20270123T000000Z-317759@events.berkeley.edu",
-      "title": "Inorganic Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-01-22",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Tim Su, Assistant Professor, UC RiversideTitle: TBDThe Inorganic Seminar Series is sponsored by Earl L. Muetterties lecture fund",
+      "id": "livewhale_20270121T190000Z-324223@events.berkeley.edu",
+      "title": "Michelle Arkin: Hacking protein-protein interaction networks with drug-like molecules",
+      "organizer": "UC Berkeley",
+      "date": "2027-01-21",
+      "time": "11:00 AM",
+      "location": "125 Li Ka Shing Center",
+      "description": "Protein complexes have been challenging to modulate with small molecules because the protein-protein interactions tend to be either large and flat or highly dynamic and disordered. We will describe how biophysical screening and covalent chemistry have yielded innovative starting points for drug discovery.Division(s): MTx (Molecular Therapeutics)",
       "tags": [
-        "Science & Tech",
-        "Academic"
+        "Arts",
+        "Science & Tech"
       ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317759-inorganic-chemistry-seminar",
+      "topics": [
+        "biology-life-sciences"
+      ],
+      "url": "https://events.berkeley.edu/live/events/324087-michelle-arkin-mtx-seminar",
       "source": "livewhale"
     },
     {
@@ -23638,54 +23390,6 @@
       "source": "calbears"
     },
     {
-      "id": "livewhale_20270128T190000Z-327538@events.berkeley.edu",
-      "title": "Graduate Research Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-01-28",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327538-graduate-research-seminar",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20270129T000000Z-327536@events.berkeley.edu",
-      "title": "Graduate Research Conference",
-      "organizer": "Department of Chemistry",
-      "date": "2027-01-28",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327536-graduate-research-conference",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20270130T000000Z-317760@events.berkeley.edu",
-      "title": "Neil Bartlett Memorial Lecture",
-      "organizer": "Department of Chemistry",
-      "date": "2027-01-29",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Michael Hill, Professor, University of BathTitle: TBD",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317760-neil-bartlett-memorial-lecture",
-      "source": "livewhale"
-    },
-    {
       "id": "cal_performances_82524",
       "title": "Mitsuko Uchida, piano 2627",
       "organizer": "Cal Performances",
@@ -23784,38 +23488,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20270202T190000Z-317676@events.berkeley.edu",
-      "title": "Clayton H. Heathcock Lecture",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-02",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Kai Johnsson, Professor, Max Planck Title: TBD",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317676-clayton-h-heathcock-lecture",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20270203T000000Z-317692@events.berkeley.edu",
-      "title": "Kenneth S. Pitzer Memorial Lecture",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-02",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Stuart Althrope, Professor, University of Cambridge Title: TBD",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317692-kenneth-s-pitzer-memorial-lecture",
-      "source": "livewhale"
-    },
-    {
       "id": "calbears_vcal_39025-admin.calbears.com",
       "title": "California Women's Basketball vs Florida State",
       "organizer": "Cal Athletics",
@@ -23829,54 +23501,6 @@
       "topics": [],
       "url": "https://admin.calbears.com/calendar.aspx?game_id=39025&sport_id=19",
       "source": "calbears"
-    },
-    {
-      "id": "livewhale_20270204T190000Z-327544@events.berkeley.edu",
-      "title": "Graduate Research Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-04",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327544-graduate-research-seminar",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20270205T000000Z-327541@events.berkeley.edu",
-      "title": "Graduate Research Conference",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-04",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327541-graduate-research-conference",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20270206T000000Z-317761@events.berkeley.edu",
-      "title": "Glenn T. Seaborg Memorial Lectures in Inorganic Chemistry",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-05",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Christian Limberg, Professor, Humboldt University of BerlinTitle: TBDLecture 1 of 2",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317761-glenn-t-seaborg-memorial-lectures-in-inorganic-chemis",
-      "source": "livewhale"
     },
     {
       "id": "cal_performances_82495",
@@ -23958,22 +23582,6 @@
       "source": "livewhale"
     },
     {
-      "id": "livewhale_20270210T000000Z-317693@events.berkeley.edu",
-      "title": "Physical Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-09",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Tatyana Polenova, Professor, UC BerkeleyTitle: TBDThe Physical Seminar Series is sponsored by the George C. Pimentel lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317693-physical-chemistry-seminar",
-      "source": "livewhale"
-    },
-    {
       "id": "cal_performances_82555",
       "title": "Henry Purcell’s Dido and Aeneas: Joyce DiDonato, mezzo-soprano; II Pomo d’Oro Orchestra and Choir",
       "organizer": "Cal Performances",
@@ -24021,38 +23629,6 @@
       "source": "calbears"
     },
     {
-      "id": "livewhale_20270211T190000Z-327549@events.berkeley.edu",
-      "title": "Graduate Research Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-11",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327549-graduate-research-seminar",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20270212T000000Z-327547@events.berkeley.edu",
-      "title": "Graduate Research Conference",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-11",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327547-graduate-research-conference",
-      "source": "livewhale"
-    },
-    {
       "id": "calbears_vcal_38845-admin.calbears.com",
       "title": "California Men's Golf at Hawaii",
       "organizer": "Cal Athletics",
@@ -24066,22 +23642,6 @@
       "topics": [],
       "url": "https://admin.calbears.com/calendar.aspx?game_id=38845&sport_id=10",
       "source": "calbears"
-    },
-    {
-      "id": "livewhale_20270213T000000Z-328654@events.berkeley.edu",
-      "title": "Glenn T. Seaborg Memorial Lectures in Inorganic Chemistry",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-12",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Christian Limberg, Professor, Humboldt University of BerlinTitle: TBDLecture 2 of 2",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/328654-glenn-t-seaborg-memorial-lectures-in-inorganic-chemis",
-      "source": "livewhale"
     },
     {
       "id": "calbears_vcal_38846-admin.calbears.com",
@@ -24159,38 +23719,6 @@
       "source": "cal_performances"
     },
     {
-      "id": "livewhale_20270216T190000Z-317678@events.berkeley.edu",
-      "title": "Gilead Lecture",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-16",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Alex Schuppe, Assistant Professor, Vanderbilt University Title: TBD",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317678-gilead-lecture",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20270217T000000Z-317694@events.berkeley.edu",
-      "title": "Physical Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-16",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Sandeep Sharma, Professor, CaltechTitle: TBDThe Physical Seminar Series is sponsored by the George C. Pimentel lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317694-physical-chemistry-seminar",
-      "source": "livewhale"
-    },
-    {
       "id": "calbears_vcal_39028-admin.calbears.com",
       "title": "California Women's Basketball at Clemson",
       "organizer": "Cal Athletics",
@@ -24204,54 +23732,6 @@
       "topics": [],
       "url": "https://admin.calbears.com/calendar.aspx?game_id=39028&sport_id=19",
       "source": "calbears"
-    },
-    {
-      "id": "livewhale_20270218T190000Z-327554@events.berkeley.edu",
-      "title": "Graduate Research Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-18",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327554-graduate-research-seminar",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20270219T000000Z-327551@events.berkeley.edu",
-      "title": "Graduate Research Conference",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-18",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327551-graduate-research-conference",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20270220T000000Z-317763@events.berkeley.edu",
-      "title": "Inorganic Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-19",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Megan Jackson, Assistant Professor, University of North Carolina at Chapel HillTitle: TBDThe Inorganic Seminar Series is sponsored by Earl L. Muetterties lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317763-inorganic-chemistry-seminar",
-      "source": "livewhale"
     },
     {
       "id": "cal_performances_82586",
@@ -24382,38 +23862,6 @@
       "source": "calbears"
     },
     {
-      "id": "livewhale_20270223T190000Z-317679@events.berkeley.edu",
-      "title": "Organic Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-23",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Phil Cole, Professor, Harvard UniversityTitle: TBDThe Organic Seminar Series is sponsored by the William G. Dauben lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317679-organic-chemistry-seminar",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20270224T000000Z-317695@events.berkeley.edu",
-      "title": "Physical Chemistry Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-23",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Todd Martinez, David Mulvane Ehrsam and Edward Curtis Franklin Professor, StanfordTitle: TBDThe Physical Seminar Series is sponsored by the George C. Pimentel lecture fund",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317695-physical-chemistry-seminar",
-      "source": "livewhale"
-    },
-    {
       "id": "calbears_vcal_39030-admin.calbears.com",
       "title": "California Women's Basketball vs Boston College",
       "organizer": "Cal Athletics",
@@ -24427,38 +23875,6 @@
       "topics": [],
       "url": "https://admin.calbears.com/calendar.aspx?game_id=39030&sport_id=19",
       "source": "calbears"
-    },
-    {
-      "id": "livewhale_20270225T190000Z-327561@events.berkeley.edu",
-      "title": "Graduate Research Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-25",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327561-graduate-research-seminar",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20270226T000000Z-327559@events.berkeley.edu",
-      "title": "Graduate Research Conference",
-      "organizer": "Department of Chemistry",
-      "date": "2027-02-25",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327559-graduate-research-conference",
-      "source": "livewhale"
     },
     {
       "id": "cal_performances_83684",
@@ -24588,22 +24004,6 @@
       "source": "simons"
     },
     {
-      "id": "livewhale_20270302T000000Z-321965@events.berkeley.edu",
-      "title": "Rachel Klevit: BTP/SQB Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-03-01",
-      "time": "4:00 PM",
-      "location": "106 Stanley Hall",
-      "description": "Structural & Quantitative Biology Seminar",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/321965-rachel-klevit-btpsqb-seminar",
-      "source": "livewhale"
-    },
-    {
       "id": "calbears_vcal_38849-admin.calbears.com",
       "title": "California Men's Golf vs Arkansas",
       "organizer": "Cal Athletics",
@@ -24617,23 +24017,6 @@
       "topics": [],
       "url": "https://admin.calbears.com/calendar.aspx?game_id=38849&sport_id=10",
       "source": "calbears"
-    },
-    {
-      "id": "livewhale_20270302T190000Z-317680@events.berkeley.edu",
-      "title": "Genentech Lecture",
-      "organizer": "Department of Chemistry",
-      "date": "2027-03-02",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Huw Davies, Asa Griggs Candler Professor, Harvard University Title: TBD",
-      "tags": [
-        "Science & Tech",
-        "Academic",
-        "Student Life"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/317680-genentech-lecture",
-      "source": "livewhale"
     },
     {
       "id": "cal_performances_82546",
@@ -24664,38 +24047,6 @@
       "topics": [],
       "url": "https://admin.calbears.com/calendar.aspx?game_id=39032&sport_id=19",
       "source": "calbears"
-    },
-    {
-      "id": "livewhale_20270304T190000Z-327565@events.berkeley.edu",
-      "title": "Graduate Research Seminar",
-      "organizer": "Department of Chemistry",
-      "date": "2027-03-04",
-      "time": "11:00 AM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327565-graduate-research-seminar",
-      "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20270305T000000Z-327564@events.berkeley.edu",
-      "title": "Graduate Research Conference",
-      "organizer": "Department of Chemistry",
-      "date": "2027-03-04",
-      "time": "4:00 PM",
-      "location": "120 Latimer Hall",
-      "description": "Graduate student seminar - title and abstract to follow.",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/chem/event/327564-graduate-research-conference",
-      "source": "livewhale"
     },
     {
       "id": "cal_performances_82592",
@@ -25802,7 +25153,7 @@
       "uri": "https://brsl.berkeley.edu/events/"
     }
   ],
-  "lastUpdated": 1788702849039,
+  "lastUpdated": 1788797739525,
   "data_age_hours": 0,
   "degraded_sources": [],
   "topic_vocabulary": {
