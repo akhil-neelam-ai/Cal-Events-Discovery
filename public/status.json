@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-18T14:45:24.019Z",
-  "total_events": 1590,
-  "duplicates_removed": 348,
-  "past_events_filtered": 3125,
+  "generated_at": "2026-09-19T14:07:34.908Z",
+  "total_events": 1529,
+  "duplicates_removed": 340,
+  "past_events_filtered": 3152,
   "invalid_events_filtered": 11,
   "topics": {
     "outcome": "ok",
@@ -13,87 +13,87 @@
     {
       "name": "livewhale",
       "ok": true,
-      "count": 1692,
-      "duration_ms": 5713,
-      "fetched_at": "2026-09-18T14:44:55.165Z"
+      "count": 1628,
+      "duration_ms": 8976,
+      "fetched_at": "2026-09-19T14:07:08.453Z"
     },
     {
       "name": "callink",
       "ok": true,
       "count": 10,
-      "duration_ms": 538,
-      "fetched_at": "2026-09-18T14:44:55.188Z"
+      "duration_ms": 1007,
+      "fetched_at": "2026-09-19T14:07:08.476Z"
     },
     {
       "name": "cal_performances",
       "ok": true,
       "count": 56,
-      "duration_ms": 27425,
-      "fetched_at": "2026-09-18T14:44:55.189Z"
+      "duration_ms": 24847,
+      "fetched_at": "2026-09-19T14:07:08.477Z"
     },
     {
       "name": "calbears",
       "ok": true,
-      "count": 319,
-      "duration_ms": 1071,
-      "fetched_at": "2026-09-18T14:44:55.191Z"
+      "count": 317,
+      "duration_ms": 1110,
+      "fetched_at": "2026-09-19T14:07:08.479Z"
     },
     {
       "name": "bampfa",
       "ok": true,
-      "count": 138,
-      "duration_ms": 4136,
-      "fetched_at": "2026-09-18T14:44:55.192Z"
+      "count": 137,
+      "duration_ms": 3887,
+      "fetched_at": "2026-09-19T14:07:08.480Z"
     },
     {
       "name": "haas",
       "ok": true,
       "count": 25,
-      "duration_ms": 2636,
-      "fetched_at": "2026-09-18T14:44:55.195Z"
+      "duration_ms": 4238,
+      "fetched_at": "2026-09-19T14:07:08.483Z"
     },
     {
       "name": "berkeley_law",
       "ok": true,
-      "count": 147,
-      "duration_ms": 4705,
-      "fetched_at": "2026-09-18T14:44:55.197Z"
+      "count": 150,
+      "duration_ms": 5460,
+      "fetched_at": "2026-09-19T14:07:08.485Z"
     },
     {
       "name": "simons",
       "ok": true,
       "count": 34,
-      "duration_ms": 25339,
-      "fetched_at": "2026-09-18T14:44:55.198Z"
+      "duration_ms": 16320,
+      "fetched_at": "2026-09-19T14:07:08.486Z"
     },
     {
       "name": "luma",
       "ok": true,
       "count": 7,
-      "duration_ms": 1281,
-      "fetched_at": "2026-09-18T14:44:55.199Z"
+      "duration_ms": 1275,
+      "fetched_at": "2026-09-19T14:07:08.487Z"
     },
     {
       "name": "begin",
       "ok": true,
       "count": 3,
-      "duration_ms": 2011,
-      "fetched_at": "2026-09-18T14:44:55.207Z"
+      "duration_ms": 1993,
+      "fetched_at": "2026-09-19T14:07:08.494Z"
     },
     {
       "name": "ai_risk",
       "ok": false,
       "count": 0,
-      "duration_ms": 6067,
+      "duration_ms": 5531,
       "error": "ai_risk fetch failed after 3 attempts: 404 Not Found",
-      "fetched_at": "2026-09-18T14:44:55.208Z"
+      "fetched_at": "2026-09-19T14:07:08.495Z"
     },
     {
       "name": "brsl",
       "ok": true,
       "count": 4,
-      "duration_ms": 3499,
-      "fetched_at": "2026-09-18T14:44:55.209Z"
+      "duration_ms": 3460,
+      "fetched_at": "2026-09-19T14:07:08.496Z"
     }
   ],
   "fallback_used": false,
