@@ -141,6 +141,8 @@ Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` is
 
 The June full-repo audit is `docs/code-review-2026-06-02.md`. It is a different pass.
 
+The September full-repo audit is `docs/code-review-2026-09-25.md`. Its items #1 to #35 are open. Four need a decision first: #2, #11, #19, and #26.
+
 ## Key files
 
 | File | Purpose |
