@@ -264,3 +264,20 @@ test("a multi-day event is grouped under the first day of the view", () => {
   ]);
   assert.equal(tomorrowGroups[0].label, "Tomorrow · May 14");
 });
+
+test("multi-day labels follow the synced today key", () => {
+  const run = {
+    date: "2026-05-02",
+    end_date: "2026-05-04",
+    dates: ["2026-05-02", "2026-05-03", "2026-05-04"],
+    time: "All day",
+  };
+  // 00:30 PT on May 2. The synced key still says May 1 until its refresh.
+  const now = new Date("2026-05-02T07:30:00Z");
+
+  assert.equal(
+    formatRelativeEventDate(run, now, "upcoming", "2026-05-01"),
+    "May 2 – May 4",
+  );
+  assert.equal(formatRelativeEventDate(run, now, "upcoming"), "Through May 4");
+});

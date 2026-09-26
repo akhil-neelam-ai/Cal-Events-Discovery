@@ -210,11 +210,12 @@ export function formatMultiDayWhen(
   event: Pick<CalEvent, "date" | "end_date" | "dates">,
   now = new Date(),
   dateRange?: string,
+  syncedTodayKey?: string,
 ): string | null {
   const dates = event.dates;
   if (!dates || dates.length < 2) return null;
 
-  const todayKey = getCurrentPacificDateKey(now);
+  const todayKey = syncedTodayKey ?? getCurrentPacificDateKey(now);
 
   // In the "This Week" view, a gappy/recurring run is most useful framed as how
   // many days it actually occurs within the next 7 days. Continuous runs keep
@@ -249,7 +250,7 @@ export function formatRelativeEventDate(
   // real time for callers (and tests) that don't thread it.
   syncedTodayKey?: string,
 ): string {
-  const multiDay = formatMultiDayWhen(event, now, dateRange);
+  const multiDay = formatMultiDayWhen(event, now, dateRange, syncedTodayKey);
   if (multiDay) return multiDay;
 
   const dateKey = getPacificDateKey(event.date);

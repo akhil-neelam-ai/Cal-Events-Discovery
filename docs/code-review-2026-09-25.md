@@ -368,7 +368,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 - #23: the CalLink cleaner is still there. See #26 above.
 - #26: `calbears.ts:144` still double-casts. Fixed with #35.
-- #31: `formatMultiDayWhen` still reads the wall clock, not the synced day key.
+- #31: `formatMultiDayWhen` still reads the wall clock, not the synced day key. Fixed: `formatRelativeEventDate` now passes its synced key through. The detail panel has no synced key and still uses the clock.
 - #36: Zod now requires `source`, but OpenAPI does not. Fixed with #20.
 
 Everything else from Tiers 1 to 8 is in the code, including the privacy footer and the mobile filter scrollbar.
