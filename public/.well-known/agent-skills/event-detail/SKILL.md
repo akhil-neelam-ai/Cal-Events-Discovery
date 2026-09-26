@@ -13,6 +13,7 @@ deep link, directions, or the official page for one event id.
    - `directionsUrl` (Google Maps search for physical locations)
    - `googleCalendarUrl` (Google Calendar template; may be null for multi-day gaps)
    - `permalink` (`https://cal-events.com/?event=<id>`)
+   - `end_date` and `dates` for a multi-day event, so the user sees every day
 4. Hand the user the official `url` for registration or tickets.
 
 ## Notes

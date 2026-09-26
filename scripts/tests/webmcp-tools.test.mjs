@@ -357,6 +357,26 @@ test("WebMCP date presets match every day of a multi-day event", async () => {
   }
 });
 
+test("WebMCP search results carry the multi-day fields", async () => {
+  const todayKey = getCurrentPacificDateKey();
+  const days = [0, 1, 2].map((offset) => addDaysToDateKey(todayKey, offset));
+  const { tools } = loadTools(
+    makePayload([
+      {
+        ...event({ id: "exhibit", date: days[0], time: "All day" }),
+        end_date: days[2],
+        dates: days,
+      },
+    ]),
+  );
+
+  const output = await tools
+    .get("search_berkeley_events")
+    .execute({ datePreset: "week" });
+  assert.equal(output.events[0].end_date, days[2]);
+  assert.deepEqual(output.events[0].dates, days);
+});
+
 test("WebMCP week preset matches the UI's 7-day week", async () => {
   const todayKey = getCurrentPacificDateKey();
   const { tools } = loadTools(

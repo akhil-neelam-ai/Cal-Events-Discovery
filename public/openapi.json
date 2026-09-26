@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "CalEvents Public Data API",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "description": "Static public data resources for UC Berkeley campus event discovery. Read-only: there are no create, update, or delete operations for events or feed status. Mutations are not supported."
   },
   "servers": [
@@ -145,13 +145,28 @@
           "location",
           "description",
           "tags",
-          "url"
+          "url",
+          "source"
         ],
         "properties": {
           "id": { "type": "string" },
           "title": { "type": "string" },
           "organizer": { "type": "string" },
-          "date": { "type": "string", "format": "date" },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "First upcoming Pacific day the event occurs. For a multi-day event, match date windows against dates instead."
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Multi-day events only: the last Pacific day the event occurs."
+          },
+          "dates": {
+            "type": "array",
+            "items": { "type": "string", "format": "date" },
+            "description": "Multi-day events only: every upcoming Pacific day the event occurs, in order. A long run lists at most 120 days."
+          },
           "time": { "type": "string" },
           "location": { "type": "string" },
           "description": { "type": "string" },

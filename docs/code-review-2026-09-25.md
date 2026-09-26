@@ -225,6 +225,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #20. Agent docs and OpenAPI omit the multi-day fields (P2)
 
+**Status:** Fixed. The OpenAPI `Event` schema now lists `end_date` and `dates`, and `source` is required. llms.txt, llms-full.txt, and the search and detail skills document both fields. They tell agents to match date windows on `dates`. `summarizeEvent` returns both fields. The skill digests are regenerated, and the three discovery versions are 1.3.0. Agent-readiness tests assert each change.
 **Files:** `public/openapi.json` (`components.schemas.Event`), `public/llms.txt`, `public/llms-full.txt`, `public/.well-known/agent-skills/search-events/SKILL.md`, `agent/webmcpTools.ts:55-71`
 **Problem:** `LegacyCalEventSchema` publishes `end_date` and `dates` on multi-day events, 32 of them today. The OpenAPI `Event` schema lists neither. It also leaves `source` optional, though Zod requires it. llms.txt, llms-full.txt, and every skill are silent on both fields. The search skill tells HTTP agents to filter on `date`, which repeats #3 for them. `summarizeEvent` drops both fields from search results.
 **Fix:** Add `end_date` and `dates` to OpenAPI, llms.txt, llms-full.txt, and the search skill. Mark `source` required. Tell agents to match on `dates` when present. Return both fields from `summarizeEvent`. Regenerate the skill digests and bump the three discovery versions together to 1.3.0.

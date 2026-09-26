@@ -117,7 +117,34 @@ test("agent discovery JSON files are valid and internally linked", () => {
     agentCard.version,
     "OpenAPI and agent-card versions must stay equal",
   );
-  assert.equal(openapi.info.version, "1.2.0");
+  assert.equal(openapi.info.version, "1.3.0");
+});
+
+test("agent docs describe the multi-day date fields", () => {
+  const openapi = readJson("public/openapi.json");
+  const event = openapi.components.schemas.Event;
+  assert.equal(event.properties.end_date?.format, "date");
+  assert.equal(event.properties.dates?.type, "array");
+  assert.ok(event.required.includes("source"), "source is always published");
+
+  const llms = readText("public/llms.txt");
+  const llmsFull = readText("public/llms-full.txt");
+  const searchSkill = readText(
+    "public/.well-known/agent-skills/search-events/SKILL.md",
+  );
+  for (const [name, text] of [
+    ["llms.txt", llms],
+    ["llms-full.txt", llmsFull],
+    ["search-events skill", searchSkill],
+  ]) {
+    assert.match(text, /`end_date`/, `${name} must document end_date`);
+    assert.match(text, /`dates`/, `${name} must document dates`);
+  }
+  assert.doesNotMatch(
+    llmsFull,
+    /Filter events by `date >= today`/,
+    "date-only filtering drops multi-day events",
+  );
 });
 
 test("agent URL and search guidance includes the topic filter", () => {

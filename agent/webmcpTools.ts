@@ -58,6 +58,9 @@ function summarizeEvent(event: CalEvent) {
     id: event.id,
     title: event.title,
     date: event.date,
+    // Multi-day events only. A date window should match against `dates`.
+    end_date: event.end_date,
+    dates: event.dates,
     time: event.time,
     location: event.location,
     organizer: event.organizer,
