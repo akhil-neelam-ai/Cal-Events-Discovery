@@ -1165,7 +1165,7 @@ test('"free will lecture" is not interpreted as free admission', () => {
   assert.equal(output.results[0]?.id, "evt-free-will");
 });
 
-test("date fallback clears this-weekend hard filters when relaxing to upcoming", () => {
+test("the weekend fallback drops the weekend filter and says so", () => {
   const futureDate = addDaysToDateKey(getCurrentPacificDateKey(), 14);
   const events = [
     {
@@ -1181,9 +1181,12 @@ test("date fallback clears this-weekend hard filters when relaxing to upcoming",
   const output = searchEvents(events, "this weekend hackathon future", null);
 
   assert.equal(output.fallbackUsed, true);
-  assert.equal(output.plan.filters.dateRange, "upcoming");
   assert.equal(output.plan.filters.weekend, undefined);
   assert.equal(output.results[0]?.id, "evt-future-hackathon");
+  assert.equal(
+    output.fallbackMessage,
+    'No matches for "hackathon future" this weekend. Showing other dates instead.',
+  );
 });
 
 test("the weekend filter keeps a multi-day event that runs over the weekend", () => {

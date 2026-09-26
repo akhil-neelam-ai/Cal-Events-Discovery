@@ -85,7 +85,7 @@ Loads `events.json` and `search-index.json` at startup. Search is entirely clien
 **Search flow** (`utils/searchIntent.ts` + `utils/searchEngine.ts`):
 
 1. `buildSearchPlan(query, { topics })` detects intent in a fixed detector order: temporal, source, topic, time-of-day, modality, free, category, campus area. Topic uses the published vocabulary when the feed has loaded. Later topic phrases stay ranking text. Each detector strips its matched words from the residual query text. **Only category names such as "arts" or "sports" lock a category.** Subject words such as "seminar" or "basketball" stay ranking text, because a lock hides matches filed under another primary category. Dismissing a source or category chip searches the words that set it.
-2. `searchEvents` applies plan filters as a hard pool filter, then scores against the inverted index, falls back to Fuse.js, then broadens (relax date, then drop category, then drop topic) with an explanatory message.
+2. `searchEvents` applies plan filters as a hard pool filter, then scores against the inverted index, falls back to Fuse.js, then broadens (drop the weekend filter, then category, then topic) with an explanatory message. Callers narrow the pool to the date range first.
 
 **Search index** (`scripts/lib/buildIndex.ts` → `public/search-index.json`): field-differentiated inverted index. Fields: `t` title (60), `g` tags (45), `o` organizer (30), `l` location (20), `d` description (10). Values are event-position integers into `ids[]`. Venue aliases are injected at build time.
 

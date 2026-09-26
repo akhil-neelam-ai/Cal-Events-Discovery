@@ -319,6 +319,8 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #31. The date fallback in `searchEvents` is mostly dead (P3)
 
+**Status:** Fixed. The branch now drops only the weekend filter, and its copy says "this weekend". The dead today, tomorrow, and week relaxation is gone. The UI and the WebMCP tool both narrow the pool by date before they search, and neither reads the relaxed date range. `AGENTS.md` describes the new cascade.
+
 **File:** `utils/searchEngine.ts:552-585`
 **Problem:** `applyPoolFilters` never reads `dateRange`. The date-broadening branch only changes the result when `weekend` is set. Its message then says "this week" for a weekend query.
 **Fix:** Keep a weekend-only relaxation with the right copy, and delete the rest of the branch.

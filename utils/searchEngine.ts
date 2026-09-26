@@ -577,36 +577,20 @@ export function searchEvents(
 
   // Fallback: empty result sets can broaden and explain.
   if (results.length === 0) {
-    // Try broadening date range
-    if (plan.filters.dateRange && plan.filters.dateRange !== "upcoming") {
-      const relaxedPlan: SearchPlan = {
-        ...plan,
-        filters: {
-          ...plan.filters,
-          dateRange:
-            plan.filters.dateRange === "today" ||
-            plan.filters.dateRange === "tomorrow"
-              ? "week"
-              : "upcoming",
-        },
-      };
-      if (plan.filters.weekend) {
-        delete relaxedPlan.filters.weekend;
-      }
+    // The weekend is the only date filter applied here. Callers narrow the
+    // pool to the date range before they search, so relaxing the range here
+    // would change nothing.
+    if (plan.filters.weekend) {
+      const relaxedPlan: SearchPlan = { ...plan, filters: { ...plan.filters } };
+      delete relaxedPlan.filters.weekend;
       const fallbackPool = applyPoolFilters(events, relaxedPlan, dismissedKeys);
       const fallbackResults = runScoring(fallbackPool, relaxedPlan, index);
       if (fallbackResults.length > 0) {
-        const rangeLabel =
-          plan.filters.dateRange === "today"
-            ? "today"
-            : plan.filters.dateRange === "tomorrow"
-              ? "tomorrow"
-              : "this week";
         return {
           results: fallbackResults,
           plan: relaxedPlan,
           fallbackUsed: true,
-          fallbackMessage: `No matches for "${plan.keywords.join(" ")}" ${rangeLabel}. Showing upcoming results instead.`,
+          fallbackMessage: `No matches for "${plan.keywords.join(" ")}" this weekend. Showing other dates instead.`,
         };
       }
     }
