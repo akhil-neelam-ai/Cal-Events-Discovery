@@ -377,7 +377,9 @@ const ORGANIZER_TOPIC_PATTERNS: ReadonlyArray<
     ["visual-arts-exhibitions"],
   ],
   [/\b(student organization|student club)\b/i, ["social-clubs"]],
-  [/\b(recreational sports|wellness|counseling)\b/i, ["wellness"]],
+  // Recreational Sports is left out on purpose. Its 200-plus rows (building
+  // hours, lap swim, open gym) would swamp the Wellness chip.
+  [/\b(wellness|counseling)\b/i, ["wellness"]],
   [
     /\b(skydeck|e-?hub|entrepreneurship|gateway accelerator|scet)\b/i,
     ["startups"],

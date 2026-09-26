@@ -107,6 +107,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #7. Recreation rows fill Student Life (P2)
 
+**Status:** Fixed. `ORG_UNIT_MAP` now labels the "recsports" slug "Recreational Sports", which scores as Sports. The Wellness organizer pattern drops that name, so those rows gain no topic. The published feed changes on the next daily run. On today's snapshot, 204 rows move to Sports and Student Life drops from 269 to 65. "cal games" and "bears game" now mean the Cal Bears source, so lap swim and building hours cannot bury the games.
 **Files:** `scripts/sources/livewhale.ts:90-177`, `scripts/lib/normalize.ts:52-55`, `scripts/lib/topics.ts:380`
 **Problem:** 236 LiveWhale rows have the organizer "Recsports", the prettified URL slug. `ORG_UNIT_MAP` has no entry for it. The category map only knows "recreational sports" and "rec sports". So "Building Hours - RSF", "Lap Swim", and "Bouldering" score no Sports signal. 204 of the 236 fall to Student Life, which is 76% of that category (204 of 269). Recsports rows fill 21% to 39% of each day's list over the next nine days.
 **Fix:** Add `recsports: "Recreational Sports"` to `ORG_UNIT_MAP`. In the same change, drop "recreational sports" from the Wellness organizer pattern at `topics.ts:380`. Otherwise all 236 rows gain the Wellness topic and break the 200 breadth cap.

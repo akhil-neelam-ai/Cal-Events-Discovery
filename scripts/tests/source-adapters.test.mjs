@@ -209,4 +209,5 @@ test("LiveWhale unit labels map known slugs", () => {
   assert.equal(unitFromSlug("BAMPFA"), "BAMPFA");
   assert.equal(unitFromSlug("Social Science Matrix"), "Social Science Matrix");
   assert.equal(unitFromSlug("unknown-center"), "Unknown Center");
+  assert.equal(unitFromSlug("recsports"), "Recreational Sports");
 });

@@ -99,6 +99,7 @@ const ORG_UNIT_MAP: Record<string, string> = {
   arf: "Archaeological Research Facility",
   art: "Department of Art Practice",
   sports: "Cal Athletics",
+  recsports: "Recreational Sports",
   bot: "UC Botanical Garden",
   bph: "Berkeley Public Health",
   brc: "Berkeley Retirement Center",

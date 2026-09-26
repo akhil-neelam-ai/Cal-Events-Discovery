@@ -790,15 +790,31 @@ test("all-day events match morning, afternoon, and evening filters", () => {
   }
 });
 
-test('"cal games" is interpreted as sports without searching for generic game text', () => {
-  const output = searchEvents(SYNTHETIC_EVENTS, "cal games", null);
+test('"cal games" means Cal Bears games, not generic game text', () => {
+  // A Sports lock would also return Recreational Sports rows like lap swim.
+  const events = [
+    ...SYNTHETIC_EVENTS,
+    {
+      ...SYNTHETIC_EVENTS[12],
+      id: "evt-lap-swim",
+      title: "Lap Swim",
+      organizer: "Recreational Sports",
+      source: "livewhale",
+    },
+  ];
 
-  assert.equal(output.plan.filters.category, "Sports");
-  assert.deepEqual(output.plan.keywords, []);
-  assert.deepEqual(
-    output.results.map((event) => event.id),
-    ["evt-baseball"],
-  );
+  for (const query of ["cal games", "bears game", "cal bears games"]) {
+    const output = searchEvents(events, query, null);
+
+    assert.equal(output.plan.filters.source, "calbears", query);
+    assert.equal(output.plan.filters.category, undefined, query);
+    assert.deepEqual(output.plan.keywords, [], query);
+    assert.deepEqual(
+      output.results.map((event) => event.id),
+      ["evt-baseball"],
+      query,
+    );
+  }
 });
 
 test("sport words stay as ranking text instead of locking Sports", () => {
@@ -829,7 +845,6 @@ test("category names lock a category and leave no ranking text", () => {
   const cases = [
     ["sports", "Sports"],
     ["athletics", "Sports"],
-    ["cal games", "Sports"],
     ["arts", "Arts"],
     ["academic", "Academic"],
     ["science & tech", "Science & Tech"],

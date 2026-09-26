@@ -61,7 +61,6 @@ export const RE_FREE_EVENT =
   /(?:\bfree\b(?!\s*(?:throw|agent|range|radical|speech|will))|\bcomplimentary\b|\bno[-\s]?charge\b|\bno[-\s]?cost\b|\$0\b)/i;
 const RE_ONLINE = /\b(online|virtual|zoom|remote|webinar|livestream)\b/i;
 const RE_INPERSON = /\b(in.?person|on campus)\b/i;
-const RE_CAL_GAMES = /\b(cal games?|bears games?|cal bears games?)\b/i;
 const RE_BARE_FREE = /\bfree\b/i;
 
 // Only category names lock a category. Subject words such as "tennis" or
@@ -70,7 +69,7 @@ const RE_BARE_FREE = /\bfree\b/i;
 // keywords to rank the locked pool by.
 const CATEGORY_PATTERNS: Array<[string, RegExp]> = [
   ["Entrepreneurship", /\b(entrepreneurship)\b/i],
-  ["Sports", /\b(cal games?|bears games?|athletics|sports)\b/i],
+  ["Sports", /\b(athletics|sports)\b/i],
   ["Arts", /\b(arts?)\b/i],
   [
     "Science & Tech",
@@ -86,7 +85,13 @@ const SOURCE_PATTERNS: Array<[string, RegExp, string]> = [
     /\b(bampfa|berkeley art museum|pacific film archive)\b/i,
     "BAMPFA",
   ],
-  ["calbears", /\b(cal bears|cal athletics|calbears)\b/i, "Cal Bears"],
+  // "cal games" means Cal Bears games. The Sports category also holds
+  // Recreational Sports rows such as lap swim, so it would bury them.
+  [
+    "calbears",
+    /\b(cal bears games?|cal games?|bears games?|cal bears|cal athletics|calbears)\b/i,
+    "Cal Bears",
+  ],
   ["cal_performances", /\b(cal performances)\b/i, "Cal Performances"],
   ["callink", /\b(callink|cal link)\b/i, "CalLink"],
   ["haas", /\b(haas|berkeley haas|business school)\b/i, "Berkeley Haas"],
@@ -421,10 +426,6 @@ export function buildSearchPlan(
       cleaned = stripIntent(cleaned, pattern);
       break;
     }
-  }
-
-  if (RE_CAL_GAMES.test(raw)) {
-    cleaned = stripIntent(cleaned, RE_CAL_GAMES);
   }
 
   for (const [area, pattern] of AREA_PATTERNS) {

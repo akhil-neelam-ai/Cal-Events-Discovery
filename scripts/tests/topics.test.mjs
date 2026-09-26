@@ -185,6 +185,19 @@ test("membership in two department feeds assigns both fields", () => {
   assert.ok(topics.includes("law"));
 });
 
+test("Recreational Sports rows do not claim the Wellness topic", () => {
+  assert.deepEqual(
+    assignTopics(
+      baseEvent({
+        title: "Building Hours - RSF",
+        description: "The Recreational Sports Facility is open.",
+        organizer: "Recreational Sports",
+      }),
+    ),
+    [],
+  );
+});
+
 test("a strong title signal assigns a topic without group membership", () => {
   assert.ok(
     assignTopics(

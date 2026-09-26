@@ -328,14 +328,16 @@ test('real search: "tonight" keeps all-day events and excludes morning times', (
   }
 });
 
-test('real search: "cal games" returns sports-only results', () => {
+test('real search: "cal games" returns Cal Athletics events only', () => {
   const output = searchEvents(events, "cal games", searchIndex);
+  const isCalAthletics = (event) =>
+    event.source === "calbears" || event.organizer === "Cal Athletics";
 
-  assert.equal(output.plan.filters.category, "Sports");
-  assert.ok(output.results.length > 0, '"cal games" should find sports events');
+  assert.equal(output.plan.filters.source, "calbears");
+  assert.ok(output.results.length > 0, '"cal games" should find Cal games');
   assert.ok(
-    output.results.slice(0, 20).every((event) => event.tags?.[0] === "Sports"),
-    '"cal games" should not rank non-sports events',
+    output.results.slice(0, 20).every(isCalAthletics),
+    '"cal games" should not rank recreation or other sports rows',
   );
 });
 
