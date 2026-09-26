@@ -47,13 +47,13 @@ import {
 } from "./lib/feedHealthPolicy.js";
 import {
   CANCELED_TITLE_PATTERN,
-  appendLastGoodEvents,
-  fallbackAgeHours,
-  nextLastHealthyAt,
+  FALLBACK_POLICIES,
+  emptyRecoveryState,
+  markRecovery,
+  type RecoveryState,
 } from "./lib/lastGoodFallback.js";
 import { fetchLiveWhale } from "./sources/livewhale.js";
 
-const LIVEWHALE_HEALTHY_THRESHOLD = 100;
 import { fetchCallink } from "./sources/callink.js";
 import { fetchCalPerformances } from "./sources/cal_performances.js";
 import { fetchCalBears } from "./sources/calbears.js";
@@ -138,50 +138,6 @@ interface AdapterRun {
   groupFeedsDegraded?: boolean;
 }
 
-interface RecoveryState {
-  fallbackSources: Set<SourceName>;
-  degradedSources: Set<SourceName>;
-  /** Sources whose last-good data was too old to republish, so it was dropped. */
-  staleFallbackSources: Set<SourceName>;
-  degradedReasons: Set<string>;
-  lastGoodUsed: number;
-  fallbackAgeHours?: number;
-  restoredIds: Set<string>;
-}
-
-interface RecoveryPolicy {
-  allowLastGood: boolean;
-  degradeOnFailure: boolean;
-  minHealthyCount?: number;
-}
-
-const FALLBACK_POLICIES: Partial<Record<SourceName, RecoveryPolicy>> = {
-  livewhale: {
-    allowLastGood: true,
-    degradeOnFailure: true,
-    minHealthyCount: LIVEWHALE_HEALTHY_THRESHOLD,
-  },
-  callink: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
-  cal_performances: {
-    allowLastGood: true,
-    degradeOnFailure: true,
-    minHealthyCount: 1,
-  },
-  calbears: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
-  bampfa: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
-  haas: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
-  berkeley_law: {
-    allowLastGood: true,
-    degradeOnFailure: true,
-    minHealthyCount: 1,
-  },
-  simons: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
-  luma: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
-  begin: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
-  ai_risk: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
-  brsl: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
-};
-
 async function runAdapter<
   T extends {
     events: CanonicalEvent[];
@@ -265,92 +221,6 @@ function loadPreviousLastHealthy(): Map<string, string> {
     return stamps;
   } catch {
     return new Map();
-  }
-}
-
-function markRecovery(
-  run: AdapterRun,
-  legacy: LegacyCalEvent[],
-  existing: { events: LegacyCalEvent[]; lastUpdated?: number },
-  previousLastHealthy: ReadonlyMap<string, string>,
-  recovery: RecoveryState,
-  today: string,
-): void {
-  const policy = FALLBACK_POLICIES[run.status.name];
-  const belowHealthyThreshold =
-    typeof policy?.minHealthyCount === "number" &&
-    run.status.ok &&
-    run.status.count < policy.minHealthyCount;
-  const degraded = !run.status.ok || belowHealthyThreshold;
-  run.status.last_healthy_at = nextLastHealthyAt(
-    !degraded,
-    run.status.fetched_at,
-    previousLastHealthy.get(run.status.name),
-    existing.lastUpdated,
-  );
-  if (!degraded) return;
-
-  if (!policy?.degradeOnFailure) {
-    return;
-  }
-
-  run.status.degraded = true;
-
-  const reason = !run.status.ok
-    ? `${run.status.name} failed: ${run.status.error ?? "unknown error"}`
-    : `${run.status.name} returned ${run.status.count} events (below healthy threshold ${policy?.minHealthyCount})`;
-  run.status.degraded_reason = reason;
-  recovery.degradedSources.add(run.status.name);
-  recovery.degradedReasons.add(reason);
-
-  if (!policy?.allowLastGood) return;
-
-  // Expired last-good data must never be republished as if it were fresh, but
-  // that is this source's problem alone. Drop its events and keep going: a
-  // supplementary feed sitting on stale fallback should cost us that feed, not
-  // the fresh events every other source just returned. Only a critical source
-  // in this state blocks the publish (see dataQualityFailure).
-  // Age counts from this source's last healthy fetch. The previous publish
-  // time would reset to a day old on every run of a multi-day outage.
-  const ageHours = fallbackAgeHours(run.status.last_healthy_at);
-  if (typeof ageHours === "number" && ageHours > MAX_FALLBACK_AGE_HOURS) {
-    const staleReason = `${run.status.name} fallback expired (${ageHours}h old, exceeding ${MAX_FALLBACK_AGE_HOURS}h); last-good events dropped`;
-    run.status.fallback_expired = true;
-    run.status.fallback_age_hours = ageHours;
-    run.status.degraded_reason = `${reason}; ${staleReason}`;
-    recovery.staleFallbackSources.add(run.status.name);
-    recovery.degradedReasons.add(staleReason);
-    console.warn(`[orchestrator] ${staleReason}`);
-    return;
-  }
-
-  const beforeIds = new Set(legacy.map((event) => event.id));
-  const restored = appendLastGoodEvents(
-    legacy,
-    existing.events,
-    run.status.name,
-    today,
-  );
-  if (restored > 0) {
-    for (const event of legacy) {
-      if (!beforeIds.has(event.id)) {
-        recovery.restoredIds.add(event.id);
-      }
-    }
-    run.status.fallback_used = true;
-    run.status.fallback_count = restored;
-    run.status.fallback_age_hours = ageHours;
-    recovery.fallbackSources.add(run.status.name);
-    recovery.lastGoodUsed += restored;
-    if (typeof ageHours === "number") {
-      recovery.fallbackAgeHours =
-        typeof recovery.fallbackAgeHours === "number"
-          ? Math.max(recovery.fallbackAgeHours, ageHours)
-          : ageHours;
-    }
-    console.warn(
-      `[orchestrator] Fallback restored ${restored} last-good ${run.status.name} events.`,
-    );
   }
 }
 
@@ -598,18 +468,22 @@ async function main(): Promise<void> {
     return published;
   });
 
-  const recovery: RecoveryState = {
-    fallbackSources: new Set<SourceName>(),
-    degradedSources: new Set<SourceName>(),
-    staleFallbackSources: new Set<SourceName>(),
-    degradedReasons: new Set<string>(),
-    lastGoodUsed: 0,
-    restoredIds: new Set<string>(),
-  };
+  const recovery = emptyRecoveryState();
 
-  const previousLastHealthy = loadPreviousLastHealthy();
+  const recoveryContext = {
+    legacy,
+    existing,
+    previousLastHealthy: loadPreviousLastHealthy(),
+    recovery,
+    today,
+    maxFallbackAgeHours: MAX_FALLBACK_AGE_HOURS,
+  };
   for (const run of runs) {
-    markRecovery(run, legacy, existing, previousLastHealthy, recovery, today);
+    markRecovery(
+      run.status,
+      FALLBACK_POLICIES[run.status.name],
+      recoveryContext,
+    );
   }
   const beforeRestoreDedupe = legacy.length;
   legacy = dedupeRestoredEvents(legacy, recovery.restoredIds, today);

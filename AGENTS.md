@@ -53,10 +53,11 @@ Three layers, cleanly separated.
 livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley_law / simons / luma / begin / ai_risk / brsl (3)
 ```
 
-**Failure handling.** Each source has a `RecoveryPolicy` in `updateEvents.ts`:
+**Failure handling.** Each source has a `RecoveryPolicy` in `scripts/lib/lastGoodFallback.ts`, applied by `markRecovery`:
 
 - On error or below `minHealthyCount`: mark degraded, optionally restore last-good events from the previous `events.json` (filtered to today and later, PT)
 - Fallback age counts from each source's `last_healthy_at` in `status.json`, which carries forward while the source is degraded. A restore older than 48 hours expires
+- Quiet sources (`degradeOnFailure: false`: luma, begin, ai_risk, brsl) restore too, but stay out of `degraded_sources`, the top-level reason, and `data_age_hours`, so no banner appears
 - If every source returns 0 events: refuse to overwrite the existing file and exit non-zero
 - `status.json` is always written with per-source details, degradation flags, and fallback counts
 
@@ -143,7 +144,7 @@ Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` is
 
 The June full-repo audit is `docs/code-review-2026-06-02.md`. It is a different pass.
 
-The September full-repo audit is `docs/code-review-2026-09-25.md`. Items with a `Status: Fixed` line are done. A `Partly fixed` line says what is left, and the rest are open. Three need a decision first: #11, #19, and #26.
+The September full-repo audit is `docs/code-review-2026-09-25.md`. Items with a `Status: Fixed` line are done. A `Partly fixed` line says what is left, and the rest are open. Two need a decision first: #19 and #26.
 
 ## Key files
 
@@ -154,7 +155,7 @@ The September full-repo audit is `docs/code-review-2026-09-25.md`. Items with a 
 | `scripts/lib/dedupe.ts` | Source-priority dedupe by normalized title and date |
 | `scripts/lib/normalize.ts` | `projectToLegacy`, `deriveFrontendTags`, `isoDateInPT`, `cleanTitle` |
 | `scripts/lib/buildIndex.ts` | Inverted index generator with venue alias expansion |
-| `scripts/lib/lastGoodFallback.ts` | Last-good restore, by id, with cancellation filtering |
+| `scripts/lib/lastGoodFallback.ts` | Recovery policies, `markRecovery`, and last-good restore with cancellation filtering |
 | `scripts/lib/topics.ts` | Topic vocabulary and deterministic assignment |
 | `docs/code-review-2026-09-04-topic-filter-layer.md` | Leftover topic-filter review items after PR 173 |
 | `utils/searchIntent.ts` | Query intent: `buildSearchPlan`, topic phrases, dismissed-key rebuild |

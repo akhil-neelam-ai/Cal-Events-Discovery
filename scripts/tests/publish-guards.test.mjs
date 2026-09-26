@@ -21,11 +21,17 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { dedupeEvents, dedupeRestoredEvents } from "../lib/dedupe.ts";
-import { appendLastGoodEvents } from "../lib/lastGoodFallback.ts";
+import {
+  FALLBACK_POLICIES,
+  appendLastGoodEvents,
+  emptyRecoveryState,
+  markRecovery,
+} from "../lib/lastGoodFallback.ts";
 import { projectToLegacy, todayPT } from "../lib/normalize.ts";
 import { PublishedEventsPayloadSchema } from "../lib/schema.ts";
 import { assignTopicsResiliently } from "../lib/topicAssignmentResilience.ts";
 import { TOPIC_VOCABULARY } from "../lib/topics.ts";
+import { shouldShowStaleDataBanner } from "../../utils/staleDataUi.ts";
 import { buildStatusBanner } from "../../utils/statusUi.ts";
 
 const rootDir = path.resolve(
@@ -393,6 +399,106 @@ test("a restored LiveWhale copy replaces today's lower-priority duplicate", () =
     final.map((event) => event.id),
     [yesterdayCopy.id],
   );
+});
+
+function failedRun(name) {
+  return {
+    name,
+    ok: false,
+    count: 0,
+    duration_ms: 5,
+    error: "404 Not Found",
+    fetched_at: new Date().toISOString(),
+  };
+}
+
+function recoverFrom(status, yesterday, previousStamp) {
+  const published = [];
+  const recovery = emptyRecoveryState();
+  markRecovery(status, FALLBACK_POLICIES[status.name], {
+    legacy: published,
+    existing: { events: yesterday, lastUpdated: Date.now() - 86_400_000 },
+    previousLastHealthy: new Map([[status.name, previousStamp]]),
+    recovery,
+    today: todayPT(),
+    maxFallbackAgeHours: 48,
+  });
+  return { published, recovery };
+}
+
+function inDays(days) {
+  const [year, month, day] = todayPT().split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day + days))
+    .toISOString()
+    .slice(0, 10);
+}
+
+const DAY_AGO = new Date(Date.now() - 86_400_000).toISOString();
+
+test("a quiet source restores last-good events without visitor banners", () => {
+  const talk = legacy({
+    id: "ai_risk_talk-1",
+    title: "Scaling Oversight",
+    date: inDays(2),
+    source: "ai_risk",
+  });
+  const status = failedRun("ai_risk");
+  const { published, recovery } = recoverFrom(status, [talk], DAY_AGO);
+
+  assert.deepEqual(
+    published.map((event) => event.id),
+    ["ai_risk_talk-1"],
+  );
+  assert.equal(status.degraded, true);
+  assert.equal(status.fallback_used, true);
+  assert.equal(status.fallback_age_hours, 24);
+  assert.deepEqual([...recovery.degradedSources], []);
+  assert.deepEqual([...recovery.degradedReasons], []);
+  assert.equal(recovery.fallbackAgeHours, undefined);
+
+  const report = {
+    sources: [status],
+    fallback_used: recovery.fallbackSources.size > 0,
+    degraded: recovery.degradedReasons.size > 0,
+    last_good_used: recovery.lastGoodUsed,
+    data_quality_blocked: false,
+    fallback_sources: [...recovery.fallbackSources],
+    degraded_sources: [...recovery.degradedSources],
+  };
+  assert.equal(buildStatusBanner(report), null);
+  assert.equal(
+    shouldShowStaleDataBanner(
+      recovery.fallbackAgeHours,
+      report.degraded_sources,
+    ),
+    false,
+  );
+});
+
+test("a quiet source with expired fallback stays out of the banner fields", () => {
+  const status = failedRun("ai_risk");
+  const threeDaysAgo = new Date(Date.now() - 3 * 86_400_000).toISOString();
+  const { published, recovery } = recoverFrom(status, [], threeDaysAgo);
+
+  assert.equal(published.length, 0);
+  assert.equal(status.fallback_expired, true);
+  assert.deepEqual([...recovery.staleFallbackSources], ["ai_risk"]);
+  assert.deepEqual([...recovery.degradedReasons], []);
+});
+
+test("a loud source still raises the degraded flags when it restores", () => {
+  const meeting = legacy({
+    id: "callink_1",
+    title: "Robotics Club Meeting",
+    date: inDays(2),
+    source: "callink",
+  });
+  const status = failedRun("callink");
+  const { published, recovery } = recoverFrom(status, [meeting], DAY_AGO);
+
+  assert.equal(published.length, 1);
+  assert.deepEqual([...recovery.degradedSources], ["callink"]);
+  assert.equal(recovery.fallbackAgeHours, 24);
 });
 
 test("degraded group-feed provenance carries prior topics without source banners", () => {

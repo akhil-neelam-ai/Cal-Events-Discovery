@@ -144,6 +144,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #11. Four sources can never restore, and ai_risk has been down since 2026-09-15 (P2)
 
+**Status:** Partly fixed. The decision was quiet restore. luma, begin, ai_risk, and brsl now restore last-good events under the 48 h cap. They set `degraded` and `fallback_used` on their own status entry. They stay out of `degraded_sources`, the top-level reason, and `data_age_hours`, so no banner appears. The recovery code moved to `scripts/lib/lastGoodFallback.ts` so publish-guard tests can run it. Still open: `speaker-series.js` returns 404, and the review sandbox could not reach ai-risk.berkeley.edu to find the new path.
 **Files:** `scripts/updateEvents.ts:173-176` and `:267-269`, `scripts/sources/ai_risk.ts:20`
 **Problem:** `luma`, `begin`, `ai_risk`, and `brsl` set `allowLastGood: true` with `degradeOnFailure: false`. `markRecovery` returns at line 267, before the last-good branch, so they never restore. No test covers that pair. `speaker-series.js` has returned 404 on every run since 2026-09-15. The AI Risk talks have been missing for 11 days, and `status.json` still says `degraded: false`. Issue #195 has been open since 2026-09-21.
 **Decision needed:** Should supplementary sources restore quietly?
