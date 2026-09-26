@@ -5,6 +5,7 @@ import {
   renderHook,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -986,6 +987,30 @@ describe("App UI regressions", () => {
     expect(
       screen.getByRole("button", { name: /close event details/i }),
     ).toBeInTheDocument();
+  });
+
+  it("shows the full run of a multi-day event in the desktop detail panel", async () => {
+    const user = userEvent.setup();
+
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "exhibit-run",
+        title: "Archive Exhibition",
+        time: "All day",
+        tags: ["Arts"],
+        end_date: "2026-04-24",
+        dates: [TODAY_KEY, TOMORROW_KEY, "2026-04-24"],
+      }),
+    ]);
+
+    render(<App />);
+    await user.click(
+      screen.getByRole("button", { name: /archive exhibition/i }),
+    );
+
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByText("Through Apr 24")).toBeInTheDocument();
+    expect(within(dialog).getByText("Daily · all day")).toBeInTheDocument();
   });
 
   it("opens event details and syncs the selected event into the URL", async () => {

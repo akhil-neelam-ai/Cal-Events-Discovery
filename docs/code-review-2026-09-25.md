@@ -253,6 +253,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #23. The desktop detail panel shows one date for multi-day events (P3)
 
+**Status:** Fixed. The desktop panel now uses `detailWhenPrimary` and `detailWhenSecondary`, like the mobile sheet. A UI test opens a three-day exhibit and reads "Through Apr 24" and "Daily · all day".
 **File:** `components/EventDetailOverlay.tsx:629-632` (desktop) versus `:436-441` (mobile)
 **Problem:** The mobile sheet uses `detailWhenPrimary` and `detailWhenSecondary` ("Through Dec 31", "Daily · all day"). The desktop panel prints `formatEventDate(event.date)` and `event.time`. An 80-date exhibition reads as a single day on desktop.
 **Fix:** Use the same two helpers in the desktop panel.
