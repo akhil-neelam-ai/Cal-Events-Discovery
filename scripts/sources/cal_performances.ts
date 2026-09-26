@@ -21,7 +21,7 @@ import type { FetchOptions } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { endedBeforePT, todayPT } from "../lib/normalize.js";
+import { endedBeforePT, isoDateInPT, todayPT } from "../lib/normalize.js";
 
 const WP_API_BASE = "https://calperformances.org/wp-json/wp/v2/cp_event";
 const PER_PAGE = 100;
@@ -100,23 +100,37 @@ export function parseAddeventatcDate(raw: string): string | null {
   return `${yyyy}-${mm}-${dd}T${HH}:${MM}:00${offsetStr}`;
 }
 
-/**
- * Extract structured event data from a cp_event post's content HTML.
- * Returns null if no addeventatc start span is found.
- */
-function extractFromContent(contentHtml: string): {
+interface Performance {
   start: string;
   end: string | undefined;
+}
+
+/**
+ * Extract structured event data from a cp_event post's content HTML.
+ * A production can carry one addeventatc widget per performance, so every
+ * `span.start` is read with the `span.end` beside it. Returns null if no
+ * performance parses.
+ */
+function extractFromContent(contentHtml: string): {
+  performances: Performance[];
   venue: string;
   description: string;
   cost: string;
 } | null {
   const $ = cheerio.load(contentHtml);
 
-  const startRaw = $("span.start").first().text().trim();
-  if (!startRaw) return null;
+  const performances: Performance[] = [];
+  $("span.start").each((_, el) => {
+    const start = parseAddeventatcDate($(el).text().trim());
+    if (!start) return;
+    const endRaw = $(el).siblings("span.end").first().text().trim();
+    const end = endRaw
+      ? (parseAddeventatcDate(endRaw) ?? undefined)
+      : undefined;
+    performances.push({ start, end });
+  });
+  if (performances.length === 0) return null;
 
-  const endRaw = $("span.end").first().text().trim();
   const venue = decodeHtmlEntities($("a.event-location").first().text().trim());
   const costRaw = $(".event-price-block").first().text().trim();
   const cost = decodeHtmlEntities(costRaw);
@@ -132,12 +146,7 @@ function extractFromContent(contentHtml: string): {
     }
   });
 
-  const start = parseAddeventatcDate(startRaw);
-  if (!start) return null;
-
-  const end = endRaw ? (parseAddeventatcDate(endRaw) ?? undefined) : undefined;
-
-  return { start, end, venue, description, cost };
+  return { performances, venue, description, cost };
 }
 
 interface WpPage {
@@ -222,18 +231,30 @@ export async function fetchCalPerformances(
         continue;
       }
 
-      const { start, end, venue, description, cost } = parsed;
+      const { venue, description, cost } = parsed;
 
-      // Drop events that ended before today (PT), keeping running spans.
-      if (
-        endedBeforePT(
-          { start_at: start, end_at: end, all_day: false },
-          todayIso,
+      // Keep the performances that have not ended. A run publishes as one
+      // event across its remaining days, so it stays listed after opening
+      // night.
+      const upcoming = parsed.performances
+        .filter(
+          (show) =>
+            !endedBeforePT(
+              { start_at: show.start, end_at: show.end, all_day: false },
+              todayIso,
+            ),
         )
-      ) {
+        .sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
+      if (upcoming.length === 0) {
         filteredPast++;
         continue;
       }
+      const first = upcoming[0];
+      const last = upcoming[upcoming.length - 1];
+      const days = [
+        ...new Set(upcoming.map((show) => isoDateInPT(show.start))),
+      ];
+      const run = days.length > 1;
 
       // Infer a sub-genre tag from the URL path segment
       const urlSegments = (post.link ?? "").split("/").filter(Boolean);
@@ -250,8 +271,9 @@ export async function fetchCalPerformances(
         evidence_url: post.link,
         title,
         description: description || title,
-        start_at: start,
-        end_at: end,
+        start_at: first.start,
+        end_at: run ? (last.end ?? last.start) : first.end,
+        occurrence_dates: run ? days : undefined,
         timezone: "America/Los_Angeles",
         all_day: false,
         venue: venue || "Cal Performances",

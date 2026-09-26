@@ -39,6 +39,11 @@ const ID_STRIP_RULES: Partial<Record<string, RegExp[]>> = {
   simons: [TRAILING_OCCURRENCE_DATE],
 };
 
+// BAMPFA gives a later showing on the same day its start time, as in
+// "film-night::2026-10-02@1900". Those rows group by time slot, so a daily
+// 7 PM session becomes one multi-day event beside the earlier session.
+const SHOWING_TIME = /@\d{4}$/;
+
 /** Stable per-event identity used to group per-day rows of the same event. */
 export function stableEventKey(event: CanonicalEvent): string {
   if (event.source_name === "livewhale") {
@@ -46,8 +51,11 @@ export function stableEventKey(event: CanonicalEvent): string {
     return `livewhale::${stable}`;
   }
   const rules = ID_STRIP_RULES[event.source_name] ?? [];
-  const stable = rules.reduce((id, re) => id.replace(re, ""), event.source_id);
-  return `${event.source_name}::${stable}`;
+  const time =
+    rules.length > 0 ? (event.source_id.match(SHOWING_TIME)?.[0] ?? "") : "";
+  const base = event.source_id.slice(0, event.source_id.length - time.length);
+  const stable = rules.reduce((id, re) => id.replace(re, ""), base);
+  return `${event.source_name}::${stable}${time}`;
 }
 
 export interface CollapseResult {

@@ -2,7 +2,8 @@
  * Cross-source dedupe.
  *
  * Strategy: bucket by (normalized_title, date). Within a bucket, keep the
- * highest-priority source. Source priority reflects data quality:
+ * highest-priority source, and all of its rows whose start times differ.
+ * Source priority reflects data quality:
  *   livewhale (structured iCal) > callink/cal_performances/calbears (JSON APIs)
  */
 
@@ -60,30 +61,47 @@ function tieBreak(a: CanonicalEvent, b: CanonicalEvent): CanonicalEvent {
   return idCmp <= 0 ? a : b;
 }
 
+/** True when `a`'s source should hold a shared key instead of `b`'s. */
+function outranks(a: CanonicalEvent, b: CanonicalEvent): boolean {
+  const ap = SOURCE_PRIORITY[a.source_name];
+  const bp = SOURCE_PRIORITY[b.source_name];
+  if (ap !== bp) return ap > bp;
+  return a.source_name.localeCompare(b.source_name) < 0;
+}
+
+function startInstant(event: CanonicalEvent): number {
+  const parsed = Date.parse(event.start_at);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
 export function dedupeEvents(events: CanonicalEvent[]): DedupeResult {
-  const buckets = new Map<string, CanonicalEvent>();
+  // Each key keeps only the winning source's rows. One source can list a
+  // title twice on one day, like a doubleheader or a second tour session,
+  // so its own rows merge only when their start times also match.
+  const buckets = new Map<string, CanonicalEvent[]>();
 
   for (const event of events) {
     const key = dedupeKey(event);
-    const existing = buckets.get(key);
-    if (!existing) {
-      buckets.set(key, event);
+    const rows = buckets.get(key);
+    if (!rows) {
+      buckets.set(key, [event]);
       continue;
     }
-    const ep = SOURCE_PRIORITY[event.source_name];
-    const xp = SOURCE_PRIORITY[existing.source_name];
-    let winner: CanonicalEvent;
-    if (ep > xp) {
-      winner = event;
-    } else if (ep < xp) {
-      winner = existing;
-    } else {
-      winner = tieBreak(event, existing);
+    if (rows[0].source_name !== event.source_name) {
+      if (outranks(event, rows[0])) buckets.set(key, [event]);
+      continue;
     }
-    buckets.set(key, winner);
+    const sameStart = rows.findIndex(
+      (row) => startInstant(row) === startInstant(event),
+    );
+    if (sameStart === -1) {
+      rows.push(event);
+    } else {
+      rows[sameStart] = tieBreak(event, rows[sameStart]);
+    }
   }
 
-  const deduped = Array.from(buckets.values());
+  const deduped = [...buckets.values()].flat();
   return {
     events: deduped,
     duplicatesRemoved: events.length - deduped.length,
@@ -141,9 +159,23 @@ export function dedupeRestoredEvents(
   for (const bucket of buckets.values()) {
     if (bucket.length < 2) continue;
     if (!bucket.some((event) => restoredIds.has(event.id))) continue;
+    // As in dedupeEvents, the winning source keeps each row with its own
+    // time, such as both games of a doubleheader.
     const winner = bucket.reduce(pickPublished);
+    const keptByTime = new Map<string, LegacyCalEvent>();
     for (const event of bucket) {
-      if (event !== winner) dropped.add(event);
+      if (event.source !== winner.source) {
+        dropped.add(event);
+        continue;
+      }
+      const held = keptByTime.get(event.time);
+      if (!held) {
+        keptByTime.set(event.time, event);
+        continue;
+      }
+      const keep = pickPublished(held, event);
+      dropped.add(keep === held ? event : held);
+      keptByTime.set(event.time, keep);
     }
   }
 

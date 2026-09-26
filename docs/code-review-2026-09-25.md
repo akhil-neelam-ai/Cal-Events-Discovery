@@ -162,6 +162,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #13. Same-day repeat sessions can collapse into one (P3, needs a live check)
 
+**Status:** Fixed in code, pending a live check. Dedupe now keeps a source's same-day rows when their start times differ, so both games of a doubleheader publish. The restore pass from #9 follows the same rule. BAMPFA keys a showing on its URL and start time. A later showing that day gets an `@HHMM` id suffix, and the first keeps its id. Collapse groups later showings by time slot, so a daily second session is one card. Cal Performances reads every performance and publishes a run over its remaining days.
 **Files:** `scripts/sources/bampfa.ts:358-368`, `scripts/sources/cal_performances.ts:115`, `scripts/lib/dedupe.ts:146-154`
 **Problem:** Three places identify an event without its start time. BAMPFA dedupes on `url::date`, so a second showing of a film that day is dropped. On 2026-09-25 it skipped 16 rows this way (148 raw, 125 kept, 7 invalid), some of them month-page overlaps. Cal Performances reads only the first `span.start` in a production's post. A multi-performance run can then vanish once its first show passes. Cross-source dedupe keys on title and PT date only.
 **Fix:** Add the start time to BAMPFA's key and to the second showing's `source_id`, and keep the first id stable. Parse every `span.start`. In dedupe, do not merge two rows from one source whose start times differ.

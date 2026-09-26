@@ -299,8 +299,8 @@ export async function fetchBampfa(
   let filteredPast = 0;
   let invalid = 0;
 
-  // Track seen canonical URLs to avoid duplicating recurring events that appear
-  // across month boundaries in the scraped pages (same event, same date).
+  // Month pages overlap, so the same showing can appear twice. A showing is
+  // its canonical URL plus its start, so a second screening that day stays.
   const seenKeys = new Set<string>();
 
   const months = targetMonths();
@@ -355,8 +355,7 @@ export async function fetchBampfa(
         }
         const eventDate = start_at.slice(0, 10);
 
-        // Deduplicate: same canonical URL + same date = same occurrence.
-        const dedupeKey = `${canonicalUrl}::${eventDate}`;
+        const dedupeKey = `${canonicalUrl}::${start_at}`;
         if (seenKeys.has(dedupeKey)) {
           return; // silently skip duplicate (not a past filter)
         }
@@ -418,8 +417,34 @@ export async function fetchBampfa(
     );
   }
 
+  numberSameDayShowings(events);
   console.log(
     `[bampfa] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`,
   );
   return { events, rawCount, filteredPast, invalid };
+}
+
+/**
+ * Showings share a `slug::date` id, so a second showing that day needs its
+ * own. The day's earliest showing keeps the plain id, which stays stable for
+ * `?event=` links, and each later one gets its start time, as in
+ * `film-night::2026-10-02@1900`.
+ */
+function numberSameDayShowings(events: CanonicalEvent[]): void {
+  const byId = new Map<string, CanonicalEvent[]>();
+  for (const event of events) {
+    const showings = byId.get(event.source_id);
+    if (showings) {
+      showings.push(event);
+    } else {
+      byId.set(event.source_id, [event]);
+    }
+  }
+  for (const [id, showings] of byId) {
+    if (showings.length < 2) continue;
+    showings.sort((a, b) => a.start_at.localeCompare(b.start_at));
+    for (const later of showings.slice(1)) {
+      later.source_id = `${id}@${later.start_at.slice(11, 16).replace(":", "")}`;
+    }
+  }
 }

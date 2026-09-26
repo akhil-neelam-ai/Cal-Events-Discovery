@@ -4,6 +4,7 @@ import test from "node:test";
 import { HttpUrlSchema } from "../../scripts/lib/schema.ts";
 import {
   calendarUrlForMonth,
+  fetchBampfa,
   gcalTokenToIso,
   isValidGCalToken,
   parseGCalLink,
@@ -19,7 +20,11 @@ import {
   parseAddeventatcDate,
 } from "../../scripts/sources/cal_performances.ts";
 import { unitFromSlug } from "../../scripts/sources/livewhale.ts";
-import { isoDateInPT } from "../../scripts/lib/normalize.ts";
+import {
+  isoDateInPT,
+  projectToLegacy,
+  todayPT,
+} from "../../scripts/lib/normalize.ts";
 
 test("BAMPFA parser reads Google Calendar links", () => {
   const parsed = parseGCalLink(
@@ -248,6 +253,90 @@ test("Cal Performances fetches the remaining pages in parallel", async () => {
     assert.equal(result.rawCount, 384);
     assert.deepEqual(requested, [1, 2, 3, 4]);
     assert.equal(maxInFlight, 3, "pages 2 to 4 should download together");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+function daysFromToday(days) {
+  const [year, month, day] = todayPT().split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day + days))
+    .toISOString()
+    .slice(0, 10);
+}
+
+test("BAMPFA keeps a second showing of a film on the same day", async () => {
+  const day = daysFromToday(2);
+  const token = (hhmm) => `${day.replace(/-/g, "")}T${hhmm}00`;
+  const link = (start, end) =>
+    `<a href="https://calendar.google.com/calendar/r/eventedit?text=Film+Night&amp;dates=${token(start)}/${token(end)}&amp;details=https%3A%2F%2Fbampfa.org%2Fevent%2Ffilm-night&amp;location=BAMPFA">Add</a>`;
+  // Every month page repeats the same showings, like overlapping months do.
+  const html = `<html><body>${link("1900", "2100")}${link("1400", "1600")}</body></html>`;
+
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => ({
+    ok: true,
+    status: 200,
+    text: async () => html,
+  });
+  try {
+    const result = await fetchBampfa();
+
+    assert.deepEqual(result.events.map((event) => event.source_id).sort(), [
+      `film-night::${day}`,
+      `film-night::${day}@1900`,
+    ]);
+    const first = result.events.find(
+      (event) => event.source_id === `film-night::${day}`,
+    );
+    assert.match(first.start_at, /T14:00/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("Cal Performances keeps a run listed after its first performance", async () => {
+  const stamp = (key, time) => {
+    const [year, month, day] = key.split("-");
+    return `${month}/${day}/${year} ${time}`;
+  };
+  const show = (key, start, end) =>
+    `<div class="addeventatc"><span class="start">${stamp(key, start)}</span><span class="end">${stamp(key, end)}</span></div>`;
+  const yesterday = daysFromToday(-1);
+  const tomorrow = daysFromToday(1);
+  const dayAfter = daysFromToday(2);
+  const post = {
+    id: 501,
+    slug: "dance-run",
+    link: "https://calperformances.org/events/2026-27/dance/dance-run/",
+    title: { rendered: "Dance Run" },
+    content: {
+      rendered: [
+        show(yesterday, "07:30 pm", "09:30 pm"),
+        show(tomorrow, "07:30 pm", "09:30 pm"),
+        show(dayAfter, "02:00 pm", "04:00 pm"),
+        '<a class="event-location">Zellerbach Hall</a>',
+      ].join(""),
+    },
+  };
+
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => ({
+    ok: true,
+    status: 200,
+    headers: new Headers({ "X-WP-TotalPages": "1" }),
+    json: async () => [post],
+  });
+  try {
+    const result = await fetchCalPerformances();
+
+    assert.equal(result.events.length, 1);
+    const legacy = projectToLegacy(result.events[0]);
+    assert.equal(legacy.id, "cal_performances_501");
+    assert.equal(legacy.date, tomorrow);
+    assert.equal(legacy.time, "7:30 PM");
+    assert.deepEqual(legacy.dates, [tomorrow, dayAfter]);
+    assert.equal(legacy.end_date, dayAfter);
   } finally {
     globalThis.fetch = originalFetch;
   }
