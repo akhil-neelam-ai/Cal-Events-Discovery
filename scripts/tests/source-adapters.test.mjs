@@ -14,7 +14,7 @@ import {
   cleanSummary,
   parseGameFlags,
 } from "../../scripts/sources/calbears.ts";
-import { fetchCallink, stripHtml } from "../../scripts/sources/callink.ts";
+import { fetchCallink } from "../../scripts/sources/callink.ts";
 import {
   fetchCalPerformances,
   parseAddeventatcDate,
@@ -348,17 +348,26 @@ test("CalLink filters by Pacific event date instead of UTC date prefix", () => {
   assert.equal(isoDateInPT("not-a-date"), "");
 });
 
-test("CalLink HTML extraction preserves comparison text", () => {
-  assert.equal(
-    stripHtml("Requirements: GPA > 3.0 and Age < 25"),
-    "Requirements: GPA > 3.0 and Age < 25",
+test("CalLink descriptions publish through the shared sanitizer", async () => {
+  // The shared sanitizer drops every < and >, so a comparison loses its
+  // operator. The feed keeps that rule for every source.
+  const [row] = callinkEvents(1);
+  const { result } = await withCallinkStub(
+    () => ({
+      "@odata.count": 1,
+      value: [
+        {
+          ...row,
+          description:
+            "<p>Welcome&nbsp;Bears<br>GPA &gt; 3.0</p><script>bad()</script><style>.x{color:red}</style>",
+        },
+      ],
+    }),
+    fetchCallink,
   );
-  assert.equal(
-    stripHtml(
-      "<p>Welcome&nbsp;Bears<br>GPA &gt; 3.0</p><script>bad()</script>",
-    ),
-    "Welcome Bears GPA > 3.0",
-  );
+
+  const legacy = projectToLegacy(result.events[0]);
+  assert.equal(legacy.description, "Welcome Bears GPA 3.0");
 });
 
 test("canonical URLs only allow HTTP(S) protocols", () => {

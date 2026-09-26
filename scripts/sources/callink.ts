@@ -12,31 +12,16 @@
  *   visibility ("Public"), status ("Approved"), latitude, longitude.
  */
 
-import he from "he";
-
 import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
 import type { FetchOptions } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
-import { endedBeforePT, isoDateInPT, todayPT } from "../lib/normalize.js";
-
-/**
- * CalLink-specific HTML cleaner. Unlike the shared `sanitizePlainText`
- * (which strips every `<`/`>` as XSS defense-in-depth), this preserves literal
- * comparison operators such as "GPA > 3.0" that appear in org descriptions,
- * while still removing tags and `<script>`/`<style>` blocks. React escapes the
- * rendered output, so keeping bare operators is safe here.
- */
-export function stripHtml(html: string): string {
-  return he
-    .decode(
-      html
-        .replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, " ")
-        .replace(/<[^>]+>/g, " "),
-    )
-    .replace(/\s+/g, " ")
-    .trim();
-}
+import {
+  endedBeforePT,
+  isoDateInPT,
+  sanitizePlainText,
+  todayPT,
+} from "../lib/normalize.js";
 
 const BASE_URL = "https://callink.berkeley.edu";
 const DISCOVERY_API = `${BASE_URL}/api/discovery/event/search`;
@@ -248,7 +233,7 @@ export async function fetchCallink(
 
       const title = item.name.trim();
       const description = item.description
-        ? stripHtml(item.description)
+        ? sanitizePlainText(item.description)
         : title;
       const organizer = item.organizationName ?? "";
       const venue = item.location ?? "";

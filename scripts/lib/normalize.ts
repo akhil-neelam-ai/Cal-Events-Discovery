@@ -378,7 +378,10 @@ export function cleanTitle(raw: string): string {
 }
 
 export function sanitizePlainText(raw: string): string {
-  const withoutTags = raw.replace(/<[^>]+>/g, " ");
+  // Drop script and style blocks with their contents, then every other tag.
+  const withoutTags = raw
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, " ")
+    .replace(/<[^>]+>/g, " ");
   const decoded = he.decode(withoutTags);
   return decoded.replace(/[<>]/g, "").replace(/\s+/g, " ").trim();
 }

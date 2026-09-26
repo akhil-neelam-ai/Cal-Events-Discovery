@@ -14,6 +14,15 @@ test("sanitizePlainText decodes HTML entities and strips tags", () => {
   );
 });
 
+test("sanitizePlainText drops script and style blocks with their contents", () => {
+  assert.equal(
+    sanitizePlainText(
+      'Intro<script type="text/javascript">alert(1)</script> text<STYLE>.x{color:red}</STYLE > end',
+    ),
+    "Intro text end",
+  );
+});
+
 test("sanitizePlainText removes remaining angle brackets", () => {
   assert.equal(sanitizePlainText("bad <<tag>> value"), "bad value");
   assert.equal(/[<>]/.test(sanitizePlainText("x < y > z")), false);

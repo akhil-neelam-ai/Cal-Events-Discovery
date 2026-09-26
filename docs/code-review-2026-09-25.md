@@ -278,6 +278,8 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #26. CalLink's comparison-preserving cleaner has no effect (P3)
 
+**Status:** Fixed. Decision: keep the strip. The CalLink `stripHtml` is gone, and the adapter uses `sanitizePlainText` like the other sources. `sanitizePlainText` now drops `<script>` and `<style>` blocks with their contents, which the CalLink cleaner used to do. The test runs the adapter and asserts the published text, "Welcome Bears GPA 3.0".
+
 **Files:** `scripts/sources/callink.ts:24-40`, `scripts/lib/normalize.ts:445`, `scripts/tests/source-adapters.test.mjs:162-173`
 **Problem:** The CalLink `stripHtml` keeps "GPA > 3.0". `projectToLegacy` then runs `sanitizePlainText`, which strips every `<` and `>`. The published text reads "GPA 3.0". The test checks only the adapter output. June #23 asked to remove this cleaner.
 **Decision needed:** Keep the `<` and `>` strip in `sanitizePlainText`, a June security invariant, or relax it after tag removal?
@@ -366,7 +368,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 **June full-repo audit (`docs/code-review-2026-06-02.md`):** closed except for four partial items.
 
-- #23: the CalLink cleaner is still there. See #26 above.
+- #23: the CalLink cleaner is still there. Fixed with #26.
 - #26: `calbears.ts:144` still double-casts. Fixed with #35.
 - #31: `formatMultiDayWhen` still reads the wall clock, not the synced day key. Fixed: `formatRelativeEventDate` now passes its synced key through. The detail panel has no synced key and still uses the clock.
 - #36: Zod now requires `source`, but OpenAPI does not. Fixed with #20.
