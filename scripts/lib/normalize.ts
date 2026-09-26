@@ -512,9 +512,14 @@ export function displayTime(start_at: string, all_day: boolean): string {
 export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
   const date = firstOccurrencePT(event);
   const time = displayTime(event.start_at, event.all_day);
+  // Venue and organizer text arrives with entities and line breaks too, and
+  // React would show a literal "&nbsp;".
   const location =
-    [event.venue, event.building].filter(Boolean).join(" — ") ||
-    event.address ||
+    [event.venue, event.building]
+      .map(sanitizePlainText)
+      .filter(Boolean)
+      .join(" — ") ||
+    sanitizePlainText(event.address) ||
     "Berkeley, CA";
   const tags =
     event.tags.length > 0
@@ -524,7 +529,10 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
   const legacy: LegacyCalEvent = {
     id,
     title: cleanTitle(event.title),
-    organizer: event.organizer || event.organizer_unit || "UC Berkeley",
+    organizer:
+      sanitizePlainText(event.organizer) ||
+      sanitizePlainText(event.organizer_unit) ||
+      "UC Berkeley",
     date,
     time,
     location,

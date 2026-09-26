@@ -269,6 +269,8 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #25. Location and organizer text skip sanitization (P3)
 
+**Status:** Fixed. `projectToLegacy` runs `sanitizePlainText` over each venue part, the address, the organizer, and the organizer unit. A part that cleans to nothing falls through. The three affected rows in the committed feed clear on the next pipeline run.
+
 **File:** `scripts/lib/normalize.ts:429-441`
 **Problem:** `projectToLegacy` sanitizes the title and description but not the location or organizer. One Simons row publishes a location with a literal `&nbsp;`, and another has a raw newline. React escapes text, so the UI shows `&nbsp;` as typed.
 **Fix:** Run `sanitizePlainText` over location and organizer in `projectToLegacy`.

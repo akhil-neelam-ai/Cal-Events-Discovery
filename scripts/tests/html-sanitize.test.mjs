@@ -19,8 +19,8 @@ test("sanitizePlainText removes remaining angle brackets", () => {
   assert.equal(/[<>]/.test(sanitizePlainText("x < y > z")), false);
 });
 
-test("projectToLegacy emits clean descriptions without HTML", () => {
-  const legacy = projectToLegacy({
+function canonicalEvent(overrides = {}) {
+  return {
     source_name: "livewhale",
     source_id: "evt-1",
     source_url: "https://example.com/source",
@@ -44,8 +44,39 @@ test("projectToLegacy emits clean descriptions without HTML", () => {
     last_seen_at: "2026-05-23T12:00:00Z",
     confidence: 1,
     quality_flags: [],
-  });
+    ...overrides,
+  };
+}
+
+test("projectToLegacy emits clean descriptions without HTML", () => {
+  const legacy = projectToLegacy(canonicalEvent());
 
   assert.equal(legacy.description, "Join us today");
   assert.doesNotMatch(legacy.description, /&amp;|&#|[<>]/);
+});
+
+test("projectToLegacy cleans venue and organizer text", () => {
+  const legacy = projectToLegacy(
+    canonicalEvent({
+      source_name: "simons",
+      venue: "Calvin Lab auditorium&nbsp;",
+      building: "Calvin Lab\nIn-Person Event Only ",
+      organizer: " &nbsp; ",
+      organizer_unit: "Simons Institute &amp; SLMath",
+    }),
+  );
+
+  assert.equal(
+    legacy.location,
+    "Calvin Lab auditorium — Calvin Lab In-Person Event Only",
+  );
+  assert.equal(legacy.organizer, "Simons Institute & SLMath");
+});
+
+test("projectToLegacy falls back when every venue part is blank", () => {
+  const legacy = projectToLegacy(
+    canonicalEvent({ venue: "&nbsp;", building: "", address: " \n " }),
+  );
+
+  assert.equal(legacy.location, "Berkeley, CA");
 });
