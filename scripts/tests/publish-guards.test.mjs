@@ -174,6 +174,25 @@ test("three failed runs in a row open a source-contracts issue", () => {
   );
 });
 
+test("third-party actions are pinned and scopes are granted per job", () => {
+  for (const name of fs.readdirSync(workflowsDir)) {
+    const workflow = readWorkflow(name);
+    for (const [, action] of workflow.matchAll(/uses:\s*(\S+)/g)) {
+      if (action.startsWith("actions/")) continue;
+      assert.match(
+        action,
+        /@[0-9a-f]{40}$/,
+        `${name}: ${action} must be pinned to a commit SHA`,
+      );
+    }
+  }
+  assert.match(
+    updateEvents,
+    /^permissions: \{\}$/m,
+    "update-events.yml grants no scopes at the top; each job asks for its own",
+  );
+});
+
 test("production staleness is checked on a schedule, not only on push", () => {
   assert.match(
     productionSmoke,

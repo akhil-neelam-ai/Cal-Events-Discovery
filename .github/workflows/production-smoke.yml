@@ -18,6 +18,9 @@ concurrency:
   group: production-smoke-main
   cancel-in-progress: true
 
+# The smoke job only reads the public site. notify-failure grants its own.
+permissions: {}
+
 jobs:
   smoke:
     runs-on: ubuntu-latest

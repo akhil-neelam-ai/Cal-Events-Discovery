@@ -198,6 +198,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #17. Pin third-party actions and narrow workflow permissions (P3)
 
+**Status:** Fixed. `peter-evans/create-pull-request` is pinned to `5f6978f` (v8.1.1), and Dependabot bumps it. `update-events.yml` sets `permissions: {}` at the top, and only the update-events job asks for write scopes. Validate, E2E, Security Audit, and Source Contracts now default to read-only contents. Production Smoke grants nothing at the top. A publish-guard test fails on an unpinned third-party action.
 **Files:** `.github/workflows/*.yml`
 **Problem:** `peter-evans/create-pull-request@v8` receives the automation PAT and sits on a movable tag. `update-events.yml` grants contents, pull-request, and issue write to every job. That includes `schedule-gate`, which needs none.
 **Fix:** Pin third-party actions to commit SHAs. Dependabot already tracks `github-actions`, so it will bump them. Set `permissions: {}` at the top and grant per job.

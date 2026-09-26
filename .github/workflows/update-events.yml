@@ -20,10 +20,8 @@ concurrency:
 # token check, create-PR, and merge. `npm ci` runs install scripts, and the
 # pipeline parses untrusted upstream data, so neither should see it.
 
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
+# No job gets a scope it does not ask for. schedule-gate needs none.
+permissions: {}
 
 jobs:
   schedule-gate:
@@ -63,6 +61,10 @@ jobs:
       )
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
 
     steps:
       # Validate the automation token before spending a pipeline run on it.
@@ -243,7 +245,8 @@ jobs:
 
       - name: Create artifact update pull request
         id: create_pr
-        uses: peter-evans/create-pull-request@v8
+        # Pinned to a commit because this step receives the automation token.
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ steps.token_check.outputs.usable == 'true' && secrets.AUTOMATION_PR_TOKEN || github.token }}
           branch: automation/update-events

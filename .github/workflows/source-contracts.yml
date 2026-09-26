@@ -11,9 +11,9 @@ on:
       - "scripts/runSourceContracts.mjs"
   workflow_dispatch:
 
+# Only the notify job writes issues, and it grants that itself.
 permissions:
   contents: read
-  issues: write
 
 jobs:
   source-contracts:

@@ -8,9 +8,9 @@ on:
     - cron: "0 16 * * 1" # Mondays, ~8-9 AM Pacific
   workflow_dispatch:
 
+# Only the notify job writes issues, and it grants that itself.
 permissions:
   contents: read
-  issues: write
 
 jobs:
   audit:
