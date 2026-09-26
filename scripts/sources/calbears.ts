@@ -10,7 +10,7 @@
  * that ultimately resolve to /calendar.ashx/calendar.ics (text/calendar).
  */
 
-import ical, { type VEvent } from "node-ical";
+import ical, { type CalendarResponse, type VEvent } from "node-ical";
 import {
   abortableDelay,
   signalWithTimeout,
@@ -85,9 +85,7 @@ export function parseGameFlags(summary: string): {
   };
 }
 
-async function fetchFeed(
-  options: FetchOptions,
-): Promise<Record<string, unknown>> {
+async function fetchFeed(options: FetchOptions): Promise<CalendarResponse> {
   let lastErr = "";
   for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
     console.log(
@@ -106,7 +104,7 @@ async function fetchFeed(
         const ics = await res.text();
         const parsed = ical.sync.parseICS(ics);
         const veventCount = Object.values(parsed).filter(
-          (c) => (c as { type?: string }).type === "VEVENT",
+          (c) => c?.type === "VEVENT",
         ).length;
         if (veventCount >= MIN_HEALTHY_EVENT_COUNT) {
           return parsed;
@@ -138,10 +136,10 @@ export async function fetchCalBears(
   let filteredPast = 0;
   let invalid = 0;
 
-  for (const key of Object.keys(parsed)) {
-    const component = parsed[key] as { type?: string };
-    if (!component || component.type !== "VEVENT") continue;
-    const ve = component as unknown as VEvent;
+  for (const [key, component] of Object.entries(parsed)) {
+    // node-ical tags each component with its type, so this narrows to VEvent.
+    if (component?.type !== "VEVENT") continue;
+    const ve = component;
     rawCount++;
 
     try {

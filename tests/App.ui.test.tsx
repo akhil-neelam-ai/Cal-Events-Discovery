@@ -17,6 +17,7 @@ import { useUrlStateSync } from "../hooks/useUrlStateSync";
 import type { CalEvent } from "../types";
 import { LoadingState } from "../types";
 import { TOPIC_VOCABULARY } from "../scripts/lib/topics";
+import { addRecentSearch } from "../utils/recentSearches";
 
 const TODAY_KEY = "2026-04-22";
 const TOMORROW_KEY = "2026-04-23";
@@ -52,6 +53,12 @@ vi.mock("../utils/analytics", () => ({
   trackFilter: vi.fn(),
   trackExternalLink: vi.fn(),
 }));
+
+vi.mock("../utils/recentSearches", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("../utils/recentSearches")>();
+  return { ...actual, addRecentSearch: vi.fn(actual.addRecentSearch) };
+});
 
 vi.mock("../hooks/useEventFeed", () => ({
   useEventFeed: () => mockFeedState,
@@ -613,7 +620,7 @@ describe("App UI regressions", () => {
       screen.getByRole("heading", { level: 2, name: /this week/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Tomorrow Founder Talk")).toBeInTheDocument();
-    expect(screen.getAllByText("Updates everyday").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Updates every day").length).toBeGreaterThan(0);
     expect(screen.queryByText(/Updated \d+h ago/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Synced \d+h ago/)).not.toBeInTheDocument();
   });
@@ -1011,6 +1018,28 @@ describe("App UI regressions", () => {
     const dialog = screen.getByRole("dialog");
     expect(within(dialog).getByText("Through Apr 24")).toBeInTheDocument();
     expect(within(dialog).getByText("Daily · all day")).toBeInTheDocument();
+  });
+
+  it("records the search behind a card click once, even in StrictMode", async () => {
+    const user = userEvent.setup();
+    vi.mocked(addRecentSearch).mockClear();
+
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "recent-1", title: "Design Review Night" }),
+    ]);
+    window.history.replaceState({}, "", "/?q=design");
+
+    render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>,
+    );
+    await user.click(
+      screen.getByRole("button", { name: /design review night/i }),
+    );
+
+    expect(addRecentSearch).toHaveBeenCalledTimes(1);
+    expect(addRecentSearch).toHaveBeenCalledWith("design");
   });
 
   it("keeps the source link outside the card's button", async () => {

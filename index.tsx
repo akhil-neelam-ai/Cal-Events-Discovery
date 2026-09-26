@@ -1,16 +1,16 @@
-import './index.css';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import { registerWebMcpTools } from './agent/registerWebMcp';
-import { initErrorTracking } from './utils/errorTracking';
+import "./index.css";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { registerWebMcpTools } from "./agent/registerWebMcp";
+import { initErrorTracking } from "./utils/errorTracking";
 
 // Loads Sentry only when VITE_SENTRY_DSN is set; otherwise a no-op.
 void initErrorTracking();
 registerWebMcpTools();
 
-const rootElement = document.getElementById('root');
+const rootElement = document.getElementById("root");
 if (!rootElement) {
   throw new Error("Could not find root element to mount to");
 }
@@ -21,5 +21,5 @@ root.render(
     <ErrorBoundary>
       <App />
     </ErrorBoundary>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

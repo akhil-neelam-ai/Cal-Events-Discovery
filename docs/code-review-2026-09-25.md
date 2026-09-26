@@ -353,6 +353,8 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #35. Small hygiene items (P3)
 
+**Status:** Fixed. `format:check` and `format:fix` now cover `index.tsx`, `vite.config.ts`, and `postcss.config.js`, and all three are formatted. The copy reads "Updates every day". `handleEventClick` records the recent search outside the state updater, and a StrictMode test counts one call. `calbears.ts` types the parsed feed as `CalendarResponse` and narrows on `type`, so the double cast is gone.
+
 - `format:check` misses `index.tsx`, `vite.config.ts`, and `postcss.config.js`, and none of them is formatted.
 - `appConfig.ts:93` says "Updates everyday". It should read "Updates every day".
 - `App.tsx:116-119` calls `addRecentSearch` inside a `setFilters` updater, which runs twice under StrictMode.
@@ -365,9 +367,9 @@ The hero preset "A film at BAMPFA" has the same gap.
 **June full-repo audit (`docs/code-review-2026-06-02.md`):** closed except for four partial items.
 
 - #23: the CalLink cleaner is still there. See #26 above.
-- #26: `calbears.ts:144` still double-casts.
+- #26: `calbears.ts:144` still double-casts. Fixed with #35.
 - #31: `formatMultiDayWhen` still reads the wall clock, not the synced day key.
-- #36: Zod now requires `source`, but OpenAPI does not. See #20 above.
+- #36: Zod now requires `source`, but OpenAPI does not. Fixed with #20.
 
 Everything else from Tiers 1 to 8 is in the code, including the privacy footer and the mobile filter scrollbar.
 

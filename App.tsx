@@ -110,20 +110,21 @@ export default function App() {
     [feedSettled, topicVocabulary],
   );
 
-  const handleEventClick = useCallback((event: CalEvent) => {
-    setSelectedEventId(event.id);
-    // Persist the search term that led to this click
-    setFilters((prev) => {
-      if (prev.searchQuery.trim()) addRecentSearch(prev.searchQuery.trim());
-      return prev;
-    });
-    trackEventClick({
-      event_id: event.id,
-      event_title: event.title,
-      event_category: event.tags?.[0] || "Unknown",
-      event_date: event.date,
-    });
-  }, []);
+  const handleEventClick = useCallback(
+    (event: CalEvent) => {
+      setSelectedEventId(event.id);
+      // Persist the search term that led to this click. This runs here, not
+      // in a state updater, which StrictMode calls twice.
+      if (filters.searchQuery.trim()) addRecentSearch(filters.searchQuery);
+      trackEventClick({
+        event_id: event.id,
+        event_title: event.title,
+        event_category: event.tags?.[0] || "Unknown",
+        event_date: event.date,
+      });
+    },
+    [filters.searchQuery],
+  );
 
   const handleCloseDetail = useCallback(() => {
     setSelectedEventId(null);

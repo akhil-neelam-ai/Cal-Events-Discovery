@@ -90,7 +90,7 @@ export const DEFAULT_FILTERS: SearchFilters = {
 
 export const VISIBLE_EVENT_BATCH_SIZE = 72;
 
-export const FEED_CADENCE_COPY = "Updates everyday";
+export const FEED_CADENCE_COPY = "Updates every day";
 
 // Natural-language example queries shown as chips below the hero search bar.
 // Each sets a sensible scope plus a query the client search engine interprets.
