@@ -273,6 +273,31 @@ function scoreEvent(
 
 // ─── Pool filters (hard constraints from plan) ────────────────────────────────
 
+// Dedupe keeps the LiveWhale copy of an event that an institution also lists
+// in its own feed. LiveWhale files that copy under the institution's unit
+// name, so a source word matches the unit name as well as the feed.
+const SOURCE_ORGANIZERS: Partial<Record<string, string>> = {
+  bampfa: "bampfa",
+  berkeley_law: "berkeley law",
+  cal_performances: "cal performances",
+  calbears: "cal athletics",
+  haas: "berkeley haas",
+  simons: "simons institute",
+};
+
+/** True when an event comes from, or is run by, a source named in a query. */
+function matchesSourceIntent(
+  event: Pick<CalEvent, "source" | "organizer">,
+  source: string,
+): boolean {
+  if (event.source === source) return true;
+  const organizer = SOURCE_ORGANIZERS[source];
+  return (
+    organizer !== undefined &&
+    (event.organizer ?? "").trim().toLowerCase() === organizer
+  );
+}
+
 function applyPoolFilters(
   events: CalEvent[],
   plan: SearchPlan,
@@ -288,7 +313,7 @@ function applyPoolFilters(
     if (
       filters.source &&
       !dismissedKeys.has(`source:${filters.source}`) &&
-      ev.source !== filters.source
+      !matchesSourceIntent(ev, filters.source)
     ) {
       return false;
     }

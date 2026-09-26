@@ -881,6 +881,46 @@ test("source names act as source intent instead of generic text", () => {
   );
 });
 
+test("source words keep the LiveWhale copy filed under the same unit", () => {
+  // Dedupe keeps LiveWhale's copy of a cross-published event, under the
+  // institution's unit name, so the source lock must match that name too.
+  const events = [
+    ...SYNTHETIC_EVENTS,
+    {
+      ...SYNTHETIC_EVENTS[15],
+      id: "evt-law-livewhale",
+      title: "Law Faculty Colloquium",
+      source: "livewhale",
+    },
+    {
+      ...SYNTHETIC_EVENTS[12],
+      id: "evt-tennis-livewhale",
+      title: "California Men's Tennis vs Stanford",
+      source: "livewhale",
+    },
+    {
+      ...SYNTHETIC_EVENTS[16],
+      id: "evt-law-mention",
+      title: "Berkeley Law and Finance Talk",
+      description: "A campus talk that mentions Berkeley Law.",
+    },
+  ];
+
+  const law = searchEvents(events, "berkeley law", null);
+  assert.equal(law.plan.filters.source, "berkeley_law");
+  assert.deepEqual(law.results.map((event) => event.id).sort(), [
+    "evt-law",
+    "evt-law-livewhale",
+  ]);
+
+  const athletics = searchEvents(events, "cal bears", null);
+  assert.equal(athletics.plan.filters.source, "calbears");
+  assert.deepEqual(athletics.results.map((event) => event.id).sort(), [
+    "evt-baseball",
+    "evt-tennis-livewhale",
+  ]);
+});
+
 test("dismissed source intent becomes literal search text instead of returning the full pool", () => {
   const output = searchEvents(
     SYNTHETIC_EVENTS,

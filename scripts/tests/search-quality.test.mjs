@@ -391,14 +391,26 @@ test('real search: "moffitt" does not broaden to generic library exhibits', () =
   );
 });
 
-test('real search: "berkeley law" is scoped to the Berkeley Law source', () => {
+test('real search: "berkeley law" is scoped to Berkeley Law events', () => {
   const output = searchEvents(events, "berkeley law", searchIndex);
+  // LiveWhale keeps its own copy of cross-published law events, filed under
+  // the Berkeley Law unit. Those belong in the results too.
+  const isLaw = (event) =>
+    event.source === "berkeley_law" || event.organizer === "Berkeley Law";
 
   assert.equal(output.plan.filters.source, "berkeley_law");
   assert.ok(output.results.length > 0, '"berkeley law" should find law events');
   assert.ok(
-    output.results.every((event) => event.source === "berkeley_law"),
+    output.results.every(isLaw),
     '"berkeley law" should not return generic Berkeley events',
+  );
+  assert.equal(
+    output.results.filter((event) => event.source === "livewhale").length,
+    events.filter(
+      (event) =>
+        event.source === "livewhale" && event.organizer === "Berkeley Law",
+    ).length,
+    '"berkeley law" should keep every LiveWhale Berkeley Law event',
   );
 });
 

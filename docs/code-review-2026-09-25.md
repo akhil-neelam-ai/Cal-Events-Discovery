@@ -74,6 +74,7 @@
 
 ### #5. Source words hide the same organizer's LiveWhale events (P2)
 
+**Status:** Fixed. A source word now matches the feed or the LiveWhale unit name. This covers BAMPFA, Berkeley Law, Cal Performances, Cal Bears, Haas, and Simons. The chip stays. "berkeley law" returns 142 rows, all 36 LiveWhale ones included. "film bampfa" returns 13 instead of 2. The source dropdown still means feed provenance. ai_risk, brsl, and begin have no LiveWhale unit, so they are unchanged.
 **Files:** `utils/searchIntent.ts:89-112` and `:346-353`, `utils/searchEngine.ts:286-292`
 **Problem:** "berkeley law", "bampfa", "haas", and "simons" become hard `source:` filters. Dedupe keeps the LiveWhale copy of any cross-published event. Those rows carry `source: livewhale`, so the lock hides them.
 **Evidence:**

@@ -844,6 +844,14 @@ describe("App UI regressions", () => {
         tags: ["Academic"],
         description: "A generic campus event mentioning Berkeley Law.",
       }),
+      makeEvent({
+        id: "law-livewhale-unit",
+        title: "Law Faculty Colloquium",
+        organizer: "Berkeley Law",
+        source: "livewhale",
+        tags: ["Academic"],
+        description: "A colloquium LiveWhale files under Berkeley Law.",
+      }),
     ]);
 
     window.history.replaceState({}, "", "/?q=berkeley%20law&date=upcoming");
@@ -854,6 +862,7 @@ describe("App UI regressions", () => {
       screen.getByRole("button", { name: /remove berkeley law filter/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Law Certificate Ceremony")).toBeInTheDocument();
+    expect(screen.getByText("Law Faculty Colloquium")).toBeInTheDocument();
     expect(
       screen.queryByText("Berkeley Law and Finance Talk"),
     ).not.toBeInTheDocument();
