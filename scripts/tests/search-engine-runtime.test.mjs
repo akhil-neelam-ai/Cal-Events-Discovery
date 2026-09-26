@@ -5,6 +5,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { DESKTOP_HERO_PRESETS } from "../../appConfig.ts";
+import { buildSearchIndex } from "../lib/buildIndex.ts";
 import {
   buildSearchPlan,
   searchEvents,
@@ -761,24 +762,104 @@ test('"cal games" is interpreted as sports without searching for generic game te
   );
 });
 
-test("specific sport words remain category intent and are stripped", () => {
-  const output = searchEvents(SYNTHETIC_EVENTS, "basketball", {
-    ids: SYNTHETIC_EVENTS.map((event) => event.id),
-    t: { baseball: [12] },
-    g: { sport: [12] },
-    o: {},
-    d: {},
-    l: {},
-    buildAt: "test",
-    eventCount: SYNTHETIC_EVENTS.length,
-  });
+test("sport words stay as ranking text instead of locking Sports", () => {
+  // A Sports lock used to strip "basketball" and return every Sports event,
+  // so a baseball game answered a basketball search.
+  const events = [
+    ...SYNTHETIC_EVENTS,
+    {
+      ...SYNTHETIC_EVENTS[12],
+      id: "evt-basketball",
+      title: "California Basketball vs Oregon",
+      description: "A Cal Bears basketball game.",
+      url: "https://example.com/basketball",
+    },
+  ];
 
-  assert.equal(output.plan.filters.category, "Sports");
-  assert.deepEqual(output.plan.keywords, []);
+  const output = searchEvents(events, "basketball", buildSearchIndex(events));
+
+  assert.equal(output.plan.filters.category, undefined);
+  assert.deepEqual(output.plan.keywords, ["basketball"]);
   assert.deepEqual(
     output.results.map((event) => event.id),
-    ["evt-baseball"],
+    ["evt-basketball"],
   );
+});
+
+test("category names lock a category and leave no ranking text", () => {
+  const cases = [
+    ["sports", "Sports"],
+    ["athletics", "Sports"],
+    ["cal games", "Sports"],
+    ["arts", "Arts"],
+    ["academic", "Academic"],
+    ["science & tech", "Science & Tech"],
+    ["science and technology", "Science & Tech"],
+    ["tech", "Science & Tech"],
+    ["student life", "Student Life"],
+    ["student orgs", "Student Life"],
+    ["entrepreneurship", "Entrepreneurship"],
+  ];
+
+  for (const [query, category] of cases) {
+    const plan = buildSearchPlan(query);
+    assert.equal(plan.filters.category, category, `${query} category`);
+    assert.deepEqual(plan.keywords, [], `${query} keywords`);
+  }
+});
+
+test("subject words stay as ranking text without a category lock", () => {
+  const subjectWords = [
+    "tennis",
+    "basketball",
+    "seminar",
+    "lecture",
+    "colloquium",
+    "keynote",
+    "gallery",
+    "exhibit",
+    "performance",
+    "hackathon",
+    "coding",
+    "orientation",
+    "science",
+    "skydeck",
+  ];
+
+  for (const subject of subjectWords) {
+    const plan = buildSearchPlan(subject);
+    assert.equal(plan.filters.category, undefined, `${subject} category`);
+    assert.equal(plan.keywords.length, 1, `${subject} keywords`);
+  }
+});
+
+test("subject words find matches filed under any primary category", () => {
+  const events = [
+    {
+      ...SYNTHETIC_EVENTS[16],
+      id: "evt-seminar-academic",
+      title: "History Seminar",
+      description: "A weekly history seminar.",
+      tags: ["Academic"],
+    },
+    {
+      ...SYNTHETIC_EVENTS[7],
+      id: "evt-seminar-tech",
+      title: "Robotics Seminar",
+      description: "A weekly robotics seminar.",
+      tags: ["Science & Tech"],
+    },
+    SYNTHETIC_EVENTS[12],
+  ];
+
+  const output = searchEvents(events, "seminar", buildSearchIndex(events));
+
+  assert.equal(output.plan.filters.category, undefined);
+  assert.equal(output.fallbackUsed, false);
+  assert.deepEqual(output.results.map((event) => event.id).sort(), [
+    "evt-seminar-academic",
+    "evt-seminar-tech",
+  ]);
 });
 
 test("venue aliases do not broaden Moffitt into every library event", () => {
@@ -812,6 +893,27 @@ test("dismissed source intent becomes literal search text instead of returning t
   assert.deepEqual(output.plan.keywords, ["law"]);
   assert.ok(output.results.length < SYNTHETIC_EVENTS.length);
   assert.equal(output.results[0]?.id, "evt-law");
+});
+
+test("a dismissed chip searches the words that set it, not the chip label", () => {
+  const alone = searchEvents(
+    SYNTHETIC_EVENTS,
+    "athletics",
+    null,
+    new Set(["category:Sports"]),
+  );
+  assert.equal(alone.plan.filters.category, undefined);
+  assert.deepEqual(alone.plan.keywords, tokenize("athletics"));
+  assert.equal(alone.results[0]?.id, "evt-baseball");
+
+  const withOtherWords = searchEvents(
+    SYNTHETIC_EVENTS,
+    "tech talk",
+    null,
+    new Set(["category:Science & Tech"]),
+  );
+  assert.equal(withOtherWords.plan.filters.category, undefined);
+  assert.deepEqual(withOtherWords.plan.keywords, tokenize("talk tech"));
 });
 
 test('"berkeley ai risk" is a source lock; generic "ai risk" is not', () => {
@@ -921,7 +1023,7 @@ test('"free will lecture" is not interpreted as free admission', () => {
   const output = searchEvents(events, "free will lecture", null);
 
   assert.equal(output.plan.filters.free, undefined);
-  assert.equal(output.plan.filters.category, "Academic");
+  assert.equal(output.plan.filters.category, undefined);
   assert.equal(output.results[0]?.id, "evt-free-will");
 });
 

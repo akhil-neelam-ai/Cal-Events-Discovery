@@ -34,6 +34,7 @@
 
 ### #2. Category words erase the query (P1)
 
+**Status:** Fixed. The decision was plain search text, which differs from the default below. Only category names such as "arts" or "sports" lock a category. Subject words never do. "basketball" now returns 83 rows, and every one mentions basketball. "hackathon" shows the no-results state. A dismissed chip searches the words that set it. Covered by `scripts/tests/search-engine-runtime.test.mjs` and a golden check in `scripts/tests/search-quality.test.mjs`.
 **Files:** `utils/searchIntent.ts:417-424` (strip at `:421`), `utils/searchIntent.ts:65-87`, `utils/searchIntent.ts:488-505`, `scripts/tests/search-engine-runtime.test.mjs:764` and `:843`, `AGENTS.md:83`
 **Problem:** Commit `4664a0b` (2026-09-04) made the category detector strip its matched words. A subject word such as "tennis" now sets the Sports filter and leaves no keywords. `runScoring` then returns the whole category in date order. AGENTS.md:83 still says the category branch does not strip, and calls that asymmetry load-bearing.
 **Evidence (2026-09-25 corpus):**
@@ -279,6 +280,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #30. Regex lookbehind blanks the page on Safari before 16.4 (P3)
 
+**Status:** Partly fixed. The #2 change removed the only lookbehind. The build target and the ESLint guard are still open.
 **Files:** `utils/searchIntent.ts:77`, `vite.config.ts`
 **Problem:** The Science & Tech pattern uses lookbehind (`(?<!data )`). Safari added lookbehind in 16.4. The build targets `esnext`, so nothing rewrites it. On older iPhones the bundle fails to parse and the page stays blank. The error boundary cannot catch a parse error.
 **Fix:** Rewrite the pattern without lookbehind. Set an explicit build target such as `safari15`.
@@ -302,6 +304,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #33. AGENTS.md contradicts the code in three places (P3)
 
+**Status:** Partly fixed. The #2 change rewrote the search-flow line at `:83`. The domain and in-flight lines are still open.
 **File:** `AGENTS.md:7`, `:83`, and `:140`
 **Problem:** It says the site deploys at `calevents-discovery.vercel.app`. The smoke test and all 61 URL references elsewhere in the repo use `cal-events.com`. It says the category branch does not strip, which #2 shows has been false since `4664a0b`. It lists the leftover topic work as in flight on `feat/topic-filter-review-fixes`, but PR 174 merged it on 2026-09-04.
 **Fix:** Update all three after the #2 decision.

@@ -348,6 +348,29 @@ test('real search: "basketball" does not substitute baseball', () => {
   assert.equal(bad.length, 0, '"basketball" should not return baseball games');
 });
 
+test("real search: subject words rank text across every category", () => {
+  // Seminars and lectures are filed under Academic and Science & Tech alike,
+  // so a category lock on these words hid about half of the matches.
+  for (const [query, pattern] of [
+    ["seminar", /seminar/i],
+    ["lecture", /lectur/i],
+  ]) {
+    const output = searchEvents(events, query, searchIndex);
+    const top = output.results.slice(0, 5);
+    const categories = new Set(output.results.map((event) => event.tags?.[0]));
+
+    assert.equal(output.plan.filters.category, undefined, `${query} category`);
+    assert.ok(top.length > 0, `"${query}" should find events`);
+    assert.ok(
+      top.every((event) =>
+        pattern.test(`${event.title ?? ""} ${event.description ?? ""}`),
+      ),
+      `"${query}" top results should mention the word`,
+    );
+    assert.ok(categories.size > 1, `"${query}" should span categories`);
+  }
+});
+
 test('real search: "moffitt" does not broaden to generic library exhibits', () => {
   const output = searchEvents(events, "moffitt", searchIndex);
   // Doe/Bancroft events that never mention Moffitt are false broadenings.
