@@ -18,7 +18,7 @@ import {
 } from "../lib/abort.js";
 import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { isoDateInPT, todayPT } from "../lib/normalize.js";
+import { endedBeforePT, todayPT } from "../lib/normalize.js";
 
 const FEED_URL = "https://calbears.com/calendar.ashx/calendar.ics";
 const FETCH_TIMEOUT_MS = 30_000;
@@ -160,8 +160,9 @@ export async function fetchCalBears(
           : endDate.toISOString()
         : undefined;
 
-      const eventDate = isoDateInPT(start_at);
-      if (eventDate < todayIso) {
+      // Drop events that ended before today (PT). A tournament that started
+      // earlier but is still running is kept.
+      if (endedBeforePT({ start_at, end_at, all_day: allDay }, todayIso)) {
         filteredPast++;
         continue;
       }

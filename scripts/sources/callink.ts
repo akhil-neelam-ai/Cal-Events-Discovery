@@ -19,7 +19,7 @@ import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
 import type { FetchOptions } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
-import { isoDateInPT, todayPT } from "../lib/normalize.js";
+import { endedBeforePT, isoDateInPT, todayPT } from "../lib/normalize.js";
 
 /**
  * CalLink-specific HTML cleaner. Unlike the shared `sanitizePlainText`
@@ -197,12 +197,12 @@ export async function fetchCallink(
         continue;
       }
 
-      if (eventDate < todayIso) {
+      const end_at = item.endsOn ?? undefined;
+      if (endedBeforePT({ start_at, end_at, all_day: false }, todayIso)) {
         filteredPast++;
         continue;
       }
 
-      const end_at = item.endsOn ?? undefined;
       const title = item.name.trim();
       const description = item.description
         ? stripHtml(item.description)

@@ -26,7 +26,7 @@ import {
 } from "../lib/abort.js";
 import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { todayPT } from "../lib/normalize.js";
+import { endedBeforePT, todayPT } from "../lib/normalize.js";
 
 const BASE_URL = "https://bampfa.org";
 const CALENDAR_URL = `${BASE_URL}/visit/calendar`;
@@ -348,12 +348,12 @@ export async function fetchBampfa(
         const { iso: start_at, allDay: all_day } = gcalTokenToIso(startToken);
         const end_at = endToken ? gcalTokenToIso(endToken).iso : undefined;
 
-        // Filter past events using date prefix (YYYY-MM-DD).
-        const eventDate = start_at.slice(0, 10);
-        if (eventDate < todayIso) {
+        // Drop events that ended before today (PT), keeping running spans.
+        if (endedBeforePT({ start_at, end_at, all_day }, todayIso)) {
           filteredPast++;
           return;
         }
+        const eventDate = start_at.slice(0, 10);
 
         // Deduplicate: same canonical URL + same date = same occurrence.
         const dedupeKey = `${canonicalUrl}::${eventDate}`;

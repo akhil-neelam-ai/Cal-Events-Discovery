@@ -14,7 +14,11 @@
 
 import type { CanonicalEvent, FetchResult, SourceName } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { deriveFrontendTags, todayPT } from "../lib/normalize.js";
+import {
+  deriveFrontendTags,
+  endedBeforePT,
+  todayPT,
+} from "../lib/normalize.js";
 import type { FetchOptions } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 
@@ -224,20 +228,18 @@ async function fetchCalendar(
       continue;
     }
 
-    const startDate = new Date(ev.start_at);
-    if (isNaN(startDate.getTime())) {
+    if (isNaN(new Date(ev.start_at).getTime())) {
       invalid++;
       continue;
     }
 
-    const eventPtDate = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "America/Los_Angeles",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(startDate);
-
-    if (eventPtDate < todayIso) {
+    // Drop events that ended before today (PT), keeping running spans.
+    if (
+      endedBeforePT(
+        { start_at: ev.start_at, end_at: ev.end_at, all_day: false },
+        todayIso,
+      )
+    ) {
       filteredPast++;
       continue;
     }

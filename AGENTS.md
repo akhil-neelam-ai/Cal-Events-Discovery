@@ -170,6 +170,8 @@ The September full-repo audit is `docs/code-review-2026-09-25.md`. Items with a 
 
 **All-day events**: iCal VEVENTs with `VALUE=DATE` become `all_day: true` with a bare `YYYY-MM-DD` start. `displayTime()` returns "All day".
 
+**Running spans**: adapters drop an event only after its last day (`endedBeforePT`). A bare all-day end is exclusive. `withSpanOccurrences` then gives a multi-day span one `dates` entry per remaining day, capped at 120, and publishes today as its `date`.
+
 **LiveWhale group feeds**: the main feed misses events posted only to department calendars. Group feeds use path-based URLs, and group names are case-sensitive. The adapter fetches 40 groups with bounded concurrency and merges by UID first-wins, which discards which feed each event came from.
 
 **Tribe adapter reusability**: `scripts/sources/tribe.ts` exports `fetchHaas`, `fetchBerkeleyLaw`, `fetchBegin`, and `fetchBrsl` from one config-driven implementation. A new WordPress site running The Events Calendar needs only a new export.

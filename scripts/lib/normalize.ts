@@ -410,6 +410,92 @@ export function todayPT(): string {
   }).format(new Date());
 }
 
+const DATE_KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+const PT_HOUR_FORMAT = new Intl.DateTimeFormat("en-US", {
+  timeZone: TZ,
+  hour: "numeric",
+  hourCycle: "h23",
+});
+
+// A timed end before this PT hour belongs to the night before, so a show
+// that runs past midnight stays a one-day event.
+const OVERNIGHT_END_HOUR = 6;
+
+/** Most days one span publishes in `dates`. The daily run moves the window. */
+export const MAX_SPAN_DAYS = 120;
+
+function addDaysToKey(key: string, days: number): string {
+  const [year, month, day] = key.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day + days))
+    .toISOString()
+    .slice(0, 10);
+}
+
+type EventTimes = Pick<CanonicalEvent, "start_at" | "end_at" | "all_day">;
+
+/**
+ * The last PT day an event occurs on. A bare all-day end is exclusive, as in
+ * iCal DTEND and Google Calendar links. An end before the start day counts as
+ * a one-day event.
+ */
+export function lastDayInPT(event: EventTimes): string {
+  const startDay = isoDateInPT(event.start_at);
+  if (!startDay || !event.end_at) return startDay;
+
+  let endDay: string;
+  if (DATE_KEY_RE.test(event.end_at)) {
+    endDay = event.all_day ? addDaysToKey(event.end_at, -1) : event.end_at;
+  } else {
+    const end = new Date(event.end_at);
+    if (isNaN(end.getTime())) return startDay;
+    endDay = isoDateInPT(event.end_at);
+    if (Number(PT_HOUR_FORMAT.format(end)) < OVERNIGHT_END_HOUR) {
+      endDay = addDaysToKey(endDay, -1);
+    }
+  }
+  return endDay > startDay ? endDay : startDay;
+}
+
+/**
+ * True when an event's last day is before `todayIso`. Adapters use this in
+ * place of a start-date check, so a span that is still running is kept.
+ */
+export function endedBeforePT(event: EventTimes, todayIso: string): boolean {
+  return lastDayInPT(event) < todayIso;
+}
+
+/**
+ * Gives a single event that spans several PT days one occurrence per day
+ * from today on, in the same shape `collapseMultiDay` produces. `end_at`
+ * becomes the inclusive last day. Other events come back unchanged.
+ */
+export function withSpanOccurrences(
+  event: CanonicalEvent,
+  todayIso: string,
+): CanonicalEvent {
+  if (event.occurrence_dates) return event;
+  const startDay = isoDateInPT(event.start_at);
+  const lastDay = lastDayInPT(event);
+  if (!startDay || lastDay <= startDay || lastDay < todayIso) return event;
+
+  const occurrence_dates: string[] = [];
+  let day = startDay > todayIso ? startDay : todayIso;
+  while (day <= lastDay && occurrence_dates.length < MAX_SPAN_DAYS) {
+    occurrence_dates.push(day);
+    day = addDaysToKey(day, 1);
+  }
+  return { ...event, end_at: lastDay, occurrence_dates };
+}
+
+/** The first PT day an event is published under. */
+export function firstOccurrencePT(
+  event: Pick<CanonicalEvent, "start_at" | "occurrence_dates">,
+): string {
+  const [first] = [...(event.occurrence_dates ?? [])].sort();
+  return first ?? isoDateInPT(event.start_at);
+}
+
 export function displayTime(start_at: string, all_day: boolean): string {
   if (all_day) return "All day";
   if (/^\d{4}-\d{2}-\d{2}$/.test(start_at)) return "All day";
@@ -424,7 +510,7 @@ export function displayTime(start_at: string, all_day: boolean): string {
 }
 
 export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
-  const date = isoDateInPT(event.start_at);
+  const date = firstOccurrencePT(event);
   const time = displayTime(event.start_at, event.all_day);
   const location =
     [event.venue, event.building].filter(Boolean).join(" — ") ||
@@ -448,8 +534,9 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
     source: event.source_name,
   };
 
-  // Multi-day events carry their full upcoming occurrence list (set by
-  // collapseMultiDay). `date` is the earliest of those; `end_date` is the last.
+  // Multi-day events carry their upcoming occurrence list (set by
+  // collapseMultiDay or withSpanOccurrences). `date` is the earliest of
+  // those; `end_date` is the last day, which a capped span can pass.
   if (event.occurrence_dates && event.occurrence_dates.length > 1) {
     const dates = [...event.occurrence_dates].sort();
     legacy.dates = dates;

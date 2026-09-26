@@ -35,7 +35,11 @@ import { PublishedEventsPayloadSchema } from "./lib/schema.js";
 import type { FetchOptions } from "./lib/abort.js";
 import { dedupeEvents } from "./lib/dedupe.js";
 import { collapseMultiDay } from "./lib/collapseMultiDay.js";
-import { projectToLegacy, todayPT } from "./lib/normalize.js";
+import {
+  projectToLegacy,
+  todayPT,
+  withSpanOccurrences,
+} from "./lib/normalize.js";
 import { atomicWriteJsonSync } from "./lib/atomicWrite.js";
 import {
   CRITICAL_SOURCES,
@@ -514,7 +518,12 @@ async function main(): Promise<void> {
 
   const cappedReasons = capSourceEvents(runs);
 
-  const allCanonical: CanonicalEvent[] = runs.flatMap((r) => r.events);
+  // Adapters keep a span that started earlier but is still running. Give it
+  // one occurrence per remaining day before collapse and dedupe read dates.
+  const today = todayPT();
+  const allCanonical: CanonicalEvent[] = runs
+    .flatMap((r) => r.events)
+    .map((event) => withSpanOccurrences(event, today));
   const groundingSources: PublishedSource[] = runs.flatMap(
     (r) => r.groundingSources ?? [],
   );
@@ -574,7 +583,6 @@ async function main(): Promise<void> {
     restoredIds: new Set<string>(),
   };
 
-  const today = todayPT();
   for (const run of runs) {
     markRecovery(run, legacy, existing, recovery, today);
   }

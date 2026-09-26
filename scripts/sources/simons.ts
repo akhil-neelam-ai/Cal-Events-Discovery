@@ -16,7 +16,7 @@
 
 import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { todayPT } from "../lib/normalize.js";
+import { endedBeforePT, todayPT } from "../lib/normalize.js";
 import type { FetchOptions } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 
@@ -110,12 +110,12 @@ export async function fetchSimons(
         invalid++;
         continue;
       }
-      if (ptDate < todayIso) {
+      const end_at = item.end ? withZ(item.end) : undefined;
+      if (endedBeforePT({ start_at, end_at, all_day: false }, todayIso)) {
         filteredPast++;
         continue;
       }
 
-      const end_at = item.end ? withZ(item.end) : undefined;
       const canonicalUrl = item.url.startsWith("http")
         ? item.url
         : `${BASE_URL}${item.url}`;

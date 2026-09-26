@@ -95,10 +95,11 @@ export const CanonicalEventSchema = z.object({
 
   // Multi-day collapse: when a source emits one row per day for a long-running
   // event (e.g. LiveWhale exhibits), collapseMultiDay merges them into a single
-  // event whose start_at/end_at span the run. occurrence_dates holds every
-  // upcoming day the event actually occurs (PT YYYY-MM-DD), so the frontend can
-  // distinguish a continuous run from a gappy/recurring series. Absent for
-  // single-day events.
+  // event whose start_at/end_at span the run. withSpanOccurrences does the same
+  // for one row whose start and end fall on different days. occurrence_dates
+  // holds every upcoming day the event actually occurs (PT YYYY-MM-DD), so the
+  // frontend can distinguish a continuous run from a gappy/recurring series.
+  // Absent for single-day events.
   occurrence_dates: z.array(z.string()).optional(),
 
   // Place
@@ -188,9 +189,10 @@ export const LegacyCalEventSchema = z.object({
   // The fallback-restore path reuses already-published events, which also
   // carry source, so every published LegacyCalEvent has it.
   source: z.string().min(1),
-  // Multi-day events only (set by collapseMultiDay). `date` is the earliest
-  // upcoming occurrence; `end_date` is the last; `dates` lists every upcoming
-  // occurrence day (PT YYYY-MM-DD). Single-day events omit both.
+  // Multi-day events only (set by collapseMultiDay or withSpanOccurrences).
+  // `date` is the earliest upcoming occurrence; `end_date` is the last;
+  // `dates` lists every upcoming occurrence day (PT YYYY-MM-DD), capped at
+  // 120 for a long span. Single-day events omit both.
   end_date: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)

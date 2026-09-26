@@ -7,7 +7,7 @@
  */
 
 import type { CanonicalEvent, SourceName } from "./schema.js";
-import { isoDateInPT, normalizeForDedupe } from "./normalize.js";
+import { firstOccurrencePT, normalizeForDedupe } from "./normalize.js";
 
 const SOURCE_PRIORITY: Record<SourceName, number> = {
   livewhale: 4,
@@ -34,7 +34,9 @@ export interface DedupeResult {
 }
 
 function dedupeKey(event: CanonicalEvent): string {
-  const date = isoDateInPT(event.start_at);
+  // A span that started before today is keyed on today, the day it is
+  // published under, so it still meets another source's copy.
+  const date = firstOccurrencePT(event);
   const normalizedTitle = normalizeForDedupe(event.title);
   const identity = normalizedTitle
     ? ["title", normalizedTitle]

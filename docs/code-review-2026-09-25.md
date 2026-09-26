@@ -65,6 +65,7 @@
 
 ### #4. In-progress multi-day events are dropped at ingest (P2)
 
+**Status:** Fixed. All 8 adapters now drop an event only after its last day, through `endedBeforePT` in `scripts/lib/normalize.ts`. A bare all-day end is exclusive, and a timed end before 6 AM counts as the night before. `withSpanOccurrences` gives a kept span one `dates` entry per remaining day, capped at 120, with today as its `date`. Dedupe keys a span on that day too. Covered by `scripts/tests/multi-day-spans.test.mjs`, with stubbed LiveWhale and Tribe feeds.
 **Files:** `scripts/sources/livewhale.ts:618-624`, the same start-date check in `tribe.ts:207-216`, `callink.ts:194-203`, `luma.ts:233-243`, `simons.ts:108-116`, `calbears.ts:163-167`, `bampfa.ts:352-356`, and `cal_performances.ts:210-214`, plus `scripts/lib/normalize.ts:451-459`
 **Problem:** Adapters drop any event whose start date is before today, whatever its end date. The LiveWhale comment says in-progress multi-day events are kept, but the code drops them. A single VEVENT that spans days survives only on its first day. `projectToLegacy` sets `end_date` and `dates` only for collapsed per-day rows, so even that first day publishes as a one-day event.
 **Evidence:** The real `fetchLiveWhale` with stubbed `fetch` dropped a timed conference that started yesterday and ends tomorrow. It also dropped an all-day exhibit week that started two days ago. A symposium starting today was kept with no `end_date`, so it disappears tomorrow.

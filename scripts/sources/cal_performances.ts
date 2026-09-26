@@ -21,7 +21,7 @@ import type { FetchOptions } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { todayPT } from "../lib/normalize.js";
+import { endedBeforePT, todayPT } from "../lib/normalize.js";
 
 const WP_API_BASE = "https://calperformances.org/wp-json/wp/v2/cp_event";
 const PER_PAGE = 100;
@@ -206,9 +206,13 @@ export async function fetchCalPerformances(
 
       const { start, end, venue, description, cost } = parsed;
 
-      // Filter past events (compare date portion in PT)
-      const eventDate = start.slice(0, 10);
-      if (eventDate < todayIso) {
+      // Drop events that ended before today (PT), keeping running spans.
+      if (
+        endedBeforePT(
+          { start_at: start, end_at: end, all_day: false },
+          todayIso,
+        )
+      ) {
         filteredPast++;
         continue;
       }

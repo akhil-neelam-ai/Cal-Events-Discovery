@@ -21,7 +21,11 @@
 import * as cheerio from "cheerio";
 import type { CanonicalEvent, FetchResult, SourceName } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { deriveFrontendTags, todayPT } from "../lib/normalize.js";
+import {
+  deriveFrontendTags,
+  endedBeforePT,
+  todayPT,
+} from "../lib/normalize.js";
 import type { FetchOptions } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 
@@ -198,19 +202,17 @@ export async function fetchTribe(
         const end_at =
           utcStringToIso(raw.utc_end_date) ?? utcStringToIso(raw.end_date);
 
-        // Filter past events by PT date of the start.
-        const startDate = new Date(start_at);
-        if (isNaN(startDate.getTime())) {
+        if (isNaN(new Date(start_at).getTime())) {
           invalid++;
           continue;
         }
-        const eventPtDate = new Intl.DateTimeFormat("en-CA", {
-          timeZone: "America/Los_Angeles",
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        }).format(startDate);
-        if (eventPtDate < todayIso) {
+        // Drop events that ended before today (PT), keeping running spans.
+        if (
+          endedBeforePT(
+            { start_at, end_at, all_day: Boolean(raw.all_day) },
+            todayIso,
+          )
+        ) {
           filteredPast++;
           continue;
         }
