@@ -16,8 +16,9 @@ concurrency:
   group: update-events-main
   cancel-in-progress: false
 
-env:
-  AUTOMATION_PR_TOKEN: ${{ secrets.AUTOMATION_PR_TOKEN }}
+# AUTOMATION_PR_TOKEN is passed only to the three steps that need it: the
+# token check, create-PR, and merge. `npm ci` runs install scripts, and the
+# pipeline parses untrusted upstream data, so neither should see it.
 
 permissions:
   contents: write
@@ -77,14 +78,15 @@ jobs:
       - name: Check automation token
         id: token_check
         env:
-          GH_TOKEN: ${{ env.AUTOMATION_PR_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTOMATION_PR_TOKEN }}
           REPO: ${{ github.repository }}
           EVENT_NAME: ${{ github.event_name }}
           ROTATE_URL: ${{ github.server_url }}/settings/personal-access-tokens
         run: |
           set -uo pipefail
 
-          if [ -z "${AUTOMATION_PR_TOKEN:-}" ]; then
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
             echo "usable=false" >> "$GITHUB_OUTPUT"
             if [ "${EVENT_NAME}" = "schedule" ]; then
               echo "::error::AUTOMATION_PR_TOKEN is not set — scheduled runs require it. See README → GitHub secrets."
@@ -93,6 +95,8 @@ jobs:
             echo "::warning::AUTOMATION_PR_TOKEN is not set; the snapshot PR will be opened with GITHUB_TOKEN and will not auto-merge."
             exit 0
           fi
+
+          echo "present=true" >> "$GITHUB_OUTPUT"
 
           # Hitting the repo endpoint checks the two things the token must do:
           # authenticate, and reach this repository.
@@ -218,7 +222,7 @@ jobs:
         id: create_pr
         uses: peter-evans/create-pull-request@v8
         with:
-          token: ${{ steps.token_check.outputs.usable == 'true' && env.AUTOMATION_PR_TOKEN || github.token }}
+          token: ${{ steps.token_check.outputs.usable == 'true' && secrets.AUTOMATION_PR_TOKEN || github.token }}
           branch: automation/update-events
           base: main
           delete-branch: true
@@ -263,7 +267,7 @@ jobs:
         # security advisory). A daily data refresh must merge whenever the data
         # itself is validated, not when the entire repo posture is perfect.
         env:
-          GH_TOKEN: ${{ env.AUTOMATION_PR_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTOMATION_PR_TOKEN }}
           # Substring-matched (case-insensitive) against the PR's check names.
           REQUIRED_CHECKS: "validate browser-e2e"
           # Overall budget for required checks to appear and finish.
@@ -323,7 +327,7 @@ jobs:
       # is simply absent is a supported workflow_dispatch mode and is left to
       # the warning above.
       - name: Fail run when automation token is unusable
-        if: ${{ steps.token_check.outputs.usable != 'true' && env.AUTOMATION_PR_TOKEN != '' }}
+        if: ${{ steps.token_check.outputs.usable != 'true' && steps.token_check.outputs.present == 'true' }}
         run: |
           echo "::error::AUTOMATION_PR_TOKEN is set but unusable — see the 'Check automation token' step. Today's snapshot is waiting in the automation/update-events PR and needs a manual merge. Rotate the token to restore automatic publishing."
           exit 1

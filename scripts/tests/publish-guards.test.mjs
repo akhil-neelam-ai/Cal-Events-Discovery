@@ -138,6 +138,25 @@ test("a degraded token run still fails, so notify-failure alerts", () => {
   );
 });
 
+test("the automation token reaches only the steps that use it", () => {
+  // `npm ci` runs install scripts and the pipeline parses untrusted upstream
+  // data, so a workflow-level env would hand them a write-scoped token.
+  assert.ok(
+    !/env\.AUTOMATION_PR_TOKEN/.test(updateEvents),
+    "no step should read the token from a shared env",
+  );
+  assert.equal(
+    updateEvents.match(/secrets\.AUTOMATION_PR_TOKEN/g)?.length,
+    3,
+    "only the token check, create-PR, and merge steps receive the secret",
+  );
+  assert.match(
+    updateEvents,
+    /if: \$\{\{ steps\.token_check\.outputs\.usable != 'true' && steps\.token_check\.outputs\.present == 'true' \}\}/,
+    "the fail step learns the token was set from token_check, not from env",
+  );
+});
+
 test("production staleness is checked on a schedule, not only on push", () => {
   assert.match(
     productionSmoke,

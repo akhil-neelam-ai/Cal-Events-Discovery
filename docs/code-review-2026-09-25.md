@@ -182,6 +182,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #15. The automation token reaches every workflow step (P2)
 
+**Status:** Fixed. The workflow-level `env` is gone. Only the token check, create-PR, and merge steps receive `secrets.AUTOMATION_PR_TOKEN`. The final fail step reads a new `present` output from the token check. A publish-guard test fails if the secret moves back into a shared `env`. The run-log check needs the next scheduled run.
 **File:** `.github/workflows/update-events.yml:19-20` and `:326`
 **Problem:** `AUTOMATION_PR_TOKEN` is set in workflow-level `env`. The run log shows it in the environment of every step, including `npm ci` and `npm run update-events`. `npm ci` runs dependency install scripts. `update-events` parses untrusted upstream data. The token has contents and pull-request write, and this repo merges PRs once checks pass, with no review.
 **Fix:** Remove the workflow-level `env`. Pass the secret only to the token check, create-PR, and merge steps. Replace the `env.AUTOMATION_PR_TOKEN != ''` condition at line 326 with a `present` output from the token check.
