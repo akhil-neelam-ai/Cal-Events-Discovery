@@ -58,6 +58,7 @@ livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley
 - On error or below `minHealthyCount`: mark degraded, optionally restore last-good events from the previous `events.json` (filtered to today and later, PT)
 - Fallback age counts from each source's `last_healthy_at` in `status.json`, which carries forward while the source is degraded. A restore older than 48 hours expires
 - Quiet sources (`degradeOnFailure: false`: luma, begin, ai_risk, brsl) restore too, but stay out of `degraded_sources`, the top-level reason, and `data_age_hours`, so no banner appears
+- Each source carries `consecutive_failures` in `status.json`. Three failed fetches in a row open or update a `source-contracts` issue from the daily workflow
 - If every source returns 0 events: refuse to overwrite the existing file and exit non-zero
 - `status.json` is always written with per-source details, degradation flags, and fallback counts
 

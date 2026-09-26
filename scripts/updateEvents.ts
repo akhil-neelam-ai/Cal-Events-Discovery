@@ -50,6 +50,7 @@ import {
   FALLBACK_POLICIES,
   emptyRecoveryState,
   markRecovery,
+  type PreviousSourceHealth,
   type RecoveryState,
 } from "./lib/lastGoodFallback.js";
 import { fetchLiveWhale } from "./sources/livewhale.js";
@@ -203,22 +204,31 @@ function loadExistingEvents(): {
   }
 }
 
-/** Each source's `last_healthy_at` from the previous status.json. */
-function loadPreviousLastHealthy(): Map<string, string> {
+/** Each source's carried health fields from the previous status.json. */
+function loadPreviousHealth(): Map<string, PreviousSourceHealth> {
   try {
     const previous = JSON.parse(fs.readFileSync(statusOutPath, "utf-8")) as {
-      sources?: Array<{ name?: unknown; last_healthy_at?: unknown }>;
+      sources?: Array<{
+        name?: unknown;
+        last_healthy_at?: unknown;
+        consecutive_failures?: unknown;
+      }>;
     };
-    const stamps = new Map<string, string>();
+    const health = new Map<string, PreviousSourceHealth>();
     for (const source of previous.sources ?? []) {
-      if (
-        typeof source.name === "string" &&
-        typeof source.last_healthy_at === "string"
-      ) {
-        stamps.set(source.name, source.last_healthy_at);
-      }
+      if (typeof source.name !== "string") continue;
+      health.set(source.name, {
+        last_healthy_at:
+          typeof source.last_healthy_at === "string"
+            ? source.last_healthy_at
+            : undefined,
+        consecutive_failures:
+          typeof source.consecutive_failures === "number"
+            ? source.consecutive_failures
+            : undefined,
+      });
     }
-    return stamps;
+    return health;
   } catch {
     return new Map();
   }
@@ -479,7 +489,7 @@ async function main(): Promise<void> {
   const recoveryContext = {
     legacy,
     existing,
-    previousLastHealthy: loadPreviousLastHealthy(),
+    previousHealth: loadPreviousHealth(),
     recovery,
     today,
     maxFallbackAgeHours: MAX_FALLBACK_AGE_HOURS,

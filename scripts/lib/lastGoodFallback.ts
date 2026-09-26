@@ -129,6 +129,17 @@ export function nextLastHealthyAt(
     : undefined;
 }
 
+/**
+ * Daily runs in a row whose fetch failed. A zero-event run is not a failure,
+ * because some sources are empty between terms.
+ */
+export function nextConsecutiveFailures(
+  ok: boolean,
+  previous: number | undefined,
+): number {
+  return ok ? 0 : (previous ?? 0) + 1;
+}
+
 /** Hours since an ISO timestamp, to one decimal place. */
 export function fallbackAgeHours(
   since: string | undefined,
@@ -204,11 +215,17 @@ export function emptyRecoveryState(): RecoveryState {
   };
 }
 
+/** The health fields a run carries forward from the previous status.json. */
+export type PreviousSourceHealth = Pick<
+  SourceStatus,
+  "last_healthy_at" | "consecutive_failures"
+>;
+
 export interface RecoveryContext {
   /** Today's published rows. Restored rows are appended in place. */
   legacy: LegacyCalEvent[];
   existing: { events: LegacyCalEvent[]; lastUpdated?: number };
-  previousLastHealthy: ReadonlyMap<string, string>;
+  previousHealth: ReadonlyMap<string, PreviousSourceHealth>;
   recovery: RecoveryState;
   today: string;
   maxFallbackAgeHours: number;
@@ -229,11 +246,16 @@ export function markRecovery(
     status.ok &&
     status.count < policy.minHealthyCount;
   const degraded = !status.ok || belowHealthyThreshold;
+  const previous = ctx.previousHealth.get(status.name);
   status.last_healthy_at = nextLastHealthyAt(
     !degraded,
     status.fetched_at,
-    ctx.previousLastHealthy.get(status.name),
+    previous?.last_healthy_at,
     existing.lastUpdated,
+  );
+  status.consecutive_failures = nextConsecutiveFailures(
+    status.ok,
+    previous?.consecutive_failures,
   );
   if (!degraded || !policy) return;
 

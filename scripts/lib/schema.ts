@@ -246,6 +246,11 @@ export interface SourceStatus {
    * is degraded, so fallback age counts from here across a long outage.
    */
   last_healthy_at?: string;
+  /**
+   * Daily runs in a row whose fetch failed (`ok: false`). Three in a row
+   * opens a source-contracts issue from the daily workflow.
+   */
+  consecutive_failures?: number;
 }
 
 export interface TopicAssignmentStatus {

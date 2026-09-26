@@ -159,6 +159,29 @@ jobs:
           MAX_FALLBACK_AGE_HOURS: "48"
         run: npx tsx scripts/checkFeedHealth.ts
 
+      # A supplementary source that fails quietly only warns on a green run.
+      # Three failed fetches in a row open or update a source-contracts issue,
+      # without touching the visitor-facing degraded flags.
+      - name: Read source failure streaks
+        id: source_streaks
+        run: |
+          failing="$(jq -r '[.sources[] | select((.consecutive_failures // 0) >= 3) | "\(.name) (\(.consecutive_failures) runs)"] | join(", ")' public/status.json)"
+          echo "failing=${failing}" >> "$GITHUB_OUTPUT"
+          if [ -n "${failing}" ]; then
+            echo "::warning::Sources failing three or more runs in a row: ${failing}"
+          fi
+
+      - name: Open source-contracts issue on a failure streak
+        if: ${{ steps.source_streaks.outputs.failing != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_NAME: Daily source health
+          FAILURE_CONTEXT: "three or more failed runs in a row for ${{ steps.source_streaks.outputs.failing }}"
+          ISSUE_LABEL: source-contracts
+          ISSUE_LABEL_COLOR: 0E8A16
+          ISSUE_LABEL_DESCRIPTION: Non-urgent live source contract drift for triage
+        run: node scripts/notifyPipelineFailure.mjs
+
       # Publish-critical validation only. Live corpus golden queries
       # (search-quality) must not block shipping a healthy snapshot — they run
       # afterward and open a low-priority data-quality issue on failure.

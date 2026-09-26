@@ -8,6 +8,7 @@ import {
   fallbackAgeHours,
   hasFutureOccurrence,
   loadLastGoodForSource,
+  nextConsecutiveFailures,
   nextLastHealthyAt,
 } from "../../scripts/lib/lastGoodFallback.ts";
 
@@ -257,4 +258,17 @@ test("nextLastHealthyAt uses the previous publish until a stamp exists", () => {
     "2026-09-25T11:00:00.000Z",
   );
   assert.equal(fallbackAgeHours(undefined), undefined);
+});
+
+test("the failure streak grows on failed runs and resets on success", () => {
+  // Three daily status.json fixtures for one source, oldest first.
+  const runs = [{ ok: false }, { ok: false }, { ok: false }, { ok: true }];
+  const streaks = [];
+  let previous;
+  for (const run of runs) {
+    previous = nextConsecutiveFailures(run.ok, previous);
+    streaks.push(previous);
+  }
+
+  assert.deepEqual(streaks, [1, 2, 3, 0]);
 });

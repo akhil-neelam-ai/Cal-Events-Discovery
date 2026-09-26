@@ -157,6 +157,23 @@ test("the automation token reaches only the steps that use it", () => {
   );
 });
 
+test("three failed runs in a row open a source-contracts issue", () => {
+  assert.match(
+    updateEvents,
+    /select\(\(\.consecutive_failures \/\/ 0\) >= 3\)/,
+    "the daily workflow must read the failure streak from status.json",
+  );
+  const streakIndex = updateEvents.indexOf(
+    "name: Open source-contracts issue on a failure streak",
+  );
+  assert.ok(streakIndex >= 0);
+  assert.match(
+    updateEvents.slice(streakIndex, streakIndex + 600),
+    /ISSUE_LABEL: source-contracts/,
+    "a dead source files under source-contracts, not pipeline-failure",
+  );
+});
+
 test("production staleness is checked on a schedule, not only on push", () => {
   assert.match(
     productionSmoke,
@@ -437,7 +454,9 @@ function recoverFrom(status, yesterday, previousStamp) {
   markRecovery(status, FALLBACK_POLICIES[status.name], {
     legacy: published,
     existing: { events: yesterday, lastUpdated: Date.now() - 86_400_000 },
-    previousLastHealthy: new Map([[status.name, previousStamp]]),
+    previousHealth: new Map([
+      [status.name, { last_healthy_at: previousStamp }],
+    ]),
     recovery,
     today: todayPT(),
     maxFallbackAgeHours: 48,
@@ -492,6 +511,24 @@ test("a quiet source restores last-good events without visitor banners", () => {
     ),
     false,
   );
+});
+
+test("a failure streak carries forward without touching banner fields", () => {
+  const status = failedRun("ai_risk");
+  const recovery = emptyRecoveryState();
+  markRecovery(status, FALLBACK_POLICIES.ai_risk, {
+    legacy: [],
+    existing: { events: [], lastUpdated: Date.now() - 86_400_000 },
+    previousHealth: new Map([
+      ["ai_risk", { last_healthy_at: DAY_AGO, consecutive_failures: 2 }],
+    ]),
+    recovery,
+    today: todayPT(),
+    maxFallbackAgeHours: 48,
+  });
+
+  assert.equal(status.consecutive_failures, 3);
+  assert.deepEqual([...recovery.degradedSources], []);
 });
 
 test("a quiet source with expired fallback stays out of the banner fields", () => {

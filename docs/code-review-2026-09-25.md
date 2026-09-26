@@ -190,6 +190,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #16. A dead supplementary source raises no daily alert (P3)
 
+**Status:** Fixed. Each source in `status.json` now carries `consecutive_failures`, read from the previous committed copy. Only a failed fetch counts, since some sources are empty between terms. After three in a row, the daily workflow opens or updates a `source-contracts` issue. The counter never touches `degraded_sources`.
 **Files:** `scripts/lib/feedHealthPolicy.ts:111-118`, `.github/workflows/source-contracts.yml`
 **Problem:** A failed supplementary source becomes one `::warning::` annotation on a green run. That was the only daily signal for ai_risk. The weekly contract check opened #195 six days after the first 404.
 **Fix:** Carry `consecutive_failures` per source in `status.json`, read from the committed previous copy. After three failed runs, open or update a `source-contracts` issue from the daily workflow. Keep it out of `degraded_sources`.
