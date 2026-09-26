@@ -393,6 +393,29 @@ test('real search: "moffitt" does not broaden to generic library exhibits', () =
   );
 });
 
+test('real search: "management" skips Haas Pavilion games', () => {
+  const output = searchEvents(events, "management", searchIndex);
+  // The "haas" venue alias is for the business school. Haas Pavilion is the
+  // athletics arena, so its games should only match text that says so.
+  const bad = output.results.filter((event) => {
+    const text = `${event.title ?? ""} ${event.organizer ?? ""} ${
+      event.description ?? ""
+    }`;
+    return (
+      /haas pavilion/i.test(event.location ?? "") && !/management/i.test(text)
+    );
+  });
+
+  assert.equal(
+    bad.length,
+    0,
+    `"management" should not return Haas Pavilion games: ${bad
+      .slice(0, 3)
+      .map((event) => event.title)
+      .join(" | ")}`,
+  );
+});
+
 test('real search: "berkeley law" is scoped to Berkeley Law events', () => {
   const output = searchEvents(events, "berkeley law", searchIndex);
   // LiveWhale keeps its own copy of cross-published law events, filed under

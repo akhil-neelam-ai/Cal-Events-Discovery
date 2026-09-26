@@ -260,6 +260,8 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #24. Venue aliases match substrings (P3)
 
+**Status:** Fixed. `venueAliasExpansions` in `utils/textUtils.ts` matches aliases as whole words and skips "haas pavilion". The index builder and query expansion both use it. "management" now returns 63 results with no Haas Pavilion rows. Bakersfield rows no longer match "fitness" or "gym".
+
 **Files:** `scripts/lib/buildIndex.ts:202-212`, `utils/searchIntent.ts:265-269`, `utils/textUtils.ts:248-268`
 **Problem:** Aliases apply through `includes()`. The `haas` alias adds "business school management haas" to every "Haas Pavilion" row. All 57 such rows carry those tokens. They are basketball and volleyball games and practices. A search for "management" returns 120 results, and 57 are Haas Pavilion rows. "soda" and "wheeler" can collide the same way.
 **Fix:** Match aliases on word boundaries and skip known collisions such as "haas pavilion". Regenerate the index.

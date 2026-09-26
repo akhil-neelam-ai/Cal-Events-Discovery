@@ -15,6 +15,7 @@ import {
   addDaysToDateKey,
   getCurrentPacificDateKey,
 } from "../../utils/eventDates.ts";
+import { venueAliasExpansions } from "../../utils/textUtils.ts";
 
 const rootDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -922,6 +923,49 @@ test("venue aliases do not broaden Moffitt into every library event", () => {
   assert.deepEqual(
     output.results.map((event) => event.id),
     ["evt-moffitt"],
+  );
+});
+
+test("venue aliases match whole words and skip Haas Pavilion", () => {
+  assert.deepEqual(venueAliasExpansions("Haas Pavilion"), []);
+  assert.deepEqual(venueAliasExpansions("Bakersfield, Calif."), []);
+  assert.deepEqual(venueAliasExpansions("LMLK seal impressions"), []);
+  assert.deepEqual(venueAliasExpansions("Chou Hall, Berkeley Haas"), [
+    "business school management haas",
+  ]);
+  assert.deepEqual(venueAliasExpansions("RSF Climbing Wall"), [
+    "gym fitness recreation sports wellness",
+  ]);
+  // Text that names the arena and the school still gets the school terms.
+  assert.deepEqual(
+    venueAliasExpansions("Haas Pavilion, then a Haas School mixer"),
+    ["business school management haas"],
+  );
+});
+
+test("business-school words skip Haas Pavilion games", () => {
+  const events = [
+    {
+      ...SYNTHETIC_EVENTS[12],
+      id: "evt-haas-pavilion",
+      title: "Women's Volleyball vs. Stanford",
+      location: "Haas Pavilion",
+      description: "Conference match.",
+    },
+    {
+      ...SYNTHETIC_EVENTS[2],
+      id: "evt-haas-school",
+      title: "Leadership Mixer",
+      location: "Chou Hall, Haas School of Business",
+      description: "Meet alumni over coffee.",
+    },
+  ];
+
+  const output = searchEvents(events, "management", buildSearchIndex(events));
+
+  assert.deepEqual(
+    output.results.map((event) => event.id),
+    ["evt-haas-school"],
   );
 });
 

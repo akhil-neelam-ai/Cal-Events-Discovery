@@ -277,3 +277,30 @@ export const BERKELEY_VENUE_ALIASES: Record<string, string> = {
   northside: "north campus residential",
   southside: "south campus telegraph",
 };
+
+// "haas" names the business school, but Haas Pavilion is the athletics arena.
+const VENUE_ALIAS_EXCLUSIONS: Partial<Record<string, RegExp>> = {
+  haas: /\bhaas pavilion\b/gi,
+};
+
+const VENUE_ALIAS_PATTERNS: Array<[string, RegExp]> = Object.keys(
+  BERKELEY_VENUE_ALIASES,
+).map((alias) => [
+  alias,
+  new RegExp(`\\b${alias.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i"),
+]);
+
+/**
+ * Alias expansions for venues the text names as whole words. A plain
+ * substring match gave "Bakersfield" the RSF gym terms, and every Haas
+ * Pavilion game the business-school terms.
+ */
+export function venueAliasExpansions(text: string): string[] {
+  const expansions: string[] = [];
+  for (const [alias, pattern] of VENUE_ALIAS_PATTERNS) {
+    const exclusion = VENUE_ALIAS_EXCLUSIONS[alias];
+    const scanned = exclusion ? text.replace(exclusion, " ") : text;
+    if (pattern.test(scanned)) expansions.push(BERKELEY_VENUE_ALIASES[alias]);
+  }
+  return expansions;
+}

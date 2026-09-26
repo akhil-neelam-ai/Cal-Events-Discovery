@@ -1,5 +1,5 @@
 import { TOPICS } from "../scripts/lib/topics";
-import { BERKELEY_VENUE_ALIASES, DOMAIN_SYNONYMS, tokenize } from "./textUtils";
+import { DOMAIN_SYNONYMS, tokenize, venueAliasExpansions } from "./textUtils";
 
 export interface SearchTopicDefinition {
   slug: string;
@@ -261,10 +261,8 @@ export function expandKeywordTokens(
         tokenize(synonym).forEach((token) => expandedSet.add(token));
     }
   }
-  for (const [alias, expansion] of Object.entries(BERKELEY_VENUE_ALIASES)) {
-    if (rawLower.includes(alias)) {
-      tokenize(expansion).forEach((token) => expandedSet.add(token));
-    }
+  for (const expansion of venueAliasExpansions(rawLower)) {
+    tokenize(expansion).forEach((token) => expandedSet.add(token));
   }
 
   return Array.from(expandedSet);
