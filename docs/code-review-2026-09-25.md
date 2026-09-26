@@ -233,6 +233,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #21. Agent search with no date bound returns past events (P3)
 
+**Status:** Fixed. `search_berkeley_events` now starts at today's Pacific date when neither `datePreset` nor `startDate` sets a lower bound. A lone past `endDate` gets a clear error. The tool schema and the search skill say so, and a WebMCP test covers a yesterday row.
 **File:** `agent/webmcpTools.ts:174-184`
 **Problem:** With no `datePreset` or `startDate`, the pool has no lower bound. Before each morning's publish, yesterday's rows are still in `events.json`, and they sort first. The UI drops them.
 **Fix:** Default `startDate` to today's Pacific key.

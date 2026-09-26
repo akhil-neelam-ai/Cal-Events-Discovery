@@ -35,12 +35,17 @@ function withTopics(payload, topics = ["ai-machine-learning"]) {
   };
 }
 
+// Search defaults to today onward, so fixtures sit on days after today.
+function inDays(days) {
+  return addDaysToDateKey(getCurrentPacificDateKey(), days);
+}
+
 function event(overrides = {}) {
   return {
     id: overrides.id ?? "event",
     title: overrides.title ?? "AI Event",
     organizer: "UC Berkeley",
-    date: overrides.date ?? "2026-05-13",
+    date: overrides.date ?? inDays(1),
     time: overrides.time ?? "12:00 PM",
     location: overrides.location ?? "Sather Gate",
     description: overrides.description ?? "AI event",
@@ -92,27 +97,27 @@ test("WebMCP ranked search returns AI matches with ranked flag", async () => {
       event({
         id: "june",
         title: "June AI Workshop",
-        date: "2026-06-01",
+        date: inDays(3),
       }),
       event({
         id: "may",
         title: "May AI Talk",
-        date: "2026-05-14",
+        date: inDays(1),
       }),
       event({
         id: "october",
         title: "October AI Forum",
-        date: "2026-10-05",
+        date: inDays(20),
       }),
       event({
         id: "later-june",
         title: "Later June AI Seminar",
-        date: "2026-06-08",
+        date: inDays(10),
       }),
       event({
         id: "unrelated",
         title: "Pottery Night",
-        date: "2026-05-20",
+        date: inDays(5),
         description: "Clay workshop",
       }),
     ]),
@@ -355,6 +360,29 @@ test("WebMCP date presets match every day of a multi-day event", async () => {
       datePreset,
     );
   }
+});
+
+test("WebMCP search with no date input starts today, like the UI", async () => {
+  const { tools } = loadTools(
+    makePayload([
+      event({ id: "yesterday", title: "Past AI Talk", date: inDays(-1) }),
+      event({ id: "tomorrow", title: "Next AI Talk", date: inDays(1) }),
+    ]),
+  );
+  const search = tools.get("search_berkeley_events");
+
+  const browse = await search.execute({});
+  assert.deepEqual(
+    browse.events.map((item) => item.id),
+    ["tomorrow"],
+  );
+  const ranked = await search.execute({ query: "AI" });
+  assert.deepEqual(
+    ranked.events.map((item) => item.id),
+    ["tomorrow"],
+  );
+  const past = await search.execute({ endDate: inDays(-1) });
+  assert.match(past.error, /endDate is before today/);
 });
 
 test("WebMCP search results carry the multi-day fields", async () => {

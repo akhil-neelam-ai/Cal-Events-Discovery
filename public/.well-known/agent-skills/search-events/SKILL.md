@@ -10,6 +10,7 @@ When the CalEvents homepage is open and WebMCP is available, call
 
 Optional inputs: `query`, `datePreset` (`today` | `tomorrow` | `week` |
 `upcoming`), `category`, `topic`, `source`, `startDate`, `endDate`, `limit`.
+Results start today unless `datePreset` or `startDate` says otherwise.
 For `topic`, use a slug from the published `topic_vocabulary.topics` block in
 `events.json`; the vocabulary is the source of truth and may change.
 
