@@ -11,7 +11,7 @@ import { getDirectionsUrl } from "../utils/eventPresentation";
 import { buildEventIcs, buildGoogleCalendarUrl } from "../utils/icsExport";
 import {
   buildSearchPlan,
-  dismissedKeysForExplicitTopic,
+  dismissedKeysForExplicitFilters,
   searchEvents,
 } from "../utils/searchEngine";
 import type { SearchTopicDefinition } from "../utils/searchIntent";
@@ -396,7 +396,13 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         query.length >= 2
           ? buildSearchPlan(query, { topics: publishedTopics })
           : null;
-      const dismissedKeys = dismissedKeysForExplicitTopic(plan, topic);
+      // The same rule as the UI: an explicit filter dismisses a different
+      // one the query implies.
+      const dismissedKeys = dismissedKeysForExplicitFilters(plan, {
+        topic,
+        category,
+        source,
+      });
 
       const pool = allEvents.filter((event) => {
         const primaryCategory = event.tags?.[0]?.toLowerCase() ?? "";

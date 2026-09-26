@@ -15,7 +15,7 @@ import {
 } from "../utils/eventDates";
 import {
   buildSearchPlan,
-  dismissedKeysForExplicitTopic,
+  dismissedKeysForExplicitFilters,
   searchEvents,
   type InterpretedChip,
 } from "../utils/searchEngine";
@@ -268,34 +268,25 @@ export function useEventBrowserState({
   );
 
   const inferredTopicSlug = activePlan?.filters.topic;
-  const searchDismissedKeys = useMemo(() => {
-    const keys = dismissedKeysForExplicitTopic(
+  const searchDismissedKeys = useMemo(
+    () =>
+      dismissedKeysForExplicitFilters(
+        activePlan,
+        {
+          topic: filters.topic,
+          category: filters.category === "All" ? null : filters.category,
+          source: filters.source === "All" ? null : filters.source,
+        },
+        dismissedInterpretationKeys,
+      ),
+    [
       activePlan,
-      filters.topic,
       dismissedInterpretationKeys,
-    );
-    if (
-      activePlan?.filters.category &&
-      filters.category !== "All" &&
-      activePlan.filters.category !== filters.category
-    ) {
-      keys.add(`category:${activePlan.filters.category}`);
-    }
-    if (
-      activePlan?.filters.source &&
-      filters.source !== "All" &&
-      activePlan.filters.source !== filters.source
-    ) {
-      keys.add(`source:${activePlan.filters.source}`);
-    }
-    return keys;
-  }, [
-    activePlan,
-    dismissedInterpretationKeys,
-    filters.category,
-    filters.source,
-    filters.topic,
-  ]);
+      filters.category,
+      filters.source,
+      filters.topic,
+    ],
+  );
 
   const availabilityDismissedKeys = useMemo(() => {
     const keys = new Set(searchDismissedKeys);

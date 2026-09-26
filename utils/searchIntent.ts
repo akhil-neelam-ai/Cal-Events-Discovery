@@ -276,15 +276,30 @@ export function resolvePlanTopics(
   return topics ?? TOPICS;
 }
 
-export function dismissedKeysForExplicitTopic(
+export interface ExplicitFilters {
+  topic?: string | null;
+  category?: string | null;
+  source?: string | null;
+}
+
+/**
+ * An explicit filter wins over a different one the query implies. The UI and
+ * the agent both dismiss the inferred topic, category, or source this way, so
+ * the query words become search text inside the explicit filter.
+ */
+export function dismissedKeysForExplicitFilters(
   plan: SearchPlan | null,
-  explicitTopic: string | null | undefined,
+  explicit: ExplicitFilters,
   extra: Iterable<string> = [],
 ): Set<string> {
   const keys = new Set(extra);
-  const inferred = plan?.filters.topic;
-  if (explicitTopic && inferred && inferred !== explicitTopic) {
-    keys.add(`topic:${inferred}`);
+  if (!plan) return keys;
+  for (const field of ["topic", "category", "source"] as const) {
+    const inferred = plan.filters[field];
+    const chosen = explicit[field];
+    if (chosen && inferred && inferred.toLowerCase() !== chosen.toLowerCase()) {
+      keys.add(`${field}:${inferred}`);
+    }
   }
   return keys;
 }

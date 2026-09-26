@@ -241,6 +241,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #22. Explicit category overrides diverge between UI and agent (P3)
 
+**Status:** Fixed. `dismissedKeysForExplicitFilters` in `utils/searchIntent.ts` replaces the topic-only helper. An explicit topic, category, or source dismisses a different one the query implies, and the UI hook and `search_berkeley_events` both call it. After #2, "basketball" no longer implies Sports, so the test uses Arts plus "sports". Both paths return the one Arts event that mentions sports.
 **Files:** `agent/webmcpTools.ts:388-392`, `hooks/useEventBrowserState.ts:264-291`
 **Problem:** The UI dismisses an inferred category or source that conflicts with the explicit one. The agent does this for topic only. With `category: "Arts"` and the query "basketball", the UI returns 1 result. The agent drops the inferred category in its fallback and returns the whole Arts pool in date order.
 **Fix:** Move the explicit-versus-inferred dismissal for category, source, and topic into one shared helper, and call it from both paths. #2 improves both results.

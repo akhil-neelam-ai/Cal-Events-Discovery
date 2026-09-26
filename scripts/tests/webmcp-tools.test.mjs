@@ -9,7 +9,7 @@ import {
 } from "../../utils/eventDates.ts";
 import {
   buildSearchPlan,
-  dismissedKeysForExplicitTopic,
+  dismissedKeysForExplicitFilters,
   searchEvents,
 } from "../../utils/searchEngine.ts";
 
@@ -191,7 +191,7 @@ test("WebMCP explicit topic overrides a different inferred topic like the UI", a
     const agent = await search.execute({ topic: "law", query: "AI" });
 
     const plan = buildSearchPlan("AI", { topics: TOPIC_VOCABULARY.topics });
-    const dismissed = dismissedKeysForExplicitTopic(plan, "law");
+    const dismissed = dismissedKeysForExplicitFilters(plan, { topic: "law" });
     const pool = events.filter((item) => (item.topics ?? []).includes("law"));
     const ui = searchEvents(pool, "AI", searchIndex, dismissed, {
       topics: TOPIC_VOCABULARY.topics,
@@ -205,6 +205,45 @@ test("WebMCP explicit topic overrides a different inferred topic like the UI", a
     assert.ok(agent.events.some((item) => item.id === "law-ai-text"));
     assert.ok(!agent.events.some((item) => item.id === "ai-only"));
   }
+});
+
+test("WebMCP explicit category overrides an inferred one like the UI", async () => {
+  // "sports" names the Sports category, but the caller asked for Arts. Both
+  // paths search the word inside Arts instead of returning all of Arts.
+  const events = [
+    event({
+      id: "sports-photos",
+      title: "Sports Photography Exhibit",
+      tags: ["Arts"],
+    }),
+    event({ id: "string-quartet", title: "String Quartet", tags: ["Arts"] }),
+    event({ id: "volleyball", title: "Volleyball Match", tags: ["Sports"] }),
+  ];
+  // Real feeds publish topic_vocabulary, which turns off the agent's legacy
+  // text fallback for old fixtures.
+  const topics = TOPIC_VOCABULARY.topics;
+  const { tools } = loadTools({
+    ...makePayload(events),
+    topic_vocabulary: TOPIC_VOCABULARY,
+  });
+  const agent = await tools
+    .get("search_berkeley_events")
+    .execute({ category: "Arts", query: "sports" });
+
+  const plan = buildSearchPlan("sports", { topics });
+  const dismissed = dismissedKeysForExplicitFilters(plan, { category: "Arts" });
+  const pool = events.filter((item) => item.tags[0] === "Arts");
+  const ui = searchEvents(pool, "sports", null, dismissed, { topics });
+
+  assert.deepEqual([...dismissed], ["category:Sports"]);
+  assert.deepEqual(
+    agent.events.map((item) => item.id),
+    ui.results.map((item) => item.id),
+  );
+  assert.deepEqual(
+    agent.events.map((item) => item.id),
+    ["sports-photos"],
+  );
 });
 
 test("WebMCP date bounds apply before topic fallback", async () => {

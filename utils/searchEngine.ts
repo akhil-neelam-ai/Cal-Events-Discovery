@@ -30,7 +30,7 @@ export type {
 } from "./searchIntent";
 export {
   buildSearchPlan,
-  dismissedKeysForExplicitTopic,
+  dismissedKeysForExplicitFilters,
   resolvePlanTopics,
 } from "./searchIntent";
 
