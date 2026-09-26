@@ -20,6 +20,9 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { dedupeEvents, dedupeRestoredEvents } from "../lib/dedupe.ts";
+import { appendLastGoodEvents } from "../lib/lastGoodFallback.ts";
+import { projectToLegacy, todayPT } from "../lib/normalize.ts";
 import { PublishedEventsPayloadSchema } from "../lib/schema.ts";
 import { assignTopicsResiliently } from "../lib/topicAssignmentResilience.ts";
 import { TOPIC_VOCABULARY } from "../lib/topics.ts";
@@ -329,6 +332,67 @@ test("last-good restored events keep their published topics", () => {
   assert.deepEqual(result.events[0].topics, ["physics-math-quantum"]);
   assert.equal(result.status.outcome, "ok");
   assert.equal(result.status.assigned_count, 0);
+});
+
+test("a restored LiveWhale copy replaces today's lower-priority duplicate", () => {
+  // Day N published the LiveWhale copy. On day N+1 LiveWhale fails, so only
+  // the Haas copy survives dedupe, and the restore brings yesterday's
+  // LiveWhale row back beside it.
+  const today = todayPT();
+  const [year, month, day] = today.split("-").map(Number);
+  const eventDay = new Date(Date.UTC(year, month - 1, day + 3))
+    .toISOString()
+    .slice(0, 10);
+  const yesterdayCopy = legacy({
+    id: "livewhale_123@events.berkeley.edu",
+    title: "Haas Leadership Forum",
+    date: eventDay,
+    source: "livewhale",
+  });
+  const haasToday = {
+    source_name: "haas",
+    source_id: "987",
+    source_url: "https://haas.berkeley.edu/wp-json/tribe/events/v1/events",
+    title: "Haas Leadership Forum",
+    description: "A forum.",
+    start_at: `${eventDay}T19:00:00.000Z`,
+    timezone: "America/Los_Angeles",
+    all_day: false,
+    venue: "Haas School of Business",
+    building: "",
+    address: "",
+    modality: "in_person",
+    organizer: "Berkeley Haas",
+    organizer_unit: "Berkeley Haas",
+    audience: "",
+    cost: "",
+    canonical_url: "https://haas.berkeley.edu/events/987",
+    categories: [],
+    tags: ["Entrepreneurship"],
+    last_seen_at: `${today}T12:00:00.000Z`,
+    confidence: 0.95,
+    quality_flags: [],
+  };
+
+  const published = dedupeEvents([haasToday]).events.map(projectToLegacy);
+  const restored = appendLastGoodEvents(
+    published,
+    [yesterdayCopy],
+    "livewhale",
+    today,
+  );
+  assert.equal(restored, 1);
+  assert.equal(published.length, 2);
+
+  const final = dedupeRestoredEvents(
+    published,
+    new Set([yesterdayCopy.id]),
+    today,
+  );
+  assert.deepEqual(
+    final.map((event) => event.id),
+    [yesterdayCopy.id],
+  );
 });
 
 test("degraded group-feed provenance carries prior topics without source banners", () => {

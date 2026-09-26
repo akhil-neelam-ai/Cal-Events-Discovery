@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { dedupeEvents } from "../../scripts/lib/dedupe.ts";
+import {
+  dedupeEvents,
+  dedupeRestoredEvents,
+} from "../../scripts/lib/dedupe.ts";
 import { normalizeForDedupe } from "../../scripts/lib/normalize.ts";
 
 function event(overrides) {
@@ -175,4 +178,72 @@ test("normalizeForDedupe strips stopwords, punctuation, and case", () => {
   // A title made entirely of stopwords/punctuation normalizes to empty,
   // which forces dedupe to fall back to stable source identity.
   assert.equal(normalizeForDedupe("The & Of !!!"), "");
+});
+
+function published(overrides) {
+  return {
+    id: "livewhale_1",
+    title: "Robotics Forum",
+    organizer: "EECS",
+    date: "2026-05-12",
+    time: "12:00 PM",
+    location: "Soda Hall",
+    description: "",
+    tags: ["Science & Tech"],
+    url: "https://example.com/events/1",
+    source: "livewhale",
+    ...overrides,
+  };
+}
+
+test("dedupeRestoredEvents drops a restored copy that loses on priority", () => {
+  const fresh = published({ id: "livewhale_1" });
+  const restored = published({ id: "haas_9", source: "haas" });
+
+  assert.deepEqual(
+    dedupeRestoredEvents(
+      [fresh, restored],
+      new Set(["haas_9"]),
+      "2026-05-10",
+    ).map((event) => event.id),
+    ["livewhale_1"],
+  );
+});
+
+test("dedupeRestoredEvents leaves groups without a restored row alone", () => {
+  const events = [
+    published({ id: "haas_9", source: "haas" }),
+    published({ id: "berkeley_law_4", source: "berkeley_law" }),
+  ];
+
+  assert.equal(
+    dedupeRestoredEvents(events, new Set(["other"]), "2026-05-10").length,
+    2,
+  );
+});
+
+test("dedupeRestoredEvents keys a restored multi-day row on its next day", () => {
+  // Restored from yesterday's feed, so `date` is already past.
+  const restored = published({
+    id: "livewhale_7",
+    title: "Archive Exhibit",
+    date: "2026-05-09",
+    end_date: "2026-05-12",
+    dates: ["2026-05-09", "2026-05-10", "2026-05-11", "2026-05-12"],
+  });
+  const fresh = published({
+    id: "bampfa_3",
+    title: "Archive Exhibit",
+    date: "2026-05-10",
+    source: "bampfa",
+  });
+
+  assert.deepEqual(
+    dedupeRestoredEvents(
+      [fresh, restored],
+      new Set(["livewhale_7"]),
+      "2026-05-10",
+    ).map((event) => event.id),
+    ["livewhale_7"],
+  );
 });

@@ -127,6 +127,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #9. Last-good restore publishes duplicates (P2)
 
+**Status:** Fixed. After all restores, `dedupeRestoredEvents` in `scripts/lib/dedupe.ts` runs the title-and-date key again with source priority. It only touches groups that hold a restored row, so a normal day is unchanged. The restored LiveWhale row now wins and keeps yesterday's id. A restored multi-day row is keyed on its next day. The repro is a publish-guard test, with edge cases in `dedupe.test.mjs`.
 **Files:** `scripts/updateEvents.ts:299-305`, `scripts/lib/lastGoodFallback.ts:97-110`
 **Problem:** Restored rows are appended after cross-source dedupe and checked by id only. When LiveWhale fails, a lower-priority copy of a cross-published event survives that day's dedupe. Yesterday's LiveWhale copy then comes back through the restore. Both publish.
 **Evidence:** Reproduced with the real `dedupeEvents`, `projectToLegacy`, and `appendLastGoodEvents` in orchestrator order. Day N publishes `livewhale_123@events.berkeley.edu`. On day N+1, with LiveWhale down, both `haas_987` and the LiveWhale row publish with the same title and date.

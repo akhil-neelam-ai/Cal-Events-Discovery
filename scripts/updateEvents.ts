@@ -33,7 +33,7 @@ import type {
 } from "./lib/schema.js";
 import { PublishedEventsPayloadSchema } from "./lib/schema.js";
 import type { FetchOptions } from "./lib/abort.js";
-import { dedupeEvents } from "./lib/dedupe.js";
+import { dedupeEvents, dedupeRestoredEvents } from "./lib/dedupe.js";
 import { collapseMultiDay } from "./lib/collapseMultiDay.js";
 import {
   projectToLegacy,
@@ -585,6 +585,13 @@ async function main(): Promise<void> {
 
   for (const run of runs) {
     markRecovery(run, legacy, existing, recovery, today);
+  }
+  const beforeRestoreDedupe = legacy.length;
+  legacy = dedupeRestoredEvents(legacy, recovery.restoredIds, today);
+  if (legacy.length < beforeRestoreDedupe) {
+    console.log(
+      `[orchestrator] dedupe after restore removed ${beforeRestoreDedupe - legacy.length}`,
+    );
   }
   for (const [name, reason] of cappedReasons) {
     recovery.degradedSources.add(name);
