@@ -311,7 +311,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #30. Regex lookbehind blanks the page on Safari before 16.4 (P3)
 
-**Status:** Partly fixed. The #2 change removed the only lookbehind. The build target and the ESLint guard are still open.
+**Status:** Fixed. The #2 change removed the only lookbehind. `vite.config.ts` now targets `safari15`. That also restores the `-webkit-backdrop-filter` and `-webkit-user-select` prefixes, which the `esnext` build stripped. A `no-restricted-syntax` rule in `eslint.config.js` rejects lookbehind in regex literals and in `RegExp` calls. It uses core ESLint, so no new dependency.
 **Files:** `utils/searchIntent.ts:77`, `vite.config.ts`
 **Problem:** The Science & Tech pattern uses lookbehind (`(?<!data )`). Safari added lookbehind in 16.4. The build targets `esnext`, so nothing rewrites it. On older iPhones the bundle fails to parse and the page stays blank. The error boundary cannot catch a parse error.
 **Fix:** Rewrite the pattern without lookbehind. Set an explicit build target such as `safari15`.

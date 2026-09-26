@@ -59,6 +59,20 @@ export default [
           allowConstantExport: true,
         },
       ],
+      // Safari added regex lookbehind in 16.4. Before that, one lookbehind
+      // anywhere in the bundle stops the page from parsing.
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "Literal[regex.pattern=/\\(\\?<[=!]/]",
+          message: "Regex lookbehind breaks Safari before 16.4.",
+        },
+        {
+          selector:
+            ":matches(NewExpression, CallExpression)[callee.name='RegExp'] :matches(Literal[value=/\\(\\?<[=!]/], TemplateElement[value.raw=/\\(\\?<[=!]/])",
+          message: "Regex lookbehind breaks Safari before 16.4.",
+        },
+      ],
     },
   },
   {
