@@ -69,6 +69,9 @@ function persistBannerDismissed(key: string): void {
 
 export default function App() {
   const initialUrlState = readAppUrlState();
+  const [filters, setFilters] = useState<SearchFilters>(
+    initialUrlState.filters,
+  );
   const {
     allEvents,
     dataAgeHours,
@@ -80,11 +83,8 @@ export default function App() {
     sourceOptions,
     sourceCount,
     loadEvents,
-  } = useEventFeed();
+  } = useEventFeed(filters.searchQuery.trim().length >= 2);
   const prefersReducedMotion = usePrefersReducedMotion();
-  const [filters, setFilters] = useState<SearchFilters>(
-    initialUrlState.filters,
-  );
   const [selectedEventId, setSelectedEventId] = useState<string | null>(
     initialUrlState.selectedEventId,
   );

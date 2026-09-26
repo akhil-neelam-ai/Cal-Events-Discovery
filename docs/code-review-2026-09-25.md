@@ -293,6 +293,8 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #28. The search index gets 3 seconds and no retry (P3)
 
+**Status:** Fixed. The index fetch now gets 10 s. `useEventFeed` takes a `needsSearchIndex` flag, which `App.tsx` sets once the query reaches two characters. A failed load then gets one more try per feed load. A late response from an older request no longer overwrites a newer one. Tests in `tests/useEventFeed.test.tsx` cover the slow index, the retry, and the one-retry cap.
+
 **File:** `hooks/useEventFeed.ts:28-50`
 **Problem:** `search-index.json` is 141 KB brotli or 181 KB gzip. It must arrive within 3 s, and a timeout is never retried. On a slow phone link the whole session falls back to Fuse-only search. That path caps each fuzzy query at 100 hits and ignores field weights.
 **Fix:** Allow 10 s, and retry once when the user first types two characters.
