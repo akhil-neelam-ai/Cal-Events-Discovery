@@ -64,7 +64,7 @@ import {
   fetchBegin,
   fetchBrsl,
 } from "./sources/tribe.js";
-import { fetchSimons } from "./sources/simons.js";
+import { fetchSimons, SIMONS_ADAPTER_TIMEOUT_MS } from "./sources/simons.js";
 import { fetchLuma } from "./sources/luma.js";
 import { fetchAiRisk } from "./sources/ai_risk.js";
 import { buildSearchIndex } from "./lib/buildIndex.js";
@@ -232,17 +232,16 @@ function loadPreviousLastHealthy(): Map<string, string> {
 function runAdapterWithTimeout(
   name: SourceName,
   fn: (options: FetchOptions) => Promise<{ events: CanonicalEvent[] }>,
+  timeoutMs = ADAPTER_TIMEOUT_MS,
 ): Promise<AdapterRun> {
   const controller = new AbortController();
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, reject) => {
     timeoutId = setTimeout(() => {
-      const error = new Error(
-        `${name} timed out after ${ADAPTER_TIMEOUT_MS}ms`,
-      );
+      const error = new Error(`${name} timed out after ${timeoutMs}ms`);
       controller.abort(error);
       reject(error);
-    }, ADAPTER_TIMEOUT_MS);
+    }, timeoutMs);
   });
 
   return Promise.race([
@@ -257,7 +256,7 @@ function runAdapterWithTimeout(
           name,
           ok: false,
           count: 0,
-          duration_ms: ADAPTER_TIMEOUT_MS,
+          duration_ms: timeoutMs,
           error: message,
           fetched_at: new Date().toISOString(),
         },
@@ -333,8 +332,8 @@ function dataQualityFailure(recovery: RecoveryState): string | null {
 async function main(): Promise<void> {
   const existing = loadExistingEvents();
 
-  // Each adapter is wrapped in a 60 s timeout so a hanging source cannot
-  // block the entire pipeline. Promise.allSettled ensures one timeout does
+  // Each adapter is wrapped in a 60 s timeout, or its own budget, so a hanging
+  // source cannot block the entire pipeline. Promise.allSettled ensures one timeout does
   // not cancel the others.
   const adapterRuns: Array<{ name: SourceName; promise: Promise<AdapterRun> }> =
     [
@@ -363,7 +362,14 @@ async function main(): Promise<void> {
         name: "berkeley_law",
         promise: runAdapterWithTimeout("berkeley_law", fetchBerkeleyLaw),
       },
-      { name: "simons", promise: runAdapterWithTimeout("simons", fetchSimons) },
+      {
+        name: "simons",
+        promise: runAdapterWithTimeout(
+          "simons",
+          fetchSimons,
+          SIMONS_ADAPTER_TIMEOUT_MS,
+        ),
+      },
       { name: "luma", promise: runAdapterWithTimeout("luma", fetchLuma) },
       { name: "begin", promise: runAdapterWithTimeout("begin", fetchBegin) },
       {

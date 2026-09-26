@@ -154,6 +154,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #12. Simons and Cal Performances are drifting toward the 60 s timeout (P2)
 
+**Status:** Fixed in code, pending live runs. Simons now gets a 45 s attempt, two attempts, and a 100 s adapter budget that `simons.ts` exports. Cal Performances reads `X-WP-TotalPages` from page 1 and fetches the other pages in parallel. The date-filter check on `/api/events` is still open, because the review sandbox cannot reach simons.berkeley.edu.
 **Files:** `scripts/sources/simons.ts:25` and `:71-86`, `scripts/sources/cal_performances.ts:175-185`, `scripts/updateEvents.ts:74`
 **Problem:** Both adapters download their full history on every run. Simons fetches 2,556 events to keep 32. Its run time rose from about 14 s in July to 15 to 26 s in September. On 2026-09-25 the first 30 s attempt timed out, and the run took 36.9 s. Cal Performances pages through 384 posts to keep 56. It took 21 to 26 s in July and 24 to 31 s over the last ten days. A Simons timeout marks it degraded, and that shows the visitor banner.
 **Fix:** Check whether `/api/events` accepts a date filter. If not, give Simons its own adapter budget and a 45 s attempt timeout. For Cal Performances, read `X-WP-TotalPages` from page 1 and fetch the rest in parallel.

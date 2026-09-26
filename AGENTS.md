@@ -45,7 +45,7 @@ Three layers, cleanly separated.
 
 ### 1. Data pipeline (`scripts/`)
 
-`scripts/updateEvents.ts` is the orchestrator. It runs 12 source adapters in parallel with a 60 s timeout each, dedupes the union, projects to legacy shape, writes 3 static JSON artifacts to `public/`.
+`scripts/updateEvents.ts` is the orchestrator. It runs 12 source adapters in parallel with a 60 s timeout each (Simons gets 100 s for its full-history download), dedupes the union, projects to legacy shape, writes 3 static JSON artifacts to `public/`.
 
 **Source priority** (used by dedupe to pick the winner when two sources have the same event):
 

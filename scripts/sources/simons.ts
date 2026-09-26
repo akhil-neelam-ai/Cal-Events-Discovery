@@ -22,7 +22,13 @@ import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 
 const BASE_URL = "https://simons.berkeley.edu";
 const API_URL = `${BASE_URL}/api/events`;
-const FETCH_TIMEOUT_MS = 30_000;
+// The endpoint returns the full event history on every call, and one
+// download took 37 s in September 2026. Each attempt gets 45 s, and the
+// orchestrator gives this adapter room for both attempts.
+const FETCH_TIMEOUT_MS = 45_000;
+const MAX_ATTEMPTS = 2;
+export const SIMONS_ADAPTER_TIMEOUT_MS =
+  MAX_ATTEMPTS * FETCH_TIMEOUT_MS + 10_000;
 const PT_DATE_FORMATTER = new Intl.DateTimeFormat("en-CA", {
   timeZone: "America/Los_Angeles",
   year: "numeric",
@@ -79,6 +85,7 @@ export async function fetchSimons(
     {
       signal: options.signal,
       timeoutMs: FETCH_TIMEOUT_MS,
+      maxAttempts: MAX_ATTEMPTS,
       label: "simons",
     },
   );

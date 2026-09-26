@@ -25,6 +25,7 @@ import { endedBeforePT, todayPT } from "../lib/normalize.js";
 
 const WP_API_BASE = "https://calperformances.org/wp-json/wp/v2/cp_event";
 const PER_PAGE = 100;
+const MAX_PAGES = 10;
 const FETCH_TIMEOUT_MS = 30_000;
 const SOURCE_URL = "https://calperformances.org/events/";
 
@@ -139,10 +140,13 @@ function extractFromContent(contentHtml: string): {
   return { start, end, venue, description, cost };
 }
 
-async function fetchPage(
-  page: number,
-  options: FetchOptions,
-): Promise<WpCpEvent[]> {
+interface WpPage {
+  posts: WpCpEvent[];
+  /** WordPress's X-WP-TotalPages header, when the response carries it. */
+  totalPages?: number;
+}
+
+async function fetchPage(page: number, options: FetchOptions): Promise<WpPage> {
   const url = `${WP_API_BASE}?per_page=${PER_PAGE}&page=${page}&_fields=id,slug,link,title,content`;
   const res = await fetchWithRetry(
     url,
@@ -156,8 +160,13 @@ async function fetchPage(
       acceptStatuses: [400],
     },
   );
-  if (res.status === 400) return []; // page out of range
-  return (await res.json()) as WpCpEvent[];
+  if (res.status === 400) return { posts: [] }; // page out of range
+  const totalPages = Number(res.headers.get("X-WP-TotalPages"));
+  return {
+    posts: (await res.json()) as WpCpEvent[],
+    totalPages:
+      Number.isInteger(totalPages) && totalPages > 0 ? totalPages : undefined,
+  };
 }
 
 export async function fetchCalPerformances(
@@ -172,15 +181,24 @@ export async function fetchCalPerformances(
   let filteredPast = 0;
   let invalid = 0;
 
-  // Fetch pages sequentially so we stop as soon as WordPress returns a short
-  // page instead of issuing guaranteed-empty requests.
-  const allPosts: WpCpEvent[] = [];
-  for (let pageNumber = 1; pageNumber <= 10; pageNumber += 1) {
-    const page = await fetchPage(pageNumber, options);
-    allPosts.push(...page);
-
-    if (page.length < PER_PAGE) {
-      break;
+  // Page 1 reports the page count, so the rest download in parallel. Four
+  // sequential pages took 24 to 31 s against a 60 s adapter budget. Without
+  // the header, page on until WordPress returns a short page.
+  const first = await fetchPage(1, options);
+  const allPosts: WpCpEvent[] = [...first.posts];
+  if (first.totalPages !== undefined) {
+    const rest = await Promise.all(
+      Array.from(
+        { length: Math.min(first.totalPages, MAX_PAGES) - 1 },
+        (_, index) => fetchPage(index + 2, options),
+      ),
+    );
+    for (const page of rest) allPosts.push(...page.posts);
+  } else if (first.posts.length === PER_PAGE) {
+    for (let pageNumber = 2; pageNumber <= MAX_PAGES; pageNumber += 1) {
+      const page = await fetchPage(pageNumber, options);
+      allPosts.push(...page.posts);
+      if (page.posts.length < PER_PAGE) break;
     }
   }
 

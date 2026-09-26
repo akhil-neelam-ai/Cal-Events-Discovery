@@ -136,6 +136,7 @@ test("Cal Performances pagination stops after the first short page", async () =>
     const page = pages.shift() ?? [];
     return {
       ok: true,
+      headers: new Headers(),
       json: async () => page,
     };
   };
@@ -210,6 +211,46 @@ test("CalLink stops paging when the API ignores skip", async () => {
 
   assert.equal(result.events.length, 10);
   assert.equal(fetchedUrls.length, 2);
+});
+
+test("Cal Performances fetches the remaining pages in parallel", async () => {
+  const originalFetch = globalThis.fetch;
+  const pageSizes = [100, 100, 100, 84];
+  const requested = [];
+  let inFlight = 0;
+  let maxInFlight = 0;
+
+  globalThis.fetch = async (url) => {
+    const page = Number(new URL(String(url)).searchParams.get("page"));
+    requested.push(page);
+    inFlight += 1;
+    maxInFlight = Math.max(maxInFlight, inFlight);
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    inFlight -= 1;
+    const posts = Array.from({ length: pageSizes[page - 1] }, (_, index) => ({
+      id: page * 1000 + index,
+      slug: `event-${page}-${index}`,
+      link: `https://example.com/event-${page}-${index}`,
+      title: { rendered: `Event ${page}-${index}` },
+      content: { rendered: "" },
+    }));
+    return {
+      ok: true,
+      status: 200,
+      headers: new Headers({ "X-WP-TotalPages": "4" }),
+      json: async () => posts,
+    };
+  };
+
+  try {
+    const result = await fetchCalPerformances();
+
+    assert.equal(result.rawCount, 384);
+    assert.deepEqual(requested, [1, 2, 3, 4]);
+    assert.equal(maxInFlight, 3, "pages 2 to 4 should download together");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test("CalLink filters by Pacific event date instead of UTC date prefix", () => {
