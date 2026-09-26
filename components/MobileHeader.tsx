@@ -21,7 +21,9 @@ export function MobileHeader({
   const [searchFocused, setSearchFocused] = useState(false);
   const [recents, setRecents] = useState<string[]>([]);
   const blurRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isSuggestionsOpen = searchFocused;
+  // Recent and popular searches are not filtered by the query, so they only
+  // help before the user starts typing.
+  const isSuggestionsOpen = searchFocused && !searchQuery.trim();
 
   const closeSuggestions = () => setSearchFocused(false);
 

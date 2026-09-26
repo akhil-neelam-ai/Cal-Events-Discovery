@@ -25,6 +25,7 @@
 
 ### #1. Enter replaces the typed query with the first suggestion (P1)
 
+**Status:** Fixed. No option is active until the user arrows or hovers onto one, and suggestions show only while the input is empty. Covered by `tests/searchCombobox.test.tsx`.
 **Files:** `hooks/useSearchCombobox.ts:23` and `:54-56`, `components/DesktopHero.tsx:36` and `:184`, `components/MobileHeader.tsx:24` and `:138`
 **Problem:** The suggestion list opens whenever the input has focus (`isSuggestionsOpen = searchFocused`). `POPULAR_SEARCHES` keeps it from ever being empty. `activeIndex` starts at 0. On Enter the hook calls `preventDefault()` and selects `suggestions[0]`. Type "robotics", press Enter, and the search becomes "AI". With search history, it becomes the last recent search instead. The headers' own Enter handlers never run. On phones the keyboard's Search key sends Enter, so this is the normal way to submit.
 **Evidence:** A throwaway jsdom test typed `robotics{Enter}` into both headers. Both ended with the input reading "AI". No committed test covers Enter.
