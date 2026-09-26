@@ -186,7 +186,7 @@ test("preserves search and filter state across detail open and reload", async ({
   await expect(page.getByText("Dreams Are Colder Than Death")).toBeVisible();
   await expect(page.getByText("AI Research Forum")).toHaveCount(0);
 
-  // The whole card is a single button labeled by the event title.
+  // The title button stretches over the card and is named by the title.
   await page
     .getByRole("button", {
       name: /dreams are colder than death/i,

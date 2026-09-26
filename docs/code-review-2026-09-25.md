@@ -327,6 +327,8 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #32. Event cards nest a link inside a button (P3)
 
+**Status:** Fixed. The card is a plain `<article>` again. The title inside its `<h3>` is a native button whose `::after` stretches over the card, so a click anywhere still opens the details. The source link is a sibling above that layer. The button takes the date, place, and organizer as its description, so a screen reader announces them. The focus ring now draws inside the card edge. A UI test checks the link, the description, and Enter.
+
 **File:** `components/EventGrid.tsx:62` and `:102`
 **Problem:** Each card is an `<article role="button">` that contains an `<a>`. Screen readers handle nested interactive controls poorly. The card's `aria-label` is the title alone, so the date and place are not announced.
 **Fix:** Make the title the button, or a stretched link, and keep the external link as a sibling. Drop the `aria-label` so the card content is read.

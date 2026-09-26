@@ -1013,6 +1013,35 @@ describe("App UI regressions", () => {
     expect(within(dialog).getByText("Daily · all day")).toBeInTheDocument();
   });
 
+  it("keeps the source link outside the card's button", async () => {
+    const user = userEvent.setup();
+
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "card-1",
+        title: "Design Review Night",
+        location: "Wurster Hall",
+        organizer: "College of Environmental Design",
+      }),
+    ]);
+
+    render(<App />);
+
+    const title = screen.getByRole("button", { name: "Design Review Night" });
+    expect(title.closest("h3")).not.toBeNull();
+    expect(title).toHaveAccessibleDescription(/wurster hall/i);
+    expect(title).toHaveAccessibleDescription(/environmental design/i);
+
+    const sourceLink = screen.getByRole("link", {
+      name: /open source page for design review night/i,
+    });
+    expect(sourceLink.closest('button, [role="button"]')).toBeNull();
+
+    title.focus();
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
   it("opens event details and syncs the selected event into the URL", async () => {
     const user = userEvent.setup();
 
