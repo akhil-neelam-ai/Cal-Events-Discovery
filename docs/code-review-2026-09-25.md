@@ -302,6 +302,8 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #29. ICS export gaps (P3)
 
+**Status:** Fixed. `escapeIcsText` turns CR and CRLF into an escaped line break. A file with a timed event now carries one Los Angeles `VTIMEZONE` block with the US rules since 2007. All-day files leave it out. The object URL is revoked after 40 s. `node-ical` reads the output at the right UTC instant on both sides of the 2026 and 2027 DST switches. The mobile path still downloads the `.ics` by design, since iOS and Android hand it to the device calendar.
+
 **File:** `utils/icsExport.ts:6-12`, `:87-88`, and `:158-168`
 **Problem:** `escapeIcsText` does not handle `\r`, which matters until #25 lands. Timed events use `TZID=America/Los_Angeles` with no `VTIMEZONE` block. RFC 5545 requires one per TZID, and strict clients reject files without it. `URL.revokeObjectURL` runs right after `click()`, which can cancel the download in some mobile browsers. The mobile path always downloads the `.ics`.
 **Fix:** Strip or escape CR. Add a Los Angeles `VTIMEZONE`, or emit UTC times. Revoke the object URL in a `setTimeout`.

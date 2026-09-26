@@ -3,12 +3,38 @@ import { addDaysToDateKey, isContiguousRun } from "./eventDates";
 
 const PT_TIME_ZONE = "America/Los_Angeles";
 
+// RFC 5545 requires a VTIMEZONE for every TZID a file uses, and strict
+// clients reject a file without one. These are the US rules since 2007.
+const PT_VTIMEZONE = [
+  "BEGIN:VTIMEZONE",
+  `TZID:${PT_TIME_ZONE}`,
+  "BEGIN:DAYLIGHT",
+  "TZOFFSETFROM:-0800",
+  "TZOFFSETTO:-0700",
+  "TZNAME:PDT",
+  "DTSTART:20070311T020000",
+  "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU",
+  "END:DAYLIGHT",
+  "BEGIN:STANDARD",
+  "TZOFFSETFROM:-0700",
+  "TZOFFSETTO:-0800",
+  "TZNAME:PST",
+  "DTSTART:20071104T020000",
+  "RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU",
+  "END:STANDARD",
+  "END:VTIMEZONE",
+];
+
+// Some mobile browsers start the download after click() returns, and
+// revoking the URL at once cancels it.
+const OBJECT_URL_LIFETIME_MS = 40_000;
+
 function escapeIcsText(value: string): string {
   return value
     .replace(/\\/g, "\\\\")
     .replace(/;/g, "\\;")
     .replace(/,/g, "\\,")
-    .replace(/\n/g, "\\n");
+    .replace(/\r\n?|\n/g, "\\n");
 }
 
 function formatIcsUtc(date: Date): string {
@@ -143,13 +169,18 @@ function buildVevents(event: CalEvent): string[] {
 }
 
 export function buildEventIcs(event: CalEvent): string {
+  const vevents = buildVevents(event);
+  const usesPtZone = vevents.some((line) =>
+    line.startsWith(`DTSTART;TZID=${PT_TIME_ZONE}:`),
+  );
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//Cal Events Discovery//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
-    ...buildVevents(event),
+    ...(usesPtZone ? PT_VTIMEZONE : []),
+    ...vevents,
     "END:VCALENDAR",
   ];
   return `${lines.join("\r\n")}\r\n`;
@@ -164,7 +195,7 @@ export function downloadEventIcs(event: CalEvent): void {
   anchor.href = url;
   anchor.download = `event-${event.id.replace(/[^\w.-]+/g, "_")}.ics`;
   anchor.click();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), OBJECT_URL_LIFETIME_MS);
 }
 
 /**

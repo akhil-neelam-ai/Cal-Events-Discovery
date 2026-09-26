@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   buildEventIcs,
   buildGoogleCalendarUrl,
+  downloadEventIcs,
 } from "../../utils/icsExport.ts";
 
 const TIMED_EVENT = {
@@ -156,4 +157,66 @@ test("buildGoogleCalendarUrl spans contiguous all-day runs", () => {
   assert.ok(url);
   const parsed = new URL(url);
   assert.equal(parsed.searchParams.get("dates"), "20260530/20260603");
+});
+
+test("buildEventIcs turns carriage returns into escaped line breaks", () => {
+  const ics = buildEventIcs({
+    ...TIMED_EVENT,
+    id: "evt-cr",
+    description: "Line one\r\nLine two\rLine three",
+    location: "Calvin Lab\r\nAuditorium",
+  });
+
+  assert.match(ics, /DESCRIPTION:Line one\\nLine two\\nLine three\r\n/);
+  assert.match(ics, /LOCATION:Calvin Lab\\nAuditorium\r\n/);
+  for (const line of ics.split("\r\n")) {
+    assert.doesNotMatch(line, /[\r\n]/);
+  }
+});
+
+test("buildEventIcs defines the Los Angeles zone its timed events use", () => {
+  const ics = buildEventIcs(TIMED_EVENT);
+  const zone = ics.indexOf("BEGIN:VTIMEZONE");
+
+  assert.ok(zone > 0, "a timed event needs a VTIMEZONE block");
+  assert.ok(zone < ics.indexOf("BEGIN:VEVENT"));
+  assert.match(ics, /BEGIN:VTIMEZONE\r\nTZID:America\/Los_Angeles\r\n/);
+  assert.match(
+    ics,
+    /BEGIN:DAYLIGHT\r\nTZOFFSETFROM:-0800\r\nTZOFFSETTO:-0700\r\n/,
+  );
+  assert.match(
+    ics,
+    /BEGIN:STANDARD\r\nTZOFFSETFROM:-0700\r\nTZOFFSETTO:-0800\r\n/,
+  );
+  assert.match(ics, /RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU/);
+  assert.match(ics, /RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU/);
+  assert.equal(ics.match(/BEGIN:VTIMEZONE/g).length, 1);
+});
+
+test("buildEventIcs leaves out the zone when every VEVENT is all day", () => {
+  assert.doesNotMatch(buildEventIcs(ALL_DAY_EVENT), /VTIMEZONE/);
+});
+
+test("downloadEventIcs keeps the object URL alive while the download starts", (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const revoke = t.mock.method(URL, "revokeObjectURL", () => {});
+  t.mock.method(URL, "createObjectURL", () => "blob:calendar");
+  const anchor = { href: "", download: "", clicked: false };
+  anchor.click = () => {
+    anchor.clicked = true;
+  };
+  globalThis.document = { createElement: () => anchor };
+  t.after(() => {
+    delete globalThis.document;
+  });
+
+  downloadEventIcs(TIMED_EVENT);
+
+  assert.equal(anchor.clicked, true);
+  assert.equal(anchor.href, "blob:calendar");
+  assert.equal(revoke.mock.callCount(), 0);
+  t.mock.timers.tick(40_000);
+  assert.equal(revoke.mock.callCount(), 1);
+  assert.deepEqual(revoke.mock.calls[0].arguments, ["blob:calendar"]);
 });
