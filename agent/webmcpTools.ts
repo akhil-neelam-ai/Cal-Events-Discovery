@@ -5,6 +5,7 @@ import {
   firstOccurrenceInRange,
   getCurrentPacificDateKey,
   sortEventsChronologically,
+  weekEndKey,
 } from "../utils/eventDates";
 import { getDirectionsUrl } from "../utils/eventPresentation";
 import { buildEventIcs, buildGoogleCalendarUrl } from "../utils/icsExport";
@@ -91,7 +92,7 @@ function resolveDatePreset(
     return { startDate: tomorrow, endDate: tomorrow };
   }
   if (preset === "week") {
-    return { startDate: todayKey, endDate: addDaysToDateKey(todayKey, 6) };
+    return { startDate: todayKey, endDate: weekEndKey(todayKey) };
   }
   return { startDate: todayKey };
 }

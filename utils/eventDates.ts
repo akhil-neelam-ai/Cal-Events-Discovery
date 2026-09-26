@@ -104,6 +104,14 @@ export function addDaysToDateKey(dateKey: string, days: number): string {
   return shifted.toISOString().slice(0, 10);
 }
 
+/**
+ * The last day of "This Week": today plus six more days. The UI bucket, the
+ * "N dates this week" label, and the agent's week preset all use it.
+ */
+export function weekEndKey(todayKey: string): string {
+  return addDaysToDateKey(todayKey, 6);
+}
+
 export function formatPacificDateTime(timestamp: number): string {
   return PACIFIC_SYNC_FORMATTER.format(new Date(timestamp));
 }
@@ -212,7 +220,7 @@ export function formatMultiDayWhen(
   // many days it actually occurs within the next 7 days. Continuous runs keep
   // the span label below ("Through Aug 31"), which reads better for an exhibit.
   if (dateRange === "week" && !isContiguousRun(dates)) {
-    const weekEnd = addDaysToDateKey(todayKey, 6);
+    const weekEnd = weekEndKey(todayKey);
     const inWeek = dates.filter((d) => d >= todayKey && d <= weekEnd).length;
     if (inWeek > 0) {
       return `${inWeek} ${inWeek === 1 ? "date" : "dates"} this week`;
@@ -251,7 +259,8 @@ export function formatRelativeEventDate(
 
   const todayKey = syncedTodayKey ?? getCurrentPacificDateKey(now);
   const tomorrowKey = addDaysToDateKey(todayKey, 1);
-  const weekOutKey = addDaysToDateKey(todayKey, 7);
+  // A weekday name is unambiguous only inside the 7-day week.
+  const weekOutKey = weekEndKey(todayKey);
   const timeLabel = formatCardTime(event.time);
 
   if (dateKey === todayKey) {

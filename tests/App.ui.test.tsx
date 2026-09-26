@@ -19,7 +19,7 @@ import { TOPIC_VOCABULARY } from "../scripts/lib/topics";
 
 const TODAY_KEY = "2026-04-22";
 const TOMORROW_KEY = "2026-04-23";
-const NEXT_WEEK_KEY = "2026-04-29";
+const WEEK_END_KEY = "2026-04-28";
 
 type MockFeedState = {
   allEvents: CalEvent[];
@@ -64,7 +64,7 @@ vi.mock("../hooks/usePacificDateKeys", () => ({
   usePacificDateKeys: () => ({
     todayKey: TODAY_KEY,
     tomorrowKey: TOMORROW_KEY,
-    nextWeekKey: NEXT_WEEK_KEY,
+    weekEndKey: WEEK_END_KEY,
   }),
 }));
 
@@ -578,6 +578,19 @@ describe("App UI regressions", () => {
       }
       unmount();
     }
+  });
+
+  it("ends This Week six days after today, like the agent preset", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "day-6", title: "Sixth Day Talk", date: WEEK_END_KEY }),
+      makeEvent({ id: "day-7", title: "Week Out Talk", date: "2026-04-29" }),
+    ]);
+    window.history.replaceState({}, "", "/?date=week");
+
+    render(<App />);
+
+    expect(screen.getByText("Sixth Day Talk")).toBeInTheDocument();
+    expect(screen.queryByText("Week Out Talk")).not.toBeInTheDocument();
   });
 
   it("defaults to this week on first visit", () => {

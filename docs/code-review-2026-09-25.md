@@ -205,6 +205,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #18. Clear stale operator issues and the Dependabot queue (P3)
 
+**Status:** Fixed on 2026-09-26. #145 and #156 are closed with a comment each. The production audit found 0 vulnerabilities. #177, #178, and #141 were brought up to date with `main` and merged after both required checks passed. #130 is closed, because Node 26 types do not match the Node 22 runtime. #195 stays open until the ai_risk path from #11 is found. Before merging, this branch's full gate passed against both dependency groups.
 **Problem:** #145 (`pipeline-failure`, 2026-07-27) is still open, though runs have been green since 2026-09-02. The notifier comments on the open issue with that label, so the next failure lands in that old thread. #156 (`security-audit`, 2026-08-10) is stale because `npm audit --omit=dev` is clean today. Dependabot PRs #130 (2026-06-29), #141 (2026-07-20), #177, and #178 (2026-09-07) are unmerged. The dev audit reports 10 advisories, 4 high, in PostCSS source-map handling. #178 probably clears them.
 **Fix:** Close #145 and #156. Keep #195 open until #11 lands. Merge or close the four Dependabot PRs.
 
@@ -214,6 +215,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #19. The agent week is 7 days and the UI week is 8 (P2)
 
+**Status:** Fixed. The decision was 7 days. `weekEndKey` in `utils/eventDates.ts` returns today plus six days. The UI bucket, the "N dates this week" label, the weekday labels, and the agent's week preset all use it. Tests pin the same boundary in the UI, the label, and `search_berkeley_events`.
 **Files:** `agent/webmcpTools.ts:93-94`, `hooks/usePacificDateKeys.ts:34` and `:47`, `utils/eventDates.ts:215`
 **Problem:** `resolveDatePreset("week")` ends at today+6. The UI's `nextWeekKey` is today+7 and its bucket is inclusive, so This Week spans 8 days. On 2026-09-25 the UI week holds 428 events and the agent week 384. The "N dates this week" label uses today+6, so the UI also disagrees with itself. AGENTS.md requires parity between user and agent actions.
 **Decision needed:** 7 or 8 days?

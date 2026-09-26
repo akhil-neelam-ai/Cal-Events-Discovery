@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   addDaysToDateKey,
   getCurrentPacificDateKey,
+  weekEndKey,
 } from "../utils/eventDates";
 
 function msUntilNextPacificMidnight(now = new Date()): number {
@@ -31,7 +32,7 @@ export function usePacificDateKeys() {
     return {
       todayKey: today,
       tomorrowKey: addDaysToDateKey(today, 1),
-      nextWeekKey: addDaysToDateKey(today, 7),
+      weekEndKey: weekEndKey(today),
     };
   });
 
@@ -44,7 +45,7 @@ export function usePacificDateKeys() {
       setDateKeys({
         todayKey: today,
         tomorrowKey: addDaysToDateKey(today, 1),
-        nextWeekKey: addDaysToDateKey(today, 7),
+        weekEndKey: weekEndKey(today),
       });
     };
 

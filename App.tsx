@@ -172,7 +172,7 @@ export default function App() {
     persistBannerDismissed(staleBannerDismissalKey);
   };
 
-  const { todayKey, tomorrowKey, nextWeekKey } = usePacificDateKeys();
+  const { todayKey, tomorrowKey, weekEndKey } = usePacificDateKeys();
   const debouncedSearchQuery = useDebouncedValue(filters.searchQuery, 140);
   const browserStateFilters = useMemo(
     () => ({ ...filters, searchQuery: debouncedSearchQuery }),
@@ -258,7 +258,7 @@ export default function App() {
     selectedEventId,
     todayKey,
     tomorrowKey,
-    nextWeekKey,
+    weekEndKey,
     userSetDateRange,
     topicAvailabilityReady: allowedTopicSlugs !== null,
     topicDefinitions,

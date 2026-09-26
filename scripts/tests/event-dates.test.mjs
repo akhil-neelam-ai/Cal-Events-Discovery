@@ -9,6 +9,7 @@ import {
   formatRelativeEventDate,
   listingDateKey,
   occurrenceDateKeys,
+  weekEndKey,
 } from "../../utils/eventDates.ts";
 
 function event(overrides = {}) {
@@ -96,6 +97,21 @@ test("formatRelativeEventDate uses today, tomorrow, weekday, and absolute labels
     formatRelativeEventDate({ date: "2026-06-10", time: "11:00 AM" }, now),
     "Jun 10, 11am",
   );
+  // The week ends at today+6. A week out shares today's weekday name, so it
+  // gets a date instead.
+  assert.equal(
+    formatRelativeEventDate({ date: "2026-05-29", time: "3:00 PM" }, now),
+    "Friday, 3pm",
+  );
+  assert.equal(
+    formatRelativeEventDate({ date: "2026-05-30", time: "3:00 PM" }, now),
+    "May 30, 3pm",
+  );
+});
+
+test("weekEndKey closes This Week at today plus six days", () => {
+  assert.equal(weekEndKey("2026-05-23"), "2026-05-29");
+  assert.equal(weekEndKey("2026-12-28"), "2027-01-03");
 });
 
 test("formatMultiDayWhen labels a continuous on-view run as 'Through'", () => {

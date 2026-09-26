@@ -30,7 +30,7 @@ interface UseEventBrowserStateParams {
   selectedEventId: string | null;
   todayKey: string;
   tomorrowKey: string;
-  nextWeekKey: string;
+  weekEndKey: string;
   userSetDateRange: boolean;
   topicAvailabilityReady: boolean;
   topicDefinitions: readonly TopicDefinition[] | null;
@@ -55,7 +55,7 @@ function partitionDateBuckets(
   events: readonly CalEvent[],
   todayKey: string,
   tomorrowKey: string,
-  nextWeekKey: string,
+  weekEndKey: string,
 ) {
   const today: CalEvent[] = [];
   const tomorrow: CalEvent[] = [];
@@ -75,7 +75,7 @@ function partitionDateBuckets(
     if (firstOccurrenceInRange(event, tomorrowKey, tomorrowKey)) {
       tomorrow.push(event);
     }
-    if (next <= nextWeekKey) week.push(event);
+    if (next <= weekEndKey) week.push(event);
   }
 
   return { today, tomorrow, week, upcoming };
@@ -114,7 +114,7 @@ export function useEventBrowserState({
   selectedEventId,
   todayKey,
   tomorrowKey,
-  nextWeekKey,
+  weekEndKey,
   userSetDateRange,
   topicAvailabilityReady,
   topicDefinitions,
@@ -210,9 +210,9 @@ export function useEventBrowserState({
         categorySourcePool,
         todayKey,
         tomorrowKey,
-        nextWeekKey,
+        weekEndKey,
       ),
-    [categorySourcePool, todayKey, tomorrowKey, nextWeekKey],
+    [categorySourcePool, todayKey, tomorrowKey, weekEndKey],
   );
 
   const derivedDateRange = useMemo<SearchFilters["dateRange"]>(() => {
@@ -336,9 +336,9 @@ export function useEventBrowserState({
         availabilityOutput.results,
         todayKey,
         tomorrowKey,
-        nextWeekKey,
+        weekEndKey,
       ),
-    [availabilityOutput.results, todayKey, tomorrowKey, nextWeekKey],
+    [availabilityOutput.results, todayKey, tomorrowKey, weekEndKey],
   );
 
   const topicCounts = useMemo(

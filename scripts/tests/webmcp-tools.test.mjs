@@ -357,6 +357,24 @@ test("WebMCP date presets match every day of a multi-day event", async () => {
   }
 });
 
+test("WebMCP week preset matches the UI's 7-day week", async () => {
+  const todayKey = getCurrentPacificDateKey();
+  const { tools } = loadTools(
+    makePayload([
+      event({ id: "day-6", date: addDaysToDateKey(todayKey, 6) }),
+      event({ id: "day-7", date: addDaysToDateKey(todayKey, 7) }),
+    ]),
+  );
+
+  const output = await tools
+    .get("search_berkeley_events")
+    .execute({ datePreset: "week" });
+  assert.deepEqual(
+    output.events.map((item) => item.id),
+    ["day-6"],
+  );
+});
+
 test("WebMCP URL workspace tools build and apply shared state", async () => {
   const { tools, applied } = loadTools(withTopics(makePayload([])), {
     locationSearch: "?q=jazz&date=today",

@@ -145,7 +145,7 @@ Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` is
 
 The June full-repo audit is `docs/code-review-2026-06-02.md`. It is a different pass.
 
-The September full-repo audit is `docs/code-review-2026-09-25.md`. Items with a `Status: Fixed` line are done. A `Partly fixed` line says what is left, and the rest are open. Two need a decision first: #19 and #26.
+The September full-repo audit is `docs/code-review-2026-09-25.md`. Items with a `Status: Fixed` line are done. A `Partly fixed` line says what is left, and the rest are open. One needs a decision first: #26.
 
 ## Key files
 
