@@ -2,8 +2,8 @@ import { ALL_SOURCES, Categories, DEFAULT_FILTERS } from "../appConfig";
 import type { CalEvent, SearchFilters, SearchResponse } from "../types";
 import {
   addDaysToDateKey,
+  firstOccurrenceInRange,
   getCurrentPacificDateKey,
-  getPacificDateKey,
   sortEventsChronologically,
 } from "../utils/eventDates";
 import { getDirectionsUrl } from "../utils/eventPresentation";
@@ -171,16 +171,14 @@ function getPublishedTopics(payload: EventsPayload): SearchTopicDefinition[] {
     }));
 }
 
+// A multi-day event matches when any day in `dates` falls inside the bounds,
+// the same rule the UI date views use.
 function eventMatchesDateBounds(
   event: CalEvent,
   startDate?: string,
   endDate?: string,
 ): boolean {
-  const key = getPacificDateKey(event.date);
-  if (!key) return false;
-  if (startDate && key < startDate) return false;
-  if (endDate && key > endDate) return false;
-  return true;
+  return firstOccurrenceInRange(event, startDate, endDate) !== null;
 }
 
 function validateTopic(
@@ -405,7 +403,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
       let ranked: CalEvent[];
       let fallbackUsed = false;
       if (query.length < 2) {
-        ranked = sortEventsChronologically(pool);
+        ranked = sortEventsChronologically(pool, startDate);
       } else {
         const output = searchEvents(pool, query, index, dismissedKeys, {
           topics: publishedTopics,
@@ -426,6 +424,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
                 .toLowerCase()
                 .includes(needle),
             ),
+            startDate,
           );
         }
       }

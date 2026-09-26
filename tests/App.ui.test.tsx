@@ -112,6 +112,8 @@ function makeEvent(overrides: Partial<CalEvent> = {}): CalEvent {
     topics: overrides.topics ?? ["ai-machine-learning"],
     url: overrides.url ?? `https://example.com/${id}`,
     source: overrides.source ?? "livewhale",
+    ...(overrides.end_date ? { end_date: overrides.end_date } : {}),
+    ...(overrides.dates ? { dates: overrides.dates } : {}),
   };
 }
 
@@ -536,6 +538,46 @@ describe("App UI regressions", () => {
       screen.getByRole("heading", { level: 2, name: /this week/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Tomorrow Founder Talk")).toBeInTheDocument();
+  });
+
+  it("shows a multi-day event on each day it runs after its date passes", () => {
+    // Between midnight and the next publish, `date` is already yesterday.
+    const yesterdayKey = "2026-04-21";
+    const events = [
+      makeEvent({
+        id: "running-exhibit",
+        title: "Running Archive Exhibit",
+        date: yesterdayKey,
+        time: "All day",
+        tags: ["Arts"],
+        end_date: TOMORROW_KEY,
+        dates: [yesterdayKey, TODAY_KEY, TOMORROW_KEY],
+      }),
+      makeEvent({
+        id: "tomorrow-talk",
+        title: "Tomorrow Robotics Talk",
+        date: TOMORROW_KEY,
+      }),
+    ];
+
+    for (const range of ["today", "tomorrow", "week", "upcoming"]) {
+      mockFeedState = makeFeedState(events);
+      window.history.replaceState({}, "", `/?date=${range}`);
+      const { unmount } = render(<App />);
+
+      expect(
+        screen.getByText("Running Archive Exhibit"),
+        range,
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText("Nothing today — showing this week instead."),
+      ).not.toBeInTheDocument();
+      if (range === "week") {
+        expect(screen.getByText("Today · Apr 22")).toBeInTheDocument();
+        expect(screen.queryByText(/Apr 21/)).not.toBeInTheDocument();
+      }
+      unmount();
+    }
   });
 
   it("defaults to this week on first visit", () => {

@@ -8,6 +8,8 @@ import {
   getFallbackBannerCopy,
 } from "../utils/emptyState";
 import {
+  dateRangeStartKey,
+  firstOccurrenceInRange,
   getPacificDateKey,
   sortEventsChronologically,
 } from "../utils/eventDates";
@@ -60,15 +62,20 @@ function partitionDateBuckets(
   const week: CalEvent[] = [];
   const upcoming: CalEvent[] = [];
 
+  // Bucket by occurrence, not by `date`. A multi-day event runs on every day
+  // in `dates`, and its `date` is already past from midnight until the next
+  // publish.
   for (const event of events) {
-    const key = getPacificDateKey(event.date);
-    if (!key || key < todayKey) {
+    const next = firstOccurrenceInRange(event, todayKey);
+    if (!next) {
       continue;
     }
     upcoming.push(event);
-    if (key === todayKey) today.push(event);
-    if (key === tomorrowKey) tomorrow.push(event);
-    if (key <= nextWeekKey) week.push(event);
+    if (next === todayKey) today.push(event);
+    if (firstOccurrenceInRange(event, tomorrowKey, tomorrowKey)) {
+      tomorrow.push(event);
+    }
+    if (next <= nextWeekKey) week.push(event);
   }
 
   return { today, tomorrow, week, upcoming };
@@ -396,8 +403,12 @@ export function useEventBrowserState({
   ]);
 
   const filteredEvents = useMemo(
-    () => sortEventsChronologically(searchOutput.results),
-    [searchOutput.results],
+    () =>
+      sortEventsChronologically(
+        searchOutput.results,
+        dateRangeStartKey(effectiveDateRange, todayKey),
+      ),
+    [effectiveDateRange, searchOutput.results, todayKey],
   );
 
   useEffect(() => {

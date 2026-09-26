@@ -1048,6 +1048,34 @@ test("date fallback clears this-weekend hard filters when relaxing to upcoming",
   assert.equal(output.results[0]?.id, "evt-future-hackathon");
 });
 
+test("the weekend filter keeps a multi-day event that runs over the weekend", () => {
+  // Nine days from yesterday always cover the current or next weekend, and
+  // `date` is already past, as it is between midnight and the next publish.
+  const todayKey = getCurrentPacificDateKey();
+  const runDays = Array.from({ length: 9 }, (_, offset) =>
+    addDaysToDateKey(todayKey, offset - 1),
+  );
+  const events = [
+    {
+      ...SYNTHETIC_EVENTS[13],
+      id: "evt-running-exhibit",
+      title: "Running Archive Exhibit",
+      date: runDays[0],
+      end_date: runDays[runDays.length - 1],
+      dates: runDays,
+    },
+  ];
+
+  const output = searchEvents(events, "this weekend exhibit", null);
+
+  assert.equal(output.plan.filters.weekend, true);
+  assert.equal(output.fallbackUsed, false);
+  assert.deepEqual(
+    output.results.map((event) => event.id),
+    ["evt-running-exhibit"],
+  );
+});
+
 test("fuzzy fallback recovers a typo when the index has no exact hit", () => {
   // The index intentionally contains the event id but none of its tokens, so
   // the inverted-index phase finds nothing and the Fuse.js phase must recover

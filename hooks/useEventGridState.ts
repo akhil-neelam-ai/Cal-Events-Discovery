@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { VISIBLE_EVENT_BATCH_SIZE } from "../appConfig";
 import { LoadingState } from "../types";
 import type { CalEvent, SearchFilters } from "../types";
-import { buildEventGroups } from "../utils/eventDates";
+import { buildEventGroups, dateRangeStartKey } from "../utils/eventDates";
 
 interface UseEventGridStateParams {
   loading: LoadingState;
@@ -92,7 +92,11 @@ export function useEventGridState({
     filteredEvents.length - visibleEvents.length,
     0,
   );
-  const eventGroups = buildEventGroups(visibleEvents, todayKey);
+  const eventGroups = buildEventGroups(
+    visibleEvents,
+    todayKey,
+    dateRangeStartKey(effectiveDateRange, todayKey),
+  );
 
   return {
     shouldAnimateCards,

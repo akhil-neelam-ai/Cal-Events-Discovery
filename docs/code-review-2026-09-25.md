@@ -56,6 +56,7 @@
 
 ### #3. Multi-day events drop out of date views (P2)
 
+**Status:** Fixed. `occurrenceDateKeys` and `firstOccurrenceInRange` in `utils/eventDates.ts` now drive the UI buckets, the weekend filter, recency, and the agent date bounds. Lists sort and group by the first day of the active view. The unused `filterEventsByDateRange` is gone. On the 2026-09-25 snapshot, Tomorrow gains all 12 missing exhibits. The next morning keeps all 32 multi-day events instead of 20. The agent docs for `dates` stay with #20.
 **Files:** `hooks/useEventBrowserState.ts:52-75`, `utils/eventDates.ts:321-348`, `utils/searchEngine.ts:328-333`, `agent/webmcpTools.ts:174-184`
 **Problem:** Every date filter reads `event.date` only. For a collapsed multi-day event, `date` is its earliest upcoming day at publish time, and `dates[]` holds the rest. So an exhibit running today and tomorrow is missing from Tomorrow. The morning is worse. From midnight until the day's publish lands, `date` is yesterday, and `partitionDateBuckets` drops the event from every view, including All Events. When the cron fails, that lasts all day. The weekend filter and the agent's date bounds have the same gap.
 **Evidence:** In the 2026-09-25 snapshot, 12 of 32 multi-day events occur tomorrow but are absent from Tomorrow. One is the BAMPFA exhibition "Private Frontiers" with 80 dates. The same 12 vanish from every view on the morning of 2026-09-26 until the next publish.

@@ -4,8 +4,9 @@ import { tokenize, stem } from "./textUtils";
 import {
   addDaysToDateKey,
   daysBetweenDateKeys,
+  firstOccurrenceInRange,
   getCurrentPacificDateKey,
-  getPacificDateKey,
+  occurrenceDateKeys,
   sortEventsChronologically,
 } from "./eventDates";
 import type { SearchIndex } from "./textUtils";
@@ -84,10 +85,11 @@ const W = {
   synMultiplier: 0.55, // synonyms score lower than core tokens
 } as const;
 
-function recencyBonus(dateStr: string): number {
-  const eventKey = getPacificDateKey(dateStr);
+function recencyBonus(event: CalEvent): number {
+  const todayKey = getCurrentPacificDateKey();
+  const eventKey = firstOccurrenceInRange(event, todayKey);
   if (!eventKey) return 0;
-  const days = daysBetweenDateKeys(getCurrentPacificDateKey(), eventKey);
+  const days = daysBetweenDateKeys(todayKey, eventKey);
   if (days === null || days < 0 || days > 30) return 0;
   return Math.round(W.recency * (1 - days / 30));
 }
@@ -265,7 +267,7 @@ function scoreEvent(
     }
   }
 
-  score += recencyBonus(ev.date);
+  score += recencyBonus(ev);
   return score;
 }
 
@@ -325,11 +327,11 @@ function applyPoolFilters(
       }
     }
 
-    if (weekendKeys) {
-      const eventDateKey = getPacificDateKey(ev.date);
-      if (!eventDateKey || !weekendKeys.has(eventDateKey)) {
-        return false;
-      }
+    if (
+      weekendKeys &&
+      !occurrenceDateKeys(ev).some((key) => weekendKeys.has(key))
+    ) {
+      return false;
     }
 
     // Time-of-day: soft hard filter — only when explicitly detected
@@ -381,7 +383,7 @@ function runScoring(
   // When the query is purely a temporal/intent signal (e.g. "today", "this week"),
   // cleaned produces no keywords. Return pool unscored — date filtering happens in App.
   if (plan.expandedTokens.length === 0 && plan.phrases.length === 0)
-    return sortEventsChronologically(pool);
+    return sortEventsChronologically(pool, getCurrentPacificDateKey());
 
   const eventMap = new Map(pool.map((e) => [e.id, e]));
   const scored = new Map<string, { event: CalEvent; score: number }>();
@@ -497,7 +499,7 @@ function runScoring(
         const relevance =
           Math.round((1 - (fs ?? 1)) * 40) +
           phraseBoost(item, plan) +
-          recencyBonus(item.date);
+          recencyBonus(item);
         const existing = scored.get(item.id);
         if (existing) {
           existing.score += relevance;

@@ -3,8 +3,12 @@ import test from "node:test";
 
 import {
   buildEventGroups,
+  dateRangeStartKey,
+  firstOccurrenceInRange,
   formatMultiDayWhen,
   formatRelativeEventDate,
+  listingDateKey,
+  occurrenceDateKeys,
 } from "../../utils/eventDates.ts";
 
 function event(overrides = {}) {
@@ -19,8 +23,21 @@ function event(overrides = {}) {
     tags: ["Academic"],
     url: "https://example.com",
     source: "livewhale",
+    ...(overrides.end_date ? { end_date: overrides.end_date } : {}),
+    ...(overrides.dates ? { dates: overrides.dates } : {}),
   };
 }
+
+// `date` is the day before "today" (2026-05-13), which is what a multi-day
+// event looks like from midnight until the next publish.
+const RUNNING_EXHIBIT = event({
+  id: "exhibit",
+  title: "Running Exhibit",
+  date: "2026-05-12",
+  time: "All day",
+  end_date: "2026-05-14",
+  dates: ["2026-05-12", "2026-05-13", "2026-05-14"],
+});
 
 test("event groups are chronological even when caller input is relevance ordered", () => {
   const groups = buildEventGroups([
@@ -171,4 +188,63 @@ test("formatRelativeEventDate uses the multi-day span when present", () => {
     ),
     "Through May 25",
   );
+});
+
+test("occurrence helpers read every day of a multi-day event", () => {
+  assert.deepEqual(occurrenceDateKeys(event({ date: "2026-05-13" })), [
+    "2026-05-13",
+  ]);
+  assert.equal(
+    firstOccurrenceInRange(RUNNING_EXHIBIT, "2026-05-13"),
+    "2026-05-13",
+  );
+  assert.equal(
+    firstOccurrenceInRange(RUNNING_EXHIBIT, "2026-05-14", "2026-05-14"),
+    "2026-05-14",
+  );
+  assert.equal(firstOccurrenceInRange(RUNNING_EXHIBIT, "2026-05-15"), null);
+  assert.equal(
+    firstOccurrenceInRange(RUNNING_EXHIBIT, undefined, "2026-05-11"),
+    null,
+  );
+  assert.equal(listingDateKey(RUNNING_EXHIBIT, "2026-05-13"), "2026-05-13");
+  assert.equal(listingDateKey(RUNNING_EXHIBIT), "2026-05-12");
+  assert.equal(listingDateKey(RUNNING_EXHIBIT, "2026-06-01"), "2026-05-12");
+});
+
+test("a multi-day event is grouped under the first day of the view", () => {
+  const talk = event({
+    id: "talk",
+    title: "Morning Talk",
+    date: "2026-05-13",
+    time: "9:00 AM",
+  });
+  const lecture = event({
+    id: "lecture",
+    title: "Afternoon Lecture",
+    date: "2026-05-14",
+    time: "3:00 PM",
+  });
+  const summarize = (groups) =>
+    groups.map((group) => [group.dateKey, group.events.map((item) => item.id)]);
+
+  const weekGroups = buildEventGroups(
+    [RUNNING_EXHIBIT, lecture, talk],
+    "2026-05-13",
+    dateRangeStartKey("week", "2026-05-13"),
+  );
+  assert.deepEqual(summarize(weekGroups), [
+    ["2026-05-13", ["talk", "exhibit"]],
+    ["2026-05-14", ["lecture"]],
+  ]);
+
+  const tomorrowGroups = buildEventGroups(
+    [RUNNING_EXHIBIT, lecture],
+    "2026-05-13",
+    dateRangeStartKey("tomorrow", "2026-05-13"),
+  );
+  assert.deepEqual(summarize(tomorrowGroups), [
+    ["2026-05-14", ["lecture", "exhibit"]],
+  ]);
+  assert.equal(tomorrowGroups[0].label, "Tomorrow · May 14");
 });

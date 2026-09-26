@@ -4,6 +4,10 @@ import test from "node:test";
 import { createWebMcpTools } from "../../agent/webmcpTools.ts";
 import { TOPIC_VOCABULARY } from "../../scripts/lib/topics.ts";
 import {
+  addDaysToDateKey,
+  getCurrentPacificDateKey,
+} from "../../utils/eventDates.ts";
+import {
   buildSearchPlan,
   dismissedKeysForExplicitTopic,
   searchEvents,
@@ -319,6 +323,38 @@ test("WebMCP datePreset 'today' resolves Pacific bounds to today's events", asyn
     ["today-evt"],
   );
   assert.equal(output.ranked, false);
+});
+
+test("WebMCP date presets match every day of a multi-day event", async () => {
+  // `date` is already past, as it is between midnight and the next publish.
+  const todayKey = getCurrentPacificDateKey();
+  const yesterdayKey = addDaysToDateKey(todayKey, -1);
+  const tomorrowKey = addDaysToDateKey(todayKey, 1);
+  const { tools } = loadTools(
+    makePayload([
+      {
+        ...event({
+          id: "exhibit",
+          title: "Running Exhibit",
+          date: yesterdayKey,
+          time: "All day",
+        }),
+        end_date: tomorrowKey,
+        dates: [yesterdayKey, todayKey, tomorrowKey],
+      },
+      event({ id: "yesterday-talk", title: "Past Talk", date: yesterdayKey }),
+    ]),
+  );
+
+  const searchTool = tools.get("search_berkeley_events");
+  for (const datePreset of ["today", "tomorrow", "week", "upcoming"]) {
+    const output = await searchTool.execute({ datePreset });
+    assert.deepEqual(
+      output.events.map((item) => item.id),
+      ["exhibit"],
+      datePreset,
+    );
+  }
 });
 
 test("WebMCP URL workspace tools build and apply shared state", async () => {
