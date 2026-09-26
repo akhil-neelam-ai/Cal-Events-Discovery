@@ -2,9 +2,13 @@ import { useId } from "react";
 
 import { Analytics } from "@vercel/analytics/react";
 
-import type { QuickFilterPreset, SourceOption } from "../appConfig";
-import { useSyncStatusCopy } from "../hooks/useLiveTimestamp";
+import {
+  FEED_CADENCE_COPY,
+  type QuickFilterPreset,
+  type SourceOption,
+} from "../appConfig";
 import { LoadingState, type SearchFilters } from "../types";
+import type { TopicVocabulary } from "../types";
 import type { StatusBannerData } from "../utils/statusUi";
 import { DesktopHero } from "./DesktopHero";
 import { DesktopFiltersBar, MobileFiltersBar } from "./FiltersBar";
@@ -15,16 +19,18 @@ import { StatusBanner } from "./StatusBanner";
 export function AppHeaderShell({
   mainContentId,
   isMobile,
-  lastUpdated,
   loading,
   allEventsCount,
   sourceCount,
   filters,
   activeDateRange,
   sourceOptions,
+  topicVocabulary,
+  topicCounts,
   onSearchChange,
   onDateChange,
   onCategoryChange,
+  onTopicChange,
   onSourceChange,
   onPresetSelect,
   statusBanner,
@@ -37,16 +43,18 @@ export function AppHeaderShell({
 }: {
   mainContentId: string;
   isMobile: boolean;
-  lastUpdated: number | null;
   loading: LoadingState;
   allEventsCount: number;
   sourceCount: number;
   filters: SearchFilters;
   activeDateRange: SearchFilters["dateRange"];
   sourceOptions: SourceOption[];
+  topicVocabulary: TopicVocabulary | null;
+  topicCounts: ReadonlyMap<string, number>;
   onSearchChange: (query: string) => void;
   onDateChange: (next: SearchFilters["dateRange"]) => void;
   onCategoryChange: (next: string) => void;
+  onTopicChange: (next: string) => void;
   onSourceChange: (next: string) => void;
   onPresetSelect: (preset: QuickFilterPreset) => void;
   statusBanner: StatusBannerData | null;
@@ -58,13 +66,13 @@ export function AppHeaderShell({
   onDismissStaleBanner: () => void;
 }) {
   const desktopSearchInputId = useId();
-  const liveSyncCopy = useSyncStatusCopy(lastUpdated);
 
-  const desktopHeroStatusCopy = liveSyncCopy
-    ? liveSyncCopy
-    : loading === LoadingState.ERROR
+  const desktopHeroStatusCopy =
+    loading === LoadingState.ERROR
       ? "Latest batch unavailable"
-      : "Loading latest batch";
+      : loading === LoadingState.SUCCESS
+        ? FEED_CADENCE_COPY
+        : "Loading latest batch";
 
   const showStaleBanner =
     (typeof dataAgeHours === "number" && dataAgeHours > 12) ||
@@ -87,7 +95,6 @@ export function AppHeaderShell({
       {isMobile ? (
         <>
           <MobileHeader
-            lastUpdated={lastUpdated}
             searchQuery={filters.searchQuery}
             onSearchChange={onSearchChange}
           />
@@ -96,8 +103,11 @@ export function AppHeaderShell({
               filters={filters}
               activeDateRange={activeDateRange}
               sourceOptions={sourceOptions}
+              topicVocabulary={topicVocabulary}
+              topicCounts={topicCounts}
               onDateChange={onDateChange}
               onCategoryChange={onCategoryChange}
+              onTopicChange={onTopicChange}
               onSourceChange={onSourceChange}
             />
           </div>
@@ -117,8 +127,11 @@ export function AppHeaderShell({
               filters={filters}
               activeDateRange={activeDateRange}
               sourceOptions={sourceOptions}
+              topicVocabulary={topicVocabulary}
+              topicCounts={topicCounts}
               onDateChange={onDateChange}
               onCategoryChange={onCategoryChange}
+              onTopicChange={onTopicChange}
               onSourceChange={onSourceChange}
             />
           </div>

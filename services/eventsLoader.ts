@@ -64,6 +64,7 @@ export const fetchEventArtifacts = async (
     return {
       events: data.events,
       sources: Array.isArray(data.sources) ? data.sources : [],
+      topic_vocabulary: data.topic_vocabulary,
       lastUpdated: data.lastUpdated ?? 0,
       data_age_hours:
         typeof data.data_age_hours === "number" ? data.data_age_hours : 0,

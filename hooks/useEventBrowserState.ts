@@ -1,6 +1,6 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import type { CalEvent, SearchFilters } from "../types";
+import type { CalEvent, SearchFilters, TopicDefinition } from "../types";
 import {
   buildEmptyStateConfig,
   type EmptyStateActions,
@@ -13,6 +13,7 @@ import {
 } from "../utils/eventDates";
 import {
   buildSearchPlan,
+  dismissedKeysForExplicitTopic,
   searchEvents,
   type InterpretedChip,
 } from "../utils/searchEngine";
@@ -21,6 +22,7 @@ import type { SearchIndex } from "../utils/textUtils";
 interface UseEventBrowserStateParams {
   allEvents: CalEvent[];
   filters: SearchFilters;
+  liveSearchQuery: string;
   searchIndex: SearchIndex | null;
   dismissedInterpretationKeys: Set<string>;
   selectedEventId: string | null;
@@ -28,6 +30,9 @@ interface UseEventBrowserStateParams {
   tomorrowKey: string;
   nextWeekKey: string;
   userSetDateRange: boolean;
+  topicAvailabilityReady: boolean;
+  topicDefinitions: readonly TopicDefinition[] | null;
+  onUnavailableTopic: (topic: string) => void;
   emptyStateActions: EmptyStateActions;
 }
 
@@ -36,15 +41,67 @@ interface UseEventBrowserStateResult {
   searchFallbackMessage?: string;
   effectiveDateRange: SearchFilters["dateRange"];
   filteredEvents: CalEvent[];
+  topicCounts: ReadonlyMap<string, number>;
+  topicFilterNotice: string | null;
   visibleSelectedEventId: string | null;
   selectedEvent: CalEvent | null;
   fallbackBannerCopy: string | null;
   emptyState: EmptyStateConfig;
 }
 
+function partitionDateBuckets(
+  events: readonly CalEvent[],
+  todayKey: string,
+  tomorrowKey: string,
+  nextWeekKey: string,
+) {
+  const today: CalEvent[] = [];
+  const tomorrow: CalEvent[] = [];
+  const week: CalEvent[] = [];
+  const upcoming: CalEvent[] = [];
+
+  for (const event of events) {
+    const key = getPacificDateKey(event.date);
+    if (!key || key < todayKey) {
+      continue;
+    }
+    upcoming.push(event);
+    if (key === todayKey) today.push(event);
+    if (key === tomorrowKey) tomorrow.push(event);
+    if (key <= nextWeekKey) week.push(event);
+  }
+
+  return { today, tomorrow, week, upcoming };
+}
+
+function bucketForRange(
+  buckets: ReturnType<typeof partitionDateBuckets>,
+  range: SearchFilters["dateRange"],
+): CalEvent[] {
+  if (range === "today") return buckets.today;
+  if (range === "tomorrow") return buckets.tomorrow;
+  if (range === "week") return buckets.week;
+  return buckets.upcoming;
+}
+
+function eventHasTopic(event: CalEvent, topic: string): boolean {
+  return (event.topics ?? []).some((slug) => slug === topic);
+}
+
+function countTopics(events: readonly CalEvent[]): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const event of events) {
+    for (const topic of event.topics ?? []) {
+      counts.set(topic, (counts.get(topic) ?? 0) + 1);
+    }
+  }
+  return counts;
+}
+
 export function useEventBrowserState({
   allEvents,
   filters,
+  liveSearchQuery,
   searchIndex,
   dismissedInterpretationKeys,
   selectedEventId,
@@ -52,16 +109,30 @@ export function useEventBrowserState({
   tomorrowKey,
   nextWeekKey,
   userSetDateRange,
+  topicAvailabilityReady,
+  topicDefinitions,
+  onUnavailableTopic,
   emptyStateActions,
 }: UseEventBrowserStateParams): UseEventBrowserStateResult {
+  const [topicFilterNotice, setTopicFilterNotice] = useState<string | null>(
+    null,
+  );
+  const searchQueryPending = liveSearchQuery !== filters.searchQuery;
+  const planOptions = useMemo(
+    () => ({
+      topics: topicDefinitions === null ? undefined : topicDefinitions,
+    }),
+    [topicDefinitions],
+  );
+
   const activePlan = useMemo(() => {
     const query = filters.searchQuery.trim();
     if (query.length < 2) {
       return null;
     }
 
-    return buildSearchPlan(query);
-  }, [filters.searchQuery]);
+    return buildSearchPlan(query, planOptions);
+  }, [filters.searchQuery, planOptions]);
 
   const activeChips = useMemo<InterpretedChip[]>(() => {
     if (!activePlan) {
@@ -89,6 +160,14 @@ export function useEventBrowserState({
         return false;
       }
 
+      if (
+        interpretation.key.startsWith("topic:") &&
+        filters.topic &&
+        interpretation.key !== `topic:${filters.topic}`
+      ) {
+        return false;
+      }
+
       return true;
     });
   }, [
@@ -96,12 +175,11 @@ export function useEventBrowserState({
     dismissedInterpretationKeys,
     filters.category,
     filters.source,
+    filters.topic,
   ]);
 
-  const searchOutput = useMemo(() => {
-    const query = filters.searchQuery.trim();
-
-    const pool = allEvents.filter((event) => {
+  const categorySourcePool = useMemo(() => {
+    return allEvents.filter((event) => {
       const eventDateKey = getPacificDateKey(event.date);
       if (!eventDateKey) {
         return false;
@@ -117,78 +195,18 @@ export function useEventBrowserState({
 
       return matchesCategory && matchesSource;
     });
+  }, [allEvents, filters.category, filters.source]);
 
-    if (query.length < 2) {
-      return {
-        results: sortEventsChronologically(pool),
-        fallbackUsed: false,
-        fallbackMessage: undefined,
-      };
-    }
-
-    const effectiveDismissedKeys = new Set(dismissedInterpretationKeys);
-    if (
-      activePlan?.filters.category &&
-      filters.category !== "All" &&
-      activePlan.filters.category !== filters.category
-    ) {
-      effectiveDismissedKeys.add(`category:${activePlan.filters.category}`);
-    }
-
-    if (
-      activePlan?.filters.source &&
-      filters.source !== "All" &&
-      activePlan.filters.source !== filters.source
-    ) {
-      effectiveDismissedKeys.add(`source:${activePlan.filters.source}`);
-    }
-
-    const { results, fallbackUsed, fallbackMessage } = searchEvents(
-      pool,
-      query,
-      searchIndex,
-      effectiveDismissedKeys,
-    );
-
-    return {
-      results,
-      fallbackUsed,
-      fallbackMessage: fallbackUsed ? fallbackMessage : undefined,
-    };
-  }, [
-    allEvents,
-    activePlan,
-    dismissedInterpretationKeys,
-    filters.category,
-    filters.searchQuery,
-    filters.source,
-    searchIndex,
-  ]);
-
-  const baseFilteredEvents = searchOutput.results;
-
-  // Partition the base pool into the four (overlapping) date buckets in a
-  // single pass. Buckets stay in base order here; only the bucket actually
-  // shown is sorted chronologically below, so we avoid four filter+sort passes.
-  const dateBuckets = useMemo(() => {
-    const today: CalEvent[] = [];
-    const tomorrow: CalEvent[] = [];
-    const week: CalEvent[] = [];
-    const upcoming: CalEvent[] = [];
-
-    for (const event of baseFilteredEvents) {
-      const key = getPacificDateKey(event.date);
-      if (!key || key < todayKey) {
-        continue;
-      }
-      upcoming.push(event);
-      if (key === todayKey) today.push(event);
-      if (key === tomorrowKey) tomorrow.push(event);
-      if (key <= nextWeekKey) week.push(event);
-    }
-
-    return { today, tomorrow, week, upcoming };
-  }, [baseFilteredEvents, todayKey, tomorrowKey, nextWeekKey]);
+  const rawDateBuckets = useMemo(
+    () =>
+      partitionDateBuckets(
+        categorySourcePool,
+        todayKey,
+        tomorrowKey,
+        nextWeekKey,
+      ),
+    [categorySourcePool, todayKey, tomorrowKey, nextWeekKey],
+  );
 
   const derivedDateRange = useMemo<SearchFilters["dateRange"]>(() => {
     if (userSetDateRange) {
@@ -215,16 +233,16 @@ export function useEventBrowserState({
   const effectiveDateRange = useMemo<SearchFilters["dateRange"]>(() => {
     if (
       derivedDateRange === "today" &&
-      dateBuckets.today.length === 0 &&
-      dateBuckets.week.length > 0
+      rawDateBuckets.today.length === 0 &&
+      rawDateBuckets.week.length > 0
     ) {
       return "week";
     }
 
     if (
       derivedDateRange === "tomorrow" &&
-      dateBuckets.tomorrow.length === 0 &&
-      dateBuckets.week.length > 0
+      rawDateBuckets.tomorrow.length === 0 &&
+      rawDateBuckets.week.length > 0
     ) {
       return "week";
     }
@@ -232,23 +250,188 @@ export function useEventBrowserState({
     return derivedDateRange;
   }, [
     derivedDateRange,
-    dateBuckets.today.length,
-    dateBuckets.tomorrow.length,
-    dateBuckets.week.length,
+    rawDateBuckets.today.length,
+    rawDateBuckets.tomorrow.length,
+    rawDateBuckets.week.length,
   ]);
 
-  const filteredEvents = useMemo(() => {
-    const activeBucket =
-      effectiveDateRange === "today"
-        ? dateBuckets.today
-        : effectiveDateRange === "tomorrow"
-          ? dateBuckets.tomorrow
-          : effectiveDateRange === "week"
-            ? dateBuckets.week
-            : dateBuckets.upcoming;
+  const datePool = useMemo(
+    () => bucketForRange(rawDateBuckets, effectiveDateRange),
+    [effectiveDateRange, rawDateBuckets],
+  );
 
-    return sortEventsChronologically(activeBucket);
-  }, [effectiveDateRange, dateBuckets]);
+  const inferredTopicSlug = activePlan?.filters.topic;
+  const searchDismissedKeys = useMemo(() => {
+    const keys = dismissedKeysForExplicitTopic(
+      activePlan,
+      filters.topic,
+      dismissedInterpretationKeys,
+    );
+    if (
+      activePlan?.filters.category &&
+      filters.category !== "All" &&
+      activePlan.filters.category !== filters.category
+    ) {
+      keys.add(`category:${activePlan.filters.category}`);
+    }
+    if (
+      activePlan?.filters.source &&
+      filters.source !== "All" &&
+      activePlan.filters.source !== filters.source
+    ) {
+      keys.add(`source:${activePlan.filters.source}`);
+    }
+    return keys;
+  }, [
+    activePlan,
+    dismissedInterpretationKeys,
+    filters.category,
+    filters.source,
+    filters.topic,
+  ]);
+
+  const availabilityDismissedKeys = useMemo(() => {
+    const keys = new Set(searchDismissedKeys);
+    if (inferredTopicSlug) {
+      keys.add(`topic:${inferredTopicSlug}`);
+    }
+    return keys;
+  }, [inferredTopicSlug, searchDismissedKeys]);
+
+  const availabilityOutput = useMemo(() => {
+    const query = filters.searchQuery.trim();
+    if (query.length < 2) {
+      return {
+        results: categorySourcePool,
+        fallbackUsed: false,
+        fallbackMessage: undefined,
+      };
+    }
+
+    return searchEvents(
+      categorySourcePool,
+      query,
+      searchIndex,
+      availabilityDismissedKeys,
+      planOptions,
+    );
+  }, [
+    availabilityDismissedKeys,
+    categorySourcePool,
+    filters.searchQuery,
+    planOptions,
+    searchIndex,
+  ]);
+
+  const availabilityDateBuckets = useMemo(
+    () =>
+      partitionDateBuckets(
+        availabilityOutput.results,
+        todayKey,
+        tomorrowKey,
+        nextWeekKey,
+      ),
+    [availabilityOutput.results, todayKey, tomorrowKey, nextWeekKey],
+  );
+
+  const topicCounts = useMemo(
+    () =>
+      countTopics(bucketForRange(availabilityDateBuckets, effectiveDateRange)),
+    [availabilityDateBuckets, effectiveDateRange],
+  );
+
+  const topicUnavailable =
+    topicAvailabilityReady &&
+    Boolean(filters.topic) &&
+    (topicCounts.get(filters.topic) ?? 0) === 0 &&
+    !searchQueryPending;
+  const renderTopic = topicUnavailable ? "" : filters.topic;
+
+  const searchOutput = useMemo(() => {
+    const query = filters.searchQuery.trim();
+    const searchPool = renderTopic
+      ? datePool.filter((event) => eventHasTopic(event, renderTopic))
+      : datePool;
+
+    if (query.length < 2) {
+      return {
+        results: sortEventsChronologically(searchPool),
+        fallbackUsed: false,
+        fallbackMessage: undefined,
+      };
+    }
+
+    const output = searchEvents(
+      searchPool,
+      query,
+      searchIndex,
+      searchDismissedKeys,
+      planOptions,
+    );
+
+    if (
+      output.results.length === 0 &&
+      !renderTopic &&
+      inferredTopicSlug &&
+      !searchDismissedKeys.has(`topic:${inferredTopicSlug}`) &&
+      datePool.length > 0
+    ) {
+      return {
+        results: sortEventsChronologically(datePool),
+        fallbackUsed: true,
+        fallbackMessage: `No "${activePlan?.interpretations.find((item) => item.key === `topic:${inferredTopicSlug}`)?.label ?? inferredTopicSlug}" results for this date range. Showing all topics.`,
+      };
+    }
+
+    return output;
+  }, [
+    activePlan,
+    datePool,
+    filters.searchQuery,
+    inferredTopicSlug,
+    planOptions,
+    renderTopic,
+    searchDismissedKeys,
+    searchIndex,
+  ]);
+
+  const filteredEvents = useMemo(
+    () => sortEventsChronologically(searchOutput.results),
+    [searchOutput.results],
+  );
+
+  useEffect(() => {
+    if (!topicAvailabilityReady || !filters.topic || searchQueryPending) {
+      return;
+    }
+
+    if ((topicCounts.get(filters.topic) ?? 0) > 0) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setTopicFilterNotice(
+        "Topic cleared because no events match it with the other filters.",
+      );
+      onUnavailableTopic(filters.topic);
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [
+    filters.topic,
+    onUnavailableTopic,
+    searchQueryPending,
+    topicAvailabilityReady,
+    topicCounts,
+  ]);
+
+  useEffect(() => {
+    if (!topicFilterNotice) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => setTopicFilterNotice(null), 5000);
+    return () => window.clearTimeout(timeout);
+  }, [topicFilterNotice]);
 
   const visibleSelectedEventId = useMemo(() => {
     if (!selectedEventId) {
@@ -278,9 +461,9 @@ export function useEventBrowserState({
       getFallbackBannerCopy({
         derivedDateRange,
         effectiveDateRange,
-        weekEventsCount: dateBuckets.week.length,
+        weekEventsCount: rawDateBuckets.week.length,
       }),
-    [derivedDateRange, effectiveDateRange, dateBuckets.week.length],
+    [derivedDateRange, effectiveDateRange, rawDateBuckets.week.length],
   );
 
   const emptyState = useMemo(
@@ -289,8 +472,8 @@ export function useEventBrowserState({
         filters,
         effectiveDateRange,
         derivedDateRange,
-        upcomingEventsCount: dateBuckets.upcoming.length,
-        weekEventsCount: dateBuckets.week.length,
+        upcomingEventsCount: availabilityDateBuckets.upcoming.length,
+        weekEventsCount: availabilityDateBuckets.week.length,
         actions: emptyStateActions,
       }),
     [
@@ -298,8 +481,8 @@ export function useEventBrowserState({
       effectiveDateRange,
       emptyStateActions,
       filters,
-      dateBuckets.upcoming.length,
-      dateBuckets.week.length,
+      availabilityDateBuckets.upcoming.length,
+      availabilityDateBuckets.week.length,
     ],
   );
 
@@ -308,6 +491,8 @@ export function useEventBrowserState({
     searchFallbackMessage: searchOutput.fallbackMessage,
     effectiveDateRange,
     filteredEvents,
+    topicCounts,
+    topicFilterNotice,
     visibleSelectedEventId,
     selectedEvent,
     fallbackBannerCopy,

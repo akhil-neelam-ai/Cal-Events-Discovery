@@ -11,6 +11,8 @@ export const SOURCE_LABELS: Record<string, string> = {
   simons: "Simons Institute",
   luma: "Luma",
   begin: "Berkeley BEGIN",
+  ai_risk: "Berkeley AI Risk",
+  brsl: "Berkeley Risk and Security Lab",
 };
 
 export const SOURCE_URLS: Record<string, string> = {
@@ -24,6 +26,8 @@ export const SOURCE_URLS: Record<string, string> = {
   simons: "https://simons.berkeley.edu/programs-events",
   luma: "https://luma.com/discover",
   begin: "https://begin.berkeley.edu/events/",
+  ai_risk: "https://ai-risk.berkeley.edu/speaker-series.html",
+  brsl: "https://brsl.berkeley.edu/events/",
 };
 
 export interface SourceOption {
@@ -60,6 +64,8 @@ export const ALL_SOURCES = [
   "simons",
   "luma",
   "begin",
+  "ai_risk",
+  "brsl",
 ];
 export const DateRanges = [
   { label: "Today", value: "today" },
@@ -67,14 +73,24 @@ export const DateRanges = [
   { label: "All Events", value: "upcoming" },
 ];
 
+export const TOPIC_GROUP_PRESENTATION = [
+  { value: "fields", label: "Fields" },
+  { value: "interests", label: "Interests" },
+] as const;
+
+export const COLLAPSED_TOPICS_PER_GROUP = 4;
+
 export const DEFAULT_FILTERS: SearchFilters = {
   dateRange: "week",
   category: "All",
+  topic: "",
   searchQuery: "",
   source: "All",
 };
 
 export const VISIBLE_EVENT_BATCH_SIZE = 72;
+
+export const FEED_CADENCE_COPY = "Updates everyday";
 
 // Natural-language example queries shown as chips below the hero search bar.
 // Each sets a sensible scope plus a query the client search engine interprets.
@@ -88,7 +104,7 @@ export const DESKTOP_HERO_PRESETS: QuickFilterPreset[] = [
   {
     label: "AI talks",
     dateRange: "week",
-    category: "Science & Tech",
+    category: "All",
     searchQuery: "ai",
   },
   {

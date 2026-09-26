@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 
-import { useLiveTimestamp } from "../hooks/useLiveTimestamp";
+import { FEED_CADENCE_COPY } from "../appConfig";
 import { useSearchCombobox } from "../hooks/useSearchCombobox";
 import {
   addRecentSearch,
@@ -10,11 +10,9 @@ import {
 import { SearchSuggestionsDropdown } from "./SearchSuggestionsDropdown";
 
 export function MobileHeader({
-  lastUpdated,
   searchQuery,
   onSearchChange,
 }: {
-  lastUpdated: number | null;
   searchQuery: string;
   onSearchChange: (query: string) => void;
 }) {
@@ -23,7 +21,6 @@ export function MobileHeader({
   const [searchFocused, setSearchFocused] = useState(false);
   const [recents, setRecents] = useState<string[]>([]);
   const blurRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const liveUpdatedCopy = useLiveTimestamp(lastUpdated);
   const isSuggestionsOpen = searchFocused;
 
   const closeSuggestions = () => setSearchFocused(false);
@@ -70,12 +67,10 @@ export function MobileHeader({
             </span>
             <span className="text-2xl font-light tracking-wide">Events</span>
           </div>
-          {liveUpdatedCopy && (
-            <span className="flex items-center gap-1.5 text-[10px] text-berkeley-gold/70">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-              Updated {liveUpdatedCopy}
-            </span>
-          )}
+          <span className="flex items-center gap-1.5 text-[10px] text-berkeley-gold/70">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+            {FEED_CADENCE_COPY}
+          </span>
         </div>
 
         <div

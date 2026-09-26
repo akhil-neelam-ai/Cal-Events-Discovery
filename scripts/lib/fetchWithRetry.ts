@@ -16,7 +16,7 @@ export interface FetchWithRetryOptions extends FetchOptions {
 
 /**
  * Fetch with exponential backoff and jitter. Throws after the final failed
- * attempt. Jitter (±20%) keeps the 11 adapters from synchronizing into retry
+ * attempt. Jitter (±20%) keeps the 12 adapters from synchronizing into retry
  * storms when a shared dependency blips.
  */
 export async function fetchWithRetry(

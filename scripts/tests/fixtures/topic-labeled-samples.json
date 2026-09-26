@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "minimumPrecision": 0.9,
+  "selectionMethod": "Independently labeled from title, organizer, source, and description. Labels were not taken from assignTopics.",
+  "samples": [
+    {
+      "id": "neg-haas-hike",
+      "title": "Saturday Community Hike",
+      "organizer": "Berkeley Haas",
+      "source": "haas",
+      "description": "Meet at the trailhead for a campus hike.",
+      "relevant": [],
+      "irrelevant": ["startups"]
+    },
+    {
+      "id": "neg-bampfa-cafe",
+      "title": "Cafe Hours",
+      "organizer": "BAMPFA",
+      "source": "bampfa",
+      "description": "The cafe is open 11am to 4pm.",
+      "relevant": [],
+      "irrelevant": ["film", "visual-arts-exhibitions"]
+    },
+    {
+      "id": "neg-ochem",
+      "title": "Organic Chemistry Seminar",
+      "organizer": "College of Chemistry",
+      "source": "livewhale",
+      "livewhale_groups": ["college of chemistry"],
+      "description": "Weekly organic chemistry seminar.",
+      "relevant": [],
+      "irrelevant": ["biology-life-sciences"]
+    },
+    {
+      "id": "neg-library-hours",
+      "title": "Moffitt Library Extended Hours",
+      "organizer": "University Library",
+      "source": "livewhale",
+      "livewhale_groups": ["library"],
+      "description": "The library stays open until midnight during finals.",
+      "relevant": [],
+      "irrelevant": ["history-humanities"]
+    },
+    {
+      "id": "neg-cal-perf-box",
+      "title": "Box Office Hours",
+      "organizer": "Cal Performances",
+      "source": "cal_performances",
+      "description": "Ticket window hours for the coming week.",
+      "relevant": [],
+      "irrelevant": ["music-performance"]
+    },
+    {
+      "id": "neg-engineering-picnic",
+      "title": "College Picnic",
+      "organizer": "College of Engineering",
+      "source": "livewhale",
+      "livewhale_groups": ["college of engineering"],
+      "description": "Bring a blanket. Food trucks on the lawn.",
+      "relevant": [],
+      "irrelevant": ["computer-science-data"]
+    },
+    {
+      "id": "pos-ai-risk",
+      "title": "Speaker Series",
+      "organizer": "Berkeley AI Risk",
+      "source": "ai_risk",
+      "description": "Weekly speaker on AI risk.",
+      "relevant": ["ai-machine-learning", "computer-science-data"],
+      "irrelevant": []
+    },
+    {
+      "id": "pos-law-lunch",
+      "title": "Constitutional Law Workshop",
+      "organizer": "Berkeley Law",
+      "source": "berkeley_law",
+      "description": "Faculty workshop on constitutional law.",
+      "relevant": ["law"],
+      "irrelevant": []
+    },
+    {
+      "id": "pos-physics",
+      "title": "Weekly Department Colloquium",
+      "organizer": "UC Berkeley",
+      "source": "livewhale",
+      "livewhale_groups": ["physics"],
+      "description": "A faculty presentation.",
+      "relevant": ["physics-math-quantum"],
+      "irrelevant": []
+    },
+    {
+      "id": "pos-simons",
+      "title": "Theory Lunch",
+      "organizer": "Simons Institute",
+      "source": "simons",
+      "description": "Algorithms and complexity lunch talk.",
+      "relevant": ["computer-science-data"],
+      "irrelevant": []
+    },
+    {
+      "id": "pos-film-title",
+      "title": "Film Screening: New Voices",
+      "organizer": "BAMPFA",
+      "source": "bampfa",
+      "description": "New short films from Bay Area directors.",
+      "relevant": ["film"],
+      "irrelevant": []
+    },
+    {
+      "id": "pos-music-dept",
+      "title": "Student Recital",
+      "organizer": "Department of Music",
+      "source": "livewhale",
+      "description": "An evening recital in Hertz Hall.",
+      "relevant": ["music-performance"],
+      "irrelevant": []
+    },
+    {
+      "id": "pos-social-clubs",
+      "title": "Department Welcome Mixer",
+      "organizer": "Graduate Division",
+      "source": "livewhale",
+      "description": "Join the student club for a social mixer and info session.",
+      "relevant": ["social-clubs"],
+      "irrelevant": []
+    },
+    {
+      "id": "pos-ai-title",
+      "title": "Artificial Intelligence Research Showcase",
+      "organizer": "Independent Student Team",
+      "source": "luma",
+      "description": "Student research posters.",
+      "relevant": ["ai-machine-learning"],
+      "irrelevant": []
+    },
+    {
+      "id": "neg-labor-day",
+      "title": "Five Dollar Day: Labor Day",
+      "organizer": "Lawrence Hall of Science",
+      "source": "livewhale",
+      "livewhale_groups": ["lawrence hall of science"],
+      "description": "Bring the family for discounted admission, animal ambassadors, biotechnology, and artificial intelligence exhibits.",
+      "relevant": [],
+      "irrelevant": ["ai-machine-learning"]
+    }
+  ]
+}

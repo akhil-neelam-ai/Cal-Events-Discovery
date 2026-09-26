@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
+import { DESKTOP_HERO_PRESETS } from "../../appConfig.ts";
 import {
   buildSearchPlan,
   searchEvents,
@@ -10,6 +14,18 @@ import {
   addDaysToDateKey,
   getCurrentPacificDateKey,
 } from "../../utils/eventDates.ts";
+
+const rootDir = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+);
+const published = JSON.parse(
+  fs.readFileSync(path.join(rootDir, "public", "events.json"), "utf8"),
+);
+const publishedSearchIndex = JSON.parse(
+  fs.readFileSync(path.join(rootDir, "public", "search-index.json"), "utf8"),
+);
 
 const SYNTHETIC_EVENTS = [
   {
@@ -239,13 +255,13 @@ test("tokenization normalizes accents and hyphenated terms", () => {
 });
 
 test("single-word synonyms are matched after query stemming", () => {
-  const plan = buildSearchPlan("sports analytics");
+  const plan = buildSearchPlan("films archive");
 
   assert.ok(
-    plan.expandedTokens.includes("athletic"),
-    "sports should expand through the stemmed sport token",
+    plan.expandedTokens.includes("movie"),
+    "films should expand through the stemmed film token",
   );
-  assert.ok(plan.expandedTokens.includes("basketball"));
+  assert.ok(plan.expandedTokens.includes("cinema"));
 });
 
 test("pure temporal queries return the full pool for later date filtering", () => {
@@ -290,29 +306,31 @@ test('natural-language query "film screening at bampfa" finds the BAMPFA film fi
     null,
   );
 
-  assert.equal(output.plan.filters.category, "Arts");
+  assert.equal(output.plan.filters.category, undefined);
+  assert.ok(
+    !output.plan.interpretations.some((chip) =>
+      chip.key.startsWith("category:"),
+    ),
+  );
   assert.equal(output.results[0]?.id, "evt-bampfa");
 });
 
-test("interpreted category filters use the primary displayed event tag", () => {
+test("film screening ranks matching events across categories", () => {
   const output = searchEvents(SYNTHETIC_EVENTS, "film screening", null);
 
-  assert.equal(output.plan.filters.category, "Arts");
+  assert.equal(output.plan.filters.category, undefined);
   assert.ok(output.results.some((event) => event.id === "evt-bampfa"));
-  assert.ok(!output.results.some((event) => event.id === "evt-academic-film"));
+  assert.ok(output.results.some((event) => event.id === "evt-academic-film"));
 });
 
-test("dismissing interpreted category removes the category hard filter", () => {
-  const output = searchEvents(
-    SYNTHETIC_EVENTS,
-    "film screening",
-    null,
-    new Set(["category:Arts"]),
-  );
+test("film screening does not produce a dismissible category interpretation", () => {
+  const output = searchEvents(SYNTHETIC_EVENTS, "film screening", null);
 
   assert.equal(output.plan.filters.category, undefined);
   assert.ok(
-    !output.plan.interpretations.some((chip) => chip.key === "category:Arts"),
+    !output.plan.interpretations.some((chip) =>
+      chip.key.startsWith("category:"),
+    ),
   );
   assert.ok(output.results.some((event) => event.id === "evt-academic-film"));
 });
@@ -325,6 +343,7 @@ test("invalid event dates do not drop indexed text matches", () => {
       title: "Quantum Seminar",
       date: "not-a-real-date",
       description: "Quantum research seminar.",
+      topics: ["physics-math-quantum"],
     },
     {
       ...SYNTHETIC_EVENTS[0],
@@ -332,6 +351,7 @@ test("invalid event dates do not drop indexed text matches", () => {
       title: "Quantum Workshop",
       date: new Date(Date.now() + 7 * 86_400_000).toISOString(),
       description: "Quantum research workshop.",
+      topics: ["physics-math-quantum"],
     },
   ];
   const index = {
@@ -369,6 +389,7 @@ test("recency bonus ranks a today event above an identical future event", () => 
       location: "LeConte Hall",
       description: "A quantum physics symposium.",
       tags: ["Science & Tech"],
+      topics: ["physics-math-quantum"],
       url: "https://example.com/future",
       source: "livewhale",
     },
@@ -381,6 +402,7 @@ test("recency bonus ranks a today event above an identical future event", () => 
       location: "LeConte Hall",
       description: "A quantum physics symposium.",
       tags: ["Science & Tech"],
+      topics: ["physics-math-quantum"],
       url: "https://example.com/today",
       source: "livewhale",
     },
@@ -405,24 +427,28 @@ test("recency bonus ranks a today event above an identical future event", () => 
   );
 });
 
-test('natural-language query "artificial intelligence" applies science and tech intent', () => {
-  const output = searchEvents(
-    SYNTHETIC_EVENTS,
-    "Artificial Intelligence",
-    null,
+test('natural-language query "artificial intelligence" ranks AI events without category intent', () => {
+  const events = SYNTHETIC_EVENTS.map((event) =>
+    event.id === "evt-ai-science" || event.id === "evt-ai-arts"
+      ? { ...event, topics: ["ai-machine-learning"] }
+      : event,
   );
+  const output = searchEvents(events, "Artificial Intelligence", null);
 
-  assert.equal(output.plan.filters.category, "Science & Tech");
-  assert.ok(
-    output.plan.expandedTokens.includes("ai"),
-    "AI synonym should be searched for the full phrase",
-  );
-  assert.equal(output.results[0]?.id, "evt-ai-science");
-  assert.ok(!output.results.some((event) => event.id === "evt-ai-arts"));
+  assert.equal(output.plan.filters.category, undefined);
+  assert.equal(output.plan.filters.topic, "ai-machine-learning");
+  assert.ok(!output.plan.expandedTokens.includes("ai"));
+  assert.ok(["evt-ai-science", "evt-ai-arts"].includes(output.results[0]?.id));
+  assert.ok(output.results.some((event) => event.id === "evt-ai-arts"));
+  assert.ok(output.results.some((event) => event.id === "evt-ai-science"));
 });
 
-test('indexed query "artificial intelligence" does not rank arts film above AI events', () => {
-  const events = SYNTHETIC_EVENTS;
+test('indexed query "artificial intelligence" ranks AI events without category intent', () => {
+  const events = SYNTHETIC_EVENTS.map((event) =>
+    event.id === "evt-ai-science" || event.id === "evt-ai-arts"
+      ? { ...event, topics: ["ai-machine-learning"] }
+      : event,
+  );
   const index = {
     ids: events.map((event) => event.id),
     t: {
@@ -453,9 +479,11 @@ test('indexed query "artificial intelligence" does not rank arts film above AI e
 
   const output = searchEvents(events, "Artificial Intelligence", index);
 
-  assert.equal(output.plan.filters.category, "Science & Tech");
-  assert.equal(output.results[0]?.id, "evt-ai-science");
-  assert.ok(!output.results.some((event) => event.id === "evt-ai-arts"));
+  assert.equal(output.plan.filters.category, undefined);
+  assert.equal(output.plan.filters.topic, "ai-machine-learning");
+  assert.ok(["evt-ai-science", "evt-ai-arts"].includes(output.results[0]?.id));
+  assert.ok(output.results.some((event) => event.id === "evt-ai-arts"));
+  assert.ok(output.results.some((event) => event.id === "evt-ai-science"));
 });
 
 test('natural-language query "free events near northside" applies free and campus-area filters', () => {
@@ -477,8 +505,218 @@ test('natural-language query "founder talks tomorrow" preserves tomorrow intent 
   const output = searchEvents(SYNTHETIC_EVENTS, "founder talks tomorrow", null);
 
   assert.equal(output.plan.filters.dateRange, "tomorrow");
-  assert.equal(output.plan.filters.category, "Entrepreneurship");
+  assert.equal(output.plan.filters.category, undefined);
   assert.equal(output.results[0]?.id, "evt-founder");
+});
+
+test('live-corpus query "AI" ranks matches across categories without category intent', () => {
+  const fixture = JSON.parse(
+    fs.readFileSync(
+      path.join(
+        rootDir,
+        "scripts",
+        "tests",
+        "fixtures",
+        "topic-reference-sets.json",
+      ),
+      "utf8",
+    ),
+  );
+  const aiReferenceSet = fixture.referenceSets.find(
+    (referenceSet) => referenceSet.topic === "ai-machine-learning",
+  );
+  const knownNonAiHomonyms = new Set([
+    "livewhale_20260907T170000Z-327069@events.berkeley.edu",
+    "livewhale_20260908T200000Z-328804@events.berkeley.edu",
+    "berkeley_law_772656",
+    "livewhale_20260925T000000Z-324717@events.berkeley.edu",
+    "livewhale_20260929T210000Z-323581@events.berkeley.edu",
+  ]);
+  const publishedIds = new Set(published.events.map((event) => event.id));
+  const referenceIds = aiReferenceSet.references
+    .map((reference) => reference.id)
+    .filter((id) => publishedIds.has(id) && !knownNonAiHomonyms.has(id));
+
+  const output = searchEvents(published.events, "AI", publishedSearchIndex);
+  const categories = new Set(
+    output.results.map((event) => event.tags?.[0]).filter(Boolean),
+  );
+  const resultIds = new Set(output.results.map((event) => event.id));
+  const overlap = referenceIds.filter((id) => resultIds.has(id)).length;
+
+  assert.equal(output.plan.filters.category, undefined);
+  assert.ok(
+    !output.plan.interpretations.some((chip) =>
+      chip.key.startsWith("category:"),
+    ),
+  );
+  assert.ok(
+    overlap >= Math.min(50, referenceIds.length),
+    `AI search overlapped ${overlap}/${referenceIds.length} reference events`,
+  );
+  assert.ok(categories.size > 1);
+});
+
+test("topic intent uses the first subject word and preserves later words for ranking", () => {
+  const events = [
+    { ...SYNTHETIC_EVENTS[7], id: "topic-ai", topics: ["ai-machine-learning"] },
+    { ...SYNTHETIC_EVENTS[16], id: "topic-law", topics: ["law"] },
+  ];
+
+  const aiFirst = searchEvents(events, "AI law", null);
+  assert.equal(aiFirst.plan.filters.topic, "ai-machine-learning");
+  assert.deepEqual(aiFirst.plan.keywords, ["law"]);
+  assert.ok(
+    aiFirst.plan.interpretations.some(
+      (chip) => chip.key === "topic:ai-machine-learning",
+    ),
+  );
+
+  const lawFirst = searchEvents(events, "law AI", null);
+  assert.equal(lawFirst.plan.filters.topic, "law");
+  assert.deepEqual(lawFirst.plan.keywords, ["ai"]);
+});
+
+test("free food is a free filter, not a topic or category", () => {
+  const plan = buildSearchPlan("free food");
+
+  assert.equal(plan.filters.topic, undefined);
+  assert.equal(plan.filters.free, true);
+  assert.equal(plan.filters.category, undefined);
+});
+
+test("free lunch is not a topic or category", () => {
+  const plan = buildSearchPlan("free lunch");
+
+  assert.equal(plan.filters.topic, undefined);
+  assert.equal(plan.filters.category, undefined);
+});
+
+test("free concert keeps free plus the concert topic, not a category", () => {
+  const plan = buildSearchPlan("free concert");
+
+  assert.equal(plan.filters.topic, "music-performance");
+  assert.equal(plan.filters.free, true);
+  assert.equal(plan.filters.category, undefined);
+});
+
+test("later topic phrases stay ranking text, not a second hard filter", () => {
+  const aiFirst = buildSearchPlan("AI film");
+  assert.equal(aiFirst.filters.topic, "ai-machine-learning");
+  assert.equal(aiFirst.filters.category, undefined);
+  assert.ok(
+    aiFirst.keywords.includes("film") || aiFirst.cleaned.includes("film"),
+  );
+
+  const filmFirst = buildSearchPlan("film AI");
+  assert.equal(filmFirst.filters.topic, "film");
+  assert.equal(filmFirst.filters.category, undefined);
+  assert.ok(filmFirst.keywords.includes("ai"));
+});
+
+test("a fixture vocabulary that drops a synonym stops topic inference", () => {
+  const topics = [
+    {
+      slug: "theater-dance",
+      label: "Theater and Dance",
+      synonyms: ["theater", "dance"],
+    },
+  ];
+  const plan = buildSearchPlan("theatre", { topics });
+
+  assert.equal(plan.filters.topic, undefined);
+});
+
+test("theatre resolves to Theater and Dance instead of the broad Arts category", () => {
+  const plan = buildSearchPlan("theatre");
+
+  assert.equal(plan.filters.topic, "theater-dance");
+  assert.equal(plan.filters.category, undefined);
+});
+
+test("AI ethics ranks ethics-related events within the AI topic", () => {
+  const events = [
+    {
+      ...SYNTHETIC_EVENTS[7],
+      id: "topic-ethics",
+      title: "AI Ethics Forum",
+      topics: ["ai-machine-learning"],
+    },
+    {
+      ...SYNTHETIC_EVENTS[7],
+      id: "topic-other-ai",
+      title: "AI Systems Talk",
+      topics: ["ai-machine-learning"],
+    },
+  ];
+  const output = searchEvents(events, "AI ethics", null);
+
+  assert.equal(output.plan.filters.topic, "ai-machine-learning");
+  assert.deepEqual(output.plan.keywords, ["ethic"]);
+  assert.equal(output.results[0]?.id, "topic-ethics");
+});
+
+test("dismissing a topic removes its hard filter and reinjects its label for ranking", () => {
+  const output = searchEvents(
+    SYNTHETIC_EVENTS.map((event) => ({ ...event, topics: ["law"] })),
+    "AI",
+    null,
+    new Set(["topic:ai-machine-learning"]),
+  );
+
+  assert.equal(output.plan.filters.topic, undefined);
+  assert.deepEqual(output.plan.keywords, ["ai", "machine", "learn"]);
+  assert.ok(
+    output.plan.interpretations.every(
+      (chip) => chip.key !== "topic:ai-machine-learning",
+    ),
+  );
+});
+
+test("empty topic pools broaden with an explanatory fallback", () => {
+  const events = [
+    {
+      ...SYNTHETIC_EVENTS[7],
+      id: "topic-quantum",
+      title: "Quantum Talk",
+      topics: ["physics-math-quantum"],
+    },
+  ];
+  const output = searchEvents(events, "AI quantum", null);
+
+  assert.equal(output.fallbackUsed, true);
+  assert.match(output.fallbackMessage ?? "", /Showing all topics/);
+  assert.equal(output.results[0]?.id, "topic-quantum");
+});
+
+test("pure-topic empty pools broaden without a search index", () => {
+  const event = {
+    ...SYNTHETIC_EVENTS[16],
+    id: "topic-law-only",
+    title: "Law Workshop",
+    topics: ["law"],
+  };
+  const output = searchEvents([event], "AI", null);
+
+  assert.equal(output.fallbackUsed, true);
+  assert.match(output.fallbackMessage ?? "", /Showing all topics/);
+  assert.deepEqual(output.results, [event]);
+});
+
+test("queries without a topic leave topic intent unset", () => {
+  const plan = buildSearchPlan("seminar");
+  assert.equal(plan.filters.topic, undefined);
+  assert.ok(
+    !plan.interpretations.some((chip) => chip.key.startsWith("topic:")),
+  );
+});
+
+test("AI hero preset searches all categories", () => {
+  const aiPreset = DESKTOP_HERO_PRESETS.find(
+    (preset) => preset.label === "AI talks",
+  );
+
+  assert.equal(aiPreset?.category, "All");
 });
 
 test('"tonight" applies today plus evening intent and includes all-day events', () => {
@@ -523,7 +761,7 @@ test('"cal games" is interpreted as sports without searching for generic game te
   );
 });
 
-test("specific sport searches do not fuzzy-substitute unrelated sports", () => {
+test("specific sport words remain category intent and are stripped", () => {
   const output = searchEvents(SYNTHETIC_EVENTS, "basketball", {
     ids: SYNTHETIC_EVENTS.map((event) => event.id),
     t: { baseball: [12] },
@@ -536,7 +774,11 @@ test("specific sport searches do not fuzzy-substitute unrelated sports", () => {
   });
 
   assert.equal(output.plan.filters.category, "Sports");
-  assert.deepEqual(output.results, []);
+  assert.deepEqual(output.plan.keywords, []);
+  assert.deepEqual(
+    output.results.map((event) => event.id),
+    ["evt-baseball"],
+  );
 });
 
 test("venue aliases do not broaden Moffitt into every library event", () => {
@@ -572,11 +814,86 @@ test("dismissed source intent becomes literal search text instead of returning t
   assert.equal(output.results[0]?.id, "evt-law");
 });
 
+test('"berkeley ai risk" is a source lock; generic "ai risk" is not', () => {
+  const locked = buildSearchPlan("berkeley ai risk");
+  assert.equal(locked.filters.source, "ai_risk");
+
+  const generic = buildSearchPlan("ai risk");
+  assert.equal(generic.filters.source, undefined);
+});
+
+test('"brsl" is a source lock; generic "security lab" is not', () => {
+  const locked = buildSearchPlan("brsl seminar");
+  assert.equal(locked.filters.source, "brsl");
+
+  const named = buildSearchPlan("berkeley risk and security");
+  assert.equal(named.filters.source, "brsl");
+
+  const generic = buildSearchPlan("security lab");
+  assert.equal(generic.filters.source, undefined);
+});
+
 test('"student org" is not treated as a CalLink source lock', () => {
   const plan = buildSearchPlan("student org");
 
   assert.equal(plan.filters.source, undefined);
   assert.equal(plan.filters.category, "Student Life");
+});
+
+test("category-only words set a filter and are stripped from residual text", () => {
+  const plan = buildSearchPlan("academic");
+
+  assert.equal(plan.filters.category, "Academic");
+  assert.equal(plan.cleaned, "");
+  assert.deepEqual(plan.keywords, []);
+});
+
+test("future topic words remain searchable text instead of category intent", () => {
+  const subjectWords = [
+    "film",
+    "movie",
+    "concert",
+    "theater",
+    "dance",
+    "opera",
+    "recital",
+    "exhibition",
+    "museum",
+    "poetry",
+    "ai",
+    "artificial intelligence",
+    "machine learning",
+    "language models",
+    "llm",
+    "data science",
+    "computer science",
+    "eecs",
+    "robotics",
+    "biotech",
+    "genomics",
+    "startup",
+    "founder",
+    "venture",
+    "pitch",
+    "demo day",
+    "entrepreneur",
+    "free food",
+    "free lunch",
+    "free concert",
+    "club",
+    "social",
+    "mixer",
+    "info session",
+  ];
+
+  for (const subject of subjectWords) {
+    const plan = buildSearchPlan(subject);
+    assert.equal(
+      plan.filters.category,
+      undefined,
+      `${subject} should not set a category`,
+    );
+  }
 });
 
 test('"free speech" searches speech, not free admission', () => {
@@ -621,7 +938,7 @@ test("date fallback clears this-weekend hard filters when relaxing to upcoming",
     },
   ];
 
-  const output = searchEvents(events, "this weekend hackathon", null);
+  const output = searchEvents(events, "this weekend hackathon future", null);
 
   assert.equal(output.fallbackUsed, true);
   assert.equal(output.plan.filters.dateRange, "upcoming");
@@ -655,27 +972,27 @@ test("fuzzy fallback recovers a typo when the index has no exact hit", () => {
 });
 
 test("category-drop fallback surfaces cross-category matches when the filtered category is empty", () => {
-  // "film screening" interprets to an Arts category filter, but the only
-  // keyword match here is tagged Academic. The Arts-filtered pool is empty,
-  // so the engine must drop the category and explain the broadening.
+  // "academic research" interprets to an Academic category filter, but the
+  // only keyword match here is tagged Science & Tech. The Academic-filtered
+  // pool is empty, so the engine must drop the category and explain it.
   const futureDate = addDaysToDateKey(getCurrentPacificDateKey(), 5);
   const events = [
     {
       ...SYNTHETIC_EVENTS[4],
       id: "evt-doc-academic",
-      title: "Documentary Screening Workshop",
-      organizer: "History Department",
+      title: "Research Workshop",
+      organizer: "Engineering Department",
       date: futureDate,
       location: "Dwinelle Hall",
-      description: "A documentary screening and panel discussion.",
-      tags: ["Academic"],
+      description: "A research workshop and panel discussion.",
+      tags: ["Science & Tech"],
       source: "livewhale",
     },
   ];
 
-  const output = searchEvents(events, "film screening", null);
+  const output = searchEvents(events, "academic research", null);
 
-  assert.equal(output.plan.filters.category, "Arts");
+  assert.equal(output.plan.filters.category, "Academic");
   assert.equal(output.fallbackUsed, true);
   assert.match(output.fallbackMessage, /all categories/i);
   assert.ok(output.results.some((event) => event.id === "evt-doc-academic"));

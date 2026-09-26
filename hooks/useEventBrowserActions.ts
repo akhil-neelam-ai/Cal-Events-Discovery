@@ -93,9 +93,15 @@ export function useEventBrowserActions({
   const handleDismissChip = useCallback(
     (key: string) => {
       setDismissedInterpretationKeys((prev) => new Set([...prev, key]));
+      if (key.startsWith("topic:")) {
+        const slug = key.slice("topic:".length);
+        setFilters((prev) =>
+          prev.topic === slug ? { ...prev, topic: "" } : prev,
+        );
+      }
       setSelectedEventId(null);
     },
-    [setDismissedInterpretationKeys, setSelectedEventId],
+    [setDismissedInterpretationKeys, setFilters, setSelectedEventId],
   );
 
   const handleDateRangeChange = useCallback(
@@ -134,6 +140,25 @@ export function useEventBrowserActions({
     [onHistoryIntent, setDismissedInterpretationKeys, setFilters],
   );
 
+  const handleTopicChange = useCallback(
+    (topic: string) => {
+      onHistoryIntent("push");
+      setFilters((prev) => ({
+        ...prev,
+        topic: prev.topic === topic ? "" : topic,
+      }));
+      setSelectedEventId(null);
+      setDismissedInterpretationKeys(new Set());
+      trackFilter({ filter_type: "topic", filter_value: topic });
+    },
+    [
+      onHistoryIntent,
+      setDismissedInterpretationKeys,
+      setFilters,
+      setSelectedEventId,
+    ],
+  );
+
   const handleQuickPreset = useCallback(
     (preset: QuickFilterPreset) => {
       if (searchTimeoutRef.current) {
@@ -169,6 +194,7 @@ export function useEventBrowserActions({
     handleDismissChip,
     handleDateRangeChange,
     handleCategoryChange,
+    handleTopicChange,
     handleSourceChange,
     handleQuickPreset,
   };

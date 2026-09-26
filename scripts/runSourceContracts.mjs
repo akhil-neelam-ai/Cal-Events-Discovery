@@ -7,7 +7,7 @@
  * failing its contract exits non-zero. A supplementary source going dark is
  * reported, annotated, and flagged for operator notification via GITHUB_OUTPUT,
  * but does not fail the check — one dead scraper must not turn the whole
- * contract suite red and hide the health of the other ten sources.
+ * contract suite red and hide the health of the other sources.
  *
  * Run: node scripts/runSourceContracts.mjs
  */

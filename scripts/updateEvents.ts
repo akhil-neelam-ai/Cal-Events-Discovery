@@ -8,6 +8,7 @@
  *   cal_performances (WP REST API, arts presenter) =
  *   calbears         (athletics iCal) =
  *   bampfa           (HTML scraper, art museum & film archive)
+ *   ai_risk          (JS schedule scrape, Berkeley AI Risk speaker series)
  *
  * Failure handling: each source is independent. If a source throws, we
  * record it in status.json and continue. We refuse to overwrite a healthy
@@ -28,7 +29,9 @@ import type {
   SourceName,
   SourceStatus,
   StatusReport,
+  TopicAssignmentStatus,
 } from "./lib/schema.js";
+import { PublishedEventsPayloadSchema } from "./lib/schema.js";
 import type { FetchOptions } from "./lib/abort.js";
 import { dedupeEvents } from "./lib/dedupe.js";
 import { collapseMultiDay } from "./lib/collapseMultiDay.js";
@@ -49,10 +52,18 @@ import { fetchCallink } from "./sources/callink.js";
 import { fetchCalPerformances } from "./sources/cal_performances.js";
 import { fetchCalBears } from "./sources/calbears.js";
 import { fetchBampfa } from "./sources/bampfa.js";
-import { fetchHaas, fetchBerkeleyLaw, fetchBegin } from "./sources/tribe.js";
+import {
+  fetchHaas,
+  fetchBerkeleyLaw,
+  fetchBegin,
+  fetchBrsl,
+} from "./sources/tribe.js";
 import { fetchSimons } from "./sources/simons.js";
 import { fetchLuma } from "./sources/luma.js";
+import { fetchAiRisk } from "./sources/ai_risk.js";
 import { buildSearchIndex } from "./lib/buildIndex.js";
+import { TOPIC_VOCABULARY } from "./lib/topics.js";
+import { assignTopicsResiliently } from "./lib/topicAssignmentResilience.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -118,6 +129,7 @@ interface AdapterRun {
   groundingSources?: PublishedSource[];
   filteredPast: number;
   invalid: number;
+  groupFeedsDegraded?: boolean;
 }
 
 interface RecoveryState {
@@ -128,6 +140,7 @@ interface RecoveryState {
   degradedReasons: Set<string>;
   lastGoodUsed: number;
   fallbackAgeHours?: number;
+  restoredIds: Set<string>;
 }
 
 interface RecoveryPolicy {
@@ -159,6 +172,8 @@ const FALLBACK_POLICIES: Partial<Record<SourceName, RecoveryPolicy>> = {
   simons: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
   luma: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
   begin: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
+  ai_risk: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
+  brsl: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
 };
 
 async function runAdapter<
@@ -167,6 +182,7 @@ async function runAdapter<
     groundingSources?: PublishedSource[];
     filteredPast?: number;
     invalid?: number;
+    groupFeedsDegraded?: boolean;
   },
 >(name: SourceStatus["name"], fn: () => Promise<T>): Promise<AdapterRun> {
   const started = Date.now();
@@ -185,6 +201,7 @@ async function runAdapter<
       groundingSources: result.groundingSources,
       filteredPast: result.filteredPast ?? 0,
       invalid: result.invalid ?? 0,
+      groupFeedsDegraded: result.groupFeedsDegraded,
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -279,6 +296,7 @@ function markRecovery(
     return;
   }
 
+  const beforeIds = new Set(legacy.map((event) => event.id));
   const restored = appendLastGoodEvents(
     legacy,
     existing.events,
@@ -286,6 +304,11 @@ function markRecovery(
     today,
   );
   if (restored > 0) {
+    for (const event of legacy) {
+      if (!beforeIds.has(event.id)) {
+        recovery.restoredIds.add(event.id);
+      }
+    }
     run.status.fallback_used = true;
     run.status.fallback_count = restored;
     run.status.fallback_age_hours = ageHours;
@@ -445,6 +468,11 @@ async function main(): Promise<void> {
       { name: "simons", promise: runAdapterWithTimeout("simons", fetchSimons) },
       { name: "luma", promise: runAdapterWithTimeout("luma", fetchLuma) },
       { name: "begin", promise: runAdapterWithTimeout("begin", fetchBegin) },
+      {
+        name: "ai_risk",
+        promise: runAdapterWithTimeout("ai_risk", fetchAiRisk),
+      },
+      { name: "brsl", promise: runAdapterWithTimeout("brsl", fetchBrsl) },
     ];
 
   const settledRuns = await Promise.allSettled(
@@ -527,8 +555,15 @@ async function main(): Promise<void> {
   // Sort by date ascending
   active.sort((a, b) => a.start_at.localeCompare(b.start_at));
 
-  // Project to legacy shape
-  const legacy: LegacyCalEvent[] = active.map(projectToLegacy);
+  // Projection stays outside the topic-assignment recovery boundary. A broken
+  // projection must still stop publication instead of being mislabeled as a
+  // topic-quality problem.
+  const assignmentSources = new Map<string, CanonicalEvent>();
+  let legacy: LegacyCalEvent[] = active.map((event) => {
+    const published = projectToLegacy(event);
+    assignmentSources.set(published.id, event);
+    return published;
+  });
 
   const recovery: RecoveryState = {
     fallbackSources: new Set<SourceName>(),
@@ -536,6 +571,7 @@ async function main(): Promise<void> {
     staleFallbackSources: new Set<SourceName>(),
     degradedReasons: new Set<string>(),
     lastGoodUsed: 0,
+    restoredIds: new Set<string>(),
   };
 
   const today = todayPT();
@@ -545,6 +581,27 @@ async function main(): Promise<void> {
   for (const [name, reason] of cappedReasons) {
     recovery.degradedSources.add(name);
     recovery.degradedReasons.add(reason);
+  }
+  const groupFeedsDegraded = runs.some((run) => run.groupFeedsDegraded);
+  const topicAssignment = assignTopicsResiliently(
+    legacy.map((event) => ({
+      published: event,
+      source: assignmentSources.get(event.id) ?? event,
+    })),
+    existing.events,
+    undefined,
+    {
+      preserveTopicIds: recovery.restoredIds,
+      forceError: groupFeedsDegraded
+        ? "LiveWhale group feeds failed; topic provenance incomplete"
+        : undefined,
+    },
+  );
+  legacy = topicAssignment.events;
+  if (topicAssignment.status.outcome === "error") {
+    console.warn(
+      `[orchestrator] topic assignment failed; carried forward ${topicAssignment.status.carried_forward_count} event topic sets: ${topicAssignment.status.error}`,
+    );
   }
   legacy.sort(compareLegacyEvents);
 
@@ -575,6 +632,14 @@ async function main(): Promise<void> {
       title: "Berkeley Gateway to Innovation Events",
       uri: "https://begin.berkeley.edu/events/",
     },
+    {
+      title: "Berkeley AI Risk Speaker Series",
+      uri: "https://ai-risk.berkeley.edu/speaker-series.html",
+    },
+    {
+      title: "Berkeley Risk and Security Lab Events",
+      uri: "https://brsl.berkeley.edu/events/",
+    },
     ...groundingSources,
   ];
   const uniqueSources = Array.from(
@@ -593,6 +658,7 @@ async function main(): Promise<void> {
         existing.events.length,
         duplicatesRemoved,
         recovery,
+        topicAssignment.status,
         true,
         "all sources failed",
       );
@@ -609,6 +675,7 @@ async function main(): Promise<void> {
         existing.events.length,
         duplicatesRemoved,
         recovery,
+        topicAssignment.status,
         true,
         "sources produced 0 events",
       );
@@ -623,6 +690,7 @@ async function main(): Promise<void> {
       legacy.length,
       duplicatesRemoved,
       recovery,
+      topicAssignment.status,
       false,
       undefined,
       true,
@@ -637,13 +705,14 @@ async function main(): Promise<void> {
       : 0;
   const degradedSourceList = Array.from(recovery.degradedSources);
 
-  const outputData = {
+  const outputData = PublishedEventsPayloadSchema.parse({
     events: legacy,
     sources: uniqueSources,
     lastUpdated: Date.now(),
     data_age_hours: dataAgeHours,
     degraded_sources: degradedSourceList,
-  };
+    topic_vocabulary: TOPIC_VOCABULARY,
+  });
   atomicWriteJsonSync(eventsOutPath, outputData, 2);
   console.log(
     `[orchestrator] wrote ${legacy.length} events → ${eventsOutPath}`,
@@ -661,6 +730,7 @@ async function main(): Promise<void> {
     legacy.length,
     duplicatesRemoved,
     recovery,
+    topicAssignment.status,
     false,
     undefined,
     false,
@@ -672,6 +742,7 @@ function writeStatus(
   totalEvents: number,
   duplicatesRemoved: number,
   recovery: RecoveryState,
+  topicStatus: TopicAssignmentStatus,
   publishFallbackUsed = false,
   publishFallbackReason?: string,
   dataQualityBlocked = false,
@@ -688,6 +759,7 @@ function writeStatus(
     duplicates_removed: duplicatesRemoved,
     past_events_filtered: runs.reduce((s, r) => s + r.filteredPast, 0),
     invalid_events_filtered: runs.reduce((s, r) => s + r.invalid, 0),
+    topics: topicStatus,
     sources: runs.map((r) => r.status),
     fallback_used: publishFallbackUsed || fallbackSources.length > 0,
     degraded:

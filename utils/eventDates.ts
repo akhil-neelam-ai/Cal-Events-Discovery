@@ -349,9 +349,11 @@ export function filterEventsByDateRange(
 
 export function sortEventsChronologically(events: CalEvent[]): CalEvent[] {
   return [...events].sort((left, right) => {
-    const dateCompare = (getPacificDateKey(left.date) || "").localeCompare(
-      getPacificDateKey(right.date) || "",
-    );
+    const leftDateKey = getPacificDateKey(left.date);
+    const rightDateKey = getPacificDateKey(right.date);
+    if (!leftDateKey && rightDateKey) return 1;
+    if (leftDateKey && !rightDateKey) return -1;
+    const dateCompare = (leftDateKey || "").localeCompare(rightDateKey || "");
     if (dateCompare !== 0) return dateCompare;
     return (
       timeSortValue(left.time) - timeSortValue(right.time) ||

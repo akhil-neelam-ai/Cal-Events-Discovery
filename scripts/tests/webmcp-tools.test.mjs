@@ -1,21 +1,33 @@
 import assert from "node:assert/strict";
-import fs from "node:fs";
-import path from "node:path";
 import test from "node:test";
-import { fileURLToPath } from "node:url";
-import vm from "node:vm";
 
-const rootDir = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "..",
-);
-const webMcpPath = path.join(rootDir, "public", "webmcp-tools.js");
+import { createWebMcpTools } from "../../agent/webmcpTools.ts";
+import { TOPIC_VOCABULARY } from "../../scripts/lib/topics.ts";
+import {
+  buildSearchPlan,
+  dismissedKeysForExplicitTopic,
+  searchEvents,
+} from "../../utils/searchEngine.ts";
 
 function makePayload(events) {
   return {
     lastUpdated: Date.parse("2026-05-13T12:00:00Z"),
     events,
+  };
+}
+
+function withTopics(payload, topics = ["ai-machine-learning"]) {
+  return {
+    ...payload,
+    topic_vocabulary: {
+      version: 1,
+      topics: topics.map((slug) => ({
+        slug,
+        label: slug,
+        group: "fields",
+        synonyms: [slug],
+      })),
+    },
   };
 }
 
@@ -26,47 +38,52 @@ function event(overrides = {}) {
     organizer: "UC Berkeley",
     date: overrides.date ?? "2026-05-13",
     time: overrides.time ?? "12:00 PM",
-    location: "Campus",
+    location: overrides.location ?? "Sather Gate",
     description: overrides.description ?? "AI event",
-    tags: ["Science & Tech"],
+    tags: overrides.tags ?? ["Science & Tech"],
+    topics: overrides.topics,
     url: "https://example.com",
-    source: "livewhale",
+    source: overrides.source ?? "livewhale",
   };
 }
 
-function loadTools(payload) {
+function loadTools(payload, options = {}) {
   const tools = new Map();
-  const context = {
-    AbortController,
-    clearTimeout,
-    console,
-    fetch: async (requestPath) => {
-      assert.equal(requestPath, "/events.json");
-      return {
-        ok: true,
-        json: async () => payload,
-      };
-    },
-    navigator: {
-      modelContext: {
-        registerTool: (tool) => tools.set(tool.name, tool),
-      },
-    },
-    setTimeout,
-    window: {
-      location: { hostname: "localhost" },
-    },
-  };
+  let locationSearch = options.locationSearch ?? "";
+  const applied = [];
+  const fetchedPaths = [];
 
-  vm.createContext(context);
-  vm.runInContext(fs.readFileSync(webMcpPath, "utf8"), context, {
-    filename: webMcpPath,
+  const toolList = createWebMcpTools({
+    fetchJson: async (requestPath) => {
+      fetchedPaths.push(requestPath);
+      if (requestPath === "/events.json") {
+        return payload;
+      }
+      if (requestPath === "/search-index.json") {
+        return options.searchIndex ?? null;
+      }
+      if (requestPath === "/status.json") {
+        return options.status ?? { total_events: payload.events.length };
+      }
+      throw new Error(`unexpected path ${requestPath}`);
+    },
+    getLocationSearch: () => locationSearch,
+    getOrigin: () => "https://cal-events.com",
+    applyUrlSearch: (search) => {
+      locationSearch = search;
+      applied.push(search);
+    },
   });
-  return tools;
+
+  for (const tool of toolList) {
+    tools.set(tool.name, tool);
+  }
+
+  return { tools, applied, fetchedPaths, getSearch: () => locationSearch };
 }
 
-test("WebMCP event search sorts matches chronologically before applying limit", async () => {
-  const tools = loadTools(
+test("WebMCP ranked search returns AI matches with ranked flag", async () => {
+  const { tools } = loadTools(
     makePayload([
       event({
         id: "june",
@@ -88,24 +105,33 @@ test("WebMCP event search sorts matches chronologically before applying limit", 
         title: "Later June AI Seminar",
         date: "2026-06-08",
       }),
+      event({
+        id: "unrelated",
+        title: "Pottery Night",
+        date: "2026-05-20",
+        description: "Clay workshop",
+      }),
     ]),
   );
 
   const searchTool = tools.get("search_berkeley_events");
   assert.ok(searchTool, "search tool should register");
 
-  const output = await searchTool.execute({ query: "AI", limit: 3 });
+  const output = await searchTool.execute({ query: "AI", limit: 10 });
+  assert.equal(output.ranked, true);
+  assert.equal(output.count, 4);
   assert.deepEqual(
-    output.events.map((item) => item.id),
-    ["may", "june", "later-june"],
+    new Set(output.events.map((item) => item.id)),
+    new Set(["may", "june", "later-june", "october"]),
   );
+  assert.ok(output.events.every((item) => "directionsUrl" in item));
 });
 
-test("WebMCP get_event_by_id returns the matching event or null", async () => {
-  const tools = loadTools(
+test("WebMCP get_event_by_id returns directions and calendar links", async () => {
+  const { tools } = loadTools(
     makePayload([
       event({ id: "alpha", title: "Alpha Talk" }),
-      event({ id: "beta", title: "Beta Talk" }),
+      event({ id: "beta", title: "Beta Talk", location: "Doe Library" }),
     ]),
   );
 
@@ -115,6 +141,9 @@ test("WebMCP get_event_by_id returns the matching event or null", async () => {
   const found = await getById.execute({ id: "beta" });
   assert.equal(found.event?.id, "beta");
   assert.equal(found.event?.title, "Beta Talk");
+  assert.match(found.event.directionsUrl, /google\.com\/maps/);
+  assert.match(found.event.googleCalendarUrl, /calendar\.google\.com/);
+  assert.match(found.event.permalink, /event=beta/);
 
   const missing = await getById.execute({ id: "nope" });
   assert.equal(missing.event, null);
@@ -124,8 +153,117 @@ test("WebMCP get_event_by_id returns the matching event or null", async () => {
   assert.match(noId.error, /id is required/);
 });
 
+test("WebMCP explicit topic overrides a different inferred topic like the UI", async () => {
+  const events = [
+    event({
+      id: "law-ai-text",
+      title: "Law forum",
+      description: "A law event that mentions AI once.",
+      topics: ["law"],
+    }),
+    event({
+      id: "ai-only",
+      title: "AI forum",
+      description: "Artificial intelligence research.",
+      topics: ["ai-machine-learning"],
+    }),
+  ];
+  const payload = {
+    ...makePayload(events),
+    topic_vocabulary: TOPIC_VOCABULARY,
+  };
+
+  for (const searchIndex of [
+    null,
+    { ids: [], eventCount: 0, t: {}, g: {}, o: {}, l: {}, d: {} },
+  ]) {
+    const { tools } = loadTools(payload, { searchIndex });
+    const search = tools.get("search_berkeley_events");
+    const agent = await search.execute({ topic: "law", query: "AI" });
+
+    const plan = buildSearchPlan("AI", { topics: TOPIC_VOCABULARY.topics });
+    const dismissed = dismissedKeysForExplicitTopic(plan, "law");
+    const pool = events.filter((item) => (item.topics ?? []).includes("law"));
+    const ui = searchEvents(pool, "AI", searchIndex, dismissed, {
+      topics: TOPIC_VOCABULARY.topics,
+    });
+
+    assert.deepEqual(
+      agent.events.map((item) => item.id),
+      ui.results.map((item) => item.id).slice(0, 10),
+    );
+    assert.equal(agent.fallbackUsed, ui.fallbackUsed);
+    assert.ok(agent.events.some((item) => item.id === "law-ai-text"));
+    assert.ok(!agent.events.some((item) => item.id === "ai-only"));
+  }
+});
+
+test("WebMCP date bounds apply before topic fallback", async () => {
+  const todayKey = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+  const [year, month, day] = todayKey.split("-").map(Number);
+  const tomorrow = new Date(Date.UTC(year, month - 1, day));
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  const tomorrowKey = tomorrow.toISOString().slice(0, 10);
+
+  const { tools } = loadTools({
+    ...makePayload([
+      event({
+        id: "today-law",
+        title: "Law today",
+        date: todayKey,
+        topics: ["law"],
+        description: "A law briefing.",
+      }),
+      event({
+        id: "tomorrow-ai",
+        title: "AI tomorrow",
+        date: tomorrowKey,
+        topics: ["ai-machine-learning"],
+        description: "Artificial intelligence talk.",
+      }),
+    ]),
+    topic_vocabulary: TOPIC_VOCABULARY,
+  });
+
+  const search = tools.get("search_berkeley_events");
+  const output = await search.execute({
+    query: "AI",
+    datePreset: "today",
+  });
+
+  assert.ok(output.count > 0, "today plus AI must not return an empty list");
+  assert.ok(!output.events.some((item) => item.id === "tomorrow-ai"));
+});
+
+test("WebMCP topic filtering uses the published vocabulary and projects topics", async () => {
+  const payload = withTopics(
+    makePayload([
+      event({ id: "ai", topics: ["ai-machine-learning"], title: "AI forum" }),
+      event({ id: "law", topics: ["law"], title: "Law forum" }),
+    ]),
+    ["ai-machine-learning", "law"],
+  );
+  const { tools } = loadTools(payload);
+  const search = tools.get("search_berkeley_events");
+
+  const result = await search.execute({ topic: "ai-machine-learning" });
+  assert.deepEqual(
+    result.events.map((item) => item.id),
+    ["ai"],
+  );
+  assert.deepEqual(result.events[0].topics, ["ai-machine-learning"]);
+
+  const unknown = await search.execute({ topic: "does-not-exist" });
+  assert.match(unknown.error, /Unknown topic/);
+});
+
 test("WebMCP generate_event_ics escapes text and rolls a late-evening DTEND", async () => {
-  const tools = loadTools(
+  const { tools } = loadTools(
     makePayload([
       event({
         id: "late",
@@ -148,6 +286,7 @@ test("WebMCP generate_event_ics escapes text and rolls a late-evening DTEND", as
   assert.match(result.ics, /DTEND;TZID=America\/Los_Angeles:20260531T000000/);
   assert.doesNotMatch(result.ics, /T24\d{4}/);
   assert.equal(result.filename, "event-late.ics");
+  assert.ok(result.googleCalendarUrl);
 
   const missing = await icsTool.execute({ id: "ghost" });
   assert.equal(missing.ics, null);
@@ -166,7 +305,7 @@ test("WebMCP datePreset 'today' resolves Pacific bounds to today's events", asyn
   tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
   const tomorrowKey = tomorrow.toISOString().slice(0, 10);
 
-  const tools = loadTools(
+  const { tools } = loadTools(
     makePayload([
       event({ id: "today-evt", title: "Today AI", date: todayKey }),
       event({ id: "tomorrow-evt", title: "Tomorrow AI", date: tomorrowKey }),
@@ -179,4 +318,85 @@ test("WebMCP datePreset 'today' resolves Pacific bounds to today's events", asyn
     output.events.map((item) => item.id),
     ["today-evt"],
   );
+  assert.equal(output.ranked, false);
+});
+
+test("WebMCP URL workspace tools build and apply shared state", async () => {
+  const { tools, applied } = loadTools(withTopics(makePayload([])), {
+    locationSearch: "?q=jazz&date=today",
+  });
+
+  const getUi = tools.get("get_ui_state");
+  const buildUrl = tools.get("build_calevents_url");
+  const applyUi = tools.get("apply_ui_state");
+
+  const state = await getUi.execute({ includeFeedStatus: true });
+  assert.equal(state.filters.searchQuery, "jazz");
+  assert.equal(state.filters.dateRange, "today");
+  assert.equal(state.feedStatus.total_events, 0);
+
+  const built = await buildUrl.execute({
+    q: "moffitt",
+    date: "week",
+    category: "Academic",
+    event: "abc",
+    topic: "ai-machine-learning",
+  });
+  assert.match(built.url, /cal-events\.com\/\?/);
+  assert.match(built.search, /q=moffitt/);
+  assert.match(built.search, /event=abc/);
+  assert.match(built.search, /category=Academic/);
+  assert.match(built.search, /topic=ai-machine-learning/);
+
+  const appliedResult = await applyUi.execute({
+    query: "haas",
+    datePreset: "tomorrow",
+    source: "haas",
+  });
+  assert.equal(appliedResult.applied, true);
+  assert.equal(applied.length, 1);
+  assert.match(applied[0], /q=haas/);
+  assert.match(applied[0], /date=tomorrow/);
+  assert.match(applied[0], /source=haas/);
+});
+
+test("topic-free UI state and URL tools skip the event corpus", async () => {
+  const { tools, fetchedPaths } = loadTools(withTopics(makePayload([])), {
+    locationSearch: "?q=jazz&date=today",
+  });
+
+  const getUi = tools.get("get_ui_state");
+  const buildUrl = tools.get("build_calevents_url");
+  const applyUi = tools.get("apply_ui_state");
+
+  await getUi.execute({});
+  await buildUrl.execute({ q: "moffitt", date: "week" });
+  await applyUi.execute({ query: "haas", datePreset: "tomorrow" });
+
+  assert.equal(
+    fetchedPaths.filter((path) => path === "/events.json").length,
+    0,
+  );
+
+  const builtWithTopic = await buildUrl.execute({
+    topic: "ai-machine-learning",
+  });
+  assert.match(builtWithTopic.search, /topic=ai-machine-learning/);
+  assert.equal(
+    fetchedPaths.filter((path) => path === "/events.json").length,
+    1,
+  );
+});
+
+test("WebMCP get_event_directions returns maps URL", async () => {
+  const { tools } = loadTools(
+    makePayload([event({ id: "lib", location: "Moffitt Library" })]),
+  );
+
+  const directions = tools.get("get_event_directions");
+  const byId = await directions.execute({ id: "lib" });
+  assert.match(byId.directionsUrl, /Moffitt/);
+
+  const byLocation = await directions.execute({ location: "Sproul Plaza" });
+  assert.match(byLocation.directionsUrl, /Sproul/);
 });

@@ -6,6 +6,11 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://cal-events.com/for-agents.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://cal-events.com/llms.txt</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
