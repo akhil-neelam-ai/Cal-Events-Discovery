@@ -162,6 +162,17 @@ export function stem(word: string): string {
     }
   }
 
+  // Porter step 1c: a final "y" after a consonant becomes "i", and so does a
+  // final "ie". "library" then meets "libraries" at "librari", and "movie"
+  // meets "movies" at "movi".
+  if (w.length > 3) {
+    if (/[^aeiouy]y$/.test(w)) {
+      w = w.slice(0, -1) + "i";
+    } else if (w.endsWith("ie")) {
+      w = w.slice(0, -1);
+    }
+  }
+
   return w;
 }
 

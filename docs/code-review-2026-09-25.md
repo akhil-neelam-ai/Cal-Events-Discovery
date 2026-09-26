@@ -91,6 +91,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #6. The stemmer splits -y and -ies forms (P2)
 
+**Status:** Fixed. The stemmer now runs Porter step 1c, and `public/search-index.json` is rebuilt. "library" and "libraries" both return 30, and "community" and "communities" both return 91. `npm run rebuild-index` rebuilds the index from the committed feed. A stability test now fails when the committed index is stale. One gap is left in the topic layer. "movie" is a Film topic synonym and "movies" is not, so they still return 27 and 2.
 **File:** `utils/textUtils.ts:127-166`
 **Problem:** "-ies" becomes "-i", but a final "-y" is kept. "library" stems to `library` and "libraries" to `librari`. "movie" stays `movie` while "movies" becomes `movi`. Singular and plural queries hit different postings.
 **Evidence:**

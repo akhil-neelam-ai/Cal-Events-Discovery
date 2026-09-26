@@ -19,6 +19,7 @@ npm run test:ui              # vitest, tests/*.tsx
 npm run test:e2e             # Playwright, tests/e2e/
 npm run test:search-quality  # Live golden queries against public/ artifacts (non-blocking in CI)
 npm run update-events        # Full pipeline → public/events.json + search-index.json + status.json
+npm run rebuild-index        # Rebuild public/search-index.json from the committed events.json
 npm run preview              # Preview built output locally
 ```
 
@@ -176,7 +177,7 @@ The September full-repo audit is `docs/code-review-2026-09-25.md`. Items with a 
 
 **Tribe adapter reusability**: `scripts/sources/tribe.ts` exports `fetchHaas`, `fetchBerkeleyLaw`, `fetchBegin`, and `fetchBrsl` from one config-driven implementation. A new WordPress site running The Events Calendar needs only a new export.
 
-**Stemming must stay consistent**: `buildIndex.ts` and `searchEngine.ts` both call `stem()` from `utils/textUtils.ts`. Change the stemmer and you must regenerate the index.
+**Stemming must stay consistent**: `buildIndex.ts` and `searchEngine.ts` both call `stem()` from `utils/textUtils.ts`. Change the stemmer, the tokenizer, or the venue aliases and run `npm run rebuild-index`. A stability test fails until the committed index matches.
 
 **`runAdapterWithTimeout`** wraps each adapter so it resolves to a failed run rather than rejecting. The orchestrator still uses `Promise.allSettled` and maps results back to source names by index, so one timeout cannot cancel the others.
 

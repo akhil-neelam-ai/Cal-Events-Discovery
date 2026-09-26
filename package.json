@@ -27,7 +27,8 @@
     "typecheck": "tsc --noEmit",
     "validate": "npm run lint && npm run format:check && npm run typecheck && npm run test:scripts && npm run test:ui",
     "test": "npm run validate",
-    "update-events": "tsx scripts/updateEvents.ts"
+    "update-events": "tsx scripts/updateEvents.ts",
+    "rebuild-index": "tsx scripts/rebuildSearchIndex.ts"
   },
   "overrides": {
     "undici": "^7.29.0"

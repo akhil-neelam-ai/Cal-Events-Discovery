@@ -259,10 +259,49 @@ test("single-word synonyms are matched after query stemming", () => {
   const plan = buildSearchPlan("films archive");
 
   assert.ok(
-    plan.expandedTokens.includes("movie"),
+    plan.expandedTokens.includes(tokenize("movie")[0]),
     "films should expand through the stemmed film token",
   );
   assert.ok(plan.expandedTokens.includes("cinema"));
+});
+
+test("singular and plural words share a stem and match the same events", () => {
+  for (const [singular, plural] of [
+    ["library", "libraries"],
+    ["movie", "movies"],
+    ["community", "communities"],
+    ["study", "studies"],
+    ["party", "parties"],
+  ]) {
+    assert.deepEqual(tokenize(singular), tokenize(plural), singular);
+  }
+  assert.deepEqual(tokenize("studying studied"), tokenize("study"));
+  assert.deepEqual(tokenize("play plays monday"), ["play", "monday"]);
+
+  const events = [
+    {
+      ...SYNTHETIC_EVENTS[13],
+      id: "evt-library-tour",
+      title: "Library Tour",
+      location: "Dwinelle Hall",
+      description: "A walk through one library.",
+    },
+    {
+      ...SYNTHETIC_EVENTS[13],
+      id: "evt-libraries",
+      title: "Libraries of the Bay",
+      location: "Dwinelle Hall",
+      description: "A talk about public libraries.",
+    },
+  ];
+  const index = buildSearchIndex(events);
+  const ids = (query) =>
+    searchEvents(events, query, index)
+      .results.map((event) => event.id)
+      .sort();
+
+  assert.deepEqual(ids("library"), ["evt-libraries", "evt-library-tour"]);
+  assert.deepEqual(ids("libraries"), ids("library"));
 });
 
 test("pure temporal queries return the full pool for later date filtering", () => {
