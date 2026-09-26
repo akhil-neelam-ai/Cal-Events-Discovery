@@ -561,7 +561,7 @@ async function main(): Promise<void> {
     },
     {
       title: "Berkeley AI Risk Speaker Series",
-      uri: "https://ai-risk.berkeley.edu/speaker-series.html",
+      uri: "https://ai-risk.berkeley.edu/#upcoming",
     },
     {
       title: "Berkeley Risk and Security Lab Events",

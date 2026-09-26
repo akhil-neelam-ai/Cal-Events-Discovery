@@ -76,7 +76,7 @@ livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley
 | `tribe.ts` | Tribe/WP REST API | Haas, Berkeley Law, BEGIN, BRSL. Generic adapter, reusable for any site running The Events Calendar plugin |
 | `simons.ts` | JSON API | CS theory research institute (`simons.berkeley.edu/api/events`) |
 | `luma.ts` | Luma JSON API | Berkeley-affiliated Luma calendars; IDs in `BERKELEY_LUMA_CALENDARS` |
-| `ai_risk.ts` | JS schedule scrape | Berkeley AI Risk speaker series (`ai-risk.berkeley.edu/speaker-series.js`) |
+| `ai_risk.ts` | JSON feed | Berkeley AI Risk speaker series (`ai-risk.berkeley.edu/events.json`), which the site builds for its own calendar sync |
 
 ### 3. Frontend (`App.tsx` + `utils/`)
 
@@ -145,7 +145,7 @@ Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` me
 
 The June full-repo audit is `docs/code-review-2026-06-02.md`. It is a different pass.
 
-The September full-repo audit is `docs/code-review-2026-09-25.md`. Every item has a status line. #8, #12, and #13 are fixed in code and wait on a live run. #11 is partly fixed: the AI Risk schedule moved from `speaker-series.js`, and the new path is unknown.
+The September full-repo audit is `docs/code-review-2026-09-25.md`. Every item has a status line. #8, #11, #12, and #13 are fixed in code and wait on a live run.
 
 ## Key files
 

@@ -165,13 +165,18 @@ export const CONTRACTS = [
   },
   {
     name: "ai_risk",
-    url: "https://ai-risk.berkeley.edu/speaker-series.js",
+    url: "https://ai-risk.berkeley.edu/events.json",
     validate(_response, body) {
-      if (!/(?:const|let|var)\s+speakerEvents\s*=/.test(body)) {
-        throw new Error("speaker-series.js missing speakerEvents assignment");
+      const parsed = JSON.parse(body);
+      if (!parsed || !Array.isArray(parsed.events)) {
+        throw new Error("AI Risk events.json missing expected `events` array");
       }
-      if (!/eventDate\s*:/.test(body)) {
-        throw new Error("speaker-series.js missing eventDate fields");
+      const [first] = parsed.events;
+      if (
+        first &&
+        (typeof first.slug !== "string" || typeof first.start !== "string")
+      ) {
+        throw new Error("AI Risk events.json entries missing slug or start");
       }
     },
   },

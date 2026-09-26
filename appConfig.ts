@@ -26,7 +26,7 @@ export const SOURCE_URLS: Record<string, string> = {
   simons: "https://simons.berkeley.edu/programs-events",
   luma: "https://luma.com/discover",
   begin: "https://begin.berkeley.edu/events/",
-  ai_risk: "https://ai-risk.berkeley.edu/speaker-series.html",
+  ai_risk: "https://ai-risk.berkeley.edu/#upcoming",
   brsl: "https://brsl.berkeley.edu/events/",
 };
 

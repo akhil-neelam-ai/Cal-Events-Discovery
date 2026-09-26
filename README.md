@@ -190,7 +190,7 @@ npm run test:search-quality                 # live corpus golden queries
 | Berkeley Haas / Law / BEGIN / BRSL | `tribe.ts` | Tribe Events Calendar REST |
 | Simons Institute | `simons.ts` | JSON API |
 | Luma (Berkeley calendars) | `luma.ts` | Luma JSON API |
-| Berkeley AI Risk | `ai_risk.ts` | JS schedule scrape |
+| Berkeley AI Risk | `ai_risk.ts` | JSON feed (`events.json`) |
 
 ## Deploy
 

@@ -1,168 +1,148 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { isoDateInPT } from "../../scripts/lib/normalize.ts";
+import { addDaysToDateKey } from "../../utils/eventDates.ts";
+import { todayPT } from "../../scripts/lib/normalize.ts";
 import {
-  mapTalkToCanonical,
-  normalizeEventDate,
-  parseEventTime,
-  parseSpeakerEventsScript,
-  ptDateTimeToIso,
-  talkTitleFor,
+  FEED_URL,
+  fetchAiRisk,
+  mapFeedEvent,
 } from "../../scripts/sources/ai_risk.ts";
 
-const SAMPLE_SCRIPT = `
-const speakerEvents = [
-    {
-        id: 3,
-        speakerName: "Bharat Chandar",
-        speakerAffiliation: "Stanford University",
-        speakerWebsite: "https://bharatchandar.com",
-        talkTitle: "Canaries in the Coal Mine",
-        talkAbstract: "Line one\\nLine two",
-        eventDate: "2025-10-7",
-        eventTime: "16:30",
-        eventLocation: "621 Sutardja Dai Hall",
-        eventLink: "",
-        videoUrl: "https://www.youtube.com/watch?v=abc",
-        slidesUrl: "slides/chandar-slides.pdf"
-    },
-    {
-        id: 6,
-        speakerName: "Jessica Newman",
-        speakerAffiliation: "UC Berkeley",
-        speakerWebsite: "",
-        talkTitle: "Can we Manage the Risks of Frontier AI?",
-        talkAbstract: "",
-        eventDate: "2025-11-18",
-        eventTime: "16:30",
-        eventLocation: "Zoom only",
-        eventLink: "https://berkeley.zoom.us/j/123",
-        videoUrl: "",
-        slidesUrl: ""
-    },
-    {
-        id: 9,
-        speakerName: "Deirdre Mulligan",
-        speakerAffiliation: "UC Berkeley",
-        speakerWebsite: "",
-        talkTitle: '"If anyone builds it, everyone dies": Sociotechnical Imaginaries',
-        talkAbstract: "Joint work.",
-        eventDate: "2026-02-03",
-        eventTime: "16:00",
-        eventLocation: "621 Sutardja Dai Hall",
-        eventLink: "",
-        videoUrl: "",
-        slidesUrl: ""
-    },
-    {
-        id: 16,
-        speakerName: "John Sherman",
-        speakerAffiliation: "UC Berkeley",
-        speakerWebsite: "",
-        talkTitle: "TBA",
-        talkAbstract: "",
-        eventDate: "2026-09-22",
-        eventTime: "16:00",
-        eventLocation: "621 Sutardja Dai Hall",
-        eventLink: "",
-        videoUrl: "",
-        slidesUrl: ""
-    },
-];
-function createEventHTML(event) { return event.talkTitle; }
-`;
+const ZOOM = "https://berkeley.zoom.us/j/96396540012";
 
-test("normalizeEventDate pads single-digit month and day", () => {
-  assert.equal(normalizeEventDate("2025-10-7"), "2025-10-07");
-  assert.equal(normalizeEventDate("2026-09-08"), "2026-09-08");
-  assert.equal(normalizeEventDate("not-a-date"), null);
-  assert.equal(normalizeEventDate("2026-13-01"), null);
-});
+// Entries copy the shape that the site's tools/build.mjs writes.
+const KRUEGER = {
+  slug: "david-krueger",
+  title: "AI Risk speaker series: David Krueger",
+  start: "2025-09-09T16:30:00-07:00",
+  end: "2025-09-09T18:00:00-07:00",
+  location: "621 Sutardja Dai Hall",
+  description: [
+    "Everything You Always Wanted to Know About AI Safety (But Were Afraid to Ask)\nDavid Krueger (University of Montreal)",
+    "A whirlwind tour of AI Safety.",
+    "Second paragraph.",
+    `Zoom: ${ZOOM}`,
+    "https://ai-risk.berkeley.edu/#david-krueger",
+  ].join("\n\n"),
+};
 
-test("parseEventTime accepts 24-hour HH:MM", () => {
-  assert.deepEqual(parseEventTime("16:30"), { hour: 16, minute: 30 });
-  assert.equal(parseEventTime("25:00"), null);
-  assert.equal(parseEventTime("4:00 PM"), null);
-});
+const PIERSON = {
+  slug: "emma-pierson",
+  title: "AI Risk speaker series: Emma Pierson",
+  start: "2026-11-17T16:00:00-08:00",
+  end: "2026-11-17T17:30:00-08:00",
+  location: "621 Sutardja Dai Hall",
+  description: [
+    "Emma Pierson (UC Berkeley)",
+    `Zoom: ${ZOOM}`,
+    "https://ai-risk.berkeley.edu/#emma-pierson",
+  ].join("\n\n"),
+};
 
-test("ptDateTimeToIso uses Pacific DST offset", () => {
+const NEWMAN = {
+  slug: "jessica-newman",
+  title: "AI Risk speaker series: Jessica Newman",
+  start: "2025-11-18T16:30:00-08:00",
+  end: "2025-11-18T18:00:00-08:00",
+  location: "Zoom only",
+  description:
+    "Can we Manage the Risks of Frontier AI?\nJessica Newman (UC Berkeley)\n\nhttps://ai-risk.berkeley.edu/#jessica-newman",
+};
+
+const FETCHED_AT = "2026-09-26T00:00:00Z";
+
+test("a titled talk takes its title from the first description line", () => {
+  const event = mapFeedEvent(KRUEGER, FETCHED_AT);
+
+  assert.ok(event);
+  assert.equal(event.source_name, "ai_risk");
+  assert.equal(event.source_id, "david-krueger");
   assert.equal(
-    ptDateTimeToIso("2026-01-15", 16, 0),
-    "2026-01-15T16:00:00-08:00",
+    event.title,
+    "Everything You Always Wanted to Know About AI Safety (But Were Afraid to Ask)",
   );
   assert.equal(
-    ptDateTimeToIso("2026-07-15", 16, 0),
-    "2026-07-15T16:00:00-07:00",
+    event.description,
+    "David Krueger (University of Montreal)\n\nA whirlwind tour of AI Safety.\n\nSecond paragraph.",
   );
-});
-
-test("parseSpeakerEventsScript reads JS object literals without eval", () => {
-  const talks = parseSpeakerEventsScript(SAMPLE_SCRIPT);
-  assert.equal(talks.length, 4);
-  assert.equal(talks[0].id, 3);
-  assert.equal(talks[0].eventDate, "2025-10-7");
-  assert.equal(talks[0].talkAbstract, "Line one\nLine two");
+  assert.equal(event.start_at, "2025-09-09T16:30:00-07:00");
+  assert.equal(event.end_at, "2025-09-09T18:00:00-07:00");
+  assert.equal(event.venue, "621 Sutardja Dai Hall");
+  assert.equal(event.modality, "hybrid");
   assert.equal(
-    talks[2].talkTitle,
-    '"If anyone builds it, everyone dies": Sociotechnical Imaginaries',
+    event.canonical_url,
+    "https://ai-risk.berkeley.edu/#david-krueger",
+  );
+  assert.equal(event.evidence_url, FEED_URL);
+});
+
+test("a TBA talk uses the speaker name as its title", () => {
+  const event = mapFeedEvent(PIERSON, FETCHED_AT);
+
+  assert.ok(event);
+  assert.equal(event.title, "Emma Pierson — Berkeley AI Risk Speaker Series");
+  assert.equal(event.description, "Emma Pierson (UC Berkeley)");
+});
+
+test("a Zoom-only talk is virtual", () => {
+  const event = mapFeedEvent(NEWMAN, FETCHED_AT);
+
+  assert.ok(event);
+  assert.equal(event.title, "Can we Manage the Risks of Frontier AI?");
+  assert.equal(event.modality, "virtual");
+});
+
+async function withFeed(body, run) {
+  const originalFetch = globalThis.fetch;
+  const fetchedUrls = [];
+  globalThis.fetch = async (url) => {
+    fetchedUrls.push(String(url));
+    return { ok: true, status: 200, json: async () => body };
+  };
+  try {
+    return { result: await run(), fetchedUrls };
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+}
+
+test("fetchAiRisk reads events.json and drops finished talks", async () => {
+  const today = todayPT();
+  const past = addDaysToDateKey(today, -30);
+  const next = addDaysToDateKey(today, 20);
+  const body = {
+    calendar: "series@group.calendar.google.com",
+    events: [
+      {
+        ...KRUEGER,
+        start: `${past}T16:00:00-07:00`,
+        end: `${past}T17:30:00-07:00`,
+      },
+      {
+        ...PIERSON,
+        start: `${next}T16:00:00-07:00`,
+        end: `${next}T17:30:00-07:00`,
+      },
+      { title: "AI Risk speaker series: No Slug", start: "2026-10-01" },
+    ],
+  };
+
+  const { result, fetchedUrls } = await withFeed(body, () => fetchAiRisk());
+
+  assert.deepEqual(fetchedUrls, [FEED_URL]);
+  assert.equal(result.rawCount, 3);
+  assert.equal(result.filteredPast, 1);
+  assert.equal(result.invalid, 1);
+  assert.deepEqual(
+    result.events.map((event) => event.source_id),
+    ["emma-pierson"],
   );
 });
 
-test("parseSpeakerEventsScript rejects function calls in the data array", () => {
-  assert.throws(
-    () =>
-      parseSpeakerEventsScript(
-        `const speakerEvents = [{ id: 1, talkTitle: evil() }];`,
-      ),
-    /unexpected token/,
+test("a feed without an events array fails the fetch", async () => {
+  await assert.rejects(
+    withFeed({ calendar: "series" }, () => fetchAiRisk()),
+    /no events array/,
   );
-});
-
-test("TBA talks use the speaker name as the published title", () => {
-  assert.equal(
-    talkTitleFor({
-      id: 16,
-      speakerName: "John Sherman",
-      speakerAffiliation: "",
-      speakerWebsite: "",
-      talkTitle: "TBA",
-      talkAbstract: "",
-      eventDate: "2026-09-22",
-      eventTime: "16:00",
-      eventLocation: "621 Sutardja Dai Hall",
-      eventLink: "",
-      videoUrl: "",
-      slidesUrl: "",
-    }),
-    "John Sherman — Berkeley AI Risk Speaker Series",
-  );
-});
-
-test("mapTalkToCanonical pads dates, sets modality, and keeps a stable id", () => {
-  const talks = parseSpeakerEventsScript(SAMPLE_SCRIPT);
-  const chandar = mapTalkToCanonical(talks[0], "2026-09-02T00:00:00Z");
-  assert.ok(chandar);
-  assert.equal(chandar.source_name, "ai_risk");
-  assert.equal(chandar.source_id, "3::2025-10-07");
-  assert.equal(chandar.title, "Canaries in the Coal Mine");
-  assert.equal(isoDateInPT(chandar.start_at), "2025-10-07");
-  assert.equal(chandar.start_at, "2025-10-07T16:30:00-07:00");
-  assert.equal(chandar.end_at, "2025-10-07T18:00:00-07:00");
-  assert.equal(chandar.modality, "in_person");
-  assert.match(chandar.description, /Stanford University/);
-  assert.match(chandar.description, /slides\/chandar-slides\.pdf/);
-  assert.equal(
-    chandar.canonical_url,
-    "https://ai-risk.berkeley.edu/speaker-series.html",
-  );
-
-  const newman = mapTalkToCanonical(talks[1], "2026-09-02T00:00:00Z");
-  assert.ok(newman);
-  assert.equal(newman.modality, "virtual");
-  assert.equal(newman.registration_url, "https://berkeley.zoom.us/j/123");
-
-  const sherman = mapTalkToCanonical(talks[3], "2026-09-02T00:00:00Z");
-  assert.ok(sherman);
-  assert.equal(sherman.title, "John Sherman — Berkeley AI Risk Speaker Series");
 });
