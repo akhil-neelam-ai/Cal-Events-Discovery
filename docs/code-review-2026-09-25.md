@@ -174,6 +174,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #14. The topic-quality gate fails every day by construction (P2)
 
+**Status:** Fixed. Each of the 56 references now stores its title, description, organizer, and source, frozen from the 2026-09-03 snapshot in commit `0a87587`. The suite runs `assignTopics` on those copies and no longer checks corpus membership. It passes today at 51 of 51. It fails when "ai" leaves the AI synonyms, at 35 of 51. Removing "machine learning" alone still passes at 49 of 51, so that verify step does not hold. Close #184 once this reaches `main`.
 **Files:** `scripts/tests/topic-quality.test.mjs:44-67`, `scripts/tests/fixtures/topic-reference-sets.json`
 **Problem:** The test looks up the 56 frozen AI references by event id in the live corpus and needs 40 to remain. Events age out daily. The 2026-09-25 run reports `Only 23/56 frozen references remain in the current corpus`. The suite has failed on every run since 2026-09-12. Issue #184 has 13 identical comments, so a real topic regression would now go unseen.
 **Fix:** Store each reference's title, description, organizer, source, and groups in the fixture. Run `assignTopics` over those copies and drop the corpus-membership assertion. Then close #184.
