@@ -13,7 +13,7 @@ import {
   cleanSummary,
   parseGameFlags,
 } from "../../scripts/sources/calbears.ts";
-import { stripHtml } from "../../scripts/sources/callink.ts";
+import { fetchCallink, stripHtml } from "../../scripts/sources/callink.ts";
 import {
   fetchCalPerformances,
   parseAddeventatcDate,
@@ -151,6 +151,65 @@ test("Cal Performances pagination stops after the first short page", async () =>
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+function callinkEvents(count) {
+  const start = new Date(Date.now() + 2 * 86_400_000);
+  return Array.from({ length: count }, (_, index) => ({
+    id: `evt-${index}`,
+    name: `Club Meeting ${index}`,
+    organizationName: "Robotics Club",
+    startsOn: start.toISOString(),
+    endsOn: new Date(start.getTime() + 3_600_000).toISOString(),
+    visibility: "Public",
+    status: "Approved",
+  }));
+}
+
+async function withCallinkStub(respond, run) {
+  const originalFetch = globalThis.fetch;
+  const fetchedUrls = [];
+  globalThis.fetch = async (url) => {
+    fetchedUrls.push(new URL(String(url)));
+    return {
+      ok: true,
+      status: 200,
+      json: async () => respond(fetchedUrls.at(-1)),
+    };
+  };
+  try {
+    return { result: await run(), fetchedUrls };
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+}
+
+test("CalLink pages with take and skip until the reported count", async () => {
+  // The platform serves at most 10 rows per request, whatever `take` says.
+  const all = callinkEvents(30);
+  const { result, fetchedUrls } = await withCallinkStub((url) => {
+    const skip = Number(url.searchParams.get("skip"));
+    return { "@odata.count": 30, value: all.slice(skip, skip + 10) };
+  }, fetchCallink);
+
+  assert.equal(result.events.length, 30);
+  assert.deepEqual(
+    fetchedUrls.map((url) => url.searchParams.get("skip")),
+    ["0", "10", "20"],
+  );
+  assert.ok(fetchedUrls.every((url) => url.searchParams.has("take")));
+  assert.ok(fetchedUrls.every((url) => !url.searchParams.has("$top")));
+});
+
+test("CalLink stops paging when the API ignores skip", async () => {
+  const firstPage = callinkEvents(10);
+  const { result, fetchedUrls } = await withCallinkStub(
+    () => ({ "@odata.count": 30, value: firstPage }),
+    fetchCallink,
+  );
+
+  assert.equal(result.events.length, 10);
+  assert.equal(fetchedUrls.length, 2);
 });
 
 test("CalLink filters by Pacific event date instead of UTC date prefix", () => {

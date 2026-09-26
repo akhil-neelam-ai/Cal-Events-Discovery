@@ -3,10 +3,9 @@
  *
  * callink.berkeley.edu runs on Anthology Engage (CampusLabs). The public
  * discovery API at /api/discovery/event/search returns upcoming, approved,
- * public events without authentication. Pagination is hard-capped by the
- * platform — the API returns up to ~16 featured upcoming events regardless
- * of $skip or $top. We fetch the full public window (status=Approved,
- * endsAfter=now, $top=200) and accept whatever the platform surfaces.
+ * public events without authentication. It ignores OData `$top` and serves
+ * 10 rows by default, so we page with Engage's own `take` and `skip` until
+ * we reach `@odata.count` or MAX_EVENTS.
  *
  * Event fields:  id, name, description (HTML), organizationName, location,
  *   startsOn (ISO 8601 with UTC offset), endsOn, theme, categoryNames,
@@ -43,6 +42,7 @@ const BASE_URL = "https://callink.berkeley.edu";
 const DISCOVERY_API = `${BASE_URL}/api/discovery/event/search`;
 const FETCH_TIMEOUT_MS = 30_000;
 const MAX_EVENTS = 200;
+const PAGE_SIZE = 50;
 
 /** Map CampusGroups "theme" values to frontend-friendly category labels. */
 const THEME_MAP: Record<string, string> = {
@@ -121,23 +121,24 @@ interface ApiResponse {
   value?: RawCampusGroupsEvent[];
 }
 
-export async function fetchCallink(
-  options: FetchOptions = {},
-): Promise<FetchResult> {
-  const todayIso = todayPT();
-  const nowUtc = new Date().toISOString();
-  const fetched_at = nowUtc;
-
+async function fetchPage(
+  skip: number,
+  endsAfter: string,
+  options: FetchOptions,
+): Promise<ApiResponse> {
+  // The same query the Engage events page sends. A stable sort keeps
+  // skip-based pages from overlapping.
   const params = new URLSearchParams({
-    endsAfter: nowUtc,
+    endsAfter,
     status: "Approved",
-    $top: String(MAX_EVENTS),
+    orderByField: "endsOn",
+    orderByDirection: "ascending",
+    take: String(PAGE_SIZE),
+    skip: String(skip),
   });
 
-  const url = `${DISCOVERY_API}?${params.toString()}`;
-
   const response = await fetchWithRetry(
-    url,
+    `${DISCOVERY_API}?${params.toString()}`,
     {
       headers: {
         "User-Agent": "Cal-Events-Discovery-Bot",
@@ -157,13 +158,55 @@ export async function fetchCallink(
     );
   }
 
-  const data = (await response.json()) as ApiResponse;
-  const raw = data.value ?? [];
-  const apiTotal = data["@odata.count"] ?? raw.length;
+  return (await response.json()) as ApiResponse;
+}
+
+export async function fetchCallink(
+  options: FetchOptions = {},
+): Promise<FetchResult> {
+  const todayIso = todayPT();
+  const nowUtc = new Date().toISOString();
+  const fetched_at = nowUtc;
+
+  const raw: RawCampusGroupsEvent[] = [];
+  const seenIds = new Set<string>();
+  let apiTotal: number | undefined;
+  let offset = 0;
+
+  while (raw.length < MAX_EVENTS) {
+    const page = await fetchPage(offset, nowUtc, options);
+    const items = page.value ?? [];
+    if (typeof page["@odata.count"] === "number") {
+      apiTotal = page["@odata.count"];
+    }
+    offset += items.length;
+
+    let added = 0;
+    for (const item of items) {
+      if (item.id) {
+        if (seenIds.has(item.id)) continue;
+        seenIds.add(item.id);
+      }
+      raw.push(item);
+      added++;
+    }
+
+    // Stop on an empty page, on a page with nothing new (the API ignored
+    // `skip`), or once every counted event has arrived.
+    if (added === 0 || (apiTotal !== undefined && offset >= apiTotal)) {
+      break;
+    }
+  }
+  raw.splice(MAX_EVENTS);
 
   console.log(
-    `[callink] API returned ${raw.length} items (odata.count: ${apiTotal})`,
+    `[callink] API returned ${raw.length} items (odata.count: ${apiTotal ?? "missing"})`,
   );
+  if (apiTotal !== undefined && raw.length < Math.min(apiTotal, MAX_EVENTS)) {
+    console.warn(
+      `[callink] received ${raw.length} of ${apiTotal} events; take/skip paging may have changed`,
+    );
+  }
 
   const events: CanonicalEvent[] = [];
   let rawCount = 0;

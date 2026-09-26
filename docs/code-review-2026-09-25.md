@@ -119,6 +119,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #8. CalLink keeps 10 of 30 public events (P2)
 
+**Status:** Fixed in code, pending a live run. The adapter now pages with `take` and `skip`, sorted by `endsOn`, until it reaches `@odata.count` or 200. It stops early on an empty page or a page with no new ids, then warns. The parameter names follow the Engage events page but could not be tried from the review sandbox. The CalLink contract now fails when `take=25` returns fewer rows than the count.
 **Files:** `scripts/sources/callink.ts:131-135`, header comment at `:6-9`, `scripts/lib/sourceContracts.mjs:51`
 **Problem:** The 2026-09-25 log reads `[callink] API returned 10 items (odata.count: 30)`. CalLink has returned exactly 10 events every day since at least 2026-07-24. The adapter sends OData `$top=200`, and the Engage endpoint ignores it. The header comment says the platform caps results near 16 whatever `$top` says. The count the API reports contradicts that.
 **Fix:** Page with Engage's `take` and `skip` until `value` reaches `@odata.count` or `MAX_EVENTS`. Confirm the parameter names with one request first. Log a warning when fewer rows arrive than the count. Make the CalLink contract compare `value.length` with the count.
