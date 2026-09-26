@@ -1,6 +1,6 @@
 # Cal Events Discovery
 
-UC Berkeley campus events in one searchable feed. The site ships a static snapshot (~900+ upcoming events) built from 12 Berkeley sources, updated daily by GitHub Actions, hosted on Vercel at [cal-events.com](https://cal-events.com).
+UC Berkeley campus events in one searchable feed. The site ships a static snapshot of upcoming events built from 12 Berkeley sources, updated daily by GitHub Actions, hosted on Vercel at [cal-events.com](https://cal-events.com).
 
 ## Quick start
 
@@ -39,8 +39,8 @@ Berkeley sources (iCal, REST, HTML scrapers)
         ↓
 scripts/updateEvents.ts  (parallel adapters, dedupe, fallback)
         ↓
-public/events.json       (~1 MB, published events)
-public/search-index.json (~370 KB, inverted index)
+public/events.json       (published events)
+public/search-index.json (inverted index)
 public/status.json       (per-source health)
         ↓
 React app loads JSON client-side, search runs in-browser
@@ -48,7 +48,7 @@ React app loads JSON client-side, search runs in-browser
 Vercel CDN → cal-events.com
 ```
 
-1. **Ingestion** — `scripts/updateEvents.ts` runs 12 source adapters in parallel (60s timeout each), dedupes, writes three JSON files.
+1. **Ingestion** — `scripts/updateEvents.ts` runs 12 source adapters in parallel (60 s timeout each, 100 s for Simons), dedupes, writes three JSON files.
 2. **Automation** — Daily cron opens a PR on `automation/update-events` with updated artifacts.
 3. **Merge** — PR runs validate + E2E, auto-merges to `main` if green.
 4. **Deploy** — Vercel deploys `main`. Production smoke test hits live URLs.
@@ -59,11 +59,11 @@ Deep architecture: see [ARCHITECTURE.md](./ARCHITECTURE.md). Agent, adapter, and
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| **Validate** | PR + push to `main` (ignores artifact-only commits) | Lint, format, typecheck, 94+ tests |
+| **Validate** | PR + push to `main` (ignores artifact-only commits) | Lint, format, typecheck, script and UI tests |
 | **Browser E2E** | PR + push to `main` (ignores artifacts) | Playwright against production build |
 | **Update Events Daily** | 4:00 AM Pacific (cron) + manual | Fetch sources, health check, publish-critical validate, open automation PR; corpus search-quality is non-blocking |
 | **Security Audit** | Weekly Monday + manual | `npm audit` (prod deps); opens a `security-audit` issue on findings |
-| **Source Contracts** | Weekly Monday + manual | Live HTTP checks against all 9 Berkeley endpoints |
+| **Source Contracts** | Weekly Monday + manual | Live HTTP checks against every source endpoint |
 | **Production Smoke** | Every push to `main` | Verify `cal-events.com` serves fresh events + status |
 
 The daily merge gates on the **data-relevant** checks only (`validate` and

@@ -43,11 +43,11 @@ jobs:
 
       - name: Enforce published-artifact size budgets
         env:
-          # Current sizes are ~576 KB events.json and ~232 KB search-index.json.
-          # The budget is generous (~7x headroom) so seasonal growth is fine,
-          # but catches a regression where one source starts including base64
-          # PDFs or rich HTML in descriptions and balloons the committed file
-          # past the frontend's 8s parse timeout.
+          # In September 2026 events.json peaked near 1.7 MB and the index
+          # near 630 KB, about 2.5x and 3.3x under these budgets. That leaves
+          # room for seasonal growth, but catches a source that starts
+          # shipping base64 PDFs or rich HTML and pushes the file past the
+          # frontend's 8 s load timeout.
           MAX_EVENTS_JSON_BYTES: "4194304" # 4 MiB
           MAX_SEARCH_INDEX_BYTES: "2097152" # 2 MiB
         run: |

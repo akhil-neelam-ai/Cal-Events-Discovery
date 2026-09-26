@@ -1,6 +1,8 @@
 # Progress Log
 
-This file tracks the implementation progress, the sequence of steps taken, and the current recommended next steps for `Cal-Events-Discovery`.
+**Archived.** This log stopped on 2026-04-22 and is kept as history. Its status, next steps, and update rule are out of date. For later work, read the git history, the plans in `docs/plans/`, and the audits in `docs/`. `AGENTS.md` lists what is recent and open.
+
+This file tracked the implementation progress, the sequence of steps taken, and the recommended next steps for `Cal-Events-Discovery` through April 2026.
 
 ## Current Status
 

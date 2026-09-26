@@ -3,12 +3,9 @@
  * to the legacy CalEvent shape, write public/events.json + public/status.json.
  *
  * Source priority (configured in scripts/lib/dedupe.ts):
- *   livewhale        (structured iCal, official campus calendar) >
- *   callink          (CampusGroups JSON API, student org events) =
- *   cal_performances (WP REST API, arts presenter) =
- *   calbears         (athletics iCal) =
- *   bampfa           (HTML scraper, art museum & film archive)
- *   ai_risk          (JS schedule scrape, Berkeley AI Risk speaker series)
+ *   livewhale (4), the official campus iCal feed, outranks the other 11,
+ *   which share priority 3: callink, cal_performances, calbears, bampfa,
+ *   haas, berkeley_law, simons, luma, begin, ai_risk, brsl.
  *
  * Failure handling: each source is independent. If a source throws, we
  * record it in status.json and continue. We refuse to overwrite a healthy

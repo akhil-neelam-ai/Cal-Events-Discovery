@@ -346,6 +346,8 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #34. README, workflow comments, and PROGRESS.md carry stale numbers (P3)
 
+**Status:** Fixed. The README drops the event count, the file sizes, and the test count, which drift. It says Simons gets 100 s and that Source Contracts checks every source endpoint. The `validate.yml` comment now gives the September peaks: 1.69 MB and 628 KB, about 2.5x and 3.3x under budget. The `updateEvents.ts` header names all 12 sources. `PROGRESS.md` is marked archived and points to later records.
+
 **Problem:** README says "~900+ upcoming events" (1,487 today), "~1 MB" for `events.json` (1.5 MB), and "all 9 Berkeley endpoints" for Source Contracts (12 contracts). `validate.yml:43-47` says `events.json` is ~576 KB with ~7x headroom. It is 1.50 MB, peaked at 1.69 MB this month, and sits about 2.5x under the 4 MiB budget. `PROGRESS.md` stops at 2026-04-22. The `updateEvents.ts` header lists 6 of the 12 sources.
 **Fix:** Refresh the numbers or drop them.
 
