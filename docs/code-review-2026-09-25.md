@@ -339,7 +339,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #33. AGENTS.md contradicts the code in three places (P3)
 
-**Status:** Partly fixed. The #2 change rewrote the search-flow line at `:83`. The domain and in-flight lines are still open.
+**Status:** Fixed. The #2 change rewrote the search-flow line at `:83`. Line 7 now names `cal-events.com`. The in-flight section is now "Recent and open work", and it says PR 174 merged the topic follow-up on 2026-09-04.
 **File:** `AGENTS.md:7`, `:83`, and `:140`
 **Problem:** It says the site deploys at `calevents-discovery.vercel.app`. The smoke test and all 61 URL references elsewhere in the repo use `cal-events.com`. It says the category branch does not strip, which #2 shows has been false since `4664a0b`. It lists the leftover topic work as in flight on `feat/topic-filter-review-fixes`, but PR 174 merged it on 2026-09-04.
 **Fix:** Update all three after the #2 decision.

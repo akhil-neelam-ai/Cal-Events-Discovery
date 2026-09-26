@@ -4,7 +4,7 @@ Guidance for any coding agent working in this repository (Codex, Claude Code, or
 
 ## What this is
 
-CalEvents Discovery aggregates roughly 1,450 UC Berkeley campus events from 12 sources into static JSON, served by a React frontend with entirely client-side search. Built and maintained by one person. Deployed on Vercel at `calevents-discovery.vercel.app`.
+CalEvents Discovery aggregates roughly 1,450 UC Berkeley campus events from 12 sources into static JSON, served by a React frontend with entirely client-side search. Built and maintained by one person. Deployed on Vercel at `cal-events.com`.
 
 Stack: React 19, Vite 8, TypeScript, Tailwind v4, Fuse.js. Pipeline is TypeScript run through `tsx`, validated with Zod. Node 22.
 
@@ -137,11 +137,11 @@ Established in `docs/brainstorms/2026-08-17-publish-vs-quality-pipeline-requirem
 - The daily cron holds exactly one secret, the automation pull-request token. Adding a network dependency to that path needs a strong reason.
 - **Degraded-source flags drive visitor-facing banners.** `shouldShowStaleDataBanner` fires whenever the degraded-source list is non-empty regardless of data age, and the partial-data banner keys off the top-level `degraded` flag. Never route a non-source quality problem through those fields.
 
-## Current work in flight
+## Recent and open work
 
 The topic filter layer from `docs/plans/2026-09-03-001-feat-topic-filter-layer-plan.md` is on `main` (PR 173). Do not re-implement U1 through U9.
 
-Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` is implemented on `feat/topic-filter-review-fixes`. Successful empty assignments clear topics. Broad identity mappings are gone. The breadth cap stays 200. Public discovery versions are 1.3.0, since the September audit added the multi-day fields.
+Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` merged in PR 174 on 2026-09-04. Successful empty assignments clear topics. Broad identity mappings are gone. The breadth cap stays 200. Public discovery versions are 1.3.0, since the September audit added the multi-day fields.
 
 The June full-repo audit is `docs/code-review-2026-06-02.md`. It is a different pass.
 
