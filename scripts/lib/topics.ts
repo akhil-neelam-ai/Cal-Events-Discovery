@@ -323,6 +323,27 @@ const STRONG_DESCRIPTION_TERMS: Partial<Record<TopicSlug, readonly string[]>> =
     ],
   };
 
+/**
+ * Phrases that contain one of a topic's terms but mean something else. They
+ * are blanked out before that topic's terms are counted.
+ */
+const ASSIGNMENT_EXCLUSIONS: Partial<Record<TopicSlug, RegExp>> = {
+  // "Diffusion Language Models" is AI work, not humanities.
+  "history-humanities":
+    /\b(?:natural[\s-]+language|language[\s-]+model(?:s|ing)?)\b/giu,
+  // "Social" names an event as a noun: "Boba Social", "Social Hour". Before
+  // another word it is an adjective, as in "Social Media".
+  "social-clubs":
+    /\bsocial(?=(?:\s+|-)\p{L})(?!\s+(?:hours?|nights?|events?|at|on|in|with|for)\b)/giu,
+  // A "job talk" is a candidate's research talk, not a career event.
+  "career-jobs": /\bjob\s+talks?\b/giu,
+};
+
+function withoutExclusions(text: string, slug: TopicSlug): string {
+  const exclusion = ASSIGNMENT_EXCLUSIONS[slug];
+  return exclusion ? text.replace(exclusion, " ") : text;
+}
+
 const ORGANIZER_TOPIC_PATTERNS: ReadonlyArray<
   readonly [RegExp, readonly TopicSlug[]]
 > = [
@@ -493,14 +514,16 @@ export function assignTopics(event: TopicAssignableEvent): TopicSlug[] {
 
   for (const topic of TOPICS) {
     const terms = allTerms(topic);
-    const titleHits = countTerms(event.title, terms);
-    const descriptionHits = countTerms(event.description ?? "", terms);
+    const title = withoutExclusions(event.title, topic.slug);
+    const description = withoutExclusions(event.description ?? "", topic.slug);
+    const titleHits = countTerms(title, terms);
+    const descriptionHits = countTerms(description, terms);
     if (titleHits > 0) add(topic.slug, titleHits * TITLE_WEIGHT);
     if (descriptionHits > 0) {
       add(topic.slug, descriptionHits * DESCRIPTION_WEIGHT);
     }
     for (const term of STRONG_DESCRIPTION_TERMS[topic.slug] ?? []) {
-      if (countTerm(event.description ?? "", term) > 0) {
+      if (countTerm(description, term) > 0) {
         add(topic.slug, STRONG_DESCRIPTION_WEIGHT);
       }
     }

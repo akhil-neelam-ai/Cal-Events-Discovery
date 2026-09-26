@@ -285,6 +285,8 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #27. Three topic rules misfire (P3)
 
+**Status:** Fixed. `ASSIGNMENT_EXCLUSIONS` in `scripts/lib/topics.ts` blanks "language model" and "natural language" for History and Humanities, "job talk" for Career and Jobs, and adjective uses of "social" for Social and Clubs. "Social" still counts at the end of a title or before "hour", "night", "event", or a preposition, so "Boba Social" and "Social Hour" keep the topic. Across the current feed, 20 rows lose a wrong topic. One public health talk then gains Workshops and Skills from "training" inside a URL, a separate gap. The three examples are labeled negatives in `topic-labeled-samples.json`. Search intent still reads bare "social" as the topic.
+
 **File:** `scripts/lib/topics.ts:105`, `:138`, and `:226`
 **Problem:** "language" in the History and Humanities terms tags "Scaling Diffusion Language Models" as humanities. The "social" synonym tags "Defending Democracy Online Through Social Media" as Social and Clubs, its only topic. "job" tags two academic "Job Talk" events as Career and Jobs.
 **Fix:** Skip "language" when "model" follows. Drop bare "social" from title matching, and keep "social hour" and "mixer". Exclude "job talk". Add all three as labeled negatives in `topic-labeled-samples.json`.
