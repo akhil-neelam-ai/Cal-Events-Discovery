@@ -108,3 +108,35 @@ export function appendLastGoodEvents(
   legacy.push(...merged);
   return merged.length;
 }
+
+/**
+ * When a source last returned a healthy fetch, published as
+ * `last_healthy_at` in status.json. A healthy run stamps its own fetch time.
+ * A degraded run carries the previous stamp forward, so a multi-day outage
+ * keeps counting from the last good day instead of from yesterday's publish.
+ * Before any stamp exists, the previous publish time stands in.
+ */
+export function nextLastHealthyAt(
+  healthy: boolean,
+  fetchedAt: string,
+  previousStamp: string | undefined,
+  previousPublishedAt: number | undefined,
+): string | undefined {
+  if (healthy) return fetchedAt;
+  if (previousStamp) return previousStamp;
+  return previousPublishedAt
+    ? new Date(previousPublishedAt).toISOString()
+    : undefined;
+}
+
+/** Hours since an ISO timestamp, to one decimal place. */
+export function fallbackAgeHours(
+  since: string | undefined,
+  now = Date.now(),
+): number | undefined {
+  if (!since) return undefined;
+  const age = (now - Date.parse(since)) / 3_600_000;
+  return Number.isFinite(age) && age >= 0
+    ? Math.round(age * 10) / 10
+    : undefined;
+}

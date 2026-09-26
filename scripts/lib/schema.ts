@@ -241,6 +241,11 @@ export interface SourceStatus {
    */
   fallback_expired?: boolean;
   degraded_reason?: string;
+  /**
+   * When this source last returned a healthy fetch. Carried forward while it
+   * is degraded, so fallback age counts from here across a long outage.
+   */
+  last_healthy_at?: string;
 }
 
 export interface TopicAssignmentStatus {

@@ -136,6 +136,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #10. Chained fallback resets its own age (P2)
 
+**Status:** Fixed. Each source in `status.json` now carries `last_healthy_at`. A healthy run stamps its fetch time, and a degraded run carries the old stamp forward. Fallback age counts from that stamp, so three LiveWhale failures in a row read 24, 48, and 72 hours. The third one expires the fallback and blocks the publish. Before the first stamp exists, the previous publish time stands in.
 **File:** `scripts/updateEvents.ts:244-250` and `:287`
 **Problem:** Fallback age is `now - existing.lastUpdated`, the age of the previous `events.json`. It is not the age of the source's data. During a multi-day LiveWhale outage, each run restores rows that an earlier run restored. The age reads about 24 h every day. `MAX_FALLBACK_AGE_HOURS` (48) never trips, and `data_age_hours` understates the real age. AGENTS.md reserves `pipeline-failure` for LiveWhale without usable fallback, so that alert never fires either.
 **Fix:** Persist a per-source `last_healthy_at` in `status.json` and compute fallback age from it. The existing stale-fallback block then fires on day three.

@@ -48,6 +48,8 @@ import {
 import {
   CANCELED_TITLE_PATTERN,
   appendLastGoodEvents,
+  fallbackAgeHours,
+  nextLastHealthyAt,
 } from "./lib/lastGoodFallback.js";
 import { fetchLiveWhale } from "./sources/livewhale.js";
 
@@ -245,18 +247,32 @@ function loadExistingEvents(): {
   }
 }
 
-function fallbackAgeHours(lastUpdated: number | undefined): number | undefined {
-  if (!lastUpdated) return undefined;
-  const age = (Date.now() - lastUpdated) / 3_600_000;
-  return Number.isFinite(age) && age >= 0
-    ? Math.round(age * 10) / 10
-    : undefined;
+/** Each source's `last_healthy_at` from the previous status.json. */
+function loadPreviousLastHealthy(): Map<string, string> {
+  try {
+    const previous = JSON.parse(fs.readFileSync(statusOutPath, "utf-8")) as {
+      sources?: Array<{ name?: unknown; last_healthy_at?: unknown }>;
+    };
+    const stamps = new Map<string, string>();
+    for (const source of previous.sources ?? []) {
+      if (
+        typeof source.name === "string" &&
+        typeof source.last_healthy_at === "string"
+      ) {
+        stamps.set(source.name, source.last_healthy_at);
+      }
+    }
+    return stamps;
+  } catch {
+    return new Map();
+  }
 }
 
 function markRecovery(
   run: AdapterRun,
   legacy: LegacyCalEvent[],
   existing: { events: LegacyCalEvent[]; lastUpdated?: number },
+  previousLastHealthy: ReadonlyMap<string, string>,
   recovery: RecoveryState,
   today: string,
 ): void {
@@ -266,6 +282,12 @@ function markRecovery(
     run.status.ok &&
     run.status.count < policy.minHealthyCount;
   const degraded = !run.status.ok || belowHealthyThreshold;
+  run.status.last_healthy_at = nextLastHealthyAt(
+    !degraded,
+    run.status.fetched_at,
+    previousLastHealthy.get(run.status.name),
+    existing.lastUpdated,
+  );
   if (!degraded) return;
 
   if (!policy?.degradeOnFailure) {
@@ -288,7 +310,9 @@ function markRecovery(
   // supplementary feed sitting on stale fallback should cost us that feed, not
   // the fresh events every other source just returned. Only a critical source
   // in this state blocks the publish (see dataQualityFailure).
-  const ageHours = fallbackAgeHours(existing.lastUpdated);
+  // Age counts from this source's last healthy fetch. The previous publish
+  // time would reset to a day old on every run of a multi-day outage.
+  const ageHours = fallbackAgeHours(run.status.last_healthy_at);
   if (typeof ageHours === "number" && ageHours > MAX_FALLBACK_AGE_HOURS) {
     const staleReason = `${run.status.name} fallback expired (${ageHours}h old, exceeding ${MAX_FALLBACK_AGE_HOURS}h); last-good events dropped`;
     run.status.fallback_expired = true;
@@ -583,8 +607,9 @@ async function main(): Promise<void> {
     restoredIds: new Set<string>(),
   };
 
+  const previousLastHealthy = loadPreviousLastHealthy();
   for (const run of runs) {
-    markRecovery(run, legacy, existing, recovery, today);
+    markRecovery(run, legacy, existing, previousLastHealthy, recovery, today);
   }
   const beforeRestoreDedupe = legacy.length;
   legacy = dedupeRestoredEvents(legacy, recovery.restoredIds, today);

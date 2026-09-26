@@ -1,11 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import { parseMaxFallbackAgeHours } from "../../scripts/lib/feedHealthPolicy.ts";
 import {
   CANCELED_TITLE_PATTERN,
   appendLastGoodEvents,
+  fallbackAgeHours,
   hasFutureOccurrence,
   loadLastGoodForSource,
+  nextLastHealthyAt,
 } from "../../scripts/lib/lastGoodFallback.ts";
 
 function legacy(overrides) {
@@ -196,4 +199,62 @@ test("appendLastGoodEvents returns 0 and is a no-op when nothing to restore", ()
 
   assert.equal(restored, 0);
   assert.deepEqual(live, liveSnapshot);
+});
+
+test("fallback age counts from the last healthy fetch across an outage", () => {
+  const day = 86_400_000;
+  const healthyAt = Date.parse("2026-09-20T11:00:00Z");
+  let stamp = nextLastHealthyAt(
+    true,
+    new Date(healthyAt).toISOString(),
+    undefined,
+    undefined,
+  );
+
+  // Three failed runs in a row. Each one still publishes, so the previous
+  // publish is only ever a day old. That used to be the fallback age.
+  const ages = [];
+  for (let run = 1; run <= 3; run++) {
+    const now = healthyAt + run * day;
+    stamp = nextLastHealthyAt(
+      false,
+      new Date(now).toISOString(),
+      stamp,
+      now - day,
+    );
+    ages.push(fallbackAgeHours(stamp, now));
+  }
+
+  assert.deepEqual(ages, [24, 48, 72]);
+  const ceiling = parseMaxFallbackAgeHours(undefined);
+  assert.ok(ages[1] <= ceiling, "the second failure still restores");
+  assert.ok(ages[2] > ceiling, "the third failure expires the fallback");
+});
+
+test("nextLastHealthyAt uses the previous publish until a stamp exists", () => {
+  const publishedAt = Date.parse("2026-09-24T11:00:00Z");
+
+  assert.equal(
+    nextLastHealthyAt(
+      false,
+      "2026-09-25T11:00:00.000Z",
+      undefined,
+      publishedAt,
+    ),
+    "2026-09-24T11:00:00.000Z",
+  );
+  assert.equal(
+    nextLastHealthyAt(false, "2026-09-25T11:00:00.000Z", undefined, undefined),
+    undefined,
+  );
+  assert.equal(
+    nextLastHealthyAt(
+      true,
+      "2026-09-25T11:00:00.000Z",
+      "2026-09-01T11:00:00.000Z",
+      publishedAt,
+    ),
+    "2026-09-25T11:00:00.000Z",
+  );
+  assert.equal(fallbackAgeHours(undefined), undefined);
 });
