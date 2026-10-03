@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { createWebMcpTools } from "../../agent/webmcpTools.ts";
+import { buildSearchIndex } from "../../scripts/lib/buildIndex.ts";
 import { TOPIC_VOCABULARY } from "../../scripts/lib/topics.ts";
 import {
   addDaysToDateKey,
@@ -204,6 +205,45 @@ test("WebMCP explicit topic overrides a different inferred topic like the UI", a
     assert.equal(agent.fallbackUsed, ui.fallbackUsed);
     assert.ok(agent.events.some((item) => item.id === "law-ai-text"));
     assert.ok(!agent.events.some((item) => item.id === "ai-only"));
+  }
+});
+
+test("WebMCP explicit topic searches the word the caller typed", async () => {
+  // "concert" implies Music and Performance. Inside Law it must search
+  // "concert", not the two-word label, or the Law concert disappears.
+  const events = [
+    event({
+      id: "law-concert",
+      title: "Concert for Justice",
+      description: "A benefit concert for the legal aid clinic.",
+      topics: ["law"],
+    }),
+    event({
+      id: "law-moot",
+      title: "Moot Court Finals",
+      description: "Appellate advocacy.",
+      topics: ["law"],
+    }),
+    event({
+      id: "symphony",
+      title: "Symphony Night",
+      description: "Music performance by the orchestra.",
+      topics: ["music-performance"],
+    }),
+  ];
+  const payload = {
+    ...makePayload(events),
+    topic_vocabulary: TOPIC_VOCABULARY,
+  };
+
+  for (const searchIndex of [null, buildSearchIndex(events)]) {
+    const { tools } = loadTools(payload, { searchIndex });
+    const result = await tools
+      .get("search_berkeley_events")
+      .execute({ topic: "law", query: "concert" });
+
+    assert.equal(result.events[0]?.id, "law-concert");
+    assert.ok(!result.events.some((item) => item.id === "symphony"));
   }
 });
 

@@ -16,8 +16,10 @@ import { useEventBrowserActions } from "../hooks/useEventBrowserActions";
 import { useUrlStateSync } from "../hooks/useUrlStateSync";
 import type { CalEvent } from "../types";
 import { LoadingState } from "../types";
+import { buildSearchIndex } from "../scripts/lib/buildIndex";
 import { TOPIC_VOCABULARY } from "../scripts/lib/topics";
 import { addRecentSearch } from "../utils/recentSearches";
+import type { SearchIndex } from "../utils/textUtils";
 
 const TODAY_KEY = "2026-04-22";
 const TOMORROW_KEY = "2026-04-23";
@@ -30,7 +32,7 @@ type MockFeedState = {
   degradedSources: string[];
   loading: LoadingState;
   statusReport: null;
-  searchIndex: null;
+  searchIndex: SearchIndex | null;
   topicVocabulary: typeof TOPIC_VOCABULARY | null;
   sourceOptions: Array<{ value: string; label: string; count: number }>;
   sourceCount: number;
@@ -1243,6 +1245,152 @@ describe("App UI regressions", () => {
     expect(
       screen.getByRole("button", { name: /Law, \d+ event/i }),
     ).toBeEnabled();
+  });
+
+  // The next tests use a real search index. That path needs every core word
+  // to match, which is where a two-word topic label used to zero out counts.
+  function climateEvents(): CalEvent[] {
+    return [
+      makeEvent({
+        id: "climate-policy",
+        title: "Climate Policy Forum",
+        description: "Adaptation planning for coastal cities.",
+        tags: ["Academic"],
+        topics: ["climate-energy"],
+      }),
+      makeEvent({
+        id: "climate-science",
+        title: "Climate Science Talk",
+        description: "Warming oceans.",
+        tags: ["Academic"],
+        topics: ["climate-energy"],
+      }),
+      makeEvent({
+        id: "solar-tour",
+        title: "Solar Lab Tour",
+        description: "Energy storage and the grid.",
+        tags: ["Science & Tech"],
+        topics: ["climate-energy"],
+      }),
+      makeEvent({
+        id: "law-talk",
+        title: "Law Talk",
+        description: "Courts and appeals.",
+        tags: ["Academic"],
+        topics: ["law"],
+      }),
+    ];
+  }
+
+  async function settleAutoClear() {
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    });
+  }
+
+  it("counts the typed topic's own chip like the results it shows", () => {
+    const events = climateEvents();
+    mockFeedState = makeFeedState(events, {
+      searchIndex: buildSearchIndex(events),
+    });
+    window.history.replaceState({}, "", "/?q=climate");
+
+    render(<App />);
+
+    expect(screen.getByText("Solar Lab Tour")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Climate and Energy, 3 events/i }),
+    ).toBeEnabled();
+  });
+
+  it("keeps an explicit topic that the query also implies", async () => {
+    const events = climateEvents();
+    mockFeedState = makeFeedState(events, {
+      searchIndex: buildSearchIndex(events),
+    });
+    window.history.replaceState({}, "", "/?q=climate&topic=climate-energy");
+
+    render(<App />);
+    await settleAutoClear();
+
+    expect(window.location.search).toContain("topic=climate-energy");
+    expect(screen.queryByText(/Topic cleared/)).not.toBeInTheDocument();
+    expect(screen.getByText("Climate Policy Forum")).toBeInTheDocument();
+    expect(screen.queryByText("Law Talk")).not.toBeInTheDocument();
+  });
+
+  it("searches the typed word inside a different explicit topic", async () => {
+    const events = [
+      makeEvent({
+        id: "law-concert",
+        title: "Concert for Justice",
+        description: "A benefit concert for the legal aid clinic.",
+        tags: ["Arts"],
+        topics: ["law"],
+      }),
+      makeEvent({
+        id: "law-moot",
+        title: "Moot Court Finals",
+        description: "Appellate advocacy.",
+        tags: ["Academic"],
+        topics: ["law"],
+      }),
+      makeEvent({
+        id: "symphony",
+        title: "Symphony Night",
+        description: "Music performance by the orchestra.",
+        tags: ["Arts"],
+        topics: ["music-performance"],
+      }),
+    ];
+    mockFeedState = makeFeedState(events, {
+      searchIndex: buildSearchIndex(events),
+    });
+    window.history.replaceState({}, "", "/?q=concert&topic=law");
+
+    render(<App />);
+    await settleAutoClear();
+
+    expect(window.location.search).toContain("topic=law");
+    expect(screen.getByText("Concert for Justice")).toBeInTheDocument();
+    expect(screen.queryByText("Moot Court Finals")).not.toBeInTheDocument();
+    expect(screen.queryByText("Symphony Night")).not.toBeInTheDocument();
+  });
+
+  it("keeps the query's own topic after auto-clearing a different one", async () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "callink-ai",
+        title: "CalLink AI Club Meeting",
+        description: "AI agents demo.",
+        topics: ["ai-machine-learning"],
+        source: "callink",
+      }),
+      makeEvent({
+        id: "callink-bake-sale",
+        title: "CalLink Bake Sale",
+        description: "Cookies and brownies.",
+        tags: ["Student Life"],
+        topics: [],
+        source: "callink",
+      }),
+      makeEvent({
+        id: "livewhale-law",
+        title: "LiveWhale Law Talk",
+        description: "Courts and appeals.",
+        topics: ["law"],
+        source: "livewhale",
+      }),
+    ]);
+    window.history.replaceState({}, "", "/?q=AI&topic=law&source=callink");
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(window.location.search).not.toContain("topic=");
+    });
+    expect(screen.getByText("CalLink AI Club Meeting")).toBeInTheDocument();
+    expect(screen.queryByText("CalLink Bake Sale")).not.toBeInTheDocument();
   });
 
   it("clears the URL topic when the interpretation chip is dismissed", async () => {
