@@ -549,6 +549,13 @@ export interface SearchOutput {
   fallbackMessage?: string;
 }
 
+// The words still searched, for a fallback message. A query that was only a
+// topic or category has none, and `for ""` read as a bug.
+function forKeywords(plan: SearchPlan): string {
+  const words = plan.keywords.join(" ");
+  return words ? ` for "${words}"` : "";
+}
+
 export function searchEvents(
   events: CalEvent[],
   query: string,
@@ -590,7 +597,7 @@ export function searchEvents(
           results: fallbackResults,
           plan: relaxedPlan,
           fallbackUsed: true,
-          fallbackMessage: `No matches for "${plan.keywords.join(" ")}" this weekend. Showing other dates instead.`,
+          fallbackMessage: `No matches${forKeywords(plan)} this weekend. Showing other dates instead.`,
         };
       }
     }
@@ -606,7 +613,7 @@ export function searchEvents(
           results: fallbackResults,
           plan,
           fallbackUsed: true,
-          fallbackMessage: `No "${cat}" results for "${plan.keywords.join(" ")}". Showing all categories.`,
+          fallbackMessage: `No "${cat}" results${forKeywords(plan)}. Showing all categories.`,
         };
       }
     }
@@ -624,7 +631,7 @@ export function searchEvents(
           results: fallbackResults,
           plan,
           fallbackUsed: true,
-          fallbackMessage: `No "${topic?.label ?? plan.filters.topic}" results for "${plan.keywords.join(" ")}". Showing all topics.`,
+          fallbackMessage: `No "${topic?.label ?? plan.filters.topic}" results${forKeywords(plan)}. Showing all topics.`,
         };
       }
     }

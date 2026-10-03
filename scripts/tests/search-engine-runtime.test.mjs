@@ -783,6 +783,17 @@ test("a dismissed key for another topic keeps the query's own topic", () => {
   );
 });
 
+test("a pure-topic fallback message has no empty quotes", () => {
+  const events = [{ ...SYNTHETIC_EVENTS[15], id: "law-only", topics: ["law"] }];
+  const output = searchEvents(events, "AI", null);
+
+  assert.equal(output.fallbackUsed, true);
+  assert.equal(
+    output.fallbackMessage,
+    'No "AI and Machine Learning" results. Showing all topics.',
+  );
+});
+
 test("empty topic pools broaden with an explanatory fallback", () => {
   const events = [
     {

@@ -58,7 +58,7 @@ function makeJsonResponse(body: unknown, ok = true): Response {
 }
 
 function EventFeedProbe({ needsSearchIndex = false }) {
-  const { allEvents, loading, searchIndex, loadEvents } =
+  const { allEvents, loading, searchIndex, searchIndexSettled, loadEvents } =
     useEventFeed(needsSearchIndex);
 
   return (
@@ -67,6 +67,9 @@ function EventFeedProbe({ needsSearchIndex = false }) {
       <output aria-label="event-count">{allEvents.length}</output>
       <output aria-label="search-index">
         {searchIndex ? "loaded" : "missing"}
+      </output>
+      <output aria-label="search-index-settled">
+        {String(searchIndexSettled)}
       </output>
       <button type="button" onClick={() => void loadEvents()}>
         Reload
@@ -168,12 +171,19 @@ describe("useEventFeed", () => {
       expect(fetchMock).toHaveBeenCalledTimes(1);
     });
     expect(screen.getByLabelText("search-index")).toHaveTextContent("missing");
+    // A retry is still due, so topic counts must not treat Fuse as final.
+    expect(screen.getByLabelText("search-index-settled")).toHaveTextContent(
+      "false",
+    );
 
     rerender(<EventFeedProbe needsSearchIndex />);
 
     await waitFor(() => {
       expect(screen.getByLabelText("search-index")).toHaveTextContent("loaded");
     });
+    expect(screen.getByLabelText("search-index-settled")).toHaveTextContent(
+      "true",
+    );
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
@@ -190,6 +200,12 @@ describe("useEventFeed", () => {
     const { rerender } = render(<EventFeedProbe needsSearchIndex />);
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+    // The retry failed too. That is final: counts fall back to Fuse.
+    await waitFor(() => {
+      expect(screen.getByLabelText("search-index-settled")).toHaveTextContent(
+        "true",
+      );
     });
 
     rerender(<EventFeedProbe />);

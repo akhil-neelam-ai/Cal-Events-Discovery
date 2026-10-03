@@ -19,6 +19,12 @@ interface EventFeedState {
   loading: LoadingState;
   statusReport: IngestionStatus | null;
   searchIndex: SearchIndex | null;
+  /**
+   * True once the latest index request finished with no retry pending. Until
+   * then a query's topic counts come from Fuse alone, which misses words late
+   * in a description.
+   */
+  searchIndexSettled: boolean;
   topicVocabulary: TopicVocabulary | null;
   sourceOptions: SourceOption[];
   sourceCount: number;
@@ -76,6 +82,7 @@ export function useEventFeed(needsSearchIndex = false): EventFeedState {
     null,
   );
   const [searchIndex, setSearchIndex] = useState<SearchIndex | null>(null);
+  const [searchIndexSettled, setSearchIndexSettled] = useState(false);
   const [topicVocabulary, setTopicVocabulary] =
     useState<TopicVocabulary | null>(null);
   // Id of the index request that failed last, or 0. An id rather than a
@@ -86,6 +93,7 @@ export function useEventFeed(needsSearchIndex = false): EventFeedState {
 
   const loadSearchIndex = useCallback(() => {
     const request = ++searchIndexRequest.current;
+    setSearchIndexSettled(false);
     void fetchOptionalSearchIndex().then((index) => {
       // A reload or retry that started later owns the result.
       if (request !== searchIndexRequest.current) return;
@@ -93,6 +101,8 @@ export function useEventFeed(needsSearchIndex = false): EventFeedState {
       // fails clears the now-stale index rather than serving old postings.
       setSearchIndex(index);
       setFailedIndexRequest(index === null ? request : 0);
+      // A first failure still has a retry coming, so it is not settled yet.
+      setSearchIndexSettled(index !== null || searchIndexRetried.current);
     });
   }, []);
 
@@ -189,6 +199,7 @@ export function useEventFeed(needsSearchIndex = false): EventFeedState {
     loading,
     statusReport,
     searchIndex,
+    searchIndexSettled,
     topicVocabulary,
     sourceOptions,
     sourceCount: Math.max(sourceOptions.length - 1, 0),

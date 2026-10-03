@@ -26,6 +26,7 @@ interface UseEventBrowserStateParams {
   filters: SearchFilters;
   liveSearchQuery: string;
   searchIndex: SearchIndex | null;
+  searchIndexSettled: boolean;
   dismissedInterpretationKeys: Set<string>;
   selectedEventId: string | null;
   todayKey: string;
@@ -110,6 +111,7 @@ export function useEventBrowserState({
   filters,
   liveSearchQuery,
   searchIndex,
+  searchIndexSettled,
   dismissedInterpretationKeys,
   selectedEventId,
   todayKey,
@@ -237,36 +239,6 @@ export function useEventBrowserState({
     userSetDateRange,
   ]);
 
-  const effectiveDateRange = useMemo<SearchFilters["dateRange"]>(() => {
-    if (
-      derivedDateRange === "today" &&
-      rawDateBuckets.today.length === 0 &&
-      rawDateBuckets.week.length > 0
-    ) {
-      return "week";
-    }
-
-    if (
-      derivedDateRange === "tomorrow" &&
-      rawDateBuckets.tomorrow.length === 0 &&
-      rawDateBuckets.week.length > 0
-    ) {
-      return "week";
-    }
-
-    return derivedDateRange;
-  }, [
-    derivedDateRange,
-    rawDateBuckets.today.length,
-    rawDateBuckets.tomorrow.length,
-    rawDateBuckets.week.length,
-  ]);
-
-  const datePool = useMemo(
-    () => bucketForRange(rawDateBuckets, effectiveDateRange),
-    [effectiveDateRange, rawDateBuckets],
-  );
-
   const inferredTopicSlug = activePlan?.filters.topic;
   const searchDismissedKeys = useMemo(
     () =>
@@ -286,6 +258,79 @@ export function useEventBrowserState({
       filters.source,
       filters.topic,
     ],
+  );
+
+  // A search for today or tomorrow widens to the week when the query matches
+  // nothing that day but does match later in the week. The raw pool can't
+  // tell: it has events today even when none of them match. Matches found
+  // only by dropping a filter are not real matches, so they leave the range.
+  const weekMatchBuckets = useMemo(() => {
+    const query = filters.searchQuery.trim();
+    if (
+      query.length < 2 ||
+      (derivedDateRange !== "today" && derivedDateRange !== "tomorrow")
+    ) {
+      return null;
+    }
+
+    const pool = filters.topic
+      ? rawDateBuckets.week.filter((event) =>
+          eventHasTopic(event, filters.topic),
+        )
+      : rawDateBuckets.week;
+    const output = searchEvents(
+      pool,
+      query,
+      searchIndex,
+      searchDismissedKeys,
+      planOptions,
+    );
+    if (output.fallbackUsed || output.results.length === 0) {
+      return null;
+    }
+    return partitionDateBuckets(
+      output.results,
+      todayKey,
+      tomorrowKey,
+      weekEndKey,
+    );
+  }, [
+    derivedDateRange,
+    filters.searchQuery,
+    filters.topic,
+    planOptions,
+    rawDateBuckets.week,
+    searchDismissedKeys,
+    searchIndex,
+    todayKey,
+    tomorrowKey,
+    weekEndKey,
+  ]);
+
+  const effectiveDateRange = useMemo<SearchFilters["dateRange"]>(() => {
+    const buckets = weekMatchBuckets ?? rawDateBuckets;
+    if (
+      derivedDateRange === "today" &&
+      buckets.today.length === 0 &&
+      buckets.week.length > 0
+    ) {
+      return "week";
+    }
+
+    if (
+      derivedDateRange === "tomorrow" &&
+      buckets.tomorrow.length === 0 &&
+      buckets.week.length > 0
+    ) {
+      return "week";
+    }
+
+    return derivedDateRange;
+  }, [derivedDateRange, rawDateBuckets, weekMatchBuckets]);
+
+  const datePool = useMemo(
+    () => bucketForRange(rawDateBuckets, effectiveDateRange),
+    [effectiveDateRange, rawDateBuckets],
   );
 
   const availabilityDismissedKeys = useMemo(() => {
@@ -383,8 +428,14 @@ export function useEventBrowserState({
     return counts;
   }, [availabilityDateBuckets, effectiveDateRange, selectedTopicCounts]);
 
-  const topicUnavailable =
+  // A search's counts are final only once the index has loaded or failed.
+  // Fuse alone misses words late in a description and would clear a topic
+  // the index finds.
+  const countsReady =
     topicAvailabilityReady &&
+    (searchIndexSettled || filters.searchQuery.trim().length < 2);
+  const topicUnavailable =
+    countsReady &&
     Boolean(filters.topic) &&
     (topicCounts.get(filters.topic) ?? 0) === 0 &&
     !searchQueryPending;
@@ -404,34 +455,19 @@ export function useEventBrowserState({
       };
     }
 
-    const output = searchEvents(
+    // searchEvents' own fallback drops an inferred topic that has no match
+    // in this range and keeps the other words and filters. WebMCP gets the
+    // same answer.
+    return searchEvents(
       searchPool,
       query,
       searchIndex,
       searchDismissedKeys,
       planOptions,
     );
-
-    if (
-      output.results.length === 0 &&
-      !renderTopic &&
-      inferredTopicSlug &&
-      !searchDismissedKeys.has(`topic:${inferredTopicSlug}`) &&
-      datePool.length > 0
-    ) {
-      return {
-        results: sortEventsChronologically(datePool),
-        fallbackUsed: true,
-        fallbackMessage: `No "${activePlan?.interpretations.find((item) => item.key === `topic:${inferredTopicSlug}`)?.label ?? inferredTopicSlug}" results for this date range. Showing all topics.`,
-      };
-    }
-
-    return output;
   }, [
-    activePlan,
     datePool,
     filters.searchQuery,
-    inferredTopicSlug,
     planOptions,
     renderTopic,
     searchDismissedKeys,
@@ -448,7 +484,7 @@ export function useEventBrowserState({
   );
 
   useEffect(() => {
-    if (!topicAvailabilityReady || !filters.topic || searchQueryPending) {
+    if (!countsReady || !filters.topic || searchQueryPending) {
       return;
     }
 
@@ -464,10 +500,10 @@ export function useEventBrowserState({
     }, 0);
     return () => window.clearTimeout(timeout);
   }, [
+    countsReady,
     filters.topic,
     onUnavailableTopic,
     searchQueryPending,
-    topicAvailabilityReady,
     topicCounts,
   ]);
 
