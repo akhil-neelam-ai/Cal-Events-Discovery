@@ -69,6 +69,9 @@ function persistBannerDismissed(key: string): void {
 
 export default function App() {
   const initialUrlState = readAppUrlState();
+  const [filters, setFilters] = useState<SearchFilters>(
+    initialUrlState.filters,
+  );
   const {
     allEvents,
     dataAgeHours,
@@ -80,11 +83,8 @@ export default function App() {
     sourceOptions,
     sourceCount,
     loadEvents,
-  } = useEventFeed();
+  } = useEventFeed(filters.searchQuery.trim().length >= 2);
   const prefersReducedMotion = usePrefersReducedMotion();
-  const [filters, setFilters] = useState<SearchFilters>(
-    initialUrlState.filters,
-  );
   const [selectedEventId, setSelectedEventId] = useState<string | null>(
     initialUrlState.selectedEventId,
   );
@@ -110,20 +110,21 @@ export default function App() {
     [feedSettled, topicVocabulary],
   );
 
-  const handleEventClick = useCallback((event: CalEvent) => {
-    setSelectedEventId(event.id);
-    // Persist the search term that led to this click
-    setFilters((prev) => {
-      if (prev.searchQuery.trim()) addRecentSearch(prev.searchQuery.trim());
-      return prev;
-    });
-    trackEventClick({
-      event_id: event.id,
-      event_title: event.title,
-      event_category: event.tags?.[0] || "Unknown",
-      event_date: event.date,
-    });
-  }, []);
+  const handleEventClick = useCallback(
+    (event: CalEvent) => {
+      setSelectedEventId(event.id);
+      // Persist the search term that led to this click. This runs here, not
+      // in a state updater, which StrictMode calls twice.
+      if (filters.searchQuery.trim()) addRecentSearch(filters.searchQuery);
+      trackEventClick({
+        event_id: event.id,
+        event_title: event.title,
+        event_category: event.tags?.[0] || "Unknown",
+        event_date: event.date,
+      });
+    },
+    [filters.searchQuery],
+  );
 
   const handleCloseDetail = useCallback(() => {
     setSelectedEventId(null);
@@ -172,7 +173,7 @@ export default function App() {
     persistBannerDismissed(staleBannerDismissalKey);
   };
 
-  const { todayKey, tomorrowKey, nextWeekKey } = usePacificDateKeys();
+  const { todayKey, tomorrowKey, weekEndKey } = usePacificDateKeys();
   const debouncedSearchQuery = useDebouncedValue(filters.searchQuery, 140);
   const browserStateFilters = useMemo(
     () => ({ ...filters, searchQuery: debouncedSearchQuery }),
@@ -258,7 +259,7 @@ export default function App() {
     selectedEventId,
     todayKey,
     tomorrowKey,
-    nextWeekKey,
+    weekEndKey,
     userSetDateRange,
     topicAvailabilityReady: allowedTopicSlugs !== null,
     topicDefinitions,

@@ -162,6 +162,17 @@ export function stem(word: string): string {
     }
   }
 
+  // Porter step 1c: a final "y" after a consonant becomes "i", and so does a
+  // final "ie". "library" then meets "libraries" at "librari", and "movie"
+  // meets "movies" at "movi".
+  if (w.length > 3) {
+    if (/[^aeiouy]y$/.test(w)) {
+      w = w.slice(0, -1) + "i";
+    } else if (w.endsWith("ie")) {
+      w = w.slice(0, -1);
+    }
+  }
+
   return w;
 }
 
@@ -266,3 +277,30 @@ export const BERKELEY_VENUE_ALIASES: Record<string, string> = {
   northside: "north campus residential",
   southside: "south campus telegraph",
 };
+
+// "haas" names the business school, but Haas Pavilion is the athletics arena.
+const VENUE_ALIAS_EXCLUSIONS: Partial<Record<string, RegExp>> = {
+  haas: /\bhaas pavilion\b/gi,
+};
+
+const VENUE_ALIAS_PATTERNS: Array<[string, RegExp]> = Object.keys(
+  BERKELEY_VENUE_ALIASES,
+).map((alias) => [
+  alias,
+  new RegExp(`\\b${alias.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i"),
+]);
+
+/**
+ * Alias expansions for venues the text names as whole words. A plain
+ * substring match gave "Bakersfield" the RSF gym terms, and every Haas
+ * Pavilion game the business-school terms.
+ */
+export function venueAliasExpansions(text: string): string[] {
+  const expansions: string[] = [];
+  for (const [alias, pattern] of VENUE_ALIAS_PATTERNS) {
+    const exclusion = VENUE_ALIAS_EXCLUSIONS[alias];
+    const scanned = exclusion ? text.replace(exclusion, " ") : text;
+    if (pattern.test(scanned)) expansions.push(BERKELEY_VENUE_ALIASES[alias]);
+  }
+  return expansions;
+}

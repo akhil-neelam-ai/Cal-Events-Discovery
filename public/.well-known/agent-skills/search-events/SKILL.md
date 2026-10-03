@@ -10,6 +10,7 @@ When the CalEvents homepage is open and WebMCP is available, call
 
 Optional inputs: `query`, `datePreset` (`today` | `tomorrow` | `week` |
 `upcoming`), `category`, `topic`, `source`, `startDate`, `endDate`, `limit`.
+Results start today unless `datePreset` or `startDate` says otherwise.
 For `topic`, use a slug from the published `topic_vocabulary.topics` block in
 `events.json`; the vocabulary is the source of truth and may change.
 
@@ -32,7 +33,10 @@ For ranked offline search, also load `https://cal-events.com/search-index.json`.
 1. Prefer WebMCP `search_berkeley_events` when available.
 2. Otherwise read the top-level `events` array from `events.json`.
 3. Treat `date` as an America/Los_Angeles calendar date in `YYYY-MM-DD`.
-4. Filter out events before the user's requested date window.
+   A multi-day event also has `end_date` and `dates`, and `date` is only its
+   first upcoming day.
+4. Keep an event when any day in `dates` falls in the user's date window. Use
+   `date` when `dates` is absent.
 5. For category filtering, prefer the first value in `tags` because it is the primary displayed category.
 6. For topic filtering, match the event's published `topics` slugs. Topics are independent of `tags`.
 7. Return concise results with title, date, time, location, organizer, topics, and the official `url`.

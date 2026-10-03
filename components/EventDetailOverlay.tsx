@@ -627,9 +627,11 @@ function SlideOutPanel({
               </div>
               <div>
                 <div className="text-base font-bold text-gray-800">
-                  {formatEventDate(event.date)}
+                  {detailWhenPrimary(event)}
                 </div>
-                <div className="text-gray-500">{event.time}</div>
+                <div className="text-gray-500">
+                  {detailWhenSecondary(event)}
+                </div>
               </div>
             </div>
 

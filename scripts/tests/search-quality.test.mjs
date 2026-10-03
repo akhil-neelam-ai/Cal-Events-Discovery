@@ -328,14 +328,16 @@ test('real search: "tonight" keeps all-day events and excludes morning times', (
   }
 });
 
-test('real search: "cal games" returns sports-only results', () => {
+test('real search: "cal games" returns Cal Athletics events only', () => {
   const output = searchEvents(events, "cal games", searchIndex);
+  const isCalAthletics = (event) =>
+    event.source === "calbears" || event.organizer === "Cal Athletics";
 
-  assert.equal(output.plan.filters.category, "Sports");
-  assert.ok(output.results.length > 0, '"cal games" should find sports events');
+  assert.equal(output.plan.filters.source, "calbears");
+  assert.ok(output.results.length > 0, '"cal games" should find Cal games');
   assert.ok(
-    output.results.slice(0, 20).every((event) => event.tags?.[0] === "Sports"),
-    '"cal games" should not rank non-sports events',
+    output.results.slice(0, 20).every(isCalAthletics),
+    '"cal games" should not rank recreation or other sports rows',
   );
 });
 
@@ -346,6 +348,29 @@ test('real search: "basketball" does not substitute baseball', () => {
   );
 
   assert.equal(bad.length, 0, '"basketball" should not return baseball games');
+});
+
+test("real search: subject words rank text across every category", () => {
+  // Seminars and lectures are filed under Academic and Science & Tech alike,
+  // so a category lock on these words hid about half of the matches.
+  for (const [query, pattern] of [
+    ["seminar", /seminar/i],
+    ["lecture", /lectur/i],
+  ]) {
+    const output = searchEvents(events, query, searchIndex);
+    const top = output.results.slice(0, 5);
+    const categories = new Set(output.results.map((event) => event.tags?.[0]));
+
+    assert.equal(output.plan.filters.category, undefined, `${query} category`);
+    assert.ok(top.length > 0, `"${query}" should find events`);
+    assert.ok(
+      top.every((event) =>
+        pattern.test(`${event.title ?? ""} ${event.description ?? ""}`),
+      ),
+      `"${query}" top results should mention the word`,
+    );
+    assert.ok(categories.size > 1, `"${query}" should span categories`);
+  }
 });
 
 test('real search: "moffitt" does not broaden to generic library exhibits', () => {
@@ -368,14 +393,49 @@ test('real search: "moffitt" does not broaden to generic library exhibits', () =
   );
 });
 
-test('real search: "berkeley law" is scoped to the Berkeley Law source', () => {
+test('real search: "management" skips Haas Pavilion games', () => {
+  const output = searchEvents(events, "management", searchIndex);
+  // The "haas" venue alias is for the business school. Haas Pavilion is the
+  // athletics arena, so its games should only match text that says so.
+  const bad = output.results.filter((event) => {
+    const text = `${event.title ?? ""} ${event.organizer ?? ""} ${
+      event.description ?? ""
+    }`;
+    return (
+      /haas pavilion/i.test(event.location ?? "") && !/management/i.test(text)
+    );
+  });
+
+  assert.equal(
+    bad.length,
+    0,
+    `"management" should not return Haas Pavilion games: ${bad
+      .slice(0, 3)
+      .map((event) => event.title)
+      .join(" | ")}`,
+  );
+});
+
+test('real search: "berkeley law" is scoped to Berkeley Law events', () => {
   const output = searchEvents(events, "berkeley law", searchIndex);
+  // LiveWhale keeps its own copy of cross-published law events, filed under
+  // the Berkeley Law unit. Those belong in the results too.
+  const isLaw = (event) =>
+    event.source === "berkeley_law" || event.organizer === "Berkeley Law";
 
   assert.equal(output.plan.filters.source, "berkeley_law");
   assert.ok(output.results.length > 0, '"berkeley law" should find law events');
   assert.ok(
-    output.results.every((event) => event.source === "berkeley_law"),
+    output.results.every(isLaw),
     '"berkeley law" should not return generic Berkeley events',
+  );
+  assert.equal(
+    output.results.filter((event) => event.source === "livewhale").length,
+    events.filter(
+      (event) =>
+        event.source === "livewhale" && event.organizer === "Berkeley Law",
+    ).length,
+    '"berkeley law" should keep every LiveWhale Berkeley Law event',
   );
 });
 

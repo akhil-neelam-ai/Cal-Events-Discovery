@@ -33,7 +33,9 @@ export function DesktopHero({
   const [recents, setRecents] = useState<string[]>([]);
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listboxRef = useRef<HTMLDivElement | null>(null);
-  const isSuggestionsOpen = searchFocused;
+  // Recent and popular searches are not filtered by the query, so they only
+  // help before the user starts typing.
+  const isSuggestionsOpen = searchFocused && !searchQuery.trim();
 
   const closeSuggestions = () => setSearchFocused(false);
 

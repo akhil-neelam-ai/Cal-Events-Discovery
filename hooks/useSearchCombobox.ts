@@ -8,6 +8,11 @@ import {
 
 import { POPULAR_SEARCHES } from "../appConfig";
 
+// No option is active until the user moves onto one with the arrow keys or
+// the pointer. Enter then submits the typed query instead of silently
+// replacing it with the first suggestion.
+const NO_ACTIVE_OPTION = -1;
+
 export function useSearchCombobox({
   isOpen,
   recents,
@@ -20,7 +25,14 @@ export function useSearchCombobox({
   onClose: () => void;
 }) {
   const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(NO_ACTIVE_OPTION);
+  const [wasOpen, setWasOpen] = useState(isOpen);
+
+  // Each time the list opens or closes, start again with no active option.
+  if (wasOpen !== isOpen) {
+    setWasOpen(isOpen);
+    setActiveIndex(NO_ACTIVE_OPTION);
+  }
 
   const suggestions = useMemo(
     () => [
@@ -31,10 +43,9 @@ export function useSearchCombobox({
   );
 
   const resolvedActiveIndex =
-    isOpen && suggestions.length > 0
-      ? ((activeIndex % suggestions.length) + suggestions.length) %
-        suggestions.length
-      : -1;
+    isOpen && suggestions.length > 0 && activeIndex >= 0
+      ? activeIndex % suggestions.length
+      : NO_ACTIVE_OPTION;
 
   const handleInputKeyDown = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
@@ -47,11 +58,23 @@ export function useSearchCombobox({
 
       if (event.key === "ArrowDown") {
         event.preventDefault();
-        setActiveIndex((index) => index + 1);
+        setActiveIndex((index) =>
+          index < 0
+            ? 0
+            : ((index % suggestions.length) + 1) % suggestions.length,
+        );
       } else if (event.key === "ArrowUp") {
         event.preventDefault();
-        setActiveIndex((index) => index - 1);
+        setActiveIndex((index) => {
+          const current = index < 0 ? 0 : index % suggestions.length;
+          return (current - 1 + suggestions.length) % suggestions.length;
+        });
       } else if (event.key === "Enter") {
+        // With nothing active, let the input's own Enter handler submit the
+        // typed query.
+        if (resolvedActiveIndex < 0) {
+          return;
+        }
         event.preventDefault();
         onSelect(suggestions[resolvedActiveIndex]);
       } else if (event.key === "Escape") {

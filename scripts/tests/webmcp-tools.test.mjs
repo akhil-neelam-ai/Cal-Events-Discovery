@@ -4,8 +4,12 @@ import test from "node:test";
 import { createWebMcpTools } from "../../agent/webmcpTools.ts";
 import { TOPIC_VOCABULARY } from "../../scripts/lib/topics.ts";
 import {
+  addDaysToDateKey,
+  getCurrentPacificDateKey,
+} from "../../utils/eventDates.ts";
+import {
   buildSearchPlan,
-  dismissedKeysForExplicitTopic,
+  dismissedKeysForExplicitFilters,
   searchEvents,
 } from "../../utils/searchEngine.ts";
 
@@ -31,12 +35,17 @@ function withTopics(payload, topics = ["ai-machine-learning"]) {
   };
 }
 
+// Search defaults to today onward, so fixtures sit on days after today.
+function inDays(days) {
+  return addDaysToDateKey(getCurrentPacificDateKey(), days);
+}
+
 function event(overrides = {}) {
   return {
     id: overrides.id ?? "event",
     title: overrides.title ?? "AI Event",
     organizer: "UC Berkeley",
-    date: overrides.date ?? "2026-05-13",
+    date: overrides.date ?? inDays(1),
     time: overrides.time ?? "12:00 PM",
     location: overrides.location ?? "Sather Gate",
     description: overrides.description ?? "AI event",
@@ -88,27 +97,27 @@ test("WebMCP ranked search returns AI matches with ranked flag", async () => {
       event({
         id: "june",
         title: "June AI Workshop",
-        date: "2026-06-01",
+        date: inDays(3),
       }),
       event({
         id: "may",
         title: "May AI Talk",
-        date: "2026-05-14",
+        date: inDays(1),
       }),
       event({
         id: "october",
         title: "October AI Forum",
-        date: "2026-10-05",
+        date: inDays(20),
       }),
       event({
         id: "later-june",
         title: "Later June AI Seminar",
-        date: "2026-06-08",
+        date: inDays(10),
       }),
       event({
         id: "unrelated",
         title: "Pottery Night",
-        date: "2026-05-20",
+        date: inDays(5),
         description: "Clay workshop",
       }),
     ]),
@@ -182,7 +191,7 @@ test("WebMCP explicit topic overrides a different inferred topic like the UI", a
     const agent = await search.execute({ topic: "law", query: "AI" });
 
     const plan = buildSearchPlan("AI", { topics: TOPIC_VOCABULARY.topics });
-    const dismissed = dismissedKeysForExplicitTopic(plan, "law");
+    const dismissed = dismissedKeysForExplicitFilters(plan, { topic: "law" });
     const pool = events.filter((item) => (item.topics ?? []).includes("law"));
     const ui = searchEvents(pool, "AI", searchIndex, dismissed, {
       topics: TOPIC_VOCABULARY.topics,
@@ -196,6 +205,45 @@ test("WebMCP explicit topic overrides a different inferred topic like the UI", a
     assert.ok(agent.events.some((item) => item.id === "law-ai-text"));
     assert.ok(!agent.events.some((item) => item.id === "ai-only"));
   }
+});
+
+test("WebMCP explicit category overrides an inferred one like the UI", async () => {
+  // "sports" names the Sports category, but the caller asked for Arts. Both
+  // paths search the word inside Arts instead of returning all of Arts.
+  const events = [
+    event({
+      id: "sports-photos",
+      title: "Sports Photography Exhibit",
+      tags: ["Arts"],
+    }),
+    event({ id: "string-quartet", title: "String Quartet", tags: ["Arts"] }),
+    event({ id: "volleyball", title: "Volleyball Match", tags: ["Sports"] }),
+  ];
+  // Real feeds publish topic_vocabulary, which turns off the agent's legacy
+  // text fallback for old fixtures.
+  const topics = TOPIC_VOCABULARY.topics;
+  const { tools } = loadTools({
+    ...makePayload(events),
+    topic_vocabulary: TOPIC_VOCABULARY,
+  });
+  const agent = await tools
+    .get("search_berkeley_events")
+    .execute({ category: "Arts", query: "sports" });
+
+  const plan = buildSearchPlan("sports", { topics });
+  const dismissed = dismissedKeysForExplicitFilters(plan, { category: "Arts" });
+  const pool = events.filter((item) => item.tags[0] === "Arts");
+  const ui = searchEvents(pool, "sports", null, dismissed, { topics });
+
+  assert.deepEqual([...dismissed], ["category:Sports"]);
+  assert.deepEqual(
+    agent.events.map((item) => item.id),
+    ui.results.map((item) => item.id),
+  );
+  assert.deepEqual(
+    agent.events.map((item) => item.id),
+    ["sports-photos"],
+  );
 });
 
 test("WebMCP date bounds apply before topic fallback", async () => {
@@ -319,6 +367,99 @@ test("WebMCP datePreset 'today' resolves Pacific bounds to today's events", asyn
     ["today-evt"],
   );
   assert.equal(output.ranked, false);
+});
+
+test("WebMCP date presets match every day of a multi-day event", async () => {
+  // `date` is already past, as it is between midnight and the next publish.
+  const todayKey = getCurrentPacificDateKey();
+  const yesterdayKey = addDaysToDateKey(todayKey, -1);
+  const tomorrowKey = addDaysToDateKey(todayKey, 1);
+  const { tools } = loadTools(
+    makePayload([
+      {
+        ...event({
+          id: "exhibit",
+          title: "Running Exhibit",
+          date: yesterdayKey,
+          time: "All day",
+        }),
+        end_date: tomorrowKey,
+        dates: [yesterdayKey, todayKey, tomorrowKey],
+      },
+      event({ id: "yesterday-talk", title: "Past Talk", date: yesterdayKey }),
+    ]),
+  );
+
+  const searchTool = tools.get("search_berkeley_events");
+  for (const datePreset of ["today", "tomorrow", "week", "upcoming"]) {
+    const output = await searchTool.execute({ datePreset });
+    assert.deepEqual(
+      output.events.map((item) => item.id),
+      ["exhibit"],
+      datePreset,
+    );
+  }
+});
+
+test("WebMCP search with no date input starts today, like the UI", async () => {
+  const { tools } = loadTools(
+    makePayload([
+      event({ id: "yesterday", title: "Past AI Talk", date: inDays(-1) }),
+      event({ id: "tomorrow", title: "Next AI Talk", date: inDays(1) }),
+    ]),
+  );
+  const search = tools.get("search_berkeley_events");
+
+  const browse = await search.execute({});
+  assert.deepEqual(
+    browse.events.map((item) => item.id),
+    ["tomorrow"],
+  );
+  const ranked = await search.execute({ query: "AI" });
+  assert.deepEqual(
+    ranked.events.map((item) => item.id),
+    ["tomorrow"],
+  );
+  const past = await search.execute({ endDate: inDays(-1) });
+  assert.match(past.error, /endDate is before today/);
+});
+
+test("WebMCP search results carry the multi-day fields", async () => {
+  const todayKey = getCurrentPacificDateKey();
+  const days = [0, 1, 2].map((offset) => addDaysToDateKey(todayKey, offset));
+  const { tools } = loadTools(
+    makePayload([
+      {
+        ...event({ id: "exhibit", date: days[0], time: "All day" }),
+        end_date: days[2],
+        dates: days,
+      },
+    ]),
+  );
+
+  const output = await tools
+    .get("search_berkeley_events")
+    .execute({ datePreset: "week" });
+  assert.equal(output.events[0].end_date, days[2]);
+  assert.deepEqual(output.events[0].dates, days);
+});
+
+test("WebMCP week preset matches the UI's 7-day week", async () => {
+  const todayKey = getCurrentPacificDateKey();
+  const { tools } = loadTools(
+    makePayload([
+      event({ id: "day-6", date: addDaysToDateKey(todayKey, 6) }),
+      event({ id: "day-7", date: addDaysToDateKey(todayKey, 7) }),
+    ]),
+  );
+
+  const output = await tools
+    .get("search_berkeley_events")
+    .execute({ datePreset: "week" });
+  assert.deepEqual(
+    output.events.map((item) => item.id),
+    ["day-6"],
+  );
 });
 
 test("WebMCP URL workspace tools build and apply shared state", async () => {

@@ -4,6 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { buildSearchIndex } from "../../scripts/lib/buildIndex.ts";
 import {
   FRONTEND_CATEGORIES,
   isoDateInPT,
@@ -186,6 +187,20 @@ test("status report matches the published artifact", () => {
     assert.ok(Number.isInteger(source.count) && source.count >= 0);
     assert.ok(Number.isInteger(source.duration_ms) && source.duration_ms >= 0);
     assert.equal(typeof source.fetched_at, "string");
+  }
+});
+
+test("search index matches a rebuild with the current tokenizer", () => {
+  // The index and the query side must stem the same way. After a change to
+  // the stemmer, the tokenizer, or the venue aliases, run
+  // `npm run rebuild-index` and commit the result.
+  const rebuilt = buildSearchIndex(published.events);
+  for (const field of ["t", "g", "o", "d", "l"]) {
+    assert.deepEqual(
+      searchIndex[field],
+      rebuilt[field],
+      `search-index.json field ${field} is stale: run npm run rebuild-index`,
+    );
   }
 });
 

@@ -185,6 +185,19 @@ test("membership in two department feeds assigns both fields", () => {
   assert.ok(topics.includes("law"));
 });
 
+test("Recreational Sports rows do not claim the Wellness topic", () => {
+  assert.deepEqual(
+    assignTopics(
+      baseEvent({
+        title: "Building Hours - RSF",
+        description: "The Recreational Sports Facility is open.",
+        organizer: "Recreational Sports",
+      }),
+    ),
+    [],
+  );
+});
+
 test("a strong title signal assigns a topic without group membership", () => {
   assert.ok(
     assignTopics(
@@ -321,5 +334,70 @@ test("LLM degree abbreviations do not receive the AI topic", () => {
       }),
     ).includes("ai-machine-learning"),
     false,
+  );
+});
+
+test("topic words used in another sense do not assign their topic", () => {
+  const diffusion = assignTopics(
+    baseEvent({
+      title:
+        "Neyman Statistics Seminar with Molei Tao: Scaling Diffusion Language Models",
+      organizer: "Neyman Seminar",
+      description: "A test-time scaling method for diffusion language models.",
+    }),
+  );
+  assert.equal(diffusion.includes("history-humanities"), false);
+  assert.ok(diffusion.includes("ai-machine-learning"));
+
+  assert.deepEqual(
+    assignTopics(
+      baseEvent({
+        title:
+          "Defending Democracy Online Through Social Media: Deep Fakes and Our Cognitive Security",
+        organizer: "OLLI",
+        description: "Social media and smartphones are changing the news.",
+      }),
+    ),
+    [],
+  );
+
+  assert.deepEqual(
+    assignTopics(
+      baseEvent({
+        title: "MORS Colloquium: Alex Figueroa - Practice Job Talk",
+        organizer: "Berkeley Haas",
+        description: "MORS Colloquium: Alex Figueroa - Practice Job Talk",
+      }),
+    ),
+    [],
+  );
+});
+
+test("the noun senses of those words still assign their topic", () => {
+  for (const title of [
+    "Chicago Haas Alumni Community Social",
+    "Grad Student Social Hour",
+    "[Queer Caucus] 1L Social Mixer",
+    "Ice Cream Social on the Glade",
+  ]) {
+    assert.ok(
+      assignTopics(baseEvent({ title, description: "" })).includes(
+        "social-clubs",
+      ),
+      title,
+    );
+  }
+  assert.ok(
+    assignTopics(
+      baseEvent({ title: "1L Job Search Panel", description: "" }),
+    ).includes("career-jobs"),
+  );
+  assert.ok(
+    assignTopics(
+      baseEvent({
+        title: "Language and Literature Colloquium",
+        description: "",
+      }),
+    ).includes("history-humanities"),
   );
 });

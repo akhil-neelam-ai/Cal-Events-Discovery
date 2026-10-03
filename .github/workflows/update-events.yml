@@ -16,13 +16,12 @@ concurrency:
   group: update-events-main
   cancel-in-progress: false
 
-env:
-  AUTOMATION_PR_TOKEN: ${{ secrets.AUTOMATION_PR_TOKEN }}
+# AUTOMATION_PR_TOKEN is passed only to the three steps that need it: the
+# token check, create-PR, and merge. `npm ci` runs install scripts, and the
+# pipeline parses untrusted upstream data, so neither should see it.
 
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
+# No job gets a scope it does not ask for. schedule-gate needs none.
+permissions: {}
 
 jobs:
   schedule-gate:
@@ -62,6 +61,10 @@ jobs:
       )
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
 
     steps:
       # Validate the automation token before spending a pipeline run on it.
@@ -77,14 +80,15 @@ jobs:
       - name: Check automation token
         id: token_check
         env:
-          GH_TOKEN: ${{ env.AUTOMATION_PR_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTOMATION_PR_TOKEN }}
           REPO: ${{ github.repository }}
           EVENT_NAME: ${{ github.event_name }}
           ROTATE_URL: ${{ github.server_url }}/settings/personal-access-tokens
         run: |
           set -uo pipefail
 
-          if [ -z "${AUTOMATION_PR_TOKEN:-}" ]; then
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
             echo "usable=false" >> "$GITHUB_OUTPUT"
             if [ "${EVENT_NAME}" = "schedule" ]; then
               echo "::error::AUTOMATION_PR_TOKEN is not set — scheduled runs require it. See README → GitHub secrets."
@@ -93,6 +97,8 @@ jobs:
             echo "::warning::AUTOMATION_PR_TOKEN is not set; the snapshot PR will be opened with GITHUB_TOKEN and will not auto-merge."
             exit 0
           fi
+
+          echo "present=true" >> "$GITHUB_OUTPUT"
 
           # Hitting the repo endpoint checks the two things the token must do:
           # authenticate, and reach this repository.
@@ -155,6 +161,29 @@ jobs:
           MAX_FALLBACK_AGE_HOURS: "48"
         run: npx tsx scripts/checkFeedHealth.ts
 
+      # A supplementary source that fails quietly only warns on a green run.
+      # Three failed fetches in a row open or update a source-contracts issue,
+      # without touching the visitor-facing degraded flags.
+      - name: Read source failure streaks
+        id: source_streaks
+        run: |
+          failing="$(jq -r '[.sources[] | select((.consecutive_failures // 0) >= 3) | "\(.name) (\(.consecutive_failures) runs)"] | join(", ")' public/status.json)"
+          echo "failing=${failing}" >> "$GITHUB_OUTPUT"
+          if [ -n "${failing}" ]; then
+            echo "::warning::Sources failing three or more runs in a row: ${failing}"
+          fi
+
+      - name: Open source-contracts issue on a failure streak
+        if: ${{ steps.source_streaks.outputs.failing != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_NAME: Daily source health
+          FAILURE_CONTEXT: "three or more failed runs in a row for ${{ steps.source_streaks.outputs.failing }}"
+          ISSUE_LABEL: source-contracts
+          ISSUE_LABEL_COLOR: 0E8A16
+          ISSUE_LABEL_DESCRIPTION: Non-urgent live source contract drift for triage
+        run: node scripts/notifyPipelineFailure.mjs
+
       # Publish-critical validation only. Live corpus golden queries
       # (search-quality) must not block shipping a healthy snapshot — they run
       # afterward and open a low-priority data-quality issue on failure.
@@ -216,9 +245,10 @@ jobs:
 
       - name: Create artifact update pull request
         id: create_pr
-        uses: peter-evans/create-pull-request@v8
+        # Pinned to a commit because this step receives the automation token.
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
-          token: ${{ steps.token_check.outputs.usable == 'true' && env.AUTOMATION_PR_TOKEN || github.token }}
+          token: ${{ steps.token_check.outputs.usable == 'true' && secrets.AUTOMATION_PR_TOKEN || github.token }}
           branch: automation/update-events
           base: main
           delete-branch: true
@@ -263,7 +293,7 @@ jobs:
         # security advisory). A daily data refresh must merge whenever the data
         # itself is validated, not when the entire repo posture is perfect.
         env:
-          GH_TOKEN: ${{ env.AUTOMATION_PR_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTOMATION_PR_TOKEN }}
           # Substring-matched (case-insensitive) against the PR's check names.
           REQUIRED_CHECKS: "validate browser-e2e"
           # Overall budget for required checks to appear and finish.
@@ -323,7 +353,7 @@ jobs:
       # is simply absent is a supported workflow_dispatch mode and is left to
       # the warning above.
       - name: Fail run when automation token is unusable
-        if: ${{ steps.token_check.outputs.usable != 'true' && env.AUTOMATION_PR_TOKEN != '' }}
+        if: ${{ steps.token_check.outputs.usable != 'true' && steps.token_check.outputs.present == 'true' }}
         run: |
           echo "::error::AUTOMATION_PR_TOKEN is set but unusable — see the 'Check automation token' step. Today's snapshot is waiting in the automation/update-events PR and needs a manual merge. Rotate the token to restore automatic publishing."
           exit 1

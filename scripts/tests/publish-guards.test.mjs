@@ -20,9 +20,18 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
+import { dedupeEvents, dedupeRestoredEvents } from "../lib/dedupe.ts";
+import {
+  FALLBACK_POLICIES,
+  appendLastGoodEvents,
+  emptyRecoveryState,
+  markRecovery,
+} from "../lib/lastGoodFallback.ts";
+import { projectToLegacy, todayPT } from "../lib/normalize.ts";
 import { PublishedEventsPayloadSchema } from "../lib/schema.ts";
 import { assignTopicsResiliently } from "../lib/topicAssignmentResilience.ts";
 import { TOPIC_VOCABULARY } from "../lib/topics.ts";
+import { shouldShowStaleDataBanner } from "../../utils/staleDataUi.ts";
 import { buildStatusBanner } from "../../utils/statusUi.ts";
 
 const rootDir = path.resolve(
@@ -126,6 +135,61 @@ test("a degraded token run still fails, so notify-failure alerts", () => {
   assert.ok(
     createIndex < failIndex,
     "the run must fail only after the snapshot PR is open, so the data is recoverable by a manual merge",
+  );
+});
+
+test("the automation token reaches only the steps that use it", () => {
+  // `npm ci` runs install scripts and the pipeline parses untrusted upstream
+  // data, so a workflow-level env would hand them a write-scoped token.
+  assert.ok(
+    !/env\.AUTOMATION_PR_TOKEN/.test(updateEvents),
+    "no step should read the token from a shared env",
+  );
+  assert.equal(
+    updateEvents.match(/secrets\.AUTOMATION_PR_TOKEN/g)?.length,
+    3,
+    "only the token check, create-PR, and merge steps receive the secret",
+  );
+  assert.match(
+    updateEvents,
+    /if: \$\{\{ steps\.token_check\.outputs\.usable != 'true' && steps\.token_check\.outputs\.present == 'true' \}\}/,
+    "the fail step learns the token was set from token_check, not from env",
+  );
+});
+
+test("three failed runs in a row open a source-contracts issue", () => {
+  assert.match(
+    updateEvents,
+    /select\(\(\.consecutive_failures \/\/ 0\) >= 3\)/,
+    "the daily workflow must read the failure streak from status.json",
+  );
+  const streakIndex = updateEvents.indexOf(
+    "name: Open source-contracts issue on a failure streak",
+  );
+  assert.ok(streakIndex >= 0);
+  assert.match(
+    updateEvents.slice(streakIndex, streakIndex + 600),
+    /ISSUE_LABEL: source-contracts/,
+    "a dead source files under source-contracts, not pipeline-failure",
+  );
+});
+
+test("third-party actions are pinned and scopes are granted per job", () => {
+  for (const name of fs.readdirSync(workflowsDir)) {
+    const workflow = readWorkflow(name);
+    for (const [, action] of workflow.matchAll(/uses:\s*(\S+)/g)) {
+      if (action.startsWith("actions/")) continue;
+      assert.match(
+        action,
+        /@[0-9a-f]{40}$/,
+        `${name}: ${action} must be pinned to a commit SHA`,
+      );
+    }
+  }
+  assert.match(
+    updateEvents,
+    /^permissions: \{\}$/m,
+    "update-events.yml grants no scopes at the top; each job asks for its own",
   );
 });
 
@@ -329,6 +393,187 @@ test("last-good restored events keep their published topics", () => {
   assert.deepEqual(result.events[0].topics, ["physics-math-quantum"]);
   assert.equal(result.status.outcome, "ok");
   assert.equal(result.status.assigned_count, 0);
+});
+
+test("a restored LiveWhale copy replaces today's lower-priority duplicate", () => {
+  // Day N published the LiveWhale copy. On day N+1 LiveWhale fails, so only
+  // the Haas copy survives dedupe, and the restore brings yesterday's
+  // LiveWhale row back beside it.
+  const today = todayPT();
+  const [year, month, day] = today.split("-").map(Number);
+  const eventDay = new Date(Date.UTC(year, month - 1, day + 3))
+    .toISOString()
+    .slice(0, 10);
+  const yesterdayCopy = legacy({
+    id: "livewhale_123@events.berkeley.edu",
+    title: "Haas Leadership Forum",
+    date: eventDay,
+    source: "livewhale",
+  });
+  const haasToday = {
+    source_name: "haas",
+    source_id: "987",
+    source_url: "https://haas.berkeley.edu/wp-json/tribe/events/v1/events",
+    title: "Haas Leadership Forum",
+    description: "A forum.",
+    start_at: `${eventDay}T19:00:00.000Z`,
+    timezone: "America/Los_Angeles",
+    all_day: false,
+    venue: "Haas School of Business",
+    building: "",
+    address: "",
+    modality: "in_person",
+    organizer: "Berkeley Haas",
+    organizer_unit: "Berkeley Haas",
+    audience: "",
+    cost: "",
+    canonical_url: "https://haas.berkeley.edu/events/987",
+    categories: [],
+    tags: ["Entrepreneurship"],
+    last_seen_at: `${today}T12:00:00.000Z`,
+    confidence: 0.95,
+    quality_flags: [],
+  };
+
+  const published = dedupeEvents([haasToday]).events.map(projectToLegacy);
+  const restored = appendLastGoodEvents(
+    published,
+    [yesterdayCopy],
+    "livewhale",
+    today,
+  );
+  assert.equal(restored, 1);
+  assert.equal(published.length, 2);
+
+  const final = dedupeRestoredEvents(
+    published,
+    new Set([yesterdayCopy.id]),
+    today,
+  );
+  assert.deepEqual(
+    final.map((event) => event.id),
+    [yesterdayCopy.id],
+  );
+});
+
+function failedRun(name) {
+  return {
+    name,
+    ok: false,
+    count: 0,
+    duration_ms: 5,
+    error: "404 Not Found",
+    fetched_at: new Date().toISOString(),
+  };
+}
+
+function recoverFrom(status, yesterday, previousStamp) {
+  const published = [];
+  const recovery = emptyRecoveryState();
+  markRecovery(status, FALLBACK_POLICIES[status.name], {
+    legacy: published,
+    existing: { events: yesterday, lastUpdated: Date.now() - 86_400_000 },
+    previousHealth: new Map([
+      [status.name, { last_healthy_at: previousStamp }],
+    ]),
+    recovery,
+    today: todayPT(),
+    maxFallbackAgeHours: 48,
+  });
+  return { published, recovery };
+}
+
+function inDays(days) {
+  const [year, month, day] = todayPT().split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day + days))
+    .toISOString()
+    .slice(0, 10);
+}
+
+const DAY_AGO = new Date(Date.now() - 86_400_000).toISOString();
+
+test("a quiet source restores last-good events without visitor banners", () => {
+  const talk = legacy({
+    id: "ai_risk_talk-1",
+    title: "Scaling Oversight",
+    date: inDays(2),
+    source: "ai_risk",
+  });
+  const status = failedRun("ai_risk");
+  const { published, recovery } = recoverFrom(status, [talk], DAY_AGO);
+
+  assert.deepEqual(
+    published.map((event) => event.id),
+    ["ai_risk_talk-1"],
+  );
+  assert.equal(status.degraded, true);
+  assert.equal(status.fallback_used, true);
+  assert.equal(status.fallback_age_hours, 24);
+  assert.deepEqual([...recovery.degradedSources], []);
+  assert.deepEqual([...recovery.degradedReasons], []);
+  assert.equal(recovery.fallbackAgeHours, undefined);
+
+  const report = {
+    sources: [status],
+    fallback_used: recovery.fallbackSources.size > 0,
+    degraded: recovery.degradedReasons.size > 0,
+    last_good_used: recovery.lastGoodUsed,
+    data_quality_blocked: false,
+    fallback_sources: [...recovery.fallbackSources],
+    degraded_sources: [...recovery.degradedSources],
+  };
+  assert.equal(buildStatusBanner(report), null);
+  assert.equal(
+    shouldShowStaleDataBanner(
+      recovery.fallbackAgeHours,
+      report.degraded_sources,
+    ),
+    false,
+  );
+});
+
+test("a failure streak carries forward without touching banner fields", () => {
+  const status = failedRun("ai_risk");
+  const recovery = emptyRecoveryState();
+  markRecovery(status, FALLBACK_POLICIES.ai_risk, {
+    legacy: [],
+    existing: { events: [], lastUpdated: Date.now() - 86_400_000 },
+    previousHealth: new Map([
+      ["ai_risk", { last_healthy_at: DAY_AGO, consecutive_failures: 2 }],
+    ]),
+    recovery,
+    today: todayPT(),
+    maxFallbackAgeHours: 48,
+  });
+
+  assert.equal(status.consecutive_failures, 3);
+  assert.deepEqual([...recovery.degradedSources], []);
+});
+
+test("a quiet source with expired fallback stays out of the banner fields", () => {
+  const status = failedRun("ai_risk");
+  const threeDaysAgo = new Date(Date.now() - 3 * 86_400_000).toISOString();
+  const { published, recovery } = recoverFrom(status, [], threeDaysAgo);
+
+  assert.equal(published.length, 0);
+  assert.equal(status.fallback_expired, true);
+  assert.deepEqual([...recovery.staleFallbackSources], ["ai_risk"]);
+  assert.deepEqual([...recovery.degradedReasons], []);
+});
+
+test("a loud source still raises the degraded flags when it restores", () => {
+  const meeting = legacy({
+    id: "callink_1",
+    title: "Robotics Club Meeting",
+    date: inDays(2),
+    source: "callink",
+  });
+  const status = failedRun("callink");
+  const { published, recovery } = recoverFrom(status, [meeting], DAY_AGO);
+
+  assert.equal(published.length, 1);
+  assert.deepEqual([...recovery.degradedSources], ["callink"]);
+  assert.equal(recovery.fallbackAgeHours, 24);
 });
 
 test("degraded group-feed provenance carries prior topics without source banners", () => {

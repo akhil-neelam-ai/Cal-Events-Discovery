@@ -1,9 +1,10 @@
 {
-  "version": 1,
+  "version": 2,
   "selectedFrom": {
     "artifact": "public/events.json",
     "lastUpdated": 1788447064508,
-    "eventCount": 1450
+    "eventCount": 1450,
+    "commit": "0a875871068e5ba7b7a13496da38599f500f16b0"
   },
   "selectionMethod": "Frozen keyword review of the published title, organizer, and description fields. The review used explicit AI, machine-learning, model-family, robotics, and data-science language. It did not call topic assignment code.",
   "referenceSets": [
@@ -16,230 +17,377 @@
           "title": "Exhibition: \"Hidden Layers: AI Infrastructures and Hallucinations\"",
           "date": "2026-09-03",
           "source": "livewhale",
-          "signals": ["AI", "data science"]
+          "organizer": "Department of Art Practice",
+          "description": "The Department of German and the Department of Art Practice are excited to announce the opening of Hidden Layers: AI Infrastructures and Hallucinations, curated by Antonio Somaini with Hannes Bajohr and Sonja Thiel, in dialogue with the France–Berkeley research initiative The Latent Spaces of Culture, and on display at the Worth Ryder Art Gallery. This exhibition examines some of the concealed dimensions of contemporary AI culture — the planetary infrastructures of extraction and computation, the often invisible human labor, the latent vector spaces within which culture is compressed and processed, and the models' hallucinations. Hidden Layers tackles these phenomena from two different perspectives: AI Infrastructures and AI Hallucinations. Featuring works by Nouf Aljowaysir; Gašper and Nina Beguš & Metahaven; Grégory Chatonsky; Kate Crawford & Vladan Joler; Asma Kazmi & Jill Miller; Andrea Khôra; Occitane Lacurie & Barnabé Sauvage; Greg Niemeyer; and Mario Santamaria & Alex Saum-Pascual. The project is a collaboration between the Department of German and the Worth Ryder Art Gallery at the Department of Art Practice.Exhibition Dates: September 3 - October 3, 2026Opening Reception: Thursday, September 3, 4-6:30pm, Worth Ryder Art Gallery RSVP here (https://docs.google.com/forms/d/e/1FAIpQLSd_OOMe7YQHw3CYbSr673UCSlQ0f4mn4lZ7g46KhRUTRpC5qQ/viewform?usp=dialog)Artist Talk, Gregory Chatonsky: Thursday, September 3, 6:30-8:00pm, AAPB 285 RSVP here (https://docs.google.com/forms/d/e/1FAIpQLSd_OOMe7YQHw3CYbSr673UCSlQ0f4mn4lZ7g46KhRUTRpC5qQ/viewform?usp=dialog)Related programming:Film Program: September 9, 7 pm, BAMPFAWorkshop on Latent Spaces of Culture: September 9, 2pm-4pm; September 10/11, 9:30 am-4pm on both days, 470 Stephens Additional events and more details to be announced. Times subject to change, please also check the campus calendar. This exhibition is supported by the France-Berkeley Fund of the Institute of European Studies, the Department of German and the Department of Art Practice, together with the Berkeley Center for New Media, the Berkeley Institute for Data Science (BIDS), Department of Rhetoric; Antikythera, the Pamela P. Fong and Family Distinguished Chair in China Studies, the Division of Arts & Humanities, the Townsend Center for the Humanities and the School of Information, the Technology Network of the Berkeley Economy and Society Initiative (BESI); and the Berkeley Art, Law, and Finance Project, hosted by the Berkeley Center for Law and Business at Berkeley Law. In conjunction with the exhibition, additional programming is developed in collaboration with Berkeley Art Museum and Pacific Film Archive (BAMPFA) and the Institute for Contemporary Art San Jose.",
+          "signals": [
+            "AI",
+            "data science"
+          ]
         },
         {
           "id": "livewhale_20260903T230000Z-328405@events.berkeley.edu",
           "title": "Berkeley Art, Law, and Finance Project: Hidden Layers: AI Infrastructures and Hallucinations Opening Reception",
           "date": "2026-09-03",
           "source": "livewhale",
-          "signals": ["AI", "artificial intelligence", "machine learning"]
+          "organizer": "Berkeley Law",
+          "description": "Co-sponsored by the Berkeley Art, Law, and Finance Project, Hidden Layers (https://german.berkeley.edu/news/upcoming-exhibitions-hidden-layers-ai-infrastructures-and-hallucinations) brings together international artists working at the intersection of contemporary art and machine learning to make visible the layers of artificial intelligence that normally stay out of sight: among them, its planetary infrastructure, its ideological biases, its unexpected outputs. Taking the \"hidden layers\" of neural networks as its conceptual frame, the exhibition asks what AI conceals and what it invents, foregrounding the hallucinations, biases, and latent spaces through which these systems generate images, texts, and worlds. Participating artists include Nouf Aljowaysir, Gašper Beguš, Nina Beguš & Metahaven, Grégory Chatonsky, Jill Miller & Asma Kazmi, Greg Niemeyer, Mario Santamaria & Alex Saum-Pascual, and more to be announced. Register here (https://forms.gle/snRkw8VvR8aUHHnj8)",
+          "signals": [
+            "AI",
+            "artificial intelligence",
+            "machine learning"
+          ]
         },
         {
           "id": "livewhale_20260903T230000Z-324427@events.berkeley.edu",
           "title": "Exhibition Opening Reception: \"Hidden Layers: AI Infrastructures and Hallucinations\"",
           "date": "2026-09-03",
           "source": "livewhale",
-          "signals": ["AI", "data science"]
+          "organizer": "Department of Art Practice",
+          "description": "The Department of German and the Department of Art Practice are excited to announce the opening of Hidden Layers: AI Infrastructures and Hallucinations, curated by Antonio Somaini with Hannes Bajohr and Sonja Thiel, in dialogue with the France–Berkeley research initiative The Latent Spaces of Culture, and on display at the Worth Ryder Art Gallery. This exhibition examines some of the concealed dimensions of contemporary AI culture — the planetary infrastructures of extraction and computation, the often invisible human labor, the latent vector spaces within which culture is compressed and processed, and the models' hallucinations. Hidden Layers tackles these phenomena from two different perspectives: AI Infrastructures and AI Hallucinations. Featuring works by Nouf Aljowaysir; Gašper and Nina Beguš & Metahaven; Grégory Chatonsky; Kate Crawford & Vladan Joler; Asma Kazmi & Jill Miller; Andrea Khôra; Occitane Lacurie & Barnabé Sauvage; Greg Niemeyer; and Mario Santamaria & Alex Saum-Pascual. The project is a collaboration between the Department of German and the Worth Ryder Art Gallery at the Department of Art Practice.Exhibition Dates: September 3 - October 3, 2026Opening Reception: Thursday, September 3, 4-6:30pm, Worth Ryder Art Gallery RSVP here (https://docs.google.com/forms/d/e/1FAIpQLSd_OOMe7YQHw3CYbSr673UCSlQ0f4mn4lZ7g46KhRUTRpC5qQ/viewform?usp=dialog)Artist Talk, Gregory Chatonsky: Thursday, September 3, 6:30-8:00pm, AAPB 285 RSVP here (https://docs.google.com/forms/d/e/1FAIpQLSd_OOMe7YQHw3CYbSr673UCSlQ0f4mn4lZ7g46KhRUTRpC5qQ/viewform?usp=dialog)Related programming:Film Program: September 9, 7 pm, BAMPFA Workshop on Latent Spaces of Culture: September 9, 2pm-4pm; September 10/11, 9:30 am-4pm on both days, 470 Stephens Additional events and more details to be announced. Times subject to change, please also check the campus calendar. This exhibition is supported by the France-Berkeley Fund of the Institute of European Studies, the Department of German and the Department of Art Practice, together with the Berkeley Center for New Media, the Berkeley Institute for Data Science (BIDS), Department of Rhetoric; Antikythera, the Pamela P. Fong and Family Distinguished Chair in China Studies, the Division of Arts & Humanities, the Townsend Center for the Humanities and the School of Information, the Technology Network of the Berkeley Economy and Society Initiative (BESI); and the Berkeley Art, Law, and Finance Project, hosted by the Berkeley Center for Law and Business at Berkeley Law. In conjunction with the exhibition, additional programming is developed in collaboration with Berkeley Art Museum and Pacific Film Archive (BAMPFA) and the Institute for Contemporary Art San Jose.",
+          "signals": [
+            "AI",
+            "data science"
+          ]
         },
         {
           "id": "livewhale_20260904T013000Z-324458@events.berkeley.edu",
           "title": "Artist Talk - Grégory Chatonsky: INFRALLUCINATION",
           "date": "2026-09-03",
           "source": "livewhale",
-          "signals": ["AI", "machine learning"]
+          "organizer": "Department of Art Practice",
+          "description": "French-Canadian artist Grégory Chatonsky, a pioneer of net art and among the first artists to work through machine learning presents a lecture titled \"INFRALLUCINATION.\"Hallucination has become the ambivalent concept of our digital era: oscillating between an error to be corrected and a driver of radical inventiveness. Far from abstract theories, this conference proposes approaching artificial hallucination through the lens of artistic experience. Gregory Chatonsky explores how AI redefines our relationship with reality and memory. Through a journey across his works, he questions: how does a machine hallucinate? How does this \"ontological pareidolia\" transform our own imagination? A reflection on a machine that, through its signs, becomes the language-based hallucination of the world. Free and open to the public.RSVP here (https://docs.google.com/forms/d/e/1FAIpQLSd_OOMe7YQHw3CYbSr673UCSlQ0f4mn4lZ7g46KhRUTRpC5qQ/viewform?usp=dialog)Related programming: Exhibition: Hidden Layers: AI Infrastructures and HallucinationsExhibition Dates: September 3 - October 3, 2026 Opening Reception: Thursday, September 3, 4-6:30pm, Worth Ryder Art GalleryArtist Talk, Gregory Chatonsky \"INFRALLUCINATION\": Thursday, September 3, 6:30-8:00pm, AAPB 285Film Program, Push Buttons and AI (https://bampfa.org/event/push-buttons-and-ai): September 9, 7 pm, BAMPFACuratorial Tour, led by Antonio Somaini: Friday, September 11, 4:30pm, Worth Ryder Art GalleryWorkshop on Latent Space of Culture: September 9, 2pm-4pm; September 10/11, 9:30 am-4pm on both days, 470 StephensSalon on AI and Art: September 16, 6pm– 9pm, AI Futures LabTour of AI: October 3 Reservations required. Information forthcomingClosing day: October 3, 12-3pm, Worth Ryder Art Gallery",
+          "signals": [
+            "AI",
+            "machine learning"
+          ]
         },
         {
           "id": "livewhale_20260907T170000Z-327069@events.berkeley.edu",
           "title": "Five Dollar Day: Labor Day",
           "date": "2026-09-07",
           "source": "livewhale",
-          "signals": ["artificial intelligence"]
+          "organizer": "Lawrence Hall of Science",
+          "description": "Looking for something to do with the kids out of school on Labor Day? Join us for the ultimate day of discovery for less! On Monday, September 7, dive in and explore The Lawrence for a special discounted admission of just $5! A free shuttle runs from the Downtown Berkeley BART station to The Lawrence all day. Come face to face with furry and scaly animal ambassadors, get hands-on with cutting-edge biotechnology and artificial intelligence, explore Ohlone science and knowledge throughout the science center, and more!",
+          "signals": [
+            "artificial intelligence"
+          ]
         },
         {
           "id": "livewhale_20260908T170000Z-327942@events.berkeley.edu",
           "title": "Empowered by AI: Create a More Breathable, Sustainable Workday (2026 Fall NOW Encore Series)",
           "date": "2026-09-08",
           "source": "livewhale",
-          "signals": ["AI"]
+          "organizer": "Human Resources",
+          "description": "2026 NOW Encore Series (https://hr.berkeley.edu/development/career-development/workshops) Higher education staff are navigating unprecedented workload pressures: increasing demands, shrinking resources, and the nonstop expectation to do more with less. Meanwhile, AI has entered the workplace—but most employees are unsure how to use it effectively, ethically, or in ways that genuinely reduce overwhelm rather than add to it. This session reframes AI through a human-centered, wellness-first lens. Instead of treating AI as a productivity mandate, participants will learn how to use AI as a tool for clarity, boundaries, and sustainable success. Using Helanah Warren's \"Breathable Workday Framework,\" this interactive workshop demonstrates how AI can help UC staff reclaim time, reduce cognitive load, and create more space for the work that matters—without burnout, tech fatigue, or over-automation.Learning Outcomes: –How to use AI to streamline tasks like email, communication, planning, and documentation. –Scripts, prompts, and workflows that turn overwhelm into clarity. –Micro-boundaries that prevent AI from becoming \"one more thing.\" –A 3-step model for integrating AI ethically and sustainably. –Somatic and mindset strategies to stay grounded during tech-driven change.Registrants will be sent a Zoom link and bCal invite as the virtual workshop date draws near.",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "livewhale_20260908T200000Z-328804@events.berkeley.edu",
           "title": "Koreans at Berkeley Law: GBM & Welcome Lunch",
           "date": "2026-09-08",
           "source": "livewhale",
-          "signals": ["LLM"]
+          "organizer": "Berkeley Law",
+          "description": "Interested in joining Koreans at Berkeley Law (K-ABL)? Come to our welcome lunch! Meet the board, learn about events for the fall semester, and get to know other K-ABL members. JDs, LLMs, and visiting scholars are welcome.RSVP here. (https://forms.gle/93JhJWucKTQc4HQu8)",
+          "signals": [
+            "LLM"
+          ]
         },
         {
           "id": "livewhale_20260908T230000Z-323820@events.berkeley.edu",
           "title": "Seminar 237 - Macroeconomics/Monetary Economics: \"Artificial Intelligence and the Labor Market\"",
           "date": "2026-09-08",
           "source": "livewhale",
-          "signals": ["AI", "artificial intelligence", "machine learning"]
+          "organizer": "Department of Economics",
+          "description": "Abstract: We use advances in natural language processing to construct new measures of workers' tasklevel exposure to artificial intelligence (AI) and machine learning from 2010 to 2023, capturing variation across firms, occupations, and time. Tasks with higher AI exposure subsequently experience reduced labor demand. To interpret these patterns, we develop a model that separates direct substitution from indirect reallocative effects of labor-saving technologies. Two variables summarize the impact of AI on within-firm labor demand: the mean exposure of an occupation's tasks, which depresses demand, and the concentration of exposure in a few tasks, which offsets losses by enabling workers to reallocate effort. Using an instrument based on historical university hiring networks, we find causal evidence consistent with these predictions. Despite strong substitution at the task level, overall employment effects are modest, as reduced demand in exposed occupations is offset by productivity-driven increases in labor demand at AI-adopting firms.",
+          "signals": [
+            "AI",
+            "artificial intelligence",
+            "machine learning"
+          ]
         },
         {
           "id": "livewhale_20260909T190000Z-324950@events.berkeley.edu",
           "title": "Demography Brown Bag Seminar with Mathew Hauer and Tyler McCormick: \"AI in Demography\"",
           "date": "2026-09-09",
           "source": "livewhale",
-          "signals": ["AI", "artificial intelligence", "data science"]
+          "organizer": "Popsci",
+          "description": "Mathew E. Hauer is the Charles B. Nam Associate Professor of Sociology at Florida State University, Assistant Director of the Center for Demography and Population Health, and the Head of AI Agent Development at Aaru, a company focused on artificial intelligence and simulation (https://aaru.com/). His research lies at the intersection of demography, migration, population projections, and climate change, with particular expertise in modeling future population dynamics under climate stress. His work on climate migration and population vulnerability has earned numerous prestigious accolades, including the 2024 Early Achievement Award (https://www.populationassociation.org/about/annual-awards/early-achievement-award#:~:text=The%20Early%20Achievement%20award%20recognizes,scholars%20who%20received%20their%20Ph.) from the Population Association of America and the 2023 Cozzarelli Prize (http://www.nasonline.org/news-and-multimedia/news/pnas-cozzarelli-2022.html) from the National Academies of Sciences, Engineering, and Medicine, and is a finalist for the 2025 Cozzarelli Prize and the Max Planck-Humboldt Research Award. He is a two-time recipient of the E. Walter Terrie Award (https://www.sda-demography.org/Terrie-Award) for excellence in applied demography, and his dissertation on sea-level rise and human migration has accumulated over 1,500 citations since 2016. Dr. Hauer's research has significantly shaped our understanding of climate change's demographic impacts, from sea-level rise displacement to temperature extremes and coastal flooding. His work has been featured in over 800 media outlets worldwide, including the New York Times, The Guardian, Time Magazine, National Geographic, and the Washington Post. Before joining FSU, he spent nearly a decade directing the Applied Demography Program at the University of Georgia. Tyler McCormick's work develops statistical models for inference and prediction in scientific settings where data are sparsely observed or measured with error, with a particular focus on measuring and understanding human behavior. His recent projects include estimating features of social networks (e.g. the degree of clustering or how central an individual is) using data from standard surveys, inferring a likely cause of death (when deaths happen outside of hospitals) using reports from surviving caretakers, and quantifying & communicating uncertainty in predictive models for global health policymakers. He holds a Ph.D. in Statistics (with distinction) from Columbia University and is the recipient of the NIH Director's New Innovator Award, NIH Career Development (K01) Award, Army Research Office Young Investigator Program Award, and a Google Faculty Research Award. Currently, he is a Professor of Statistics and Sociology at the University of Washington, where he is also a core faculty member in the Center for Statistics and the Social Sciences and a Senior Data Science Fellow at the eScience Institute. During the 2019-2020 academic year Tyler was a Visiting Faculty Researcher at Google People+AI Research (PAIR). Tyler is the former Editor of the Journal of Computational and Graphical Statistics (JCGS) and a Fellow of the American Statistical Association. Tyler is currently a member of the Committee on Applied and Theoretical Statistics at the National Academies of Sciences, Engineering, & Medicine. More information on Tyler's work is here: https://thmccormick.github.io (https://thmccormick.github.io/).",
+          "signals": [
+            "AI",
+            "artificial intelligence",
+            "data science"
+          ]
         },
         {
           "id": "livewhale_20260910T020000Z-326232@events.berkeley.edu",
           "title": "Film Screening: Push Buttons and AI",
           "date": "2026-09-09",
           "source": "livewhale",
-          "signals": ["AI"]
+          "organizer": "BAMPFA",
+          "description": "In conjunction with the exhibition Hidden Layers: AI Infrastructures and Hallucinations at UC Berkeley's Worth Ryder Gallery, Antonio Somaini, Hannes Bajohr, and Sonja Thiel present a program of works about AI and its social and technical infrastructures. Gibbs Chapman's Push Button is a dryly funny exposé of the effects of automation on twenty-first-century humans, while Inès Sieulle's The Oasis I Deserve documents affective interactions with the chatbot Replika. Nicolas Gourault reveals the numbing human labor that feeds AI with Their Eyes, while the studio Taller Estampa uses classic film clips to demonstrate how the object recognition software YOLO9000 sees and classifies. AI eats itself and ends in \"model collapse\" in Egor Kraft's One & Infinite Chairs. For more information on the exhibition, visit https://events.berkeley.edu/art/event/324408-exhibition-hidden-layers-ai-infrastructures-and-hallu (https://events.berkeley.edu/art/event/324408-exhibition-hidden-layers-ai-infrastructures-and-hallu)",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "livewhale_20260910T020000Z-328921@events.berkeley.edu",
           "title": "Push Buttons and AI",
           "date": "2026-09-09",
           "source": "livewhale",
-          "signals": ["AI"]
+          "organizer": "German",
+          "description": "In conjunction with the exhibition Hidden Layers: AI Infrastructures and Hallucinations at UC Berkeley's Worth Ryder Gallery, Antonio Somaini, Hannes Bajohr, and Sonja Thiel present a program of works about AI and its social and technical infrastructures. Gibbs Chapman's Push Button is a dryly funny exposé of the effects of automation on twenty-first-century humans, while Inès Sieulle's The Oasis I Deserve documents affective interactions with the chatbot Replika. Nicolas Gourault reveals the numbing human labor that feeds AI with Their Eyes, while the studio Taller Estampa uses classic film clips to demonstrate how the object recognition software YOLO9000 sees and classifies. AI eats itself and ends in \"model collapse\" in Egor Kraft's One & Infinite Chairs (1&∞⑁).",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "livewhale_328923@events.berkeley.edu",
           "title": "Workshop: The Latent Spaces of Culture",
           "date": "2026-09-10",
           "source": "livewhale",
-          "signals": ["AI", "artificial intelligence"]
+          "organizer": "German",
+          "description": "Latent spaces are a foundational concept in contemporary artificial intelligence. They enable complex data—images, texts, sounds, and other digital objects—to be represented as high-dimensional structures in which relationships, patterns, and similarities can be modeled computationally. By translating intricate datasets into compressed mathematical representations, latent spaces allow AI systems not only to analyze information but also to generate new content; often, this content is itself cultural in nature. Yet the cultural and epistemological implications of latent spaces remain comparatively underexplored, particularly their role in shaping creativity, cultural memory, and representation. This three-day workshop, part of the France–Berkeley Fund project \"The Latent Spaces of Culture,\" brings together researchers from UC Berkeley and institutions in France to examine these questions and explore latent space as both a technical architecture and a cultural form. (September 9, 2pm-4pm; September 10/11, 9:30 am-4pm on both days)https://german.berkeley.edu/latent-spaces-culture (https://german.berkeley.edu/latent-spaces-culture)",
+          "signals": [
+            "AI",
+            "artificial intelligence"
+          ]
         },
         {
           "id": "livewhale_20260910T170000Z-328925@events.berkeley.edu",
           "title": "Hidden Layers: Curatorial Tour, led by Antonio Somaini",
           "date": "2026-09-10",
           "source": "livewhale",
-          "signals": ["AI", "data science"]
+          "organizer": "German",
+          "description": "Chief curator Antonio Somaini will give a curatorial tour of the exhibition \"Hidden Layers: AI Infrastructures and Hallucinations,\" and on display at the Worth Ryder Art Gallery. This exhibition examines some of the concealed dimensions of contemporary AI culture—the planetary infrastructures of extraction and computation, the often-invisible human labor, the latent vector spaces within which culture is compressed and processed, and the models' hallucinations. Hidden Layers tackles these phenomena from two perspectives: AI Infrastructures and AI Hallucinations. This exhibition is supported by the France-Berkeley Fund of the Institute of European Studies, the Department of German and the Department of Art Practice, together with the Berkeley Center for New Media, the Berkeley Institute for Data Science (BIDS), Department of Rhetoric; Antikythera, the Pamela P. Fong and Family Distinguished Chair in China Studies, the Division of Arts & Humanities, the Townsend Center for the Humanities and the School of Information, the Technology Network of the Berkeley Economy and Society Initiative (BESI); and the Berkeley Art, Law, and Finance Project, hosted by the Berkeley Center for Law and Business at Berkeley Law. In conjunction with the exhibition, additional programming is developed in collaboration with Berkeley Art Museum and Pacific Film Archive (BAMPFA), the San Jose State University and the Institute for Contemporary Art San Jose.",
+          "signals": [
+            "AI",
+            "data science"
+          ]
         },
         {
           "id": "livewhale_20260911T220000Z-327425@events.berkeley.edu",
           "title": "Caltrans' AI Journey",
           "date": "2026-09-11",
           "source": "livewhale",
-          "signals": ["AI", "artificial intelligence"]
+          "organizer": "Institute of Transportation Studies",
+          "description": "Vidhu Shekar, Chief Data and Artificial Intelligence Officer at Caltrans, will present Caltrans' AI Journey at the ITS Berkeley Transportation Seminar on Sept. 11, 2026. Join us for cookie hour at 2:30 in the ITS Library, hosted by TRANSOC.Bio: Vidhu Shekhar serves as Chief Data and Artificial Intelligence Officer (CDAO) at Caltrans, where he leads the department's enterprise data governance and artificial intelligence strategy. In this role, he provides executive leadership for how Caltrans manages, governs, and applies data and AI technologies to support safer and more efficient transportation systems for Californians. Prior to joining Caltrans, he served at Microsoft as the Americas Lead for Global Partnerships within Industry Solutions Delivery and previously as Government Strategy Lead for U.S. State and Local Government. His career also includes leadership roles at Workday and KPMG, as well as earlier public-sector experience spanning transportation, criminal justice, and municipal finance. He is the author of Generative Artificial Intelligence Use Cases in State & Local Government and participates in the University of Washington Mobility Innovation Center, the PacTrans-USDOT Region 10 University Transportation Center, and the National Academy of Sciences, supporting the responsible adoption of emerging technologies in the public sector. In 2025, he was named to GovTech's Center for Public Sector AI 50 and nominated for the ITS America Hall of Fame Lifetime Achievement Award. He holds a Master of Public Administration from the University of Southern California and is a Senior Executive Fellow at Harvard Kennedy School of Government.",
+          "signals": [
+            "AI",
+            "artificial intelligence"
+          ]
         },
         {
           "id": "livewhale_20260911T233000Z-328267@events.berkeley.edu",
           "title": "Exhibition Curatorial Tour: \"Hidden Layers: AI Infrastructures and Hallucinations\"",
           "date": "2026-09-11",
           "source": "livewhale",
-          "signals": ["AI", "data science"]
+          "organizer": "Department of Art Practice",
+          "description": "Co-curator Antonio Somaini leads a guided tour of Hidden Layers, walking through the exhibition's key works and the ideas behind them. Somaini—Professor of Film, Media, and Visual Culture Theory at the Université Sorbonne Nouvelle and a leading theorist of latent space—offers an in-depth reading of how the participating artists expose the data, infrastructures, and hallucinations of contemporary AI. Free and open to the public; no registration required. The exhibition Hidden Layers is supported by the France-Berkeley Fund of the Institute of European Studies, the Department of German and the Department of Art Practice, together with the Berkeley Center for New Media, the Berkeley Institute for Data Science (BIDS), Department of Rhetoric; Antikythera, the Human Technology Futures (HTF), the Pamela P. Fong and Family Distinguished Chair in China Studies, the Division of Arts & Humanities, the Townsend Center for the Humanities, the School of Information, the Technology Network of the Berkeley Economy and Society Initiative (BESI); and the Berkeley Art, Law, and Finance Project, hosted by the Berkeley Center for Law and Business at Berkeley Law. In conjunction with the exhibition, additional programming is developed in collaboration with Berkeley Art Museum and Pacific Film Archive (BAMPFA), San Jose State University, and the Institute for Contemporary Art San Jose.",
+          "signals": [
+            "AI",
+            "data science"
+          ]
         },
         {
           "id": "livewhale_20260914T160000Z-325578@events.berkeley.edu",
           "title": "BCNM Undergraduate Research Symposium",
           "date": "2026-09-14",
           "source": "livewhale",
-          "signals": ["artificial intelligence"]
+          "organizer": "BCNM",
+          "description": "BCNM is pleased to present its first ever Undergraduate Research Symposium, organized and hosted by New Media Working Group coordinators Alexis Wood and Chloé Mauvais. It will take place on Monday, September 14, 2026, from 9am to 1pm in Jarvis Auditorium at the Grimes Engineering Center. Apply to be a presenter today! (https://airtable.com/app4eJHCOwKNbJ6Bl/pag2GIgRvnCUrNx4B/form) (Deadline September 2) Register for the symposium as an observer! (https://forms.gle/4MqxMGBMzrdohfBe8) (Register by September 9 if you will be attending lunch) Save the event to your bCal here (https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MTFpNWFnMm8wcmRtaThpZWY5cmhzdDQ0dmQgZDV1NWVrN2o4aXBvZDBvOGlxNDE1ZTFhdnNAZw&tmsrc=d5u5ek7j8ipod0o8iq415e1avs%40group.calendar.google.com)! The Berkeley Center for New Media (BCNM) invites our undergraduate students to submit presentation proposals for the 2026 BCNM Undergraduate Research Symposium. The symposium offers students an opportunity to share original research, creative projects, and works in progress with an audience of fellow students, graduate researchers, faculty, and members of the broader BCNM community. In addition to student presentations, the event will include a networking lunch and a panel on graduate school and career pathways. Selected presenters will gain experience communicating their work to an interdisciplinary audience, receive guidance as they prepare their presentations, and connect with people working at the intersections of new media, technology, design, the arts, and the humanities. All students, staff, and faculty are welcome and encouraged to attend the symposium as observers. What kinds of projects are eligible? We welcome research and creative work related to BCNM's core areas of inquiry, including media transition and emergence, critical thinking and making, and technological equity and justice. Possible topics and formats include, but are not limited to: - Social media, online communities, and digital culture - Games, interactive media, virtual reality, and immersive storytelling - Digital art, design, performance, and creative technologies - Critical approaches to data, mapping, archives, or visualization - Technology, identity, accessibility, equity, or social justice - The social and cultural effects of emerging technologies - Making, prototyping, or practice-based research - Artificial intelligence, algorithms, and digital platforms Projects may come from coursework, independent research, honors theses, internships, creative practice, or collaborative work. Both completed projects and substantial works in progress are welcome. Students enrolled in the BCNM Certificate Program, or intending to enroll in the program, will be given a strong preference.Presentation format Presentations should be approximately 10–15 minutes long and will be followed by a brief audience Q&A. Presentations may include slides, demonstrations, videos, and/or performances. Selected presenters will be required to attend a virtual pre-symposium preparation meeting on Zoom the week prior to the symposium. During this session, participants will confirm their topic, presentation length, technical needs, and format and will receive guidance on preparing an engaging presentation for an interdisciplinary audience.Symposium schedule 9:00–10:00 a.m. | Coffee and Welcome Raw Thrills Lounge and Lobby 10:00–11:00 a.m. | Undergraduate Presentations and Q&A Jarvis Auditorium 11:00 a.m.–12:00 p.m. | Networking Lunch Raw Thrills Lounge and Lobby Participants will join guided conversations with students, faculty, graduate researchers, and other members of the BCNM community. 12:00–1:00 p.m. | Graduate School and Career Panel Jarvis Auditorium Panelists will discuss graduate study, professional pathways, and opportunities for students interested in new media and related fields.How to apply Please submit a brief proposal through this form (https://airtable.com/app4eJHCOwKNbJ6Bl/pag2GIgRvnCUrNx4B/form). You will be asked for the following information: - Your name, major, year, and a short bio - A working title for your presentation - A short description of your project and its connection to new media - Your preferred presentation format and any anticipated technical needs - The name of any collaborators or supervisors, if applicable The deadline to submit proposals is September 2, 2026.Attending as an observer All students, staff, and faculty are welcome and encouraged to attend the symposium as observers. Register for the symposium as a non-presenter (https://forms.gle/4MqxMGBMzrdohfBe8)! Please register by September 9 if you plan on attending the lunch portion of the day.Contact Questions about the symposium or application? Contact New Media Working Group coordinators Chloé Mauvais (chloe.mauvais [​at​] berkeley.edu (https://bcnm.berkeley.edu/events/109/special-events/6656/bcnm-undergraduate-research-symposium#)) and Alexis Wood (aew78 [​at​] berkeley.edu (https://bcnm.berkeley.edu/events/109/special-events/6656/bcnm-undergraduate-research-symposium#)). Questions about BCNM? Contact Associate Director Aaron Fai (afai [​at​] berkeley.edu (https://bcnm.berkeley.edu/events/109/special-events/6656/bcnm-undergraduate-research-symposium#)).",
+          "signals": [
+            "artificial intelligence"
+          ]
         },
         {
           "id": "livewhale_20260914T191500Z-326212@events.berkeley.edu",
           "title": "CSLS Speaker Series: \"The Distribution of Federally-Insured Mortgages: 1935-1975, Evidence from Local Land Records\"",
           "date": "2026-09-14",
           "source": "livewhale",
-          "signals": ["large language model"]
+          "organizer": "Center for the Study of Law and Society",
+          "description": "featuring Omer Ali, Assistant Professor of Economics, University of PittsburghAbstract: This project develops a novel dataset of federally-insured mortgages from 1935 to 1975 by digitizing local land records from county recorders of deeds across a geographically diverse set of U.S. counties. Despite the Federal Housing Administration (FHA) and Veterans Administration (VA) programs accounting for up to 50% of all mortgages for some years during this period, systematic borrower-level data has been unavailable due to a lack of federal records and decentralized county recording systems. Using a new pipeline that deploys large language models to digitize scanned mortgages, we identify and extract information from FHA-insured and VA-guaranteed mortgages, geolocate properties, and link borrowers to full-count Census data from 1940 and 1950. This produces the first comprehensive address- and borrower-level dataset beyond 1940. We investigate the share of Black borrowers among FHA and VA mortgage recipients, characterize the spatial distribution of mortgages across neighborhoods that vary in racial composition and HOLC ratings, and examine the demographic and socioeconomic characteristics of borrowers. The analysis enhances our understanding of how federal housing policy shaped metropolitan development and racial inequality during the New Deal and Civil Rights eras. (Joint with Jacob Faber, Andreas Ferrara, Jonathan Rose, Thomas Storrs, Katherine Thomas, Gabrielle Toborg, Randall Walsh, and Wenfei Xu)",
+          "signals": [
+            "large language model"
+          ]
         },
         {
           "id": "livewhale_20260914T213000Z-327783@events.berkeley.edu",
           "title": "Condensed Matter Seminar with Eli Yablonovitch: Can Physics Expedite Artificial Intelligence?",
           "date": "2026-09-14",
           "source": "livewhale",
-          "signals": ["artificial intelligence"]
+          "organizer": "Department of Physics",
+          "description": "Title here Abstract to come.",
+          "signals": [
+            "artificial intelligence"
+          ]
         },
         {
           "id": "livewhale_20260914T230000Z-328724@events.berkeley.edu",
           "title": "Dissertation Talk: Verifying Secure Execution for Systems with Untrusted Components",
           "date": "2026-09-14",
           "source": "livewhale",
-          "signals": ["AI"]
+          "organizer": "EECS",
+          "description": "The question of trust lies at the center of modern systems: they rely on complex components that may be compromised by an adversary. Even when one component cannot be trusted, trust in the system's behavior naturally falls apart. Techniques that enable verification of expected behavior address this challenge. To this end, we introduce new techniques for efficiently verifying secure execution across a variety of systems, from cryptographic systems to AI agents. First, we present Whisper, a system for large-scale private telemetry in the two-server setting that achieves orders of magnitude reduction in server-to-server communication when verifying that measurements are individually well-formed. After that, we look at the problem of verifiable private information retrieval, where a client privately fetches information from a remote server while verifying that the server does not cheat. We present a new protocol that reduces the client's storage by orders of magnitude for standard database sizes and a deployment mode to practically bring this technology to millions of devices. Towards the end, we transition to the world of AI agents. We present Pincer, a system that augments agents with a digital twin that verifies their actions against automatically learned user preferences.",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "livewhale_20260915T170000Z-324898@events.berkeley.edu",
           "title": "Online Information Session - Master of Artificial Intelligence and Machine Learning",
           "date": "2026-09-15",
           "source": "livewhale",
-          "signals": ["artificial intelligence", "machine learning"]
+          "organizer": "Datasci",
+          "description": "The Master of Artificial Intelligence and Machine Learning (MAIML) is a two-semester professional program (fall and spring) tailored for STEM graduates targeting high-impact industry roles. A Silicon Valley immersion program further prepares students to become machine learning engineers and artificial intelligence researchers. During the session, program staff will provide an overview of the program, outline the admissions requirements and answer your questions. Register here (https://gradapp.berkeley.edu/register/?id=17c1339e-0343-4a70-b7c6-ebafcc4254f6).",
+          "signals": [
+            "artificial intelligence",
+            "machine learning"
+          ]
         },
         {
           "id": "berkeley_law_772656",
           "title": "[Queer Caucus] Fall General Body Meeting",
           "date": "2026-09-15",
           "source": "berkeley_law",
-          "signals": ["LLM"]
+          "organizer": "Berkeley Law Queer Caucus",
+          "description": "Berkeley Law was just named the queerest law school in America — come meet the people who make it that way! 🏳️‍🌈 Join Queer Caucus for our first general body meeting of the year! Meet the board, grab some food, and hear what we’ve got planned for the year. 1Ls, LLMs, and anyone still figuring things out are all welcome 3 RSVP here for lunch!",
+          "signals": [
+            "LLM"
+          ]
         },
         {
           "id": "livewhale_20260916T003000Z-329199@events.berkeley.edu",
           "title": "Josette Melchor // Newtemporary: Designing in the Space Between New and Next",
           "date": "2026-09-15",
           "source": "livewhale",
-          "signals": ["AI"]
+          "organizer": "Jacobs",
+          "description": "The Jacobs Institute for Design Innovation welcomes Josette Melchor, founder and cultural strategist working across art, technology, cities, and responsible AI. As the founder of Gray Area and now Newtemporary — and a board member of the Burning Man Project — Josette has spent her career shaping experiences that connect emerging technologies with civic life, cultural infrastructure, and public imagination. Her work moves fluidly across spatial strategy, immersive media, curation, and systems thinking, always with an eye toward how culture and technology evolve together. ​In this talk, Josette will explore the idea behind Newtemporary, the notion that everything from culture to place to technology is always in transition. She will share how this perspective informs her work with cities, developers, and cultural organizations, from designing immersive experiences and public spaces to prototyping ethical and creative uses of AI. Drawing on projects that have ranged from large-scale festivals and artist exhibitions to global placemaking programs for Google, she will reflect on how design can respond to impermanence, support community meaning-making, and help shape the cultural infrastructure of the future. ​This event is free and open to the public. ……���……….. ​Design Field Notes (https://jacobsinstitute.berkeley.edu/design-field-notes/?utm_source=luma) is a lecture series where we invite the public to the UC Berkeley campus for conversations with designers, makers and artists who are contributing to shaping the future through design.If you require accommodation for a disability for effective communication (ASL interpreting/CART captioning, alternative media formats, etc.) or information about campus mobility access features in order to fully participate in this event, please contact Jacobs Institute staff atjacobsinstitute@berkeley.edu (mailto:jacobsinstitute@berkeley.edu)with as much advance notice as possible and at least 7-10 days in advance of the event.",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "livewhale_20260916T230000Z-326389@events.berkeley.edu",
           "title": "CLIMB + Neyman Seminar with Daniela Witten: Testing hypothesis via orthogonalization",
           "date": "2026-09-16",
           "source": "livewhale",
-          "signals": ["machine learning"]
+          "organizer": "Climb",
+          "description": "Please join us for a joint CLIMB + Neyman Seminar with Daniela Witten Testing hypothesis via orthogonalization Abstract Classical hypothesis testing frameworks break down in contemporary settings in which null hypotheses are increasingly abstract, the same data are used to both generate and test hypotheses, and minimal assumptions about the underlying data are made. In this work, we propose a new framework for conducting valid hypothesis tests in broad contexts. We propose to add and subtract external noise generated from a symmetric shift-family to our data, X, to partition it into two pieces, X1 and X2. We provide a generic strategy for orthogonalizing X2 against X1 under the null hypothesis H0, then show that testing whether the orthogonalization was successful provides a valid test of H0 under mild assumptions. Remarkably, this framework extends naturally to the post-selection inference setting with minimal modifications: we simply select a hypothesis on X1, then perform orthogonalization under the selected null. As our approach neither requires pre-specification of the selection mechanism, nor is restricted to a small class of data-generating distributions, it dramatically expands the settings for which valid post-selection inference can be conducted. We showcase the flexibility of our proposal in a number of case studies. This is joint work with Ameer Dharamshi (McGill University) and Runjia Zou (University of Washington). Bio Daniela Witten is a professor of Statistics and Biostatistics at University of Washington, and the Dorothy Gilford Endowed Chair in Mathematical Statistics. She develops statistical machine learning methods for high-dimensional data, with a focus on unsupervised learning. She has received a number of awards for her research in statistical machine learning: most notably the Spiegelman Award from the American Public Health Association for a (bio)statistician under age 40, and the Presidents' Award from the Committee of Presidents of Statistical Societies for a statistician under age 41. Daniela is a co-author of the textbook \"Introduction to Statistical Learning\", and has served as Joint Editor of Journal of the Royal Statistical Society, Series B. CLIMB Voleon Seminars are organized by the Center for the Theoretical Foundations of Learning, Inference, Information, Intelligence, Mathematics, and Microeconomics at Berkeley (CLIMB (https://climb.berkeley.edu/)), and are generously supported by the Voleon Group. CLIMB addresses new conceptual and mathematical challenges arising at the interface between technology, science, and society.If you require an accommodation for effective communication or information about campus mobility access features in order to fully participate in this event, please contact Naomi Yamasaki at climb-support@eecs.berkeley.edu or 510-710-8488 with as much advance notice as possible and at least 7-10 days before the event.",
+          "signals": [
+            "machine learning"
+          ]
         },
         {
           "id": "livewhale_20260917T000000Z-328926@events.berkeley.edu",
           "title": "World Literature: Christian Kracht's AI-novel AIR (2024)",
           "date": "2026-09-16",
           "source": "livewhale",
-          "signals": ["AI"]
+          "organizer": "German",
+          "description": "Frauke Berndt, this years Max Kade professor in the German department, will present her research. Christian Kracht's brilliant novel AIR is world literature—and that it is world literature precisely because it is a novel. Since 1800, the genre code of the modern novel has provided this encyclopedic form. At the heart of the novel is the Green Mountain Data Center in Norway, where all of humanity's knowledge is stored. The lecture links the novel's aesthetics to media models of cultural memory. It shows how the cloud model functions as a literary game changer.",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "livewhale_20260917T220000Z-327501@events.berkeley.edu",
           "title": "OSPO Monthly Meetup: September",
           "date": "2026-09-17",
           "source": "livewhale",
-          "signals": ["data science"]
+          "organizer": "Berkeley Institute for Data Science",
+          "description": "Join us in shaping the future of open source at UC Berkeley, building on its rich legacy of leadership in open source software development. There will be a fireside chat, a Q&A session, and community gathering time with drinks and snacks! → Attend in person: Register on this page and join us at 3pm. → Attend online: Sign up here to receive a Zoom link (https://forms.gle/fKjzxbKFScfAMxks5) and join us at 3:30pm.(event details coming soon!) Join us to explore how we can harness the collective intelligence and creativity of the global open source ecosystem to meaningfully transform how knowledge is created and sharedCheck out the rest of the series (https://bids.berkeley.edu/programs-initiatives/open-source-program-office-ospo)!",
+          "signals": [
+            "data science"
+          ]
         },
         {
           "id": "livewhale_20260923T003000Z-329191@events.berkeley.edu",
           "title": "Kelsey Brennan // Found Problems and Made Problems: What Comes First?",
           "date": "2026-09-22",
           "source": "livewhale",
-          "signals": ["AI", "machine learning"]
+          "organizer": "Jacobs",
+          "description": "The Jacobs Institute for Design Innovation welcomes Kelsey Brennan, Head of Product Design and User Research at ThredUp, where she leads the teams shaping how people buy and sell secondhand in one of the world's largest online resale platforms. With a background spanning design, research, architecture, and new media, Kelsey brings a systems-minded approach to product design, pairing creative rigor with a deep understanding of how people interact with complex digital experiences. Her work at ThredUp has helped shape AI-driven search features recognized by TIME's Best Inventions of 2024, alongside the company's 2025 rebrand. ​Kelsey has built her practice across a range of ambitious product environments, from scaling design at Planet, where she developed novel patterns for machine learning, satellite, and geospatial data, to launching products at Carbon Five that many people know and love. Her interdisciplinary path, grounded in a Master of Architecture from UC Berkeley and a BA from Reed College, reflects a career shaped by both conceptual thinking and practical execution. In this talk, she will explore the tensions between found problems and made problems, and what comes first when designing products, teams, and systems that need to work in the real world. ​This event is free and open to the public. ……………….. ​Design Field Notes (https://jacobsinstitute.berkeley.edu/design-field-notes/?utm_source=luma) is a lecture series where we invite the public to the UC Berkeley campus for conversations with designers, makers and artists who are contributing to shaping the future through design.If you require accommodation for a disability for effective communication (ASL interpreting/CART captioning, alternative media formats, etc.) or information about campus mobility access features in order to fully participate in this event, please contact Jacobs Institute staff atjacobsinstitute@berkeley.edu (mailto:jacobsinstitute@berkeley.edu)with as much advance notice as possible and at least 7-10 days in advance of the event.",
+          "signals": [
+            "AI",
+            "machine learning"
+          ]
         },
         {
           "id": "livewhale_20260923T230000Z-324746@events.berkeley.edu",
           "title": "CLIMB + Neyman Seminar with Susan Murphy: Online Reinforcement Learning for Digital Health Interventions in the Dyadic Setting",
           "date": "2026-09-23",
           "source": "livewhale",
-          "signals": ["reinforcement learning"]
+          "organizer": "Climb",
+          "description": "Please join us for a joint CLIMB + Neyman Seminar with Susan Murphy Online Reinforcement Learning for Digital Health Interventions in the Dyadic Setting Abstract We present our ongoing work on the development of an online reinforcement learning (RL) algorithm that personalizes delivery of interventions sequentially, over time, to members of a dyad. The RL algorithm is one component in the design of the digital health intervention. Different RL components target different elements of the dyad; these elements are a target individual, a carepartner and their relationship. The RL algorithm is a multi-agent RL algorithm in which the 3 agents make decisions on the 3 elements of the dyad. We incorporate domain knowledge in the form of approximal causal directed acyclic graphs to speed up online learning in this sparse data setting. This work is motivated by our development of the ADAPTS-HCT multi-agent RL algorithm, designed to improve medication adherence by young adults who have undergone a blood and bone marrow transplant. The RL algorithm will be deployed in a clinical trial in late summer 2026. BioSusan A. Murphy is Mallinckrodt Professor of Statistics and of Computer Science and Associate Faculty at the Kempner Institute, Harvard University. Her research focuses on improving sequential decision making via the development of online, real-time reinforcement learning algorithms. Her lab is involved in multiple deployments of these algorithms in digital health. She is a member of the US National Academy of Sciences and of the US National Academy of Medicine. In 2013 she was awarded a MacArthur Fellowship for her work on experimental designs to inform sequential decision making. She is a Fellow of the College on Problems in Drug Dependence, Past-President of Institute of Mathematical Statistics, Past-President of the Bernoulli Society and a former editor of the Annals of Statistics. CLIMB Voleon Seminars are organized by the Center for the Theoretical Foundations of Learning, Inference, Information, Intelligence, Mathematics, and Microeconomics at Berkeley (CLIMB), and are generously supported by the Voleon Group. CLIMB addresses new conceptual and mathematical challenges arising at the interface between technology, science, and society.If you require an accommodation for effective communication or information about campus mobility access features in order to fully participate in this event, please contact Naomi Yamasaki at climb-support@eecs.berkeley.edu (mailto:naomiy@berkeley.edu) or 510-710-8488 with as much advance notice as possible and at least 7-10 days before the event.",
+          "signals": [
+            "reinforcement learning"
+          ]
         },
         {
           "id": "luma_evt-ezQiQfLpSmPlbFD",
           "title": "Club AI : 1 year birthday edition",
           "date": "2026-09-24",
           "source": "luma",
-          "signals": ["AI"]
+          "organizer": "Club AI at Berkeley",
+          "description": "Club AI : 1 year birthday edition",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "livewhale_20260924T190000Z-328649@events.berkeley.edu",
           "title": "NBC Universal Information Session (Virtual)",
           "date": "2026-09-24",
           "source": "livewhale",
-          "signals": ["data science"]
+          "organizer": "IEOR",
+          "description": "Join us for an insightful virtual session with Kristin Wong, Data Analyst at NBCUniversal! Discover how NBCUniversal leverages data analytics to enhance audience engagement, optimize content strategies, and drive business growth across their entertainment platforms. Kristin will share her personal journey into data analytics, including her experiences at NBCUniversal and the skills that helped her succeed in the industry. This session is a great opportunity to learn about the exciting ways a major media company uses data to inform decision-making and create impactful viewer experiences. Whether you're interested in entertainment, data science, or building your own career path, don't miss the chance to hear Kristin's story and gain valuable industry insights! Date: Thursday September 24th Time: 12:00 - 1:00pm Location: Virtual Register: Click HERE (https://ieor-berkeley.12twenty.com/events/30006101378266) Registration required to attend!",
+          "signals": [
+            "data science"
+          ]
         },
         {
           "id": "livewhale_20260924T190000Z-326397@events.berkeley.edu",
           "title": "On-campus Info Session - Master of Artificial Intelligence and Machine Learning",
           "date": "2026-09-24",
           "source": "livewhale",
-          "signals": ["artificial intelligence", "machine learning"]
+          "organizer": "Datasci",
+          "description": "The Master of Artificial Intelligence and Machine Learning (MAIML) is a two-semester professional program (fall and spring) tailored for STEM graduates targeting high-impact industry roles. A Silicon Valley immersion program further prepares students to become machine learning engineers and artificial intelligence researchers. During the session, program staff will provide an overview of the program, outline the admissions requirements and answer your questions. Register here (https://gradapp.berkeley.edu/register/?id=29c1d21f-9c59-45bc-8574-0014056195db).",
+          "signals": [
+            "artificial intelligence",
+            "machine learning"
+          ]
         },
         {
           "id": "livewhale_20260925T000000Z-324717@events.berkeley.edu",
           "title": "From Chaebols to Startups to BTS: The Strategic Evolution of Korea's Innovation Ecosystem",
           "date": "2026-09-24",
           "source": "livewhale",
-          "signals": ["AI"]
+          "organizer": "Center for Korean Studies",
+          "description": "Speaker: Yongwook Paik (KAIST) Hybrid Event | RSVP/Registration Required RSVP for In Person Attendance at Bottom of Page Register for Virtual Attendance - COMING SOON Note: This event will begin on \"Berkeley Time\" at 5:10 PM. Talk Summary: Drawing on insights from the co-authored book The Korean Startup Ecosystem: Past, Present, and Future, this lecture offers an insider's perspective on Korea's evolving innovation landscape. It traces the nation's transition from a conglomerate-driven growth model to an innovation-led economy, highlighting the critical interplay between venture capital, government policy, conglomerates, and entrepreneurial culture. The talk demonstrates how Korea's global cultural powerhouses—including K-pop, K-dramas, and K-beauty—are strategic outcomes of this systematically built ecosystem. Through a comparative lens, the lecture examines the institutional features that distinguish the Korean and U.S. markets across key dimensions like financing, risk tolerance, and policy intervention. It concludes by outlining strategic implications for global founders, investors, and policymakers, followed by an interactive Q&A session. The English edition of The Korean Startup Ecosystem: Past, Present, and Future is available for download for free at the following link for those who are interested: https://bit.ly/4tNQSAJ (https://bit.ly/4tNQSAJ) Speaker Bio: Professor Paik is a tenured professor at the KAIST College of Business and an affiliated professor at the KAIST College of AI. His research explores the intersection of entrepreneurship, innovation, strategy, institutions, and public policy. He serves as an editorial review board member and referee for numerous top-tier academic journals in his field, and his research has appeared in premier publications such as the Strategic Management Journal, Organization Science, Strategic Entrepreneurship Journal, and the Journal of Economics & Management Strategy. Before joining KAIST in 2018, Professor Paik served as an assistant professor at the University of Southern California's Marshall School of Business and Washington University in St. Louis's Olin Business School. He holds a Ph.D. in Economics from the University of California, Berkeley. Prior to his academic career, he was a patent attorney at the leading South Korean law firm Kim & Chang, advising both multinational corporations and entrepreneurial ventures. A seasoned advisor in the innovation ecosystem, Professor Paik cofounded the venture capital firm TBW Investment, which was later acquired via M&A. He is a Board Member of Hanyang Eng Co., a major KOSDAQ-listed semiconductor and high-tech facility engineering firm, and currently serves as a policy advisor to South Korea's National Economic Advisory Council.",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "livewhale_20260925T183000Z-327955@events.berkeley.edu",
           "title": "Architecting Human Power in the Age of AI (2026 Fall NOW Encore Series)",
           "date": "2026-09-25",
           "source": "livewhale",
-          "signals": ["AI", "artificial intelligence"]
+          "organizer": "Human Resources",
+          "description": "2026 NOW Encore Series (https://hr.berkeley.edu/development/career-development/workshops) In a workplace increasingly shaped by artificial intelligence, many professional development sessions focus on what tools to learn next. This session takes a different approach. It focuses on what AI cannot replace: the distinctly human ability to decide what matters, what you stand for, and how you choose to show up. This is not an AI skills workshop. It is an invitation to become more intentional about your human advantage. As AI expands what is possible, our opportunity is not to compete with technology, but to become clearer about what makes us uniquely valuable and then use AI to amplify it. By knowing what deserves your attention, what guides your decisions, and how you want to show up, you can engage AI with greater clarity and intention rather than simply using it to do more, faster. Led by Executive Coach and former Fortune 500 Marketing Leader Sarah Peterson, this interactive 90-minute session combines provocative ideas, personal reflection, and practical application. Drawing on her own journey from high-achieving executive through burnout and realignment, Sarah introduces her Leadership DNA Pyramid, a framework inspired by the strategy used to build iconic brands and adapted to help individuals navigate change, complexity, and an increasingly AI-enabled workplace. Participants will work with three dimensions of the broader Leadership DNA framework that become increasingly important as AI accelerates how we work: Priority, Value, and Presence. They will make three intentional choices: one priority to focus their energy, one value to guide their decisions, and one quality of presence to embody in how they work and lead. They will then move from insight to implementation by identifying the behaviors and actions that will bring those choices to life over the next 90 days. Together, these choices create a personal compass for working and leading with greater clarity and intention in an AI-enabled world.Learning Outcomes: –Recognize their distinctly human contribution as a source of advantage in an AI-enabled workplace. –Define one priority that deserves their focus and energy over the next 90 days. –Identify one value to intentionally guide their choices and decisions. –Choose one quality ofpresence they want to embody in how they lead, collaborate, and contribute. –Turn Priority, Value, and Presence into Practice by defining concrete behaviors and actions they can begin applying immediately.Registrants will be sent a Zoom link and bCal invite as this virtual workshop date draws near.",
+          "signals": [
+            "AI",
+            "artificial intelligence"
+          ]
         },
         {
           "id": "livewhale_20260929T000000Z-325579@events.berkeley.edu",
           "title": "AI & Disability: A Roundtable Discussion feat. Jeff Nagy, Renée Cummings, and Os Keyes",
           "date": "2026-09-28",
           "source": "livewhale",
+          "organizer": "BCNM",
+          "description": "A History & Theory of New Media event with Jeff Nagy, Assistant Professor, Communication and Media Studies, York University; Renée Cummings, Professor of Practice, School of Data Science, University of Virginia, and Nonresident Senior Fellow and Co-Director, AI Equity Lab, Brookings Institution; and Os Keyes, Postdoctoral Fellow, University of Massachusetts, Lowell - Monday, September 28, 2026 5:00 — 6:30 PM Eugene Jarvis Auditorium,Grimes Engineering Center (http://engineering.berkeley.edu/about/facilities/grimes-engineering-center/) RSVP here (http://docs.google.com/forms/d/e/1FAIpQLSdsmOw4XW_mhfHzcHEg012STGGi9YE_lwF5AYv-7wTx4xVmJg/viewform?usp=publish-editor)! Save the event to your bCal here (https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=NzBtNDI4MWUzNzcwOXZucDA1N3R2M2MyZ2UgZDV1NWVrN2o4aXBvZDBvOGlxNDE1ZTFhdnNAZw&tmsrc=d5u5ek7j8ipod0o8iq415e1avs%40group.calendar.google.com)! - What does AI have to do with disability, and what is it doing to disability? This question undergirds a roundtable discussion featuring Jeff Nagy, Renée Cummings, and Os Keyes. In brief individual presentations, followed by a moderated discussion, these three experts in the field will tackle the question of AI and disability from a range of distinct and overlapping perspectives. Professor Nagy will examine the remaking of psychiatric disability in an AI era through the case of algorithmic depression diagnostics. Tracing a deep history of attempts to bring computing to bear on depression, he argues that the shift from clinic to program and platform, and the substitution of machine learning features for diagnostic criteria, are rewiring the political economy of diagnosis and overwriting disability identities. Through close reading of contemporary systems and the datasets they depend on, he reveals an emergent technopolitics of disability in action, one that operates at cross-purposes with disability community and activism. Professor Renée Cummings wil discuss what happens when automated systems become gatekeepers of opportunity for individuals with disabilities. Focusing on the data infrastructures governing healthcare, education, employment and public services, she exposes how incomplete datasets, inaccessible design, and reductive classifications can convert ableism into computational logic. Through the lens of data justice, she will confront the ethics of algorithmic exclusion: whose needs are recognized, whose experiences are misread, and who is excluded altogether. Centering accessibility, disability justice, and community expertise, Professor Cummings argues that disabled people must possess meaningful power to design, govern, challenge and—when necessary—refuse the systems shaping their lives. Finally, Dr. Keyes will ask what the history of computational psychiatry teaches us about the political economy of diagnostics.The role of AI in psychiatry is often framed as novel, and focused on improving efficiency and patient access to care. But neither is the case. AI has a long history in the upper echelons of psychiatry, as a field and a practice, and that history has consistently been entangled with broader political conflicts over who plays a role in shaping diagnosis and treatment., and under what conditions. Beginning with the start of computational diagnostics in the 1960s, he will trace out the history of how (and why) computational approaches to psychiatry have come in and out of vogue, arguing that the ultimate purpose of these diagnostic tools is to reshape the political economy of diagnosis and disability. About Jeff Nagy Jeff Nagy is an Assistant Professor in the Department of Communication and Media Studies at York University. He is a historian of computing and AI, currently focused on the intersection of AI development, the behavioral sciences, and disability. He holds a PhD in Communication from Stanford University. With the DISCO Network, he is a co-author of Technoskepticism: Between Possibility and Refusal (Stanford University Press, 2025). His research and writing have appeared in Parapraxis, n+1, New Media and Society, Technology and Culture, and elsewhere. About Renée Cummings Professor Renée Cummings is an internationally recognized AI governance leader, criminologist, public interest technologist, and public sector intelligence futurist whose work is helping shape how governments, institutions, and organizations prepare for the intelligence age. She is widely recognized as one of the leading global voices advancing responsible AI, trustworthy public sector AI, innovation governance, algorithmic accountability, and the governance frameworks required to strengthen public trust, democratic resilience, and institutional integrity. An award-winning AI innovator and internationally sought-after keynote speaker, Professor Cummings serves as Professor of Practice at the University of Virginia School of Data Science, where she teaches future leaders how to excel with AI and deliver AI excellence. She is also a Nonresident Senior Fellow and Co-Director of the AI Equity Lab at the Brookings Institution and serves as Co-Chair of the Global Academic Network at the Centre for AI and Digital Policy (CAIDP), one of the world's leading organizations dedicated to AI governance, policy, and digital rights. About Os Keyes Dr. Os A. Keyes is a Postdoctoral Fellow at the University of Massachusetts, Lowell. A widely published and award-winning scholar of everything from the history of medicine to critical approaches to Artificial Intelligence, their first book, Trans Science, is under contract with University of Washington Press. About History & Theory of New Media Lecture Series The History & Theory of New Media Lecture Series brings to campus leading humanities scholars working on issues of media transition and technological emergence. The series promotes new, interdisciplinary approaches to questions about the uses, meanings, causes, and effects of rapid or dramatic shifts in techno-infrastructure, information management, and forms of mediated expression. Presented by BCNM, these events are free and open to the public.",
           "signals": [
             "AI",
             "artificial intelligence",
@@ -252,161 +400,262 @@
           "title": "Misumi Information Session",
           "date": "2026-09-29",
           "source": "livewhale",
-          "signals": ["robotics"]
+          "organizer": "IEOR",
+          "description": "Join us for an engaging on-campus event featuring Misumi, a global leader in engineered manufacturing components and supply chain solutions. Misumi specializes in providing custom parts and components to a wide range of industries, including automation, robotics, machinery, and manufacturing, serving clients across automotive, electronics, medical devices, and more. This event offers a unique opportunity to learn about how Misumi leverages data intelligence and innovative supply chain strategies to deliver exceptional value to their customers. Discover how their data-driven approach helps optimize operations, improve efficiency, and support their diverse client base worldwide. The session will be hosted by John Williams, Sr. Manager of University Programming, and he will be joined by Misumi's Director of Data Intelligence. Together, they will share insights into Misumi's industry impact, their approach to utilizing data in business decision-making, and career opportunities within their organization. Whether you're interested in supply chain, data analytics, or manufacturing technology, this event is a great chance to explore the future of industry and connect with professionals making an impact in the field. Don't miss out—see you there! Date: Tuesday September 29thTime: 10:00 - 11:00amLocation: Blum Hall - 3rd FloorRegister: Click HERERegistration required to attend!",
+          "signals": [
+            "robotics"
+          ]
         },
         {
           "id": "livewhale_20260929T190000Z-326858@events.berkeley.edu",
           "title": "Student Faculty Macro Lunch: \"How Artificial Intelligence Shapes Science: Evidence from AlphaFold\"",
           "date": "2026-09-29",
           "source": "livewhale",
-          "signals": ["AI", "artificial intelligence"]
+          "organizer": "Department of Economics",
+          "description": "Abstract: We study how a frontier AI model affects scientific discovery by examining the release of the AlphaFold2 algorithm and its impact on structural biology and related fields of science. Structural biology is the field of science concerned with understanding the structure of proteins. Researchers in this field historically devoted substantial time and resources to experimentally solving three-dimensional protein structures. AlphaFold can predict these structures without running experiments. In July 2021, researchers gained access to hundreds of thousands of these AI-predicted structures virtually overnight. Yet, to date, we find that the rate of experimental structure determination has remained almost unchanged. Instead, researchers appear to use predicted structures to facilitate and complement experimental structure determination. Looking at downstream science that builds on protein structures, we find that basic research on proteins that had no structural information prior to AlphaFold increases by 23 to 32% relative to proteins that already had a structure, with the effects increasing dramatically over time. This represents a significant shift in the direction of research toward less-studied proteins. By contrast, the response of applied R&D, as measured by patents referencing those proteins, has been far more muted.",
+          "signals": [
+            "AI",
+            "artificial intelligence"
+          ]
         },
         {
           "id": "livewhale_20260929T210000Z-323581@events.berkeley.edu",
           "title": "Evolving approaches to open science and research transparency education (Bay Area Open Science Group)",
           "date": "2026-09-29",
           "source": "livewhale",
-          "signals": ["AI"]
+          "organizer": "UC Berkeley",
+          "description": "Evolving approaches to open science and research transparency educationZoom information registrationThis month we are joined by Jo Weech, Research Transparency Program Manager at the Berkeley Initiative for Transparency in the Social Sciences BITSS. Jo supports teams working on academic forecasting, evidence aggregation, and reporting in economics. In addition to its research projects, BITSS hosts an annual conference and course on research transparency. Her presentation for the September meeting will be on how education in open science and research transparency has evolved due to changes in researcher norms and use of AI.Bay Area Open Science GroupThe Bay Area Open Science Group is a growing community for Bay Area academics and researchers interested in incorporating open science into their research, teaching, and learning. Targeting students, faculty, and staff at UCSF, Berkeley, and Stanford, the goal of the community is to increase awareness of and engagement with all things open science, including open access articles, open research data, open source software, and open educational resources. Through this work the group hopes to connect researchers with tools they can use to make the products and process of science more equitable and reproducible.Meetings:4th Tuesday of the month, 2 - 3 PM Pacific on Zoom.All are welcome to attend and join the conversation!Contact:Interested in joining the group or learning about future events?Join the discussion on our Slack Channel or email Sam Teplitzky (samteplitzky@berkeley.edu).",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "livewhale_20260930T190000Z-328645@events.berkeley.edu",
           "title": "Clearway Energy Group Information Session",
           "date": "2026-09-30",
           "source": "livewhale",
-          "signals": ["AI", "machine learning", "data science"]
+          "organizer": "IEOR",
+          "description": "Unlocking the Future of Energy: A Conversation with Clearway Energy Group Join us on campus for an exciting event featuring Clearway Energy Group, a leading renewable energy company dedicated to powering a sustainable future. In this interactive session, you'll gain insights into how Clearway leverages cutting-edge technologies like data analytics, machine learning, and AI to optimize energy generation and delivery. Attendees will learn about the rapidly evolving energy industry, including the growing demand for renewable energy sources and the critical role that data-driven decision-making plays in shaping the future of energy production. Through real-world examples and case studies, you'll discover how Clearway's innovative approach is transforming the energy landscape and benefiting their clients. This event is perfect for students interested in energy, sustainability, data science, and technology. Don't miss your chance to engage with industry experts and explore career opportunities with Clearway Energy Group. Register now to secure your spot! Date: Wednesday September 30th Time: 12:00 - 1:00pm Location: Blum Hall - 3rd Floor Register: Click HERE (https://ieor-berkeley.12twenty.com/events/30006101381739) Registration required to attend!",
+          "signals": [
+            "AI",
+            "machine learning",
+            "data science"
+          ]
         },
         {
           "id": "luma_evt-z2JfnRDoYy06ONv",
           "title": "Berkeley AI Researchers: LLMs, Robotics & Embodied Intelligence Lab to Launch",
           "date": "2026-09-30",
           "source": "luma",
-          "signals": ["AI", "LLM", "robotics"]
+          "organizer": "Berkeley SkyDeck",
+          "description": "Berkeley AI Researchers: LLMs, Robotics & Embodied Intelligence Lab to Launch",
+          "signals": [
+            "AI",
+            "LLM",
+            "robotics"
+          ]
         },
         {
           "id": "simons_workshops-trustworthy-ai-hallucinations-reliable-autonomy::2026-10-05",
           "title": "Trustworthy AI: From Hallucinations to Reliable Autonomy",
           "date": "2026-10-05",
           "source": "simons",
-          "signals": ["AI"]
+          "organizer": "Simons Institute",
+          "description": "Trustworthy AI: From Hallucinations to Reliable Autonomy",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "livewhale_20261007T223000Z-327392@events.berkeley.edu",
           "title": "Experiments in Art and Geography",
           "date": "2026-10-07",
           "source": "livewhale",
-          "signals": ["AI", "computer vision"]
+          "organizer": "Geography Department",
+          "description": "In this lecture, Trevor Paglen presents a framework for thinking about what happens when artistic practice and geographic method are fused together. Drawing on his work on mass surveillance, computer vision and AI, psyops, and neuroscience, Paglen will discuss art-making not simply as a means of representing geographic research, but as a geographic research method in its own right. Artistic practice can function as a form of fieldwork: a way of investigating landscapes, infrastructures, technologies, and institutions while developing new forms through which to understand them. Paglen will explore how this hybrid practice creates opportunities for collaboration across disciplines and produces forms of knowledge that do not fit neatly within conventional academic or artistic categories. The talk argues that occupying a position neither fully within art nor geography can generate questions, methods, objects, and ways of seeing that neither discipline could produce on its own. Trevor Paglen is a multidisciplinary artist whose practice explores technology, infrastructure, and perception across exhibitions, publications, and public projects worldwide. A MacArthur Fellow and 2026 LG Guggenheim Award winner, he holds advanced degrees from UC Berkeley and the Art Institute of Chicago.",
+          "signals": [
+            "AI",
+            "computer vision"
+          ]
         },
         {
           "id": "haas_3397280",
           "title": "San Francisco Alumni: Beyond Big Tech: Reinventing Your Career in the Age of AI",
           "date": "2026-10-08",
           "source": "haas",
-          "signals": ["AI"]
+          "organizer": "Berkeley Haas",
+          "description": "The technology industry is undergoing one of its biggest transformations yet. As AI reshapes industries and organizational structures, and many professionals rethink their careers, new opportunities are emerging well beyond traditional Big Tech. Join us for an engaging panel discussion featuring leaders who successfully pivoted from careers at companies like Meta, Google, Salesforce, Intel and other major technology firms into entrepreneurship, venture capital, consulting, and academia – each representing a different path beyond Big Tech: The Entrepreneur – Left a leading technology company to build an AI startup. The Venture Capitalist – Transitioned from operator to investor, backing the next generation of AI companies. The Startup Operator – Traded the scale of a global tech company for the speed and impact of an early-stage startup. The Portfolio Leader – Built a multifaceted career combining mentorship & advisory work, angel investing, board service, and teaching. Our panelists will share candid stories about navigating uncertainty, redefining their professional identities, leveraging transferable skills, and embracing AI as both a catalyst for disruption and a tool for creating new opportunities. You’ll hear what motivated each transition, the tradeoffs they encountered, the lessons they brought from Big Tech, and how they’re building meaningful careers in today’s AI-driven economy. Whether you’re actively exploring your next move, curious about the future of work, or simply interested in how AI is changing career paths, this conversation will provide practical insights, inspiration, and meaningful connections. Questions? Contact Zhanara Amans – amanszh@gmail.com. Register",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "haas_3372396",
           "title": "Alumni and Parents Weekend at Homecoming",
           "date": "2026-10-09",
           "source": "haas",
-          "signals": ["AI"]
+          "organizer": "Berkeley Haas",
+          "description": "Homecoming @ Haas – Ignite your Spirit Get ready, #HaasAlumni and friends! The ultimate weekend of connection, learning, and roaring Cal Bears pride is almost here! Mark your calendars for October 9-10, 2026 because Homecoming is about to explode with unforgettable moments. Here are a few Haas-curated suggestions for you, but full list of Homecoming activities is found here: FRIDAY 10/9: INTELLECT MEETS EXCITEMENT! UC Berkeley Haas Faculty Lecture: “Generative AI & the Future of Finance: Can Bots Out-Trade Humans?” Jump back into Andersen Auditorium to hear how Haas is at the forefront of AI transformation. Join alumni and faculty from our Masters in Financial Education (MFE) program to learn how industry titans are leveraging AI to redefine global markets. Stick around after the lecture for a light reception and meet n’ greet with the speakers! Arrive early; seating is first-come, first-served! Conversation with the Chancellor: “America 250: Berkeley and the Future of the American Experiment” Chancellor Lyons and a panel of faculty experts explore how ideas of citizenship, democracy, participation, and higher education have shaped the American experience — and how they will continue to evolve in the decades ahead. SATURDAY 10/10: GAME DAY GLORY! Oski Village Tailgate: Live entertainment, interactive games, food and beverage for purchase, sponsor activations, and activities for fans of all ages. Game Time: Don your blue and gold and join the crowd as our mighty California Golden Bears clash with Virginia Tech ! (Game time TBA – stay tuned!) Don’t miss a single tackle – grab your game tickets TODAY! Questions? Email homecoming@berkeley.edu or call 888.UNIV.CAL (888.864.8225).",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "berkeley_law_769075",
           "title": "[BCLB] 2026 Annual Berkeley Forum on Corporate Governance",
           "date": "2026-10-13",
           "source": "berkeley_law",
-          "signals": ["AI"]
+          "organizer": "Berkeley Center for Law and Business",
+          "description": "The 11th Annual Berkeley Forum on Corporate Governance convenes judges, regulators, general counsels, and scholars for two days at the intersection of law, technology, and the markets — from controlling shareholders after SB 21 and geopolitical dealmaking to AI governance, autonomous agents, and the infrastructure race powering the next economy. Anchored by a session with three members of the Delaware Court of Chancery and conversations with leading authors and policymakers, the program treats corporate governance as what it has become: the connective tissue between technology, capital, regulation, and leadership. Sharp, current, and built for the people making the decisions.",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "berkeley_law_758843",
           "title": "[BCLT] Hot Topics in Privacy, Cybersecurity & AI",
           "date": "2026-10-13",
           "source": "berkeley_law",
-          "signals": ["AI"]
+          "organizer": "BCLT",
+          "description": "Join BCLT for a dynamic lunch presentation on October 13 from 1-2 PM in 100 Law Building. This lunch will give you insight into the practice area of all things related to privacy, data regulation, and AI. Register Here! We ask that you register in advance for catering purposes.",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "livewhale_20261014T190000Z-327053@events.berkeley.edu",
           "title": "PMB Seminar with Gautam Dantas | Understanding, Predicting, and Remediating Perturbations to Host-Microbe Interactions",
           "date": "2026-10-14",
           "source": "livewhale",
-          "signals": ["machine learning"]
+          "organizer": "Plant & Microbial Biology",
+          "description": "Antibiotics can acutely and persistently compromise microbiome stability and resilience, enabling enhanced colonization of pathogenic microbes, and loss of host-beneficial functions from depleted commensals. We interrogate resistome, taxonomic, and functional dynamics of microbiota of humans, animals, soils, and built-environments via high-throughput functional metagenomic selections, whole metagenome and transcriptome sequencing, and isolate phenotyping and whole genome sequencing. We use these datasets to model and predict the impact of various biotic and abiotic perturbations on the transmission and evolutionary dynamics of diverse microbiomes and their resistomes across time and habitats, through application of generalized linear mixed models and machine learning algorithms. By integrating community-level analyses of microbiome perturbation and response, with mechanistic analyses of novel microbial resilience functions, we are improving the accuracy and sensitivity of genomics-based methods for diagnosing and treating pathogens and their resistance properties in the clinic and maintaining or rescuing healthy microbiome states.",
+          "signals": [
+            "machine learning"
+          ]
         },
         {
           "id": "berkeley_law_758847",
           "title": "[BCLT] 1L Career Prep: Privacy, Cybersecurity & AI",
           "date": "2026-10-15",
           "source": "berkeley_law",
-          "signals": ["AI"]
+          "organizer": "BCLT",
+          "description": "Join BCLT for a dynamic lunch presentation on October 15 from 1-2 PM in the Great Hall at Berkeley Law West. This lunch will give you insight into the practice area of all things related to privacy, data regulation, and AI. Register Here! We ask that you register in advance for catering purposes. This lunchtime program is open to all students, but it is primarily designed to prepare 1L students for the following evening program which is reserved for 1L students considering a summer-associate position.",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "berkeley_law_758852",
           "title": "[BCLT] 1L Career Night: Privacy, Cybersecurity & AI",
           "date": "2026-10-15",
           "source": "berkeley_law",
-          "signals": ["AI"]
+          "organizer": "BCLT",
+          "description": "Join BCLT on October 15, 2026, from 6-8 PM at Freehouse Berkeley for a 1L mixer with several attorneys from various law offices who specialize in all things privacy, data regulation, and AI. Light refreshments will be provided. At this event, you will have the opportunity to learn about the possible career paths, the development opportunities, the ﬁrm cultures, and possible next steps for entry-level recruiting. It is also an opportunity for you to build relationships with attorneys from many firms and to get your questions answered ahead of recruitment. Register Here! We ask that you register in advance for catering purposes. Because this program is linked to entry-level positions, it is reserved for UC Berkeley Law 1L students considering a summer-associate position in either of their 1L or 2L summers.",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "luma_evt-3Z3pKiLG9CG9Kld",
           "title": "Lab to Launch: Robotics Pitch Night",
           "date": "2026-10-15",
           "source": "luma",
-          "signals": ["robotics"]
+          "organizer": "Berkeley Gateway Accelerator",
+          "description": "Lab to Launch: Robotics Pitch Night",
+          "signals": [
+            "robotics"
+          ]
         },
         {
           "id": "livewhale_20261028T223000Z-327393@events.berkeley.edu",
           "title": "All that is compute transforms into concrete: Monopoly rent and the fixity of AI's infrastructure",
           "date": "2026-10-28",
           "source": "livewhale",
-          "signals": ["AI", "artificial intelligence", "large language model"]
+          "organizer": "Geography Department",
+          "description": "In the capitalist imaginary, artificial intelligence is narrated on dematerialization. In this telling, capital has escaped the weight of human labor via the frictionless circulation of data. This paper argues the opposite: the AI economy is a geography of fixity, where training large language models requires warehouse-scale data centers anchored to specific territories by the demands of energy, infrastructure, and available land. Two analytical categories theorize this fixity. The first concerns the monopoly control of location and network proximity: value is extracted from whoever sits closest to the data, controls the interconnection, and commands the lowest latency. The second concerns the monopoly control of computation itself: training frontier AI models is capital-intensive, technically scarce, and concentrated in a handful of firms who can extract a tribute that is not reducible to productivity but to infra/structural position. Both forms of extraction are rent. And both are responses to a profitability crisis in the AI sector driven by rising fixed capital requirements that outpace returns. We draw on financial filings, industry reports, and field observations in Northern Virginia's Data Center Alley to show that what appears as an agglomeration economy is better understood as rent extracted through the strategic fixity of capital in digital infrastructure. Dillon Mahmoudi (dillonm@umbc.edu) is an Associate Professor of Geography and Environmental Systems at the University of Maryland Baltimore County. and Alan Wiig (alanwiig@ufl.edu) is an Associate Professor of Geography at the University of Florida. They recently published a book chapter, Land for AI: Data Center Real Estate Markets in The Inner World of Artificial Intelligence (2026).",
+          "signals": [
+            "AI",
+            "artificial intelligence",
+            "large language model"
+          ]
         },
         {
           "id": "livewhale_20261218T010000Z-316693@events.berkeley.edu",
           "title": "Data Science Fall 2026 Capstone Project Showcase",
           "date": "2026-12-17",
           "source": "livewhale",
-          "signals": ["data science"]
+          "organizer": "UC Berkeley",
+          "description": "Graduating MIDS students present their data science projects. A panel of judges will select an outstanding project for the Hal R. Varian MIDS Capstone Award. More info: https://www.ischool.berkeley.edu/events/2026/data-science-fall-2026-capstone-project-showcase (https://www.ischool.berkeley.edu/events/2026/data-science-fall-2026-capstone-project-showcase)",
+          "signals": [
+            "data science"
+          ]
         },
         {
           "id": "livewhale_20270126T000000Z-321964@events.berkeley.edu",
           "title": "Rhiju Das: \"De novo design of RNA with deep learning\"",
           "date": "2027-01-25",
           "source": "livewhale",
-          "signals": ["AI", "deep learning"]
+          "organizer": "Department of Chemistry",
+          "description": "RNA design has long been limited by the accuracy of RNA structure prediction. I will describe how the video game Eterna has elicited modeling and design tools for previously intractable pseudoknotted folds, multi-state sensors for disease states, and polymerase ribozymes that copy RNA. AI teams now work alongside Eterna players, and both are scored by prospective high-throughput experiments. Under that pressure, RNA design is improving quickly.",
+          "signals": [
+            "AI",
+            "deep learning"
+          ]
         },
         {
           "id": "simons_workshops-ai-risk-evaluation-governance::2027-03-31",
           "title": "AI Risk Evaluation and Governance",
           "date": "2027-03-31",
           "source": "simons",
-          "signals": ["AI"]
+          "organizer": "Simons Institute",
+          "description": "AI Risk Evaluation and Governance",
+          "signals": [
+            "AI"
+          ]
         },
         {
           "id": "simons_workshops-diffusion-generative-modeling-boot-camp::2027-08-30",
           "title": "Diffusion Generative Modeling Boot Camp",
           "date": "2027-08-30",
           "source": "simons",
-          "signals": ["generative modeling"]
+          "organizer": "Simons Institute",
+          "description": "Diffusion Generative Modeling Boot Camp",
+          "signals": [
+            "generative modeling"
+          ]
         },
         {
           "id": "simons_workshops-engineering-diffusion-models-scaling-modalities-safety::2027-09-20",
           "title": "Engineering of Diffusion Models: Scaling, Modalities, Safety",
           "date": "2027-09-20",
           "source": "simons",
-          "signals": ["diffusion model"]
+          "organizer": "Simons Institute",
+          "description": "Engineering of Diffusion Models: Scaling, Modalities, Safety",
+          "signals": [
+            "diffusion model"
+          ]
         },
         {
           "id": "simons_workshops-science-diffusion-models-speciation-creativity-new-testbeds::2027-10-18",
           "title": "Science of Diffusion Models: Speciation, Creativity, New Testbeds",
           "date": "2027-10-18",
           "source": "simons",
-          "signals": ["diffusion model"]
+          "organizer": "Simons Institute",
+          "description": "Science of Diffusion Models: Speciation, Creativity, New Testbeds",
+          "signals": [
+            "diffusion model"
+          ]
         },
         {
           "id": "simons_workshops-beyond-generative-modeling-steering-models-learning-sample::2027-11-15",
           "title": "Beyond Generative Modeling: Steering Models and Learning to Sample",
           "date": "2027-11-15",
           "source": "simons",
-          "signals": ["generative modeling"]
+          "organizer": "Simons Institute",
+          "description": "Beyond Generative Modeling: Steering Models and Learning to Sample",
+          "signals": [
+            "generative modeling"
+          ]
         }
       ]
     }

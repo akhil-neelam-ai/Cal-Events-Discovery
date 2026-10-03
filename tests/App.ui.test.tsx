@@ -5,6 +5,7 @@ import {
   renderHook,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -16,10 +17,11 @@ import { useUrlStateSync } from "../hooks/useUrlStateSync";
 import type { CalEvent } from "../types";
 import { LoadingState } from "../types";
 import { TOPIC_VOCABULARY } from "../scripts/lib/topics";
+import { addRecentSearch } from "../utils/recentSearches";
 
 const TODAY_KEY = "2026-04-22";
 const TOMORROW_KEY = "2026-04-23";
-const NEXT_WEEK_KEY = "2026-04-29";
+const WEEK_END_KEY = "2026-04-28";
 
 type MockFeedState = {
   allEvents: CalEvent[];
@@ -52,6 +54,12 @@ vi.mock("../utils/analytics", () => ({
   trackExternalLink: vi.fn(),
 }));
 
+vi.mock("../utils/recentSearches", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("../utils/recentSearches")>();
+  return { ...actual, addRecentSearch: vi.fn(actual.addRecentSearch) };
+});
+
 vi.mock("../hooks/useEventFeed", () => ({
   useEventFeed: () => mockFeedState,
 }));
@@ -64,7 +72,7 @@ vi.mock("../hooks/usePacificDateKeys", () => ({
   usePacificDateKeys: () => ({
     todayKey: TODAY_KEY,
     tomorrowKey: TOMORROW_KEY,
-    nextWeekKey: NEXT_WEEK_KEY,
+    weekEndKey: WEEK_END_KEY,
   }),
 }));
 
@@ -112,6 +120,8 @@ function makeEvent(overrides: Partial<CalEvent> = {}): CalEvent {
     topics: overrides.topics ?? ["ai-machine-learning"],
     url: overrides.url ?? `https://example.com/${id}`,
     source: overrides.source ?? "livewhale",
+    ...(overrides.end_date ? { end_date: overrides.end_date } : {}),
+    ...(overrides.dates ? { dates: overrides.dates } : {}),
   };
 }
 
@@ -538,6 +548,59 @@ describe("App UI regressions", () => {
     expect(screen.getByText("Tomorrow Founder Talk")).toBeInTheDocument();
   });
 
+  it("shows a multi-day event on each day it runs after its date passes", () => {
+    // Between midnight and the next publish, `date` is already yesterday.
+    const yesterdayKey = "2026-04-21";
+    const events = [
+      makeEvent({
+        id: "running-exhibit",
+        title: "Running Archive Exhibit",
+        date: yesterdayKey,
+        time: "All day",
+        tags: ["Arts"],
+        end_date: TOMORROW_KEY,
+        dates: [yesterdayKey, TODAY_KEY, TOMORROW_KEY],
+      }),
+      makeEvent({
+        id: "tomorrow-talk",
+        title: "Tomorrow Robotics Talk",
+        date: TOMORROW_KEY,
+      }),
+    ];
+
+    for (const range of ["today", "tomorrow", "week", "upcoming"]) {
+      mockFeedState = makeFeedState(events);
+      window.history.replaceState({}, "", `/?date=${range}`);
+      const { unmount } = render(<App />);
+
+      expect(
+        screen.getByText("Running Archive Exhibit"),
+        range,
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText("Nothing today — showing this week instead."),
+      ).not.toBeInTheDocument();
+      if (range === "week") {
+        expect(screen.getByText("Today · Apr 22")).toBeInTheDocument();
+        expect(screen.queryByText(/Apr 21/)).not.toBeInTheDocument();
+      }
+      unmount();
+    }
+  });
+
+  it("ends This Week six days after today, like the agent preset", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "day-6", title: "Sixth Day Talk", date: WEEK_END_KEY }),
+      makeEvent({ id: "day-7", title: "Week Out Talk", date: "2026-04-29" }),
+    ]);
+    window.history.replaceState({}, "", "/?date=week");
+
+    render(<App />);
+
+    expect(screen.getByText("Sixth Day Talk")).toBeInTheDocument();
+    expect(screen.queryByText("Week Out Talk")).not.toBeInTheDocument();
+  });
+
   it("defaults to this week on first visit", () => {
     mockFeedState = makeFeedState([
       makeEvent({
@@ -557,7 +620,7 @@ describe("App UI regressions", () => {
       screen.getByRole("heading", { level: 2, name: /this week/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Tomorrow Founder Talk")).toBeInTheDocument();
-    expect(screen.getAllByText("Updates everyday").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Updates every day").length).toBeGreaterThan(0);
     expect(screen.queryByText(/Updated \d+h ago/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Synced \d+h ago/)).not.toBeInTheDocument();
   });
@@ -802,6 +865,14 @@ describe("App UI regressions", () => {
         tags: ["Academic"],
         description: "A generic campus event mentioning Berkeley Law.",
       }),
+      makeEvent({
+        id: "law-livewhale-unit",
+        title: "Law Faculty Colloquium",
+        organizer: "Berkeley Law",
+        source: "livewhale",
+        tags: ["Academic"],
+        description: "A colloquium LiveWhale files under Berkeley Law.",
+      }),
     ]);
 
     window.history.replaceState({}, "", "/?q=berkeley%20law&date=upcoming");
@@ -812,6 +883,7 @@ describe("App UI regressions", () => {
       screen.getByRole("button", { name: /remove berkeley law filter/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Law Certificate Ceremony")).toBeInTheDocument();
+    expect(screen.getByText("Law Faculty Colloquium")).toBeInTheDocument();
     expect(
       screen.queryByText("Berkeley Law and Finance Talk"),
     ).not.toBeInTheDocument();
@@ -922,6 +994,81 @@ describe("App UI regressions", () => {
     expect(
       screen.getByRole("button", { name: /close event details/i }),
     ).toBeInTheDocument();
+  });
+
+  it("shows the full run of a multi-day event in the desktop detail panel", async () => {
+    const user = userEvent.setup();
+
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "exhibit-run",
+        title: "Archive Exhibition",
+        time: "All day",
+        tags: ["Arts"],
+        end_date: "2026-04-24",
+        dates: [TODAY_KEY, TOMORROW_KEY, "2026-04-24"],
+      }),
+    ]);
+
+    render(<App />);
+    await user.click(
+      screen.getByRole("button", { name: /archive exhibition/i }),
+    );
+
+    const dialog = screen.getByRole("dialog");
+    expect(within(dialog).getByText("Through Apr 24")).toBeInTheDocument();
+    expect(within(dialog).getByText("Daily · all day")).toBeInTheDocument();
+  });
+
+  it("records the search behind a card click once, even in StrictMode", async () => {
+    const user = userEvent.setup();
+    vi.mocked(addRecentSearch).mockClear();
+
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "recent-1", title: "Design Review Night" }),
+    ]);
+    window.history.replaceState({}, "", "/?q=design");
+
+    render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>,
+    );
+    await user.click(
+      screen.getByRole("button", { name: /design review night/i }),
+    );
+
+    expect(addRecentSearch).toHaveBeenCalledTimes(1);
+    expect(addRecentSearch).toHaveBeenCalledWith("design");
+  });
+
+  it("keeps the source link outside the card's button", async () => {
+    const user = userEvent.setup();
+
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "card-1",
+        title: "Design Review Night",
+        location: "Wurster Hall",
+        organizer: "College of Environmental Design",
+      }),
+    ]);
+
+    render(<App />);
+
+    const title = screen.getByRole("button", { name: "Design Review Night" });
+    expect(title.closest("h3")).not.toBeNull();
+    expect(title).toHaveAccessibleDescription(/wurster hall/i);
+    expect(title).toHaveAccessibleDescription(/environmental design/i);
+
+    const sourceLink = screen.getByRole("link", {
+      name: /open source page for design review night/i,
+    });
+    expect(sourceLink.closest('button, [role="button"]')).toBeNull();
+
+    title.focus();
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
   it("opens event details and syncs the selected event into the URL", async () => {

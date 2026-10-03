@@ -3,8 +3,13 @@ import test from "node:test";
 
 import {
   buildEventGroups,
+  dateRangeStartKey,
+  firstOccurrenceInRange,
   formatMultiDayWhen,
   formatRelativeEventDate,
+  listingDateKey,
+  occurrenceDateKeys,
+  weekEndKey,
 } from "../../utils/eventDates.ts";
 
 function event(overrides = {}) {
@@ -19,8 +24,21 @@ function event(overrides = {}) {
     tags: ["Academic"],
     url: "https://example.com",
     source: "livewhale",
+    ...(overrides.end_date ? { end_date: overrides.end_date } : {}),
+    ...(overrides.dates ? { dates: overrides.dates } : {}),
   };
 }
+
+// `date` is the day before "today" (2026-05-13), which is what a multi-day
+// event looks like from midnight until the next publish.
+const RUNNING_EXHIBIT = event({
+  id: "exhibit",
+  title: "Running Exhibit",
+  date: "2026-05-12",
+  time: "All day",
+  end_date: "2026-05-14",
+  dates: ["2026-05-12", "2026-05-13", "2026-05-14"],
+});
 
 test("event groups are chronological even when caller input is relevance ordered", () => {
   const groups = buildEventGroups([
@@ -79,6 +97,21 @@ test("formatRelativeEventDate uses today, tomorrow, weekday, and absolute labels
     formatRelativeEventDate({ date: "2026-06-10", time: "11:00 AM" }, now),
     "Jun 10, 11am",
   );
+  // The week ends at today+6. A week out shares today's weekday name, so it
+  // gets a date instead.
+  assert.equal(
+    formatRelativeEventDate({ date: "2026-05-29", time: "3:00 PM" }, now),
+    "Friday, 3pm",
+  );
+  assert.equal(
+    formatRelativeEventDate({ date: "2026-05-30", time: "3:00 PM" }, now),
+    "May 30, 3pm",
+  );
+});
+
+test("weekEndKey closes This Week at today plus six days", () => {
+  assert.equal(weekEndKey("2026-05-23"), "2026-05-29");
+  assert.equal(weekEndKey("2026-12-28"), "2027-01-03");
 });
 
 test("formatMultiDayWhen labels a continuous on-view run as 'Through'", () => {
@@ -171,4 +204,80 @@ test("formatRelativeEventDate uses the multi-day span when present", () => {
     ),
     "Through May 25",
   );
+});
+
+test("occurrence helpers read every day of a multi-day event", () => {
+  assert.deepEqual(occurrenceDateKeys(event({ date: "2026-05-13" })), [
+    "2026-05-13",
+  ]);
+  assert.equal(
+    firstOccurrenceInRange(RUNNING_EXHIBIT, "2026-05-13"),
+    "2026-05-13",
+  );
+  assert.equal(
+    firstOccurrenceInRange(RUNNING_EXHIBIT, "2026-05-14", "2026-05-14"),
+    "2026-05-14",
+  );
+  assert.equal(firstOccurrenceInRange(RUNNING_EXHIBIT, "2026-05-15"), null);
+  assert.equal(
+    firstOccurrenceInRange(RUNNING_EXHIBIT, undefined, "2026-05-11"),
+    null,
+  );
+  assert.equal(listingDateKey(RUNNING_EXHIBIT, "2026-05-13"), "2026-05-13");
+  assert.equal(listingDateKey(RUNNING_EXHIBIT), "2026-05-12");
+  assert.equal(listingDateKey(RUNNING_EXHIBIT, "2026-06-01"), "2026-05-12");
+});
+
+test("a multi-day event is grouped under the first day of the view", () => {
+  const talk = event({
+    id: "talk",
+    title: "Morning Talk",
+    date: "2026-05-13",
+    time: "9:00 AM",
+  });
+  const lecture = event({
+    id: "lecture",
+    title: "Afternoon Lecture",
+    date: "2026-05-14",
+    time: "3:00 PM",
+  });
+  const summarize = (groups) =>
+    groups.map((group) => [group.dateKey, group.events.map((item) => item.id)]);
+
+  const weekGroups = buildEventGroups(
+    [RUNNING_EXHIBIT, lecture, talk],
+    "2026-05-13",
+    dateRangeStartKey("week", "2026-05-13"),
+  );
+  assert.deepEqual(summarize(weekGroups), [
+    ["2026-05-13", ["talk", "exhibit"]],
+    ["2026-05-14", ["lecture"]],
+  ]);
+
+  const tomorrowGroups = buildEventGroups(
+    [RUNNING_EXHIBIT, lecture],
+    "2026-05-13",
+    dateRangeStartKey("tomorrow", "2026-05-13"),
+  );
+  assert.deepEqual(summarize(tomorrowGroups), [
+    ["2026-05-14", ["lecture", "exhibit"]],
+  ]);
+  assert.equal(tomorrowGroups[0].label, "Tomorrow · May 14");
+});
+
+test("multi-day labels follow the synced today key", () => {
+  const run = {
+    date: "2026-05-02",
+    end_date: "2026-05-04",
+    dates: ["2026-05-02", "2026-05-03", "2026-05-04"],
+    time: "All day",
+  };
+  // 00:30 PT on May 2. The synced key still says May 1 until its refresh.
+  const now = new Date("2026-05-02T07:30:00Z");
+
+  assert.equal(
+    formatRelativeEventDate(run, now, "upcoming", "2026-05-01"),
+    "May 2 – May 4",
+  );
+  assert.equal(formatRelativeEventDate(run, now, "upcoming"), "Through May 4");
 });

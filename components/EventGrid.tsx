@@ -54,21 +54,12 @@ export function EventGrid({
               {group.events.map((event) => {
                 const idx = globalIdx++;
                 const categoryStyle = getCategoryStyle(event.tags?.[0]);
+                const metaId = `event-card-meta-${idx}`;
 
                 return (
                   <article
                     key={event.id || idx}
-                    aria-label={event.title}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => onEventClick(event)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        onEventClick(event);
-                      }
-                    }}
-                    className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,50,98,0.06),0_4px_16px_rgba(0,50,98,0.05)] transition-[transform,box-shadow] duration-150 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2 motion-reduce:transition-none motion-safe:hover:translate-y-[-3px] motion-safe:hover:shadow-[0_8px_32px_rgba(0,50,98,0.13),0_1px_4px_rgba(0,50,98,0.06)] motion-safe:active:scale-[0.985] ${shouldAnimateCards ? "animate-card-in opacity-0" : ""}`}
+                    className={`group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,50,98,0.06),0_4px_16px_rgba(0,50,98,0.05)] transition-[transform,box-shadow] duration-150 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform motion-reduce:transition-none motion-safe:hover:translate-y-[-3px] motion-safe:hover:shadow-[0_8px_32px_rgba(0,50,98,0.13),0_1px_4px_rgba(0,50,98,0.06)] motion-safe:active:scale-[0.985] ${shouldAnimateCards ? "animate-card-in opacity-0" : ""}`}
                     style={{
                       ...(shouldAnimateCards
                         ? {
@@ -102,8 +93,7 @@ export function EventGrid({
                             href={event.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            onClick={(eventClick) => {
-                              eventClick.stopPropagation();
+                            onClick={() => {
                               trackExternalLink({
                                 event_id: event.id,
                                 event_title: event.title,
@@ -111,7 +101,7 @@ export function EventGrid({
                               });
                             }}
                             aria-label={`Open source page for ${event.title}`}
-                            className="shrink-0 rounded-full p-1.5 text-slate-300 transition hover:bg-white/80 hover:text-berkeley-blue"
+                            className="relative z-10 shrink-0 rounded-full p-1.5 text-slate-300 transition hover:bg-white/80 hover:text-berkeley-blue"
                           >
                             <svg
                               aria-hidden="true"
@@ -136,10 +126,23 @@ export function EventGrid({
                           className="mb-4 font-serif text-[1.05rem] font-semibold leading-snug text-berkeley-blue transition-colors group-hover:text-berkeley-medblue"
                           style={{ letterSpacing: "-0.01em" }}
                         >
-                          {event.title}
+                          {/* The title button stretches over the card, so a
+                              click anywhere opens the details. The source link
+                              stays a sibling above it. */}
+                          <button
+                            type="button"
+                            onClick={() => onEventClick(event)}
+                            aria-describedby={metaId}
+                            className="w-full cursor-pointer text-left after:absolute after:inset-0 after:rounded-2xl focus:outline-hidden focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-berkeley-gold/60"
+                          >
+                            {event.title}
+                          </button>
                         </h3>
 
-                        <div className="space-y-1.5 text-xs text-slate-500">
+                        <div
+                          id={metaId}
+                          className="space-y-1.5 text-xs text-slate-500"
+                        >
                           <div className="flex items-center gap-1.5">
                             <svg
                               aria-hidden="true"

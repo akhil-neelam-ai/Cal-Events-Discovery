@@ -17,7 +17,11 @@ import {
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { deriveFrontendTags, isoDateInPT, todayPT } from "../lib/normalize.js";
+import {
+  deriveFrontendTags,
+  endedBeforePT,
+  todayPT,
+} from "../lib/normalize.js";
 
 const FEED_URL = "https://events.berkeley.edu/live/ical/events";
 const GROUP_BASE = "https://events.berkeley.edu/live/ical/events/group";
@@ -95,6 +99,7 @@ const ORG_UNIT_MAP: Record<string, string> = {
   arf: "Archaeological Research Facility",
   art: "Department of Art Practice",
   sports: "Cal Athletics",
+  recsports: "Recreational Sports",
   bot: "UC Botanical Garden",
   bph: "Berkeley Public Health",
   brc: "Berkeley Retirement Center",
@@ -615,10 +620,9 @@ export async function fetchLiveWhale(
           : endDate.toISOString()
         : undefined;
 
-      // Drop events that have already started before today (PT).
-      // For multi-day events still upcoming or in progress, keep them.
-      const eventDate = isoDateInPT(start_at);
-      if (eventDate < todayIso) {
+      // Drop events that ended before today (PT). A multi-day event that
+      // started earlier but is still running is kept.
+      if (endedBeforePT({ start_at, end_at, all_day: allDay }, todayIso)) {
         filteredPast++;
         continue;
       }

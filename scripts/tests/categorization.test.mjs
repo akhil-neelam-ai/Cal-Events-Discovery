@@ -5,6 +5,7 @@ import {
   deriveFrontendTags,
   inferCategory,
 } from "../../scripts/lib/normalize.ts";
+import { unitFromSlug } from "../../scripts/sources/livewhale.ts";
 
 // deriveFrontendTags scores an event across the six frontend categories using
 // (1) a high-confidence organizer→category map, (2) the source's own tags, and
@@ -36,6 +37,23 @@ test("ASUC Student Union events are Student Life", () => {
   };
 
   assert.equal(inferCategory(event), "Student Life");
+});
+
+test("Recreational Sports rows are Sports, not the Student Life catch-all", () => {
+  // LiveWhale files these under the "recsports" slug. Without a unit label
+  // they scored no category and fell through to Student Life.
+  for (const title of ["Lap Swim", "Building Hours - RSF", "Bouldering"]) {
+    assert.equal(
+      inferCategory({
+        title,
+        organizer: unitFromSlug("recsports"),
+        description: "Open to members at the Recreational Sports Facility.",
+        categories: [],
+      }),
+      "Sports",
+      title,
+    );
+  }
 });
 
 test("an academic lecture about sustainability stays Academic", () => {

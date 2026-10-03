@@ -293,6 +293,37 @@ test("Simons events with different slugs do not merge", () => {
   ]);
 });
 
+test("BAMPFA later showings collapse by time slot beside the first", () => {
+  const session = (sourceId, start_at) =>
+    ev({
+      source_name: "bampfa",
+      source_id: sourceId,
+      start_at,
+      all_day: false,
+      title: "Open: Art Lab",
+    });
+  const { events } = collapseMultiDay([
+    session("open-art-lab-june-2026::2026-06-04", "2026-06-04T11:00:00-07:00"),
+    session(
+      "open-art-lab-june-2026::2026-06-04@1400",
+      "2026-06-04T14:00:00-07:00",
+    ),
+    session("open-art-lab-june-2026::2026-06-05", "2026-06-05T11:00:00-07:00"),
+    session(
+      "open-art-lab-june-2026::2026-06-05@1400",
+      "2026-06-05T14:00:00-07:00",
+    ),
+  ]);
+
+  assert.deepEqual(
+    events.map((event) => [event.source_id, event.occurrence_dates]).sort(),
+    [
+      ["open-art-lab", ["2026-06-04", "2026-06-05"]],
+      ["open-art-lab@1400", ["2026-06-04", "2026-06-05"]],
+    ],
+  );
+});
+
 test("month name in the middle of a BAMPFA slug is not stripped (regex anchored at $)", () => {
   assert.equal(
     stableEventKey(

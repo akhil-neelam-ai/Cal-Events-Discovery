@@ -15,8 +15,7 @@
  */
 
 import type { LegacyCalEvent } from "./schema.js";
-import { tokenize } from "../../utils/textUtils.js";
-import { BERKELEY_VENUE_ALIASES } from "../../utils/textUtils.js";
+import { tokenize, venueAliasExpansions } from "../../utils/textUtils.js";
 import type { SearchIndex } from "../../utils/textUtils.js";
 
 export type { SearchIndex };
@@ -39,13 +38,9 @@ function finalise(map: FieldMap): Record<string, number[]> {
 /** Tokenize text and also inject alias expansions for known Berkeley venues. */
 function tokenizeWithAliases(text: string): string[] {
   const base = tokenize(text);
-  const lower = text.toLowerCase();
-  const extra: string[] = [];
-  for (const [alias, expansion] of Object.entries(BERKELEY_VENUE_ALIASES)) {
-    if (lower.includes(alias)) {
-      extra.push(...tokenize(expansion));
-    }
-  }
+  const extra = venueAliasExpansions(text).flatMap((expansion) =>
+    tokenize(expansion),
+  );
   return [...new Set([...base, ...extra])];
 }
 

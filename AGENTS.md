@@ -4,7 +4,7 @@ Guidance for any coding agent working in this repository (Codex, Claude Code, or
 
 ## What this is
 
-CalEvents Discovery aggregates roughly 1,450 UC Berkeley campus events from 12 sources into static JSON, served by a React frontend with entirely client-side search. Built and maintained by one person. Deployed on Vercel at `calevents-discovery.vercel.app`.
+CalEvents Discovery aggregates roughly 1,450 UC Berkeley campus events from 12 sources into static JSON, served by a React frontend with entirely client-side search. Built and maintained by one person. Deployed on Vercel at `cal-events.com`.
 
 Stack: React 19, Vite 8, TypeScript, Tailwind v4, Fuse.js. Pipeline is TypeScript run through `tsx`, validated with Zod. Node 22.
 
@@ -19,6 +19,7 @@ npm run test:ui              # vitest, tests/*.tsx
 npm run test:e2e             # Playwright, tests/e2e/
 npm run test:search-quality  # Live golden queries against public/ artifacts (non-blocking in CI)
 npm run update-events        # Full pipeline → public/events.json + search-index.json + status.json
+npm run rebuild-index        # Rebuild public/search-index.json from the committed events.json
 npm run preview              # Preview built output locally
 ```
 
@@ -44,7 +45,7 @@ Three layers, cleanly separated.
 
 ### 1. Data pipeline (`scripts/`)
 
-`scripts/updateEvents.ts` is the orchestrator. It runs 12 source adapters in parallel with a 60 s timeout each, dedupes the union, projects to legacy shape, writes 3 static JSON artifacts to `public/`.
+`scripts/updateEvents.ts` is the orchestrator. It runs 12 source adapters in parallel with a 60 s timeout each (Simons gets 100 s for its full-history download), dedupes the union, projects to legacy shape, writes 3 static JSON artifacts to `public/`.
 
 **Source priority** (used by dedupe to pick the winner when two sources have the same event):
 
@@ -52,9 +53,12 @@ Three layers, cleanly separated.
 livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley_law / simons / luma / begin / ai_risk / brsl (3)
 ```
 
-**Failure handling.** Each source has a `RecoveryPolicy` in `updateEvents.ts`:
+**Failure handling.** Each source has a `RecoveryPolicy` in `scripts/lib/lastGoodFallback.ts`, applied by `markRecovery`:
 
 - On error or below `minHealthyCount`: mark degraded, optionally restore last-good events from the previous `events.json` (filtered to today and later, PT)
+- Fallback age counts from each source's `last_healthy_at` in `status.json`, which carries forward while the source is degraded. A restore older than 48 hours expires
+- Quiet sources (`degradeOnFailure: false`: luma, begin, ai_risk, brsl) restore too, but stay out of `degraded_sources`, the top-level reason, and `data_age_hours`, so no banner appears
+- Each source carries `consecutive_failures` in `status.json`. Three failed fetches in a row open or update a `source-contracts` issue from the daily workflow
 - If every source returns 0 events: refuse to overwrite the existing file and exit non-zero
 - `status.json` is always written with per-source details, degradation flags, and fallback counts
 
@@ -72,7 +76,7 @@ livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley
 | `tribe.ts` | Tribe/WP REST API | Haas, Berkeley Law, BEGIN, BRSL. Generic adapter, reusable for any site running The Events Calendar plugin |
 | `simons.ts` | JSON API | CS theory research institute (`simons.berkeley.edu/api/events`) |
 | `luma.ts` | Luma JSON API | Berkeley-affiliated Luma calendars; IDs in `BERKELEY_LUMA_CALENDARS` |
-| `ai_risk.ts` | JS schedule scrape | Berkeley AI Risk speaker series (`ai-risk.berkeley.edu/speaker-series.js`) |
+| `ai_risk.ts` | JSON feed | Berkeley AI Risk speaker series (`ai-risk.berkeley.edu/events.json`), which the site builds for its own calendar sync |
 
 ### 3. Frontend (`App.tsx` + `utils/`)
 
@@ -80,8 +84,8 @@ Loads `events.json` and `search-index.json` at startup. Search is entirely clien
 
 **Search flow** (`utils/searchIntent.ts` + `utils/searchEngine.ts`):
 
-1. `buildSearchPlan(query, { topics })` detects intent in a fixed detector order: temporal, source, topic, time-of-day, modality, free, category, campus area. Topic uses the published vocabulary when the feed has loaded. Later topic phrases stay ranking text. Each detector strips its matched words from the residual query text, **except the category branch, which does not**. That asymmetry is load-bearing and deliberate to know about: it is why a subject word like "AI" still ranks as text even while it locks a category.
-2. `searchEvents` applies plan filters as a hard pool filter, then scores against the inverted index, falls back to Fuse.js, then broadens (relax date, then drop category, then drop topic) with an explanatory message.
+1. `buildSearchPlan(query, { topics })` detects intent in a fixed detector order: temporal, source, topic, time-of-day, modality, free, category, campus area. Topic uses the published vocabulary when the feed has loaded. Later topic phrases stay ranking text. Each detector strips its matched words from the residual query text. **Only category names such as "arts" or "sports" lock a category.** Subject words such as "seminar" or "basketball" stay ranking text, because a lock hides matches filed under another primary category. Dismissing a source or category chip searches the words that set it.
+2. `searchEvents` applies plan filters as a hard pool filter, then scores against the inverted index, falls back to Fuse.js, then broadens (drop the weekend filter, then category, then topic) with an explanatory message. Callers narrow the pool to the date range first.
 
 **Search index** (`scripts/lib/buildIndex.ts` → `public/search-index.json`): field-differentiated inverted index. Fields: `t` title (60), `g` tags (45), `o` organizer (30), `l` location (20), `d` description (10). Values are event-position integers into `ids[]`. Venue aliases are injected at build time.
 
@@ -133,13 +137,15 @@ Established in `docs/brainstorms/2026-08-17-publish-vs-quality-pipeline-requirem
 - The daily cron holds exactly one secret, the automation pull-request token. Adding a network dependency to that path needs a strong reason.
 - **Degraded-source flags drive visitor-facing banners.** `shouldShowStaleDataBanner` fires whenever the degraded-source list is non-empty regardless of data age, and the partial-data banner keys off the top-level `degraded` flag. Never route a non-source quality problem through those fields.
 
-## Current work in flight
+## Recent and open work
 
 The topic filter layer from `docs/plans/2026-09-03-001-feat-topic-filter-layer-plan.md` is on `main` (PR 173). Do not re-implement U1 through U9.
 
-Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` is implemented on `feat/topic-filter-review-fixes`. Successful empty assignments clear topics. Broad identity mappings are gone. The breadth cap stays 200. Public discovery versions are 1.2.0.
+Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` merged in PR 174 on 2026-09-04. Successful empty assignments clear topics. Broad identity mappings are gone. The breadth cap stays 200. Public discovery versions are 1.3.0, since the September audit added the multi-day fields.
 
 The June full-repo audit is `docs/code-review-2026-06-02.md`. It is a different pass.
+
+The September full-repo audit is `docs/code-review-2026-09-25.md`. Every item has a status line. #8, #11, #12, and #13 are fixed in code and wait on a live run.
 
 ## Key files
 
@@ -150,7 +156,7 @@ The June full-repo audit is `docs/code-review-2026-06-02.md`. It is a different 
 | `scripts/lib/dedupe.ts` | Source-priority dedupe by normalized title and date |
 | `scripts/lib/normalize.ts` | `projectToLegacy`, `deriveFrontendTags`, `isoDateInPT`, `cleanTitle` |
 | `scripts/lib/buildIndex.ts` | Inverted index generator with venue alias expansion |
-| `scripts/lib/lastGoodFallback.ts` | Last-good restore, by id, with cancellation filtering |
+| `scripts/lib/lastGoodFallback.ts` | Recovery policies, `markRecovery`, and last-good restore with cancellation filtering |
 | `scripts/lib/topics.ts` | Topic vocabulary and deterministic assignment |
 | `docs/code-review-2026-09-04-topic-filter-layer.md` | Leftover topic-filter review items after PR 173 |
 | `utils/searchIntent.ts` | Query intent: `buildSearchPlan`, topic phrases, dismissed-key rebuild |
@@ -168,11 +174,13 @@ The June full-repo audit is `docs/code-review-2026-06-02.md`. It is a different 
 
 **All-day events**: iCal VEVENTs with `VALUE=DATE` become `all_day: true` with a bare `YYYY-MM-DD` start. `displayTime()` returns "All day".
 
+**Running spans**: adapters drop an event only after its last day (`endedBeforePT`). A bare all-day end is exclusive. `withSpanOccurrences` then gives a multi-day span one `dates` entry per remaining day, capped at 120, and publishes today as its `date`.
+
 **LiveWhale group feeds**: the main feed misses events posted only to department calendars. Group feeds use path-based URLs, and group names are case-sensitive. The adapter fetches 40 groups with bounded concurrency and merges by UID first-wins, which discards which feed each event came from.
 
 **Tribe adapter reusability**: `scripts/sources/tribe.ts` exports `fetchHaas`, `fetchBerkeleyLaw`, `fetchBegin`, and `fetchBrsl` from one config-driven implementation. A new WordPress site running The Events Calendar needs only a new export.
 
-**Stemming must stay consistent**: `buildIndex.ts` and `searchEngine.ts` both call `stem()` from `utils/textUtils.ts`. Change the stemmer and you must regenerate the index.
+**Stemming must stay consistent**: `buildIndex.ts` and `searchEngine.ts` both call `stem()` from `utils/textUtils.ts`. Change the stemmer, the tokenizer, or the venue aliases and run `npm run rebuild-index`. A stability test fails until the committed index matches.
 
 **`runAdapterWithTimeout`** wraps each adapter so it resolves to a failed run rather than rejecting. The orchestrator still uses `Promise.allSettled` and maps results back to source names by index, so one timeout cannot cancel the others.
 

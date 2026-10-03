@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { dedupeEvents } from "../../scripts/lib/dedupe.ts";
+import {
+  dedupeEvents,
+  dedupeRestoredEvents,
+} from "../../scripts/lib/dedupe.ts";
 import { normalizeForDedupe } from "../../scripts/lib/normalize.ts";
 
 function event(overrides) {
@@ -162,6 +165,59 @@ test("dedupe keeps same-title events on different dates distinct", () => {
   );
 });
 
+test("dedupe keeps one source's same-day rows with different start times", () => {
+  const game = (id, start_at) =>
+    event({
+      source_name: "calbears",
+      source_id: id,
+      title: "California Baseball vs Stanford",
+      start_at,
+      source_url: `https://example.com/source/${id}`,
+      canonical_url: `https://example.com/events/${id}`,
+    });
+  const first = game("game-1", "2026-05-10T13:00:00-07:00");
+  const second = game("game-2", "2026-05-10T16:00:00-07:00");
+  const repeat = game("game-1-copy", "2026-05-10T13:00:00-07:00");
+
+  for (const input of [
+    [first, second, repeat],
+    [repeat, second, first],
+  ]) {
+    const result = dedupeEvents(input);
+    assert.deepEqual(result.events.map((row) => row.source_id).sort(), [
+      "game-1",
+      "game-2",
+    ]);
+    assert.equal(result.duplicatesRemoved, 1);
+  }
+});
+
+test("dedupe still lets a higher-priority source replace every lower row", () => {
+  const calbears = (id, start_at) =>
+    event({
+      source_name: "calbears",
+      source_id: id,
+      title: "California Baseball vs Stanford",
+      start_at,
+    });
+  const livewhale = event({
+    source_name: "livewhale",
+    source_id: "lw-game",
+    title: "California Baseball vs Stanford",
+    start_at: "2026-05-10T13:00:00-07:00",
+  });
+
+  const result = dedupeEvents([
+    calbears("game-1", "2026-05-10T13:00:00-07:00"),
+    livewhale,
+    calbears("game-2", "2026-05-10T16:00:00-07:00"),
+  ]);
+  assert.deepEqual(
+    result.events.map((row) => row.source_id),
+    ["lw-game"],
+  );
+});
+
 test("normalizeForDedupe strips stopwords, punctuation, and case", () => {
   assert.equal(
     normalizeForDedupe("The Spring Lecture of Music"),
@@ -175,4 +231,95 @@ test("normalizeForDedupe strips stopwords, punctuation, and case", () => {
   // A title made entirely of stopwords/punctuation normalizes to empty,
   // which forces dedupe to fall back to stable source identity.
   assert.equal(normalizeForDedupe("The & Of !!!"), "");
+});
+
+function published(overrides) {
+  return {
+    id: "livewhale_1",
+    title: "Robotics Forum",
+    organizer: "EECS",
+    date: "2026-05-12",
+    time: "12:00 PM",
+    location: "Soda Hall",
+    description: "",
+    tags: ["Science & Tech"],
+    url: "https://example.com/events/1",
+    source: "livewhale",
+    ...overrides,
+  };
+}
+
+test("dedupeRestoredEvents drops a restored copy that loses on priority", () => {
+  const fresh = published({ id: "livewhale_1" });
+  const restored = published({ id: "haas_9", source: "haas" });
+
+  assert.deepEqual(
+    dedupeRestoredEvents(
+      [fresh, restored],
+      new Set(["haas_9"]),
+      "2026-05-10",
+    ).map((event) => event.id),
+    ["livewhale_1"],
+  );
+});
+
+test("dedupeRestoredEvents leaves groups without a restored row alone", () => {
+  const events = [
+    published({ id: "haas_9", source: "haas" }),
+    published({ id: "berkeley_law_4", source: "berkeley_law" }),
+  ];
+
+  assert.equal(
+    dedupeRestoredEvents(events, new Set(["other"]), "2026-05-10").length,
+    2,
+  );
+});
+
+test("dedupeRestoredEvents keys a restored multi-day row on its next day", () => {
+  // Restored from yesterday's feed, so `date` is already past.
+  const restored = published({
+    id: "livewhale_7",
+    title: "Archive Exhibit",
+    date: "2026-05-09",
+    end_date: "2026-05-12",
+    dates: ["2026-05-09", "2026-05-10", "2026-05-11", "2026-05-12"],
+  });
+  const fresh = published({
+    id: "bampfa_3",
+    title: "Archive Exhibit",
+    date: "2026-05-10",
+    source: "bampfa",
+  });
+
+  assert.deepEqual(
+    dedupeRestoredEvents(
+      [fresh, restored],
+      new Set(["livewhale_7"]),
+      "2026-05-10",
+    ).map((event) => event.id),
+    ["livewhale_7"],
+  );
+});
+
+test("dedupeRestoredEvents keeps both restored games of a doubleheader", () => {
+  const game = (id, time) =>
+    published({
+      id,
+      title: "California Baseball vs Stanford",
+      time,
+      source: "calbears",
+    });
+  const events = [
+    game("calbears_g1", "1:00 PM"),
+    game("calbears_g2", "4:00 PM"),
+  ];
+
+  assert.deepEqual(
+    dedupeRestoredEvents(
+      events,
+      new Set(["calbears_g1", "calbears_g2"]),
+      "2026-05-10",
+    ).map((event) => event.id),
+    ["calbears_g1", "calbears_g2"],
+  );
 });

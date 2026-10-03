@@ -21,10 +21,11 @@ import type { FetchOptions } from "../lib/abort.js";
 import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
-import { todayPT } from "../lib/normalize.js";
+import { endedBeforePT, isoDateInPT, todayPT } from "../lib/normalize.js";
 
 const WP_API_BASE = "https://calperformances.org/wp-json/wp/v2/cp_event";
 const PER_PAGE = 100;
+const MAX_PAGES = 10;
 const FETCH_TIMEOUT_MS = 30_000;
 const SOURCE_URL = "https://calperformances.org/events/";
 
@@ -99,23 +100,37 @@ export function parseAddeventatcDate(raw: string): string | null {
   return `${yyyy}-${mm}-${dd}T${HH}:${MM}:00${offsetStr}`;
 }
 
-/**
- * Extract structured event data from a cp_event post's content HTML.
- * Returns null if no addeventatc start span is found.
- */
-function extractFromContent(contentHtml: string): {
+interface Performance {
   start: string;
   end: string | undefined;
+}
+
+/**
+ * Extract structured event data from a cp_event post's content HTML.
+ * A production can carry one addeventatc widget per performance, so every
+ * `span.start` is read with the `span.end` beside it. Returns null if no
+ * performance parses.
+ */
+function extractFromContent(contentHtml: string): {
+  performances: Performance[];
   venue: string;
   description: string;
   cost: string;
 } | null {
   const $ = cheerio.load(contentHtml);
 
-  const startRaw = $("span.start").first().text().trim();
-  if (!startRaw) return null;
+  const performances: Performance[] = [];
+  $("span.start").each((_, el) => {
+    const start = parseAddeventatcDate($(el).text().trim());
+    if (!start) return;
+    const endRaw = $(el).siblings("span.end").first().text().trim();
+    const end = endRaw
+      ? (parseAddeventatcDate(endRaw) ?? undefined)
+      : undefined;
+    performances.push({ start, end });
+  });
+  if (performances.length === 0) return null;
 
-  const endRaw = $("span.end").first().text().trim();
   const venue = decodeHtmlEntities($("a.event-location").first().text().trim());
   const costRaw = $(".event-price-block").first().text().trim();
   const cost = decodeHtmlEntities(costRaw);
@@ -131,18 +146,16 @@ function extractFromContent(contentHtml: string): {
     }
   });
 
-  const start = parseAddeventatcDate(startRaw);
-  if (!start) return null;
-
-  const end = endRaw ? (parseAddeventatcDate(endRaw) ?? undefined) : undefined;
-
-  return { start, end, venue, description, cost };
+  return { performances, venue, description, cost };
 }
 
-async function fetchPage(
-  page: number,
-  options: FetchOptions,
-): Promise<WpCpEvent[]> {
+interface WpPage {
+  posts: WpCpEvent[];
+  /** WordPress's X-WP-TotalPages header, when the response carries it. */
+  totalPages?: number;
+}
+
+async function fetchPage(page: number, options: FetchOptions): Promise<WpPage> {
   const url = `${WP_API_BASE}?per_page=${PER_PAGE}&page=${page}&_fields=id,slug,link,title,content`;
   const res = await fetchWithRetry(
     url,
@@ -156,8 +169,13 @@ async function fetchPage(
       acceptStatuses: [400],
     },
   );
-  if (res.status === 400) return []; // page out of range
-  return (await res.json()) as WpCpEvent[];
+  if (res.status === 400) return { posts: [] }; // page out of range
+  const totalPages = Number(res.headers.get("X-WP-TotalPages"));
+  return {
+    posts: (await res.json()) as WpCpEvent[],
+    totalPages:
+      Number.isInteger(totalPages) && totalPages > 0 ? totalPages : undefined,
+  };
 }
 
 export async function fetchCalPerformances(
@@ -172,15 +190,24 @@ export async function fetchCalPerformances(
   let filteredPast = 0;
   let invalid = 0;
 
-  // Fetch pages sequentially so we stop as soon as WordPress returns a short
-  // page instead of issuing guaranteed-empty requests.
-  const allPosts: WpCpEvent[] = [];
-  for (let pageNumber = 1; pageNumber <= 10; pageNumber += 1) {
-    const page = await fetchPage(pageNumber, options);
-    allPosts.push(...page);
-
-    if (page.length < PER_PAGE) {
-      break;
+  // Page 1 reports the page count, so the rest download in parallel. Four
+  // sequential pages took 24 to 31 s against a 60 s adapter budget. Without
+  // the header, page on until WordPress returns a short page.
+  const first = await fetchPage(1, options);
+  const allPosts: WpCpEvent[] = [...first.posts];
+  if (first.totalPages !== undefined) {
+    const rest = await Promise.all(
+      Array.from(
+        { length: Math.min(first.totalPages, MAX_PAGES) - 1 },
+        (_, index) => fetchPage(index + 2, options),
+      ),
+    );
+    for (const page of rest) allPosts.push(...page.posts);
+  } else if (first.posts.length === PER_PAGE) {
+    for (let pageNumber = 2; pageNumber <= MAX_PAGES; pageNumber += 1) {
+      const page = await fetchPage(pageNumber, options);
+      allPosts.push(...page.posts);
+      if (page.posts.length < PER_PAGE) break;
     }
   }
 
@@ -204,14 +231,30 @@ export async function fetchCalPerformances(
         continue;
       }
 
-      const { start, end, venue, description, cost } = parsed;
+      const { venue, description, cost } = parsed;
 
-      // Filter past events (compare date portion in PT)
-      const eventDate = start.slice(0, 10);
-      if (eventDate < todayIso) {
+      // Keep the performances that have not ended. A run publishes as one
+      // event across its remaining days, so it stays listed after opening
+      // night.
+      const upcoming = parsed.performances
+        .filter(
+          (show) =>
+            !endedBeforePT(
+              { start_at: show.start, end_at: show.end, all_day: false },
+              todayIso,
+            ),
+        )
+        .sort((a, b) => Date.parse(a.start) - Date.parse(b.start));
+      if (upcoming.length === 0) {
         filteredPast++;
         continue;
       }
+      const first = upcoming[0];
+      const last = upcoming[upcoming.length - 1];
+      const days = [
+        ...new Set(upcoming.map((show) => isoDateInPT(show.start))),
+      ];
+      const run = days.length > 1;
 
       // Infer a sub-genre tag from the URL path segment
       const urlSegments = (post.link ?? "").split("/").filter(Boolean);
@@ -228,8 +271,9 @@ export async function fetchCalPerformances(
         evidence_url: post.link,
         title,
         description: description || title,
-        start_at: start,
-        end_at: end,
+        start_at: first.start,
+        end_at: run ? (last.end ?? last.start) : first.end,
+        occurrence_dates: run ? days : undefined,
         timezone: "America/Los_Angeles",
         all_day: false,
         venue: venue || "Cal Performances",

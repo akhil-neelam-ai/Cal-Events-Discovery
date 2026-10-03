@@ -142,6 +142,37 @@
       "description": "Bring the family for discounted admission, animal ambassadors, biotechnology, and artificial intelligence exhibits.",
       "relevant": [],
       "irrelevant": ["ai-machine-learning"]
+    },
+    {
+      "id": "neg-diffusion-language-models",
+      "title": "Neyman Statistics Seminar with Molei Tao: Scaling Diffusion Language Models",
+      "organizer": "Neyman Seminar",
+      "source": "livewhale",
+      "description": "A test-time scaling method for diffusion language models.",
+      "relevant": [
+        "ai-machine-learning",
+        "physics-math-quantum",
+        "computer-science-data"
+      ],
+      "irrelevant": ["history-humanities"]
+    },
+    {
+      "id": "neg-social-media",
+      "title": "Defending Democracy Online Through Social Media: Deep Fakes and Our Cognitive Security",
+      "organizer": "OLLI",
+      "source": "livewhale",
+      "description": "Social media and smartphones are changing how people get the news.",
+      "relevant": [],
+      "irrelevant": ["social-clubs"]
+    },
+    {
+      "id": "neg-practice-job-talk",
+      "title": "MORS Colloquium: Alex Figueroa - Practice Job Talk",
+      "organizer": "Berkeley Haas",
+      "source": "livewhale",
+      "description": "MORS Colloquium: Alex Figueroa - Practice Job Talk",
+      "relevant": [],
+      "irrelevant": ["career-jobs"]
     }
   ]
 }

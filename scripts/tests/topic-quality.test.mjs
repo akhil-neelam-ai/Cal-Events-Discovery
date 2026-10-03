@@ -1,8 +1,10 @@
 /**
- * Frozen topic quality checks against the published corpus.
+ * Frozen topic quality checks, plus bounds on the published corpus.
  *
  * The fixture was selected independently of assignTopics. Keep it frozen when
- * assignment weights change so recall tuning cannot move its own target.
+ * assignment weights change so recall tuning cannot move its own target. Each
+ * reference stores the text it was chosen from, because the events age out of
+ * the live feed within weeks.
  *
  * Run: node --import tsx/esm --test scripts/tests/topic-quality.test.mjs
  */
@@ -36,13 +38,12 @@ const fixture = JSON.parse(
   ),
 );
 
-const eventsById = new Map(published.events.map((event) => [event.id, event]));
 const aiReferenceSet = fixture.referenceSets.find(
   (referenceSet) => referenceSet.topic === "ai-machine-learning",
 );
 
-test("frozen AI reference fixture is complete and matches the source corpus", () => {
-  assert.equal(fixture.version, 1);
+test("frozen AI reference fixture is complete", () => {
+  assert.equal(fixture.version, 2);
   assert.equal(fixture.selectedFrom.artifact, "public/events.json");
   assert.ok(aiReferenceSet, "AI reference set is missing");
   assert.equal(aiReferenceSet.minimumRecall, 0.9);
@@ -55,19 +56,18 @@ test("frozen AI reference fixture is complete and matches the source corpus", ()
   const ids = aiReferenceSet.references.map((reference) => reference.id);
   assert.equal(new Set(ids).size, ids.length, "Reference IDs must be unique");
 
-  const availableReferences = aiReferenceSet.references.filter((reference) =>
-    eventsById.has(reference.id),
-  );
-  assert.ok(
-    availableReferences.length >= 40,
-    `Only ${availableReferences.length}/${aiReferenceSet.references.length} frozen references remain in the current corpus`,
-  );
-
-  for (const reference of availableReferences) {
+  for (const reference of aiReferenceSet.references) {
     assert.ok(
       Array.isArray(reference.signals) && reference.signals.length > 0,
       `${reference.id} needs human-readable selection evidence`,
     );
+    for (const field of ["title", "description", "organizer", "source"]) {
+      assert.equal(
+        typeof reference[field],
+        "string",
+        `${reference.id} needs its frozen ${field}`,
+      );
+    }
   }
 });
 
@@ -86,17 +86,16 @@ test("AI topic assignment reaches at least 90% of the frozen reference set", () 
     "livewhale_20260925T000000Z-324717@events.berkeley.edu",
     "livewhale_20260929T210000Z-323581@events.berkeley.edu",
   ]);
-  const availableReferences = aiReferenceSet.references.filter((reference) =>
-    eventsById.has(reference.id),
-  );
-  const referencesToCheck = availableReferences.filter(
+  const referencesToCheck = aiReferenceSet.references.filter(
     (reference) => !knownNonAiHomonyms.has(reference.id),
   );
   for (const reference of referencesToCheck) {
-    if (!eventsById.has(reference.id)) continue;
-    const assignedTopics = topicsModule.assignTopics(
-      eventsById.get(reference.id),
-    );
+    const assignedTopics = topicsModule.assignTopics({
+      title: reference.title,
+      description: reference.description,
+      organizer: reference.organizer,
+      source: reference.source,
+    });
     assert.ok(
       Array.isArray(assignedTopics),
       `assignTopics must return an array for ${reference.id}`,

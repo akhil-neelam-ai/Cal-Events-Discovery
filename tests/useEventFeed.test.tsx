@@ -1,5 +1,11 @@
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useEventFeed } from "../hooks/useEventFeed";
@@ -51,8 +57,9 @@ function makeJsonResponse(body: unknown, ok = true): Response {
   } as unknown as Response;
 }
 
-function EventFeedProbe() {
-  const { allEvents, loading, searchIndex, loadEvents } = useEventFeed();
+function EventFeedProbe({ needsSearchIndex = false }) {
+  const { allEvents, loading, searchIndex, loadEvents } =
+    useEventFeed(needsSearchIndex);
 
   return (
     <div>
@@ -102,6 +109,97 @@ describe("useEventFeed", () => {
       "/search-index.json",
       expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
+  });
+
+  it("waits past three seconds for a slow search index", async () => {
+    vi.useFakeTimers();
+    try {
+      const signals: AbortSignal[] = [];
+      const fetchMock = vi.fn<typeof fetch>((_input, init) => {
+        const signal = init?.signal as AbortSignal;
+        signals.push(signal);
+        return new Promise<Response>((_resolve, reject) => {
+          signal.addEventListener("abort", () =>
+            reject(new DOMException("Aborted", "AbortError")),
+          );
+        });
+      });
+      vi.stubGlobal("fetch", fetchMock);
+      fetchEventArtifactsMock.mockResolvedValue({
+        events: [makeEvent()],
+        sources: [],
+        lastUpdated: Date.parse("2026-04-22T19:00:00.000Z"),
+      });
+
+      render(<EventFeedProbe />);
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0);
+      });
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(5_000);
+      });
+      expect(signals[0].aborted).toBe(false);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(5_000);
+      });
+      expect(signals[0].aborted).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("retries a failed search index when the visitor starts searching", async () => {
+    const fetchMock = vi.fn<typeof fetch>();
+    fetchMock
+      .mockRejectedValueOnce(new Error("search index timed out"))
+      .mockResolvedValueOnce(makeJsonResponse(makeSearchIndex()));
+    vi.stubGlobal("fetch", fetchMock);
+    fetchEventArtifactsMock.mockResolvedValue({
+      events: [makeEvent()],
+      sources: [],
+      lastUpdated: Date.parse("2026-04-22T19:00:00.000Z"),
+    });
+
+    const { rerender } = render(<EventFeedProbe />);
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+    expect(screen.getByLabelText("search-index")).toHaveTextContent("missing");
+
+    rerender(<EventFeedProbe needsSearchIndex />);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("search-index")).toHaveTextContent("loaded");
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("retries a failed search index only once per load", async () => {
+    const fetchMock = vi.fn<typeof fetch>();
+    fetchMock.mockRejectedValue(new Error("search index unavailable"));
+    vi.stubGlobal("fetch", fetchMock);
+    fetchEventArtifactsMock.mockResolvedValue({
+      events: [makeEvent()],
+      sources: [],
+      lastUpdated: Date.parse("2026-04-22T19:00:00.000Z"),
+    });
+
+    const { rerender } = render(<EventFeedProbe needsSearchIndex />);
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    rerender(<EventFeedProbe />);
+    rerender(<EventFeedProbe needsSearchIndex />);
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(screen.getByLabelText("search-index")).toHaveTextContent("missing");
   });
 
   it("enters the error state when the events payload fails", async () => {

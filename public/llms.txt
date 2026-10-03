@@ -20,7 +20,9 @@ Each event in `events.json` has:
 - `id`: stable source-derived event id
 - `title`: event title
 - `organizer`: organizer or campus unit
-- `date`: Pacific date in `YYYY-MM-DD`
+- `date`: first upcoming Pacific date in `YYYY-MM-DD`
+- `end_date`: multi-day events only, the last Pacific date the event occurs
+- `dates`: multi-day events only, every upcoming Pacific date the event occurs
 - `time`: display time
 - `location`: venue or location text
 - `description`: event summary
@@ -66,6 +68,7 @@ CalEvents is **read-only**. Events and feed status cannot be created, updated, o
 - Prefer WebMCP `search_berkeley_events` over ad-hoc substring filters when the homepage is available.
 - Use `status.json` to understand freshness and source-level health.
 - Dates are intended for America/Los_Angeles.
+- Match a date window against `dates` when an event has it. `date` is only its first upcoming day.
 - Use official event `url` values for final user-facing citations or handoff links.
 - Do not treat fallback/degraded source status as user-facing copy unless `data_quality_blocked` is true.
 

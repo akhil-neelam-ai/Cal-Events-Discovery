@@ -1,5 +1,5 @@
 import { TOPICS } from "../scripts/lib/topics";
-import { BERKELEY_VENUE_ALIASES, DOMAIN_SYNONYMS, tokenize } from "./textUtils";
+import { DOMAIN_SYNONYMS, tokenize, venueAliasExpansions } from "./textUtils";
 
 export interface SearchTopicDefinition {
   slug: string;
@@ -22,6 +22,8 @@ export interface SearchFilter {
 export interface InterpretedChip {
   key: string;
   label: string;
+  /** The query words that set a source or category chip. */
+  text?: string;
 }
 
 export interface SearchPlan {
@@ -59,31 +61,22 @@ export const RE_FREE_EVENT =
   /(?:\bfree\b(?!\s*(?:throw|agent|range|radical|speech|will))|\bcomplimentary\b|\bno[-\s]?charge\b|\bno[-\s]?cost\b|\$0\b)/i;
 const RE_ONLINE = /\b(online|virtual|zoom|remote|webinar|livestream)\b/i;
 const RE_INPERSON = /\b(in.?person|on campus)\b/i;
-const RE_CAL_GAMES = /\b(cal games?|bears games?|cal bears games?)\b/i;
 const RE_BARE_FREE = /\bfree\b/i;
 
+// Only category names lock a category. Subject words such as "tennis" or
+// "seminar" stay as ranking text. A lock hid matches filed under another
+// primary category (many seminars are Science & Tech), and it left no
+// keywords to rank the locked pool by.
 const CATEGORY_PATTERNS: Array<[string, RegExp]> = [
-  [
-    "Entrepreneurship",
-    /\b(skydeck|entrepreneurship|product management|innovation hub)\b/i,
-  ],
-  [
-    "Sports",
-    /\b(cal games?|bears games?|cal bears|athletics|basketball|football|baseball|volleyball|soccer|swim meet|swim team|tennis|gymnastics|rowing|crew|sports)\b/i,
-  ],
-  ["Arts", /\b(arts?|performance|gallery|bampfa|exhibit)\b/i],
+  ["Entrepreneurship", /\b(entrepreneurship)\b/i],
+  ["Sports", /\b(athletics|sports)\b/i],
+  ["Arts", /\b(arts?)\b/i],
   [
     "Science & Tech",
-    /\b((?<!data )(?<!computer )science(?:\s*&\s*tech)?|tech(?:nology)?|hackathon|coding|engineering talk|tech talk)\b/i,
+    /\b(science\s*(?:&|and)\s*tech(?:nology)?|tech|technology)\b/i,
   ],
-  [
-    "Student Life",
-    /\b(student life|student org|orientation|undergrad|grad student|tabling|open house|coffee chat)\b/i,
-  ],
-  [
-    "Academic",
-    /\b(academic|seminar|colloquium|lecture|symposium|dissertation defense|dissertation|thesis defense|guest speaker|research talk|keynote)\b/i,
-  ],
+  ["Student Life", /\b(student life|student orgs?)\b/i],
+  ["Academic", /\b(academics?)\b/i],
 ];
 
 const SOURCE_PATTERNS: Array<[string, RegExp, string]> = [
@@ -92,7 +85,13 @@ const SOURCE_PATTERNS: Array<[string, RegExp, string]> = [
     /\b(bampfa|berkeley art museum|pacific film archive)\b/i,
     "BAMPFA",
   ],
-  ["calbears", /\b(cal bears|cal athletics|calbears)\b/i, "Cal Bears"],
+  // "cal games" means Cal Bears games. The Sports category also holds
+  // Recreational Sports rows such as lap swim, so it would bury them.
+  [
+    "calbears",
+    /\b(cal bears games?|cal games?|bears games?|cal bears|cal athletics|calbears)\b/i,
+    "Cal Bears",
+  ],
   ["cal_performances", /\b(cal performances)\b/i, "Cal Performances"],
   ["callink", /\b(callink|cal link)\b/i, "CalLink"],
   ["haas", /\b(haas|berkeley haas|business school)\b/i, "Berkeley Haas"],
@@ -262,10 +261,8 @@ export function expandKeywordTokens(
         tokenize(synonym).forEach((token) => expandedSet.add(token));
     }
   }
-  for (const [alias, expansion] of Object.entries(BERKELEY_VENUE_ALIASES)) {
-    if (rawLower.includes(alias)) {
-      tokenize(expansion).forEach((token) => expandedSet.add(token));
-    }
+  for (const expansion of venueAliasExpansions(rawLower)) {
+    tokenize(expansion).forEach((token) => expandedSet.add(token));
   }
 
   return Array.from(expandedSet);
@@ -277,15 +274,30 @@ export function resolvePlanTopics(
   return topics ?? TOPICS;
 }
 
-export function dismissedKeysForExplicitTopic(
+export interface ExplicitFilters {
+  topic?: string | null;
+  category?: string | null;
+  source?: string | null;
+}
+
+/**
+ * An explicit filter wins over a different one the query implies. The UI and
+ * the agent both dismiss the inferred topic, category, or source this way, so
+ * the query words become search text inside the explicit filter.
+ */
+export function dismissedKeysForExplicitFilters(
   plan: SearchPlan | null,
-  explicitTopic: string | null | undefined,
+  explicit: ExplicitFilters,
   extra: Iterable<string> = [],
 ): Set<string> {
   const keys = new Set(extra);
-  const inferred = plan?.filters.topic;
-  if (explicitTopic && inferred && inferred !== explicitTopic) {
-    keys.add(`topic:${inferred}`);
+  if (!plan) return keys;
+  for (const field of ["topic", "category", "source"] as const) {
+    const inferred = plan.filters[field];
+    const chosen = explicit[field];
+    if (chosen && inferred && inferred.toLowerCase() !== chosen.toLowerCase()) {
+      keys.add(`${field}:${inferred}`);
+    }
   }
   return keys;
 }
@@ -344,9 +356,10 @@ export function buildSearchPlan(
   }
 
   for (const [source, pattern, label] of SOURCE_PATTERNS) {
-    if (pattern.test(cleaned)) {
+    const match = cleaned.match(pattern);
+    if (match) {
       filters.source = source;
-      interpretations.push({ key: `source:${source}`, label });
+      interpretations.push({ key: `source:${source}`, label, text: match[0] });
       cleaned = stripIntent(cleaned, pattern);
       break;
     }
@@ -415,16 +428,17 @@ export function buildSearchPlan(
   }
 
   for (const [category, pattern] of CATEGORY_PATTERNS) {
-    if (pattern.test(detectorText)) {
+    const match = detectorText.match(pattern);
+    if (match) {
       filters.category = category;
-      interpretations.push({ key: `category:${category}`, label: category });
+      interpretations.push({
+        key: `category:${category}`,
+        label: category,
+        text: match[0],
+      });
       cleaned = stripIntent(cleaned, pattern);
       break;
     }
-  }
-
-  if (RE_CAL_GAMES.test(raw)) {
-    cleaned = stripIntent(cleaned, RE_CAL_GAMES);
   }
 
   for (const [area, pattern] of AREA_PATTERNS) {
@@ -485,6 +499,8 @@ export function withDismissedInterpretations(
     if (field === "topic") delete filters.topic;
   }
 
+  // A dismissed source or category chip turns the words that set it back into
+  // search text, so "athletics" searches "athletics" rather than "Sports".
   const dismissedLiteralText = plan.interpretations
     .filter(
       (interpretation) =>
@@ -492,11 +508,11 @@ export function withDismissedInterpretations(
         (interpretation.key.startsWith("source:") ||
           interpretation.key.startsWith("category:")),
     )
-    .map((interpretation) => interpretation.label)
+    .map((interpretation) => interpretation.text ?? interpretation.label)
     .join(" ");
 
-  if (keywords.length === 0 && dismissedLiteralText) {
-    cleaned = dismissedLiteralText;
+  if (dismissedLiteralText) {
+    cleaned = [cleaned, dismissedLiteralText].filter(Boolean).join(" ");
     keywords = tokenize(cleaned);
     expandedTokens = expandKeywordTokens(
       keywords,

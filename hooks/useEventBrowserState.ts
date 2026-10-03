@@ -8,12 +8,14 @@ import {
   getFallbackBannerCopy,
 } from "../utils/emptyState";
 import {
+  dateRangeStartKey,
+  firstOccurrenceInRange,
   getPacificDateKey,
   sortEventsChronologically,
 } from "../utils/eventDates";
 import {
   buildSearchPlan,
-  dismissedKeysForExplicitTopic,
+  dismissedKeysForExplicitFilters,
   searchEvents,
   type InterpretedChip,
 } from "../utils/searchEngine";
@@ -28,7 +30,7 @@ interface UseEventBrowserStateParams {
   selectedEventId: string | null;
   todayKey: string;
   tomorrowKey: string;
-  nextWeekKey: string;
+  weekEndKey: string;
   userSetDateRange: boolean;
   topicAvailabilityReady: boolean;
   topicDefinitions: readonly TopicDefinition[] | null;
@@ -53,22 +55,27 @@ function partitionDateBuckets(
   events: readonly CalEvent[],
   todayKey: string,
   tomorrowKey: string,
-  nextWeekKey: string,
+  weekEndKey: string,
 ) {
   const today: CalEvent[] = [];
   const tomorrow: CalEvent[] = [];
   const week: CalEvent[] = [];
   const upcoming: CalEvent[] = [];
 
+  // Bucket by occurrence, not by `date`. A multi-day event runs on every day
+  // in `dates`, and its `date` is already past from midnight until the next
+  // publish.
   for (const event of events) {
-    const key = getPacificDateKey(event.date);
-    if (!key || key < todayKey) {
+    const next = firstOccurrenceInRange(event, todayKey);
+    if (!next) {
       continue;
     }
     upcoming.push(event);
-    if (key === todayKey) today.push(event);
-    if (key === tomorrowKey) tomorrow.push(event);
-    if (key <= nextWeekKey) week.push(event);
+    if (next === todayKey) today.push(event);
+    if (firstOccurrenceInRange(event, tomorrowKey, tomorrowKey)) {
+      tomorrow.push(event);
+    }
+    if (next <= weekEndKey) week.push(event);
   }
 
   return { today, tomorrow, week, upcoming };
@@ -107,7 +114,7 @@ export function useEventBrowserState({
   selectedEventId,
   todayKey,
   tomorrowKey,
-  nextWeekKey,
+  weekEndKey,
   userSetDateRange,
   topicAvailabilityReady,
   topicDefinitions,
@@ -203,9 +210,9 @@ export function useEventBrowserState({
         categorySourcePool,
         todayKey,
         tomorrowKey,
-        nextWeekKey,
+        weekEndKey,
       ),
-    [categorySourcePool, todayKey, tomorrowKey, nextWeekKey],
+    [categorySourcePool, todayKey, tomorrowKey, weekEndKey],
   );
 
   const derivedDateRange = useMemo<SearchFilters["dateRange"]>(() => {
@@ -261,34 +268,25 @@ export function useEventBrowserState({
   );
 
   const inferredTopicSlug = activePlan?.filters.topic;
-  const searchDismissedKeys = useMemo(() => {
-    const keys = dismissedKeysForExplicitTopic(
+  const searchDismissedKeys = useMemo(
+    () =>
+      dismissedKeysForExplicitFilters(
+        activePlan,
+        {
+          topic: filters.topic,
+          category: filters.category === "All" ? null : filters.category,
+          source: filters.source === "All" ? null : filters.source,
+        },
+        dismissedInterpretationKeys,
+      ),
+    [
       activePlan,
-      filters.topic,
       dismissedInterpretationKeys,
-    );
-    if (
-      activePlan?.filters.category &&
-      filters.category !== "All" &&
-      activePlan.filters.category !== filters.category
-    ) {
-      keys.add(`category:${activePlan.filters.category}`);
-    }
-    if (
-      activePlan?.filters.source &&
-      filters.source !== "All" &&
-      activePlan.filters.source !== filters.source
-    ) {
-      keys.add(`source:${activePlan.filters.source}`);
-    }
-    return keys;
-  }, [
-    activePlan,
-    dismissedInterpretationKeys,
-    filters.category,
-    filters.source,
-    filters.topic,
-  ]);
+      filters.category,
+      filters.source,
+      filters.topic,
+    ],
+  );
 
   const availabilityDismissedKeys = useMemo(() => {
     const keys = new Set(searchDismissedKeys);
@@ -329,9 +327,9 @@ export function useEventBrowserState({
         availabilityOutput.results,
         todayKey,
         tomorrowKey,
-        nextWeekKey,
+        weekEndKey,
       ),
-    [availabilityOutput.results, todayKey, tomorrowKey, nextWeekKey],
+    [availabilityOutput.results, todayKey, tomorrowKey, weekEndKey],
   );
 
   const topicCounts = useMemo(
@@ -396,8 +394,12 @@ export function useEventBrowserState({
   ]);
 
   const filteredEvents = useMemo(
-    () => sortEventsChronologically(searchOutput.results),
-    [searchOutput.results],
+    () =>
+      sortEventsChronologically(
+        searchOutput.results,
+        dateRangeStartKey(effectiveDateRange, todayKey),
+      ),
+    [effectiveDateRange, searchOutput.results, todayKey],
   );
 
   useEffect(() => {

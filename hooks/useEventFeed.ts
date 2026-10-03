@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ALL_SOURCES, SOURCE_LABELS } from "../appConfig";
 import type { SourceOption } from "../appConfig";
@@ -25,8 +25,12 @@ interface EventFeedState {
   loadEvents: () => Promise<void>;
 }
 
+// The index is about 180 KB gzipped. A slow phone link needs more than a
+// few seconds, and Fuse-only search caps hits and ignores field weights.
+const SEARCH_INDEX_TIMEOUT_MS = 10_000;
+
 async function fetchOptionalSearchIndex(
-  timeoutMs = 3000,
+  timeoutMs = SEARCH_INDEX_TIMEOUT_MS,
 ): Promise<SearchIndex | null> {
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
@@ -57,7 +61,12 @@ function assertValidEventsPayload(
   }
 }
 
-export function useEventFeed(): EventFeedState {
+/**
+ * Loads the published feed. `needsSearchIndex` is true once the visitor has
+ * typed a query of two or more characters. A failed index load then gets one
+ * more try.
+ */
+export function useEventFeed(needsSearchIndex = false): EventFeedState {
   const [allEvents, setAllEvents] = useState<CalEvent[]>([]);
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [dataAgeHours, setDataAgeHours] = useState(0);
@@ -69,6 +78,23 @@ export function useEventFeed(): EventFeedState {
   const [searchIndex, setSearchIndex] = useState<SearchIndex | null>(null);
   const [topicVocabulary, setTopicVocabulary] =
     useState<TopicVocabulary | null>(null);
+  // Id of the index request that failed last, or 0. An id rather than a
+  // flag, so a failure after a reload still reaches the retry effect.
+  const [failedIndexRequest, setFailedIndexRequest] = useState(0);
+  const searchIndexRequest = useRef(0);
+  const searchIndexRetried = useRef(false);
+
+  const loadSearchIndex = useCallback(() => {
+    const request = ++searchIndexRequest.current;
+    void fetchOptionalSearchIndex().then((index) => {
+      // A reload or retry that started later owns the result.
+      if (request !== searchIndexRequest.current) return;
+      // Set unconditionally (even on null) so a reload whose index fetch
+      // fails clears the now-stale index rather than serving old postings.
+      setSearchIndex(index);
+      setFailedIndexRequest(index === null ? request : 0);
+    });
+  }, []);
 
   const loadEvents = useCallback(async () => {
     setLoading(LoadingState.LOADING);
@@ -85,8 +111,8 @@ export function useEventFeed(): EventFeedState {
     }
 
     // Render the list as soon as events.json resolves. First paint must not
-    // wait on the ~215KB search index, which is only needed once a query
-    // reaches 2+ characters.
+    // wait on the search index, which is only needed once a query reaches 2+
+    // characters.
     setAllEvents(data.events);
     setTopicVocabulary(data.topic_vocabulary ?? null);
     setLastUpdated(data.lastUpdated ?? null);
@@ -99,10 +125,21 @@ export function useEventFeed(): EventFeedState {
     setStatusReport(data.status || null);
     setLoading(LoadingState.SUCCESS);
 
-    // Set unconditionally (even on null) so a reload whose index fetch fails
-    // clears the now-stale index rather than serving outdated postings.
-    void fetchOptionalSearchIndex().then(setSearchIndex);
-  }, []);
+    searchIndexRetried.current = false;
+    loadSearchIndex();
+  }, [loadSearchIndex]);
+
+  useEffect(() => {
+    if (
+      !needsSearchIndex ||
+      !failedIndexRequest ||
+      searchIndexRetried.current
+    ) {
+      return;
+    }
+    searchIndexRetried.current = true;
+    loadSearchIndex();
+  }, [needsSearchIndex, failedIndexRequest, loadSearchIndex]);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {

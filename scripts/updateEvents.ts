@@ -3,12 +3,9 @@
  * to the legacy CalEvent shape, write public/events.json + public/status.json.
  *
  * Source priority (configured in scripts/lib/dedupe.ts):
- *   livewhale        (structured iCal, official campus calendar) >
- *   callink          (CampusGroups JSON API, student org events) =
- *   cal_performances (WP REST API, arts presenter) =
- *   calbears         (athletics iCal) =
- *   bampfa           (HTML scraper, art museum & film archive)
- *   ai_risk          (JS schedule scrape, Berkeley AI Risk speaker series)
+ *   livewhale (4), the official campus iCal feed, outranks the other 11,
+ *   which share priority 3: callink, cal_performances, calbears, bampfa,
+ *   haas, berkeley_law, simons, luma, begin, ai_risk, brsl.
  *
  * Failure handling: each source is independent. If a source throws, we
  * record it in status.json and continue. We refuse to overwrite a healthy
@@ -33,9 +30,13 @@ import type {
 } from "./lib/schema.js";
 import { PublishedEventsPayloadSchema } from "./lib/schema.js";
 import type { FetchOptions } from "./lib/abort.js";
-import { dedupeEvents } from "./lib/dedupe.js";
+import { dedupeEvents, dedupeRestoredEvents } from "./lib/dedupe.js";
 import { collapseMultiDay } from "./lib/collapseMultiDay.js";
-import { projectToLegacy, todayPT } from "./lib/normalize.js";
+import {
+  projectToLegacy,
+  todayPT,
+  withSpanOccurrences,
+} from "./lib/normalize.js";
 import { atomicWriteJsonSync } from "./lib/atomicWrite.js";
 import {
   CRITICAL_SOURCES,
@@ -43,11 +44,14 @@ import {
 } from "./lib/feedHealthPolicy.js";
 import {
   CANCELED_TITLE_PATTERN,
-  appendLastGoodEvents,
+  FALLBACK_POLICIES,
+  emptyRecoveryState,
+  markRecovery,
+  type PreviousSourceHealth,
+  type RecoveryState,
 } from "./lib/lastGoodFallback.js";
 import { fetchLiveWhale } from "./sources/livewhale.js";
 
-const LIVEWHALE_HEALTHY_THRESHOLD = 100;
 import { fetchCallink } from "./sources/callink.js";
 import { fetchCalPerformances } from "./sources/cal_performances.js";
 import { fetchCalBears } from "./sources/calbears.js";
@@ -58,7 +62,7 @@ import {
   fetchBegin,
   fetchBrsl,
 } from "./sources/tribe.js";
-import { fetchSimons } from "./sources/simons.js";
+import { fetchSimons, SIMONS_ADAPTER_TIMEOUT_MS } from "./sources/simons.js";
 import { fetchLuma } from "./sources/luma.js";
 import { fetchAiRisk } from "./sources/ai_risk.js";
 import { buildSearchIndex } from "./lib/buildIndex.js";
@@ -132,50 +136,6 @@ interface AdapterRun {
   groupFeedsDegraded?: boolean;
 }
 
-interface RecoveryState {
-  fallbackSources: Set<SourceName>;
-  degradedSources: Set<SourceName>;
-  /** Sources whose last-good data was too old to republish, so it was dropped. */
-  staleFallbackSources: Set<SourceName>;
-  degradedReasons: Set<string>;
-  lastGoodUsed: number;
-  fallbackAgeHours?: number;
-  restoredIds: Set<string>;
-}
-
-interface RecoveryPolicy {
-  allowLastGood: boolean;
-  degradeOnFailure: boolean;
-  minHealthyCount?: number;
-}
-
-const FALLBACK_POLICIES: Partial<Record<SourceName, RecoveryPolicy>> = {
-  livewhale: {
-    allowLastGood: true,
-    degradeOnFailure: true,
-    minHealthyCount: LIVEWHALE_HEALTHY_THRESHOLD,
-  },
-  callink: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
-  cal_performances: {
-    allowLastGood: true,
-    degradeOnFailure: true,
-    minHealthyCount: 1,
-  },
-  calbears: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
-  bampfa: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
-  haas: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
-  berkeley_law: {
-    allowLastGood: true,
-    degradeOnFailure: true,
-    minHealthyCount: 1,
-  },
-  simons: { allowLastGood: true, degradeOnFailure: true, minHealthyCount: 1 },
-  luma: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
-  begin: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
-  ai_risk: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
-  brsl: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
-};
-
 async function runAdapter<
   T extends {
     events: CanonicalEvent[];
@@ -241,88 +201,33 @@ function loadExistingEvents(): {
   }
 }
 
-function fallbackAgeHours(lastUpdated: number | undefined): number | undefined {
-  if (!lastUpdated) return undefined;
-  const age = (Date.now() - lastUpdated) / 3_600_000;
-  return Number.isFinite(age) && age >= 0
-    ? Math.round(age * 10) / 10
-    : undefined;
-}
-
-function markRecovery(
-  run: AdapterRun,
-  legacy: LegacyCalEvent[],
-  existing: { events: LegacyCalEvent[]; lastUpdated?: number },
-  recovery: RecoveryState,
-  today: string,
-): void {
-  const policy = FALLBACK_POLICIES[run.status.name];
-  const belowHealthyThreshold =
-    typeof policy?.minHealthyCount === "number" &&
-    run.status.ok &&
-    run.status.count < policy.minHealthyCount;
-  const degraded = !run.status.ok || belowHealthyThreshold;
-  if (!degraded) return;
-
-  if (!policy?.degradeOnFailure) {
-    return;
-  }
-
-  run.status.degraded = true;
-
-  const reason = !run.status.ok
-    ? `${run.status.name} failed: ${run.status.error ?? "unknown error"}`
-    : `${run.status.name} returned ${run.status.count} events (below healthy threshold ${policy?.minHealthyCount})`;
-  run.status.degraded_reason = reason;
-  recovery.degradedSources.add(run.status.name);
-  recovery.degradedReasons.add(reason);
-
-  if (!policy?.allowLastGood) return;
-
-  // Expired last-good data must never be republished as if it were fresh, but
-  // that is this source's problem alone. Drop its events and keep going: a
-  // supplementary feed sitting on stale fallback should cost us that feed, not
-  // the fresh events every other source just returned. Only a critical source
-  // in this state blocks the publish (see dataQualityFailure).
-  const ageHours = fallbackAgeHours(existing.lastUpdated);
-  if (typeof ageHours === "number" && ageHours > MAX_FALLBACK_AGE_HOURS) {
-    const staleReason = `${run.status.name} fallback expired (${ageHours}h old, exceeding ${MAX_FALLBACK_AGE_HOURS}h); last-good events dropped`;
-    run.status.fallback_expired = true;
-    run.status.fallback_age_hours = ageHours;
-    run.status.degraded_reason = `${reason}; ${staleReason}`;
-    recovery.staleFallbackSources.add(run.status.name);
-    recovery.degradedReasons.add(staleReason);
-    console.warn(`[orchestrator] ${staleReason}`);
-    return;
-  }
-
-  const beforeIds = new Set(legacy.map((event) => event.id));
-  const restored = appendLastGoodEvents(
-    legacy,
-    existing.events,
-    run.status.name,
-    today,
-  );
-  if (restored > 0) {
-    for (const event of legacy) {
-      if (!beforeIds.has(event.id)) {
-        recovery.restoredIds.add(event.id);
-      }
+/** Each source's carried health fields from the previous status.json. */
+function loadPreviousHealth(): Map<string, PreviousSourceHealth> {
+  try {
+    const previous = JSON.parse(fs.readFileSync(statusOutPath, "utf-8")) as {
+      sources?: Array<{
+        name?: unknown;
+        last_healthy_at?: unknown;
+        consecutive_failures?: unknown;
+      }>;
+    };
+    const health = new Map<string, PreviousSourceHealth>();
+    for (const source of previous.sources ?? []) {
+      if (typeof source.name !== "string") continue;
+      health.set(source.name, {
+        last_healthy_at:
+          typeof source.last_healthy_at === "string"
+            ? source.last_healthy_at
+            : undefined,
+        consecutive_failures:
+          typeof source.consecutive_failures === "number"
+            ? source.consecutive_failures
+            : undefined,
+      });
     }
-    run.status.fallback_used = true;
-    run.status.fallback_count = restored;
-    run.status.fallback_age_hours = ageHours;
-    recovery.fallbackSources.add(run.status.name);
-    recovery.lastGoodUsed += restored;
-    if (typeof ageHours === "number") {
-      recovery.fallbackAgeHours =
-        typeof recovery.fallbackAgeHours === "number"
-          ? Math.max(recovery.fallbackAgeHours, ageHours)
-          : ageHours;
-    }
-    console.warn(
-      `[orchestrator] Fallback restored ${restored} last-good ${run.status.name} events.`,
-    );
+    return health;
+  } catch {
+    return new Map();
   }
 }
 
@@ -334,17 +239,16 @@ function markRecovery(
 function runAdapterWithTimeout(
   name: SourceName,
   fn: (options: FetchOptions) => Promise<{ events: CanonicalEvent[] }>,
+  timeoutMs = ADAPTER_TIMEOUT_MS,
 ): Promise<AdapterRun> {
   const controller = new AbortController();
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, reject) => {
     timeoutId = setTimeout(() => {
-      const error = new Error(
-        `${name} timed out after ${ADAPTER_TIMEOUT_MS}ms`,
-      );
+      const error = new Error(`${name} timed out after ${timeoutMs}ms`);
       controller.abort(error);
       reject(error);
-    }, ADAPTER_TIMEOUT_MS);
+    }, timeoutMs);
   });
 
   return Promise.race([
@@ -359,7 +263,7 @@ function runAdapterWithTimeout(
           name,
           ok: false,
           count: 0,
-          duration_ms: ADAPTER_TIMEOUT_MS,
+          duration_ms: timeoutMs,
           error: message,
           fetched_at: new Date().toISOString(),
         },
@@ -435,8 +339,8 @@ function dataQualityFailure(recovery: RecoveryState): string | null {
 async function main(): Promise<void> {
   const existing = loadExistingEvents();
 
-  // Each adapter is wrapped in a 60 s timeout so a hanging source cannot
-  // block the entire pipeline. Promise.allSettled ensures one timeout does
+  // Each adapter is wrapped in a 60 s timeout, or its own budget, so a hanging
+  // source cannot block the entire pipeline. Promise.allSettled ensures one timeout does
   // not cancel the others.
   const adapterRuns: Array<{ name: SourceName; promise: Promise<AdapterRun> }> =
     [
@@ -465,7 +369,14 @@ async function main(): Promise<void> {
         name: "berkeley_law",
         promise: runAdapterWithTimeout("berkeley_law", fetchBerkeleyLaw),
       },
-      { name: "simons", promise: runAdapterWithTimeout("simons", fetchSimons) },
+      {
+        name: "simons",
+        promise: runAdapterWithTimeout(
+          "simons",
+          fetchSimons,
+          SIMONS_ADAPTER_TIMEOUT_MS,
+        ),
+      },
       { name: "luma", promise: runAdapterWithTimeout("luma", fetchLuma) },
       { name: "begin", promise: runAdapterWithTimeout("begin", fetchBegin) },
       {
@@ -514,7 +425,12 @@ async function main(): Promise<void> {
 
   const cappedReasons = capSourceEvents(runs);
 
-  const allCanonical: CanonicalEvent[] = runs.flatMap((r) => r.events);
+  // Adapters keep a span that started earlier but is still running. Give it
+  // one occurrence per remaining day before collapse and dedupe read dates.
+  const today = todayPT();
+  const allCanonical: CanonicalEvent[] = runs
+    .flatMap((r) => r.events)
+    .map((event) => withSpanOccurrences(event, today));
   const groundingSources: PublishedSource[] = runs.flatMap(
     (r) => r.groundingSources ?? [],
   );
@@ -565,18 +481,29 @@ async function main(): Promise<void> {
     return published;
   });
 
-  const recovery: RecoveryState = {
-    fallbackSources: new Set<SourceName>(),
-    degradedSources: new Set<SourceName>(),
-    staleFallbackSources: new Set<SourceName>(),
-    degradedReasons: new Set<string>(),
-    lastGoodUsed: 0,
-    restoredIds: new Set<string>(),
-  };
+  const recovery = emptyRecoveryState();
 
-  const today = todayPT();
+  const recoveryContext = {
+    legacy,
+    existing,
+    previousHealth: loadPreviousHealth(),
+    recovery,
+    today,
+    maxFallbackAgeHours: MAX_FALLBACK_AGE_HOURS,
+  };
   for (const run of runs) {
-    markRecovery(run, legacy, existing, recovery, today);
+    markRecovery(
+      run.status,
+      FALLBACK_POLICIES[run.status.name],
+      recoveryContext,
+    );
+  }
+  const beforeRestoreDedupe = legacy.length;
+  legacy = dedupeRestoredEvents(legacy, recovery.restoredIds, today);
+  if (legacy.length < beforeRestoreDedupe) {
+    console.log(
+      `[orchestrator] dedupe after restore removed ${beforeRestoreDedupe - legacy.length}`,
+    );
   }
   for (const [name, reason] of cappedReasons) {
     recovery.degradedSources.add(name);
@@ -634,7 +561,7 @@ async function main(): Promise<void> {
     },
     {
       title: "Berkeley AI Risk Speaker Series",
-      uri: "https://ai-risk.berkeley.edu/speaker-series.html",
+      uri: "https://ai-risk.berkeley.edu/#upcoming",
     },
     {
       title: "Berkeley Risk and Security Lab Events",

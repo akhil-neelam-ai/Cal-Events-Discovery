@@ -4,8 +4,9 @@ import { tokenize, stem } from "./textUtils";
 import {
   addDaysToDateKey,
   daysBetweenDateKeys,
+  firstOccurrenceInRange,
   getCurrentPacificDateKey,
-  getPacificDateKey,
+  occurrenceDateKeys,
   sortEventsChronologically,
 } from "./eventDates";
 import type { SearchIndex } from "./textUtils";
@@ -29,7 +30,7 @@ export type {
 } from "./searchIntent";
 export {
   buildSearchPlan,
-  dismissedKeysForExplicitTopic,
+  dismissedKeysForExplicitFilters,
   resolvePlanTopics,
 } from "./searchIntent";
 
@@ -84,10 +85,11 @@ const W = {
   synMultiplier: 0.55, // synonyms score lower than core tokens
 } as const;
 
-function recencyBonus(dateStr: string): number {
-  const eventKey = getPacificDateKey(dateStr);
+function recencyBonus(event: CalEvent): number {
+  const todayKey = getCurrentPacificDateKey();
+  const eventKey = firstOccurrenceInRange(event, todayKey);
   if (!eventKey) return 0;
-  const days = daysBetweenDateKeys(getCurrentPacificDateKey(), eventKey);
+  const days = daysBetweenDateKeys(todayKey, eventKey);
   if (days === null || days < 0 || days > 30) return 0;
   return Math.round(W.recency * (1 - days / 30));
 }
@@ -265,11 +267,36 @@ function scoreEvent(
     }
   }
 
-  score += recencyBonus(ev.date);
+  score += recencyBonus(ev);
   return score;
 }
 
 // ─── Pool filters (hard constraints from plan) ────────────────────────────────
+
+// Dedupe keeps the LiveWhale copy of an event that an institution also lists
+// in its own feed. LiveWhale files that copy under the institution's unit
+// name, so a source word matches the unit name as well as the feed.
+const SOURCE_ORGANIZERS: Partial<Record<string, string>> = {
+  bampfa: "bampfa",
+  berkeley_law: "berkeley law",
+  cal_performances: "cal performances",
+  calbears: "cal athletics",
+  haas: "berkeley haas",
+  simons: "simons institute",
+};
+
+/** True when an event comes from, or is run by, a source named in a query. */
+function matchesSourceIntent(
+  event: Pick<CalEvent, "source" | "organizer">,
+  source: string,
+): boolean {
+  if (event.source === source) return true;
+  const organizer = SOURCE_ORGANIZERS[source];
+  return (
+    organizer !== undefined &&
+    (event.organizer ?? "").trim().toLowerCase() === organizer
+  );
+}
 
 function applyPoolFilters(
   events: CalEvent[],
@@ -286,7 +313,7 @@ function applyPoolFilters(
     if (
       filters.source &&
       !dismissedKeys.has(`source:${filters.source}`) &&
-      ev.source !== filters.source
+      !matchesSourceIntent(ev, filters.source)
     ) {
       return false;
     }
@@ -325,11 +352,11 @@ function applyPoolFilters(
       }
     }
 
-    if (weekendKeys) {
-      const eventDateKey = getPacificDateKey(ev.date);
-      if (!eventDateKey || !weekendKeys.has(eventDateKey)) {
-        return false;
-      }
+    if (
+      weekendKeys &&
+      !occurrenceDateKeys(ev).some((key) => weekendKeys.has(key))
+    ) {
+      return false;
     }
 
     // Time-of-day: soft hard filter — only when explicitly detected
@@ -381,7 +408,7 @@ function runScoring(
   // When the query is purely a temporal/intent signal (e.g. "today", "this week"),
   // cleaned produces no keywords. Return pool unscored — date filtering happens in App.
   if (plan.expandedTokens.length === 0 && plan.phrases.length === 0)
-    return sortEventsChronologically(pool);
+    return sortEventsChronologically(pool, getCurrentPacificDateKey());
 
   const eventMap = new Map(pool.map((e) => [e.id, e]));
   const scored = new Map<string, { event: CalEvent; score: number }>();
@@ -497,7 +524,7 @@ function runScoring(
         const relevance =
           Math.round((1 - (fs ?? 1)) * 40) +
           phraseBoost(item, plan) +
-          recencyBonus(item.date);
+          recencyBonus(item);
         const existing = scored.get(item.id);
         if (existing) {
           existing.score += relevance;
@@ -550,36 +577,20 @@ export function searchEvents(
 
   // Fallback: empty result sets can broaden and explain.
   if (results.length === 0) {
-    // Try broadening date range
-    if (plan.filters.dateRange && plan.filters.dateRange !== "upcoming") {
-      const relaxedPlan: SearchPlan = {
-        ...plan,
-        filters: {
-          ...plan.filters,
-          dateRange:
-            plan.filters.dateRange === "today" ||
-            plan.filters.dateRange === "tomorrow"
-              ? "week"
-              : "upcoming",
-        },
-      };
-      if (plan.filters.weekend) {
-        delete relaxedPlan.filters.weekend;
-      }
+    // The weekend is the only date filter applied here. Callers narrow the
+    // pool to the date range before they search, so relaxing the range here
+    // would change nothing.
+    if (plan.filters.weekend) {
+      const relaxedPlan: SearchPlan = { ...plan, filters: { ...plan.filters } };
+      delete relaxedPlan.filters.weekend;
       const fallbackPool = applyPoolFilters(events, relaxedPlan, dismissedKeys);
       const fallbackResults = runScoring(fallbackPool, relaxedPlan, index);
       if (fallbackResults.length > 0) {
-        const rangeLabel =
-          plan.filters.dateRange === "today"
-            ? "today"
-            : plan.filters.dateRange === "tomorrow"
-              ? "tomorrow"
-              : "this week";
         return {
           results: fallbackResults,
           plan: relaxedPlan,
           fallbackUsed: true,
-          fallbackMessage: `No matches for "${plan.keywords.join(" ")}" ${rangeLabel}. Showing upcoming results instead.`,
+          fallbackMessage: `No matches for "${plan.keywords.join(" ")}" this weekend. Showing other dates instead.`,
         };
       }
     }

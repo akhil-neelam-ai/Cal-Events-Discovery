@@ -2,15 +2,16 @@ import { ALL_SOURCES, Categories, DEFAULT_FILTERS } from "../appConfig";
 import type { CalEvent, SearchFilters, SearchResponse } from "../types";
 import {
   addDaysToDateKey,
+  firstOccurrenceInRange,
   getCurrentPacificDateKey,
-  getPacificDateKey,
   sortEventsChronologically,
+  weekEndKey,
 } from "../utils/eventDates";
 import { getDirectionsUrl } from "../utils/eventPresentation";
 import { buildEventIcs, buildGoogleCalendarUrl } from "../utils/icsExport";
 import {
   buildSearchPlan,
-  dismissedKeysForExplicitTopic,
+  dismissedKeysForExplicitFilters,
   searchEvents,
 } from "../utils/searchEngine";
 import type { SearchTopicDefinition } from "../utils/searchIntent";
@@ -57,6 +58,9 @@ function summarizeEvent(event: CalEvent) {
     id: event.id,
     title: event.title,
     date: event.date,
+    // Multi-day events only. A date window should match against `dates`.
+    end_date: event.end_date,
+    dates: event.dates,
     time: event.time,
     location: event.location,
     organizer: event.organizer,
@@ -91,7 +95,7 @@ function resolveDatePreset(
     return { startDate: tomorrow, endDate: tomorrow };
   }
   if (preset === "week") {
-    return { startDate: todayKey, endDate: addDaysToDateKey(todayKey, 6) };
+    return { startDate: todayKey, endDate: weekEndKey(todayKey) };
   }
   return { startDate: todayKey };
 }
@@ -171,16 +175,14 @@ function getPublishedTopics(payload: EventsPayload): SearchTopicDefinition[] {
     }));
 }
 
+// A multi-day event matches when any day in `dates` falls inside the bounds,
+// the same rule the UI date views use.
 function eventMatchesDateBounds(
   event: CalEvent,
   startDate?: string,
   endDate?: string,
 ): boolean {
-  const key = getPacificDateKey(event.date);
-  if (!key) return false;
-  if (startDate && key < startDate) return false;
-  if (endDate && key > endDate) return false;
-  return true;
+  return firstOccurrenceInRange(event, startDate, endDate) !== null;
 }
 
 function validateTopic(
@@ -325,7 +327,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
           type: "string",
           pattern: "^\\d{4}-\\d{2}-\\d{2}$",
           description:
-            "Optional inclusive Pacific date lower bound in YYYY-MM-DD.",
+            "Optional inclusive Pacific date lower bound in YYYY-MM-DD. Defaults to today, as in the UI.",
         },
         endDate: {
           type: "string",
@@ -346,18 +348,23 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
       input = input ?? {};
 
       const preset = resolveDatePreset(input.datePreset);
+      // With no lower bound, rows the feed still holds from yesterday would
+      // sort first before each morning's publish. The UI never shows them.
       const startDate =
         typeof input.startDate === "string"
           ? input.startDate
-          : (preset?.startDate ?? undefined);
+          : (preset?.startDate ?? getCurrentPacificDateKey());
       const endDate =
         typeof input.endDate === "string"
           ? input.endDate
           : (preset?.endDate ?? undefined);
 
       if (startDate && endDate && startDate > endDate) {
+        const startGiven = typeof input.startDate === "string" || preset;
         return {
-          error: "startDate must be earlier than or equal to endDate",
+          error: startGiven
+            ? "startDate must be earlier than or equal to endDate"
+            : "endDate is before today. Pass startDate to search earlier days.",
           count: 0,
           events: [],
         };
@@ -389,7 +396,13 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         query.length >= 2
           ? buildSearchPlan(query, { topics: publishedTopics })
           : null;
-      const dismissedKeys = dismissedKeysForExplicitTopic(plan, topic);
+      // The same rule as the UI: an explicit filter dismisses a different
+      // one the query implies.
+      const dismissedKeys = dismissedKeysForExplicitFilters(plan, {
+        topic,
+        category,
+        source,
+      });
 
       const pool = allEvents.filter((event) => {
         const primaryCategory = event.tags?.[0]?.toLowerCase() ?? "";
@@ -405,7 +418,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
       let ranked: CalEvent[];
       let fallbackUsed = false;
       if (query.length < 2) {
-        ranked = sortEventsChronologically(pool);
+        ranked = sortEventsChronologically(pool, startDate);
       } else {
         const output = searchEvents(pool, query, index, dismissedKeys, {
           topics: publishedTopics,
@@ -426,6 +439,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
                 .toLowerCase()
                 .includes(needle),
             ),
+            startDate,
           );
         }
       }

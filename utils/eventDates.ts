@@ -104,6 +104,14 @@ export function addDaysToDateKey(dateKey: string, days: number): string {
   return shifted.toISOString().slice(0, 10);
 }
 
+/**
+ * The last day of "This Week": today plus six more days. The UI bucket, the
+ * "N dates this week" label, and the agent's week preset all use it.
+ */
+export function weekEndKey(todayKey: string): string {
+  return addDaysToDateKey(todayKey, 6);
+}
+
 export function formatPacificDateTime(timestamp: number): string {
   return PACIFIC_SYNC_FORMATTER.format(new Date(timestamp));
 }
@@ -202,17 +210,18 @@ export function formatMultiDayWhen(
   event: Pick<CalEvent, "date" | "end_date" | "dates">,
   now = new Date(),
   dateRange?: string,
+  syncedTodayKey?: string,
 ): string | null {
   const dates = event.dates;
   if (!dates || dates.length < 2) return null;
 
-  const todayKey = getCurrentPacificDateKey(now);
+  const todayKey = syncedTodayKey ?? getCurrentPacificDateKey(now);
 
   // In the "This Week" view, a gappy/recurring run is most useful framed as how
   // many days it actually occurs within the next 7 days. Continuous runs keep
   // the span label below ("Through Aug 31"), which reads better for an exhibit.
   if (dateRange === "week" && !isContiguousRun(dates)) {
-    const weekEnd = addDaysToDateKey(todayKey, 6);
+    const weekEnd = weekEndKey(todayKey);
     const inWeek = dates.filter((d) => d >= todayKey && d <= weekEnd).length;
     if (inWeek > 0) {
       return `${inWeek} ${inWeek === 1 ? "date" : "dates"} this week`;
@@ -241,7 +250,7 @@ export function formatRelativeEventDate(
   // real time for callers (and tests) that don't thread it.
   syncedTodayKey?: string,
 ): string {
-  const multiDay = formatMultiDayWhen(event, now, dateRange);
+  const multiDay = formatMultiDayWhen(event, now, dateRange, syncedTodayKey);
   if (multiDay) return multiDay;
 
   const dateKey = getPacificDateKey(event.date);
@@ -251,7 +260,8 @@ export function formatRelativeEventDate(
 
   const todayKey = syncedTodayKey ?? getCurrentPacificDateKey(now);
   const tomorrowKey = addDaysToDateKey(todayKey, 1);
-  const weekOutKey = addDaysToDateKey(todayKey, 7);
+  // A weekday name is unambiguous only inside the 7-day week.
+  const weekOutKey = weekEndKey(todayKey);
   const timeLabel = formatCardTime(event.time);
 
   if (dateKey === todayKey) {
@@ -318,39 +328,75 @@ export function formatEventDate(dateString: string): string {
   return `${day}${ordinal(day)} ${MONTHS[month - 1]}`;
 }
 
-export function filterEventsByDateRange(
-  events: CalEvent[],
-  dateRange: SearchFilters["dateRange"],
-  todayKey: string,
-  nextWeekKey: string,
-  tomorrowKey?: string,
-): CalEvent[] {
-  return events.filter((event) => {
-    const eventDateKey = getPacificDateKey(event.date);
-    if (!eventDateKey) {
-      return false;
-    }
-
-    if (dateRange === "today") {
-      return eventDateKey === todayKey;
-    }
-
-    if (dateRange === "tomorrow") {
-      return eventDateKey === (tomorrowKey ?? addDaysToDateKey(todayKey, 1));
-    }
-
-    if (dateRange === "week") {
-      return eventDateKey >= todayKey && eventDateKey <= nextWeekKey;
-    }
-
-    return eventDateKey >= todayKey;
-  });
+/**
+ * Every PT day an event occurs on. A collapsed multi-day event lists them in
+ * `dates`, and its `date` is only the first day left when the feed was
+ * published. A single-day event has just `date`.
+ */
+export function occurrenceDateKeys(
+  event: Pick<CalEvent, "date" | "dates">,
+): string[] {
+  if (event.dates && event.dates.length > 0) {
+    return event.dates;
+  }
+  const key = getPacificDateKey(event.date);
+  return key ? [key] : [];
 }
 
-export function sortEventsChronologically(events: CalEvent[]): CalEvent[] {
+/**
+ * The earliest day in [startKey, endKey] on which the event occurs, or null
+ * when it has none. Either bound may be left open.
+ */
+export function firstOccurrenceInRange(
+  event: Pick<CalEvent, "date" | "dates">,
+  startKey?: string,
+  endKey?: string,
+): string | null {
+  let first: string | null = null;
+  for (const key of occurrenceDateKeys(event)) {
+    if (startKey && key < startKey) continue;
+    if (endKey && key > endKey) continue;
+    if (first === null || key < first) first = key;
+  }
+  return first;
+}
+
+/**
+ * The day an event is listed under: its first occurrence on or after
+ * `fromKey`, or its own date when it has none.
+ */
+export function listingDateKey(
+  event: Pick<CalEvent, "date" | "dates">,
+  fromKey?: string,
+): string {
+  return (
+    (fromKey && firstOccurrenceInRange(event, fromKey)) ||
+    getPacificDateKey(event.date)
+  );
+}
+
+/** The first day a date-range view shows. */
+export function dateRangeStartKey(
+  dateRange: SearchFilters["dateRange"],
+  todayKey: string,
+): string {
+  return dateRange === "tomorrow" ? addDaysToDateKey(todayKey, 1) : todayKey;
+}
+
+/**
+ * Sorts by listing day, then time, then title. Pass `fromKey` so a multi-day
+ * event sorts by its next occurrence instead of a day already past.
+ */
+export function sortEventsChronologically(
+  events: CalEvent[],
+  fromKey?: string,
+): CalEvent[] {
+  const listingKeys = new Map(
+    events.map((event) => [event, listingDateKey(event, fromKey)]),
+  );
   return [...events].sort((left, right) => {
-    const leftDateKey = getPacificDateKey(left.date);
-    const rightDateKey = getPacificDateKey(right.date);
+    const leftDateKey = listingKeys.get(left) ?? "";
+    const rightDateKey = listingKeys.get(right) ?? "";
     if (!leftDateKey && rightDateKey) return 1;
     if (leftDateKey && !rightDateKey) return -1;
     const dateCompare = (leftDateKey || "").localeCompare(rightDateKey || "");
@@ -392,14 +438,20 @@ function timeSortValue(time: string | undefined): number {
   return hour * 60 + minute;
 }
 
+/**
+ * Groups events by listing day. `fromKey` is the first day of the active
+ * view, so an exhibit that runs today and tomorrow sits under Tomorrow in
+ * the Tomorrow view.
+ */
 export function buildEventGroups(
   events: CalEvent[],
   syncedTodayKey?: string,
+  fromKey?: string,
 ): EventGroup[] {
   const groups: EventGroup[] = [];
 
-  for (const event of sortEventsChronologically(events)) {
-    const dateKey = getPacificDateKey(event.date);
+  for (const event of sortEventsChronologically(events, fromKey)) {
+    const dateKey = listingDateKey(event, fromKey);
     const last = groups[groups.length - 1];
 
     if (last && last.dateKey === dateKey) {
