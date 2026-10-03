@@ -79,6 +79,7 @@ export default function App() {
     loading,
     statusReport,
     searchIndex,
+    searchIndexSettled,
     topicVocabulary,
     sourceOptions,
     sourceCount,
@@ -96,18 +97,19 @@ export default function App() {
     initialUrlState.hasExplicitDateRange,
   );
   const showBackToTop = useBackToTopVisibility();
-  const feedSettled =
-    loading === LoadingState.SUCCESS || loading === LoadingState.ERROR;
+  // Only a successful load knows the vocabulary. A failed load keeps a URL
+  // topic provisional, so Retry can still apply it.
+  const feedLoaded = loading === LoadingState.SUCCESS;
   const allowedTopicSlugs = useMemo(
     () =>
-      feedSettled
+      feedLoaded
         ? (topicVocabulary?.topics.map((topic) => topic.slug) ?? [])
         : null,
-    [feedSettled, topicVocabulary],
+    [feedLoaded, topicVocabulary],
   );
   const topicDefinitions = useMemo(
-    () => (feedSettled ? (topicVocabulary?.topics ?? []) : null),
-    [feedSettled, topicVocabulary],
+    () => (feedLoaded ? (topicVocabulary?.topics ?? []) : null),
+    [feedLoaded, topicVocabulary],
   );
 
   const handleEventClick = useCallback(
@@ -255,6 +257,7 @@ export default function App() {
     filters: browserStateFilters,
     liveSearchQuery: filters.searchQuery,
     searchIndex,
+    searchIndexSettled,
     dismissedInterpretationKeys,
     selectedEventId,
     todayKey,

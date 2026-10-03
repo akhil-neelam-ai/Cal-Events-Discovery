@@ -33,6 +33,7 @@ type MockFeedState = {
   loading: LoadingState;
   statusReport: null;
   searchIndex: SearchIndex | null;
+  searchIndexSettled: boolean;
   topicVocabulary: typeof TOPIC_VOCABULARY | null;
   sourceOptions: Array<{ value: string; label: string; count: number }>;
   sourceCount: number;
@@ -139,6 +140,7 @@ function makeFeedState(
     loading: LoadingState.SUCCESS,
     statusReport: null,
     searchIndex: null,
+    searchIndexSettled: true,
     topicVocabulary: TOPIC_VOCABULARY,
     sourceOptions: buildSourceOptions(events),
     sourceCount: Math.max(
@@ -1456,6 +1458,141 @@ describe("App UI regressions", () => {
 
     expect(screen.getByText("Today Law Lunch")).toBeInTheDocument();
     expect(screen.queryByText("May AI Summit")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'No "AI and Machine Learning" results. Showing all topics.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("widens a search for today to the week when the match is later", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "today-chemistry",
+        title: "Chemistry Seminar",
+        date: TODAY_KEY,
+        topics: [],
+        description: "Reaction kinetics.",
+        tags: ["Academic"],
+      }),
+      makeEvent({
+        id: "tomorrow-ai",
+        title: "Tomorrow AI Workshop",
+        date: TOMORROW_KEY,
+        topics: ["ai-machine-learning"],
+        description: "Artificial intelligence workshop.",
+      }),
+      makeEvent({
+        id: "tomorrow-origami",
+        title: "Origami Meetup",
+        date: TOMORROW_KEY,
+        topics: [],
+        description: "Fold paper cranes.",
+        tags: ["Student Life"],
+      }),
+    ]);
+
+    for (const [search, match] of [
+      ["?q=AI&date=today", "Tomorrow AI Workshop"],
+      ["?q=origami%20today", "Origami Meetup"],
+    ]) {
+      window.history.replaceState({}, "", `/${search}`);
+      const { unmount } = render(<App />);
+
+      expect(screen.getByText(match)).toBeInTheDocument();
+      expect(screen.queryByText("Chemistry Seminar")).not.toBeInTheDocument();
+      expect(screen.getByText(/Nothing today/)).toBeInTheDocument();
+      unmount();
+    }
+  });
+
+  it("keeps the other search words when an inferred topic has no match", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "today-law",
+        title: "Today Law Lunch",
+        date: TODAY_KEY,
+        topics: ["law"],
+        description: "A law briefing.",
+      }),
+      makeEvent({
+        id: "today-run",
+        title: "Morning Fun Run",
+        date: TODAY_KEY,
+        topics: ["wellness"],
+        description: "Jog around the track.",
+        tags: ["Sports"],
+      }),
+      makeEvent({
+        id: "later-ai",
+        title: "May AI Summit",
+        date: "2026-05-20",
+        topics: ["ai-machine-learning"],
+        description: "Artificial intelligence and quantum computing.",
+      }),
+    ]);
+    window.history.replaceState({}, "", "/?q=AI%20quantum&date=today");
+
+    render(<App />);
+
+    expect(screen.queryByText("Today Law Lunch")).not.toBeInTheDocument();
+    expect(screen.queryByText("Morning Fun Run")).not.toBeInTheDocument();
+  });
+
+  it("keeps a URL topic through a failed load and a successful retry", async () => {
+    mockFeedState = makeFeedState([], {
+      loading: LoadingState.ERROR,
+      topicVocabulary: null,
+    });
+    window.history.replaceState({}, "", "/?topic=law");
+
+    const { rerender } = render(<App />);
+    await settleAutoClear();
+    expect(window.location.search).toContain("topic=law");
+
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "law-1", title: "Law Colloquium", topics: ["law"] }),
+      makeEvent({
+        id: "ai-1",
+        title: "AI Talk",
+        topics: ["ai-machine-learning"],
+      }),
+    ]);
+    rerender(<App />);
+    await settleAutoClear();
+
+    expect(window.location.search).toContain("topic=law");
+    expect(screen.getByText("Law Colloquium")).toBeInTheDocument();
+    expect(screen.queryByText("AI Talk")).not.toBeInTheDocument();
+  });
+
+  it("waits for the search index before clearing a topic for a search", async () => {
+    // Fuse alone misses "workshop" this late in the description. The index
+    // finds it, so the Law topic must survive until the index arrives.
+    const events = [
+      makeEvent({
+        id: "tenant-clinic",
+        title: "Tenant Clinic",
+        description:
+          "Bring questions. This session doubles as a workshop on tenant rights.",
+        topics: ["law"],
+      }),
+    ];
+    mockFeedState = makeFeedState(events, { searchIndexSettled: false });
+    window.history.replaceState({}, "", "/?q=workshop&topic=law");
+
+    const { rerender } = render(<App />);
+    await settleAutoClear();
+    expect(window.location.search).toContain("topic=law");
+
+    mockFeedState = makeFeedState(events, {
+      searchIndex: buildSearchIndex(events),
+    });
+    rerender(<App />);
+    await settleAutoClear();
+
+    expect(window.location.search).toContain("topic=law");
+    expect(screen.getByText("Tenant Clinic")).toBeInTheDocument();
   });
 
   it("rejects a stuck topic on a legacy payload without vocabulary", async () => {
