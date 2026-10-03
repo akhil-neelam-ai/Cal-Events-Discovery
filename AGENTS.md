@@ -141,7 +141,7 @@ Established in `docs/brainstorms/2026-08-17-publish-vs-quality-pipeline-requirem
 
 The topic filter layer from `docs/plans/2026-09-03-001-feat-topic-filter-layer-plan.md` is on `main` (PR 173). Do not re-implement U1 through U9.
 
-Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` merged in PR 174 on 2026-09-04. Successful empty assignments clear topics. Broad identity mappings are gone. The breadth cap stays 200. Public discovery versions are 1.3.0, since the September audit added the multi-day fields.
+Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` merged in PR 174 on 2026-09-04. Successful empty assignments clear topics. Broad identity mappings are gone. In their place, BAMPFA's calendar labels and Cal Performances genres reach `assignTopics` as internal `event_types`. The breadth cap stays 200. Public discovery versions are 1.3.0, since the September audit added the multi-day fields.
 
 The June full-repo audit is `docs/code-review-2026-06-02.md`. It is a different pass.
 

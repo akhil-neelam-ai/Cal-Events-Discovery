@@ -295,6 +295,49 @@ test("BAMPFA keeps a second showing of a film on the same day", async () => {
   }
 });
 
+test("BAMPFA reads the card's labels and summary, which the link lacks", async () => {
+  // Mirrors bampfa.org: a teaser lists the labels, and the popup it opens
+  // holds the summary and the Google Calendar link.
+  const day = daysFromToday(3);
+  const token = `${day.replace(/-/g, "")}T190000`;
+  const html = `<html><body><div class="views-row">
+    <div class="views-field views-field-nothing"><span class="field-content">
+      <div class="calendar-event"><div class="time">7:00 PM</div>
+        <div class="event-content">
+          <div class="title month-title" nid="1" data-id="1_0"><a href="/event/band-of-outsiders">Band of Outsiders</a></div>
+          <ul class="calendar_filter"><li>Film</li><li>In-Person</li></ul>
+        </div>
+      </div>
+    </span></div>
+    <div class="popupboxthing" data-popup="1_0"><div class="views-row"><div class="calendar-event">
+      <div class="event-content">
+        <div class="title"><a href="/event/band-of-outsiders">Band of Outsiders</a></div>
+        <div class="event-summary"> Two drifters plan   a heist in Paris. </div>
+      </div>
+      <a class="add-to-cal-link" href="https://calendar.google.com/calendar/r/eventedit?text=Band+of+Outsiders&amp;dates=${token}/${token}&amp;details=Please+note+that+event+details+are+subject+to+change:+https%3A%2F%2Fbampfa.org%2Fevent%2Fband-of-outsiders&amp;location=BAMPFA">Add</a>
+    </div></div></div>
+  </div></body></html>`;
+
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => ({
+    ok: true,
+    status: 200,
+    text: async () => html,
+  });
+  try {
+    const result = await fetchBampfa();
+
+    assert.equal(result.events.length, 1);
+    assert.deepEqual(result.events[0].event_types, ["Film", "In-Person"]);
+    assert.equal(
+      result.events[0].description,
+      "Two drifters plan a heist in Paris.",
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("Cal Performances keeps a run listed after its first performance", async () => {
   const stamp = (key, time) => {
     const [year, month, day] = key.split("-");
@@ -331,6 +374,7 @@ test("Cal Performances keeps a run listed after its first performance", async ()
     const result = await fetchCalPerformances();
 
     assert.equal(result.events.length, 1);
+    assert.deepEqual(result.events[0].event_types, ["dance"]);
     const legacy = projectToLegacy(result.events[0]);
     assert.equal(legacy.id, "cal_performances_501");
     assert.equal(legacy.date, tomorrow);
