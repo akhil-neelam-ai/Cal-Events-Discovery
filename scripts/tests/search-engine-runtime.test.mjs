@@ -641,6 +641,24 @@ test("free concert keeps free plus the concert topic, not a category", () => {
   assert.equal(plan.filters.category, undefined);
 });
 
+test("hyphenated -free words describe the topic, not the price", () => {
+  for (const query of ["carbon-free energy", "stress-free yoga"]) {
+    const plan = buildSearchPlan(query);
+
+    assert.ok(plan.filters.topic, query);
+    assert.equal(plan.filters.free, undefined, query);
+  }
+});
+
+test('"tonight" plus another evening phrase leaves no stray keyword', () => {
+  for (const query of ["tonight after work", "tonight evening concert"]) {
+    const plan = buildSearchPlan(query);
+
+    assert.equal(plan.filters.timeOfDay, "evening", query);
+    assert.deepEqual(plan.keywords, [], query);
+  }
+});
+
 test("later topic phrases stay ranking text, not a second hard filter", () => {
   const aiFirst = buildSearchPlan("AI film");
   assert.equal(aiFirst.filters.topic, "ai-machine-learning");
@@ -697,7 +715,7 @@ test("AI ethics ranks ethics-related events within the AI topic", () => {
   assert.equal(output.results[0]?.id, "topic-ethics");
 });
 
-test("dismissing a topic removes its hard filter and reinjects its label for ranking", () => {
+test("dismissing a topic removes its hard filter and searches the typed words", () => {
   const output = searchEvents(
     SYNTHETIC_EVENTS.map((event) => ({ ...event, topics: ["law"] })),
     "AI",
@@ -706,11 +724,62 @@ test("dismissing a topic removes its hard filter and reinjects its label for ran
   );
 
   assert.equal(output.plan.filters.topic, undefined);
-  assert.deepEqual(output.plan.keywords, ["ai", "machine", "learn"]);
+  assert.deepEqual(output.plan.keywords, ["ai"]);
   assert.ok(
     output.plan.interpretations.every(
       (chip) => chip.key !== "topic:ai-machine-learning",
     ),
+  );
+});
+
+test("a dismissed topic searches its synonym, not the multi-word label", () => {
+  // "Music and Performance" would need both words to match. The Law event
+  // only says "concert", which is what the user typed.
+  const events = [
+    {
+      ...SYNTHETIC_EVENTS[15],
+      id: "law-concert",
+      title: "Concert for Justice",
+      description: "A benefit concert for the legal aid clinic.",
+      topics: ["law"],
+    },
+    {
+      ...SYNTHETIC_EVENTS[15],
+      id: "law-moot",
+      title: "Moot Court Finals",
+      description: "Appellate advocacy.",
+      topics: ["law"],
+    },
+  ];
+  const output = searchEvents(
+    events,
+    "concert",
+    buildSearchIndex(events),
+    new Set(["topic:music-performance"]),
+  );
+
+  assert.equal(output.plan.filters.topic, undefined);
+  assert.deepEqual(output.plan.keywords, ["concert"]);
+  assert.deepEqual(
+    output.results.map((event) => event.id),
+    ["law-concert"],
+  );
+});
+
+test("a dismissed key for another topic keeps the query's own topic", () => {
+  // Auto-clearing Law leaves topic:law dismissed. A later "AI" query must
+  // keep its own AI filter instead of listing every event.
+  const events = [
+    { ...SYNTHETIC_EVENTS[7], id: "topic-ai", topics: ["ai-machine-learning"] },
+    { ...SYNTHETIC_EVENTS[15], id: "topic-law", topics: ["law"] },
+    { ...SYNTHETIC_EVENTS[12], id: "no-topic", topics: [] },
+  ];
+  const output = searchEvents(events, "AI", null, new Set(["topic:law"]));
+
+  assert.equal(output.plan.filters.topic, "ai-machine-learning");
+  assert.deepEqual(
+    output.results.map((event) => event.id),
+    ["topic-ai"],
   );
 });
 

@@ -22,7 +22,7 @@ export interface SearchFilter {
 export interface InterpretedChip {
   key: string;
   label: string;
-  /** The query words that set a source or category chip. */
+  /** The query words that set a source, category, or topic chip. */
   text?: string;
 }
 
@@ -61,7 +61,9 @@ export const RE_FREE_EVENT =
   /(?:\bfree\b(?!\s*(?:throw|agent|range|radical|speech|will))|\bcomplimentary\b|\bno[-\s]?charge\b|\bno[-\s]?cost\b|\$0\b)/i;
 const RE_ONLINE = /\b(online|virtual|zoom|remote|webinar|livestream)\b/i;
 const RE_INPERSON = /\b(in.?person|on campus)\b/i;
-const RE_BARE_FREE = /\bfree\b/i;
+// A standalone "free". Compounds such as "carbon-free" or "stress-free"
+// describe the subject, not the price.
+const RE_BARE_FREE = /(?:^|[^\w-])free(?![\w-])/i;
 
 // Only category names lock a category. Subject words such as "tennis" or
 // "seminar" stay as ranking text. A lock hid matches filed under another
@@ -372,6 +374,10 @@ export function buildSearchPlan(
     interpretations.push({
       key: `topic:${firstTopic.topic.slug}`,
       label: firstTopic.topic.label,
+      text: cleaned.slice(
+        firstTopic.index,
+        firstTopic.index + firstTopic.length,
+      ),
     });
     cleaned = stripIntent(cleaned, topicPattern(firstTopic.synonym));
   }
@@ -394,7 +400,9 @@ export function buildSearchPlan(
     });
     cleaned = stripIntent(cleaned, RE_AFTERNOON_CLOCK);
     cleaned = stripIntent(cleaned, RE_LUNCH);
-  } else if (RE_EVENING.test(raw) && !filters.timeOfDay) {
+  } else if (RE_EVENING.test(raw)) {
+    // Runs after "tonight" too, so "tonight after work" strips "after work"
+    // instead of leaving it as a required keyword.
     filters.timeOfDay = "evening";
     addInterpretationOnce(interpretations, {
       key: "timeOfDay:evening",
@@ -486,54 +494,34 @@ export function withDismissedInterpretations(
   let keywords = plan.keywords;
   let expandedTokens = plan.expandedTokens;
 
-  for (const key of dismissedKeys) {
-    const [field] = key.split(":");
-    if (field === "dateRange") delete filters.dateRange;
-    if (field === "weekend") delete filters.weekend;
-    if (field === "category") delete filters.category;
-    if (field === "source") delete filters.source;
-    if (field === "campusArea") delete filters.campusArea;
-    if (field === "timeOfDay") delete filters.timeOfDay;
-    if (field === "free") delete filters.free;
-    if (field === "modality") delete filters.modality;
-    if (field === "topic") delete filters.topic;
+  // Drop a filter only when its exact key is dismissed. Auto-clear leaves
+  // topic:law behind, and that key must not remove the AI topic a later "AI"
+  // query implies.
+  for (const field of Object.keys(filters) as Array<keyof SearchFilter>) {
+    if (dismissedKeys.has(`${field}:${String(filters[field])}`)) {
+      delete filters[field];
+    }
   }
 
-  // A dismissed source or category chip turns the words that set it back into
-  // search text, so "athletics" searches "athletics" rather than "Sports".
-  const dismissedLiteralText = plan.interpretations
+  // A dismissed source, category, or topic chip turns the words that set it
+  // back into search text. "athletics" searches "athletics" rather than
+  // "Sports", and "concert" searches "concert" rather than "Music and
+  // Performance".
+  const dismissedText = plan.interpretations
     .filter(
       (interpretation) =>
         dismissedKeys.has(interpretation.key) &&
-        (interpretation.key.startsWith("source:") ||
-          interpretation.key.startsWith("category:")),
+        /^(source|category|topic):/.test(interpretation.key),
     )
     .map((interpretation) => interpretation.text ?? interpretation.label)
     .join(" ");
 
-  if (dismissedLiteralText) {
-    cleaned = [cleaned, dismissedLiteralText].filter(Boolean).join(" ");
+  if (dismissedText) {
+    cleaned = [cleaned, dismissedText].filter(Boolean).join(" ");
     keywords = tokenize(cleaned);
     expandedTokens = expandKeywordTokens(
       keywords,
-      `${plan.raw} ${dismissedLiteralText}`.toLowerCase(),
-    );
-  }
-
-  const dismissedTopicText = plan.interpretations
-    .filter(
-      (interpretation) =>
-        dismissedKeys.has(interpretation.key) &&
-        interpretation.key.startsWith("topic:"),
-    )
-    .map((interpretation) => interpretation.label)
-    .join(" ");
-  if (dismissedTopicText) {
-    cleaned = [cleaned, dismissedTopicText].filter(Boolean).join(" ");
-    keywords = tokenize(cleaned);
-    expandedTokens = expandKeywordTokens(
-      keywords,
-      `${plan.raw} ${dismissedTopicText}`.toLowerCase(),
+      `${plan.raw} ${dismissedText}`.toLowerCase(),
     );
   }
 

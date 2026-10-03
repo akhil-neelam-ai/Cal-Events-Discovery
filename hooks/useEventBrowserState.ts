@@ -332,11 +332,56 @@ export function useEventBrowserState({
     [availabilityOutput.results, todayKey, tomorrowKey, weekEndKey],
   );
 
-  const topicCounts = useMemo(
-    () =>
-      countTopics(bucketForRange(availabilityDateBuckets, effectiveDateRange)),
-    [availabilityDateBuckets, effectiveDateRange],
-  );
+  // The selected topic and the typed topic count what choosing them shows:
+  // the same topic-first search the results grid runs. Counting them from the
+  // availability search let a topic label or Fuse's 100-hit cap drop real
+  // matches and auto-clear a valid topic. Other chips count events that match
+  // the typed words as text.
+  const selectedTopicCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    const query = filters.searchQuery.trim();
+    if (query.length < 2) {
+      return counts;
+    }
+
+    for (const slug of [filters.topic, inferredTopicSlug]) {
+      if (!slug || counts.has(slug)) {
+        continue;
+      }
+
+      const keys = new Set(searchDismissedKeys);
+      if (slug === inferredTopicSlug) {
+        keys.delete(`topic:${slug}`);
+      }
+      const pool = datePool.filter((event) => eventHasTopic(event, slug));
+      counts.set(
+        slug,
+        pool.length === 0
+          ? 0
+          : searchEvents(pool, query, searchIndex, keys, planOptions).results
+              .length,
+      );
+    }
+    return counts;
+  }, [
+    datePool,
+    filters.searchQuery,
+    filters.topic,
+    inferredTopicSlug,
+    planOptions,
+    searchDismissedKeys,
+    searchIndex,
+  ]);
+
+  const topicCounts = useMemo(() => {
+    const counts = countTopics(
+      bucketForRange(availabilityDateBuckets, effectiveDateRange),
+    );
+    for (const [slug, count] of selectedTopicCounts) {
+      counts.set(slug, count);
+    }
+    return counts;
+  }, [availabilityDateBuckets, effectiveDateRange, selectedTopicCounts]);
 
   const topicUnavailable =
     topicAvailabilityReady &&
