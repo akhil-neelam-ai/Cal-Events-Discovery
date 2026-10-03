@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 import { DESKTOP_HERO_PRESETS } from "../../appConfig.ts";
 import { buildSearchIndex } from "../lib/buildIndex.ts";
+import { assignTopics } from "../lib/topics.ts";
 import {
   buildSearchPlan,
   searchEvents,
@@ -551,6 +552,24 @@ test('natural-language query "founder talks tomorrow" preserves tomorrow intent 
 });
 
 test('live-corpus query "AI" ranks matches across categories without category intent', () => {
+  const output = searchEvents(published.events, "AI", publishedSearchIndex);
+  const categories = new Set(
+    output.results.map((event) => event.tags?.[0]).filter(Boolean),
+  );
+
+  assert.equal(output.plan.filters.category, undefined);
+  assert.ok(
+    !output.plan.interpretations.some((chip) =>
+      chip.key.startsWith("category:"),
+    ),
+  );
+  assert.ok(categories.size > 1);
+});
+
+test('"AI" finds the frozen AI reference events', () => {
+  // Frozen titles and descriptions, so this measures the code. The live
+  // version shrank as reference events passed, demanding 100% of whatever
+  // remained, and could block the daily publish on one upstream edit.
   const fixture = JSON.parse(
     fs.readFileSync(
       path.join(
@@ -573,29 +592,34 @@ test('live-corpus query "AI" ranks matches across categories without category in
     "livewhale_20260925T000000Z-324717@events.berkeley.edu",
     "livewhale_20260929T210000Z-323581@events.berkeley.edu",
   ]);
-  const publishedIds = new Set(published.events.map((event) => event.id));
-  const referenceIds = aiReferenceSet.references
-    .map((reference) => reference.id)
-    .filter((id) => publishedIds.has(id) && !knownNonAiHomonyms.has(id));
+  const events = aiReferenceSet.references
+    .filter((reference) => !knownNonAiHomonyms.has(reference.id))
+    .map((reference) => {
+      const event = {
+        id: reference.id,
+        title: reference.title,
+        organizer: reference.organizer ?? "",
+        date: reference.date,
+        time: "12:00 PM",
+        location: "",
+        description: reference.description ?? "",
+        tags: ["Academic"],
+        url: "https://example.com/reference",
+        source: reference.source,
+      };
+      return { ...event, topics: assignTopics(event) };
+    });
 
-  const output = searchEvents(published.events, "AI", publishedSearchIndex);
-  const categories = new Set(
-    output.results.map((event) => event.tags?.[0]).filter(Boolean),
-  );
-  const resultIds = new Set(output.results.map((event) => event.id));
-  const overlap = referenceIds.filter((id) => resultIds.has(id)).length;
+  const output = searchEvents(events, "AI", buildSearchIndex(events));
+  const found = new Set(output.results.map((event) => event.id));
+  const matched = events.filter((event) => found.has(event.id)).length;
 
-  assert.equal(output.plan.filters.category, undefined);
+  // A fallback would return every event and pass for the wrong reason.
+  assert.equal(output.fallbackUsed, false);
   assert.ok(
-    !output.plan.interpretations.some((chip) =>
-      chip.key.startsWith("category:"),
-    ),
+    matched >= Math.ceil(aiReferenceSet.minimumRecall * events.length),
+    `AI search found ${matched}/${events.length} frozen reference events`,
   );
-  assert.ok(
-    overlap >= Math.min(50, referenceIds.length),
-    `AI search overlapped ${overlap}/${referenceIds.length} reference events`,
-  );
-  assert.ok(categories.size > 1);
 });
 
 test("topic intent uses the first subject word and preserves later words for ranking", () => {

@@ -146,10 +146,16 @@ export interface FetchResult {
   filteredPast: number;
   invalid: number;
   /**
-   * LiveWhale-only: department group feeds failed. Topic assignment should
-   * carry prior topics. This is not a visitor-facing source degradation.
+   * LiveWhale-only: every department group feed failed. The topic stage
+   * reports an error. This is not a visitor-facing source degradation.
    */
   groupFeedsDegraded?: boolean;
+  /**
+   * LiveWhale-only: names of the department group feeds that failed. Their
+   * events lost that group's evidence, so topic assignment keeps any prior
+   * topic only those groups can give.
+   */
+  failedGroups?: string[];
 }
 
 const TOPIC_SLUG_TUPLE = TOPIC_SLUGS as readonly [TopicSlug, ...TopicSlug[]];

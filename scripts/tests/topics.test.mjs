@@ -17,6 +17,7 @@ import {
   TOPIC_VOCABULARY_VERSION,
 } from "../../scripts/lib/topics.ts";
 import {
+  fetchLiveWhale,
   groupFeedsAreDegraded,
   mergeLiveWhaleFeeds,
 } from "../../scripts/sources/livewhale.ts";
@@ -254,6 +255,49 @@ test("all failed LiveWhale group feeds count as degraded provenance", () => {
   assert.equal(groupFeedsAreDegraded([]), false);
   assert.equal(groupFeedsAreDegraded([{ ok: true }, { ok: false }]), false);
   assert.equal(groupFeedsAreDegraded([{ ok: false }, { ok: false }]), true);
+});
+
+test("a group feed that serves a non-calendar page counts as failed", async () => {
+  // A 200 with an HTML error page used to parse as an empty, healthy feed,
+  // so the group's topics vanished without any failure on record.
+  const day = new Date(Date.now() + 2 * 86_400_000)
+    .toISOString()
+    .slice(0, 10)
+    .replace(/-/g, "");
+  const mainFeed = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    ...Array.from({ length: 50 }, (_, index) => [
+      "BEGIN:VEVENT",
+      `UID:talk-${index}@events.berkeley.edu`,
+      `DTSTART:${day}T190000Z`,
+      `DTEND:${day}T200000Z`,
+      `SUMMARY:Campus Talk ${index}`,
+      "END:VEVENT",
+    ]).flat(),
+    "END:VCALENDAR",
+  ].join("\r\n");
+  const emptyCalendar = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nEND:VCALENDAR";
+
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    const target = String(url);
+    const body =
+      target === "https://events.berkeley.edu/live/ical/events"
+        ? mainFeed
+        : target.endsWith("/group/physics")
+          ? "<html><body>Service unavailable</body></html>"
+          : emptyCalendar;
+    return { ok: true, status: 200, text: async () => body };
+  };
+  try {
+    const result = await fetchLiveWhale();
+
+    assert.deepEqual(result.failedGroups, ["physics"]);
+    assert.equal(result.groupFeedsDegraded, false);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test("LiveWhale UID merge keeps every group membership on the main record", () => {

@@ -393,6 +393,8 @@ test("last-good restored events keep their published topics", () => {
   assert.deepEqual(result.events[0].topics, ["physics-math-quantum"]);
   assert.equal(result.status.outcome, "ok");
   assert.equal(result.status.assigned_count, 0);
+  // The row kept yesterday's topics, which is what the field reports.
+  assert.equal(result.status.carried_forward_count, 1);
 });
 
 test("a restored LiveWhale copy replaces today's lower-priority duplicate", () => {
@@ -576,23 +578,85 @@ test("a loud source still raises the degraded flags when it restores", () => {
   assert.equal(recovery.fallbackAgeHours, 24);
 });
 
-test("degraded group-feed provenance carries prior topics without source banners", () => {
+test("a failed group feed keeps only that group's prior topics", () => {
+  // The physics feed failed. Yesterday's physics topic survives on the
+  // colloquium, but a stale history topic on another event does not.
+  const colloquium = legacy({ id: "livewhale_colloquium" });
+  const reception = legacy({ id: "livewhale_reception" });
   const result = assignTopicsResiliently(
-    [candidate(legacy({ topics: [] }))],
-    [legacy({ topics: ["law"] })],
-    () => ["startups"],
-    { forceError: "LiveWhale group feeds failed; topic provenance incomplete" },
+    [candidate(colloquium), candidate(reception)],
+    [
+      legacy({
+        id: "livewhale_colloquium",
+        topics: ["physics-math-quantum", "law"],
+      }),
+      legacy({ id: "livewhale_reception", topics: ["history-humanities"] }),
+    ],
+    (event) => (event.id === "livewhale_colloquium" ? ["law"] : []),
+    { missingGroups: ["physics"] },
   );
 
+  assert.deepEqual(result.events[0].topics, ["law", "physics-math-quantum"]);
+  assert.deepEqual(result.events[1].topics, []);
+  assert.deepEqual(result.status, {
+    outcome: "ok",
+    assigned_count: 1,
+    carried_forward_count: 1,
+  });
+});
+
+test("every group feed failing still assigns other sources, without banners", () => {
+  const lawForum = legacy({
+    id: "berkeley_law_forum",
+    title: "Constitutional Law Forum",
+    source: "berkeley_law",
+  });
+  const groupEvent = legacy({ id: "livewhale_clinic" });
+  const result = assignTopicsResiliently(
+    [candidate(lawForum), candidate(groupEvent)],
+    [legacy({ id: "livewhale_clinic", topics: ["law"] })],
+    (event) => (event.source === "berkeley_law" ? ["law"] : []),
+    {
+      missingGroups: ["law"],
+      provenanceError:
+        "LiveWhale group feeds failed; topic provenance incomplete",
+    },
+  );
+
+  // A brand-new Berkeley Law event is assigned, not frozen at [].
+  assert.deepEqual(result.events[0].topics, ["law"]);
+  assert.deepEqual(result.events[1].topics, ["law"]);
   assert.equal(result.status.outcome, "error");
   assert.match(result.status.error ?? "", /group feeds failed/);
-  assert.deepEqual(result.events[0].topics, ["law"]);
-  assert.deepEqual(
-    {
-      degraded: false,
-      degraded_sources: [],
-    },
-    { degraded: false, degraded_sources: [] },
+
+  // The LiveWhale run itself succeeded, so recovery marks nothing degraded
+  // and the topic error raises no visitor banner.
+  const liveWhale = {
+    name: "livewhale",
+    ok: true,
+    count: 1200,
+    duration_ms: 5,
+    fetched_at: new Date().toISOString(),
+  };
+  const { recovery } = recoverFrom(liveWhale, [], DAY_AGO);
+  const report = {
+    sources: [liveWhale],
+    topics: result.status,
+    fallback_used: false,
+    degraded: recovery.degradedReasons.size > 0,
+    last_good_used: recovery.lastGoodUsed,
+    data_quality_blocked: false,
+    fallback_sources: [...recovery.fallbackSources],
+    degraded_sources: [...recovery.degradedSources],
+  };
+  assert.deepEqual(report.degraded_sources, []);
+  assert.equal(buildStatusBanner(report), null);
+  assert.equal(
+    shouldShowStaleDataBanner(
+      recovery.fallbackAgeHours,
+      report.degraded_sources,
+    ),
+    false,
   );
 });
 
@@ -643,9 +707,14 @@ test("orchestrator preserves last-good topics and group-feed provenance", () => 
   );
 
   assert.match(orchestrator, /preserveTopicIds: recovery\.restoredIds/);
-  assert.match(orchestrator, /groupFeedsDegraded/);
+  assert.match(orchestrator, /missingGroups: failedGroups/);
   assert.match(
     orchestrator,
     /LiveWhale group feeds failed; topic provenance incomplete/,
+  );
+  assert.doesNotMatch(
+    orchestrator,
+    /degradedSources\.add\([^)]*(failedGroups|groupFeedsDegraded)/,
+    "group-feed failures must not mark a source degraded",
   );
 });

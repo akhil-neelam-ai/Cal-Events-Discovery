@@ -521,6 +521,20 @@ function allTerms(topic: Topic): readonly string[] {
  * Identity fields clear the floor on their own. Description text needs either
  * repeated evidence or one precise technical phrase.
  */
+/**
+ * Topics that LiveWhale department groups can give. When a group feed fails,
+ * its events lose only these, so only these may carry over from yesterday.
+ */
+export function groupTopicSlugs(groups: Iterable<string>): Set<TopicSlug> {
+  const slugs = new Set<TopicSlug>();
+  for (const group of groups) {
+    for (const slug of GROUP_TOPICS[group.trim().toLowerCase()] ?? []) {
+      slugs.add(slug);
+    }
+  }
+  return slugs;
+}
+
 export function assignTopics(event: TopicAssignableEvent): TopicSlug[] {
   const scores = new Map<TopicSlug, number>(
     TOPICS.map((topic) => [topic.slug, 0]),

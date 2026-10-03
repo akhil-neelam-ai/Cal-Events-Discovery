@@ -176,7 +176,7 @@ The September full-repo audit is `docs/code-review-2026-09-25.md`. Every item ha
 
 **Running spans**: adapters drop an event only after its last day (`endedBeforePT`). A bare all-day end is exclusive. `withSpanOccurrences` then gives a multi-day span one `dates` entry per remaining day, capped at 120, and publishes today as its `date`.
 
-**LiveWhale group feeds**: the main feed misses events posted only to department calendars. Group feeds use path-based URLs, and group names are case-sensitive. The adapter fetches 40 groups with bounded concurrency and merges by UID first-wins, which discards which feed each event came from.
+**LiveWhale group feeds**: the main feed misses events posted only to department calendars. Group feeds use path-based URLs, and group names are case-sensitive. The adapter fetches 40 groups with bounded concurrency and merges by UID, keeping every group that listed an event as topic evidence. A failed group feed, including a 200 response that is not iCal, lands in `failedGroups`. Its events keep only the prior topics that group can give. Group failures never mark LiveWhale degraded, so they raise no visitor banner.
 
 **Tribe adapter reusability**: `scripts/sources/tribe.ts` exports `fetchHaas`, `fetchBerkeleyLaw`, `fetchBegin`, `fetchBrsl`, and `fetchCltc` from one config-driven implementation. A new WordPress site running The Events Calendar needs only a new export.
 

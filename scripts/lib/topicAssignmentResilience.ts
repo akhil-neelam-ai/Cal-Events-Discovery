@@ -1,6 +1,7 @@
 import type { LegacyCalEvent, TopicAssignmentStatus } from "./schema.js";
 import {
   assignTopics,
+  groupTopicSlugs,
   TOPIC_BY_SLUG,
   type TopicAssignableEvent,
   type TopicSlug,
@@ -21,8 +22,14 @@ export type TopicAssigner = (event: TopicAssignableEvent) => TopicSlug[];
 export interface TopicAssignmentOptions {
   /** Last-good rows keep the topics already on the published event. */
   preserveTopicIds?: ReadonlySet<string>;
-  /** Skip assignment and carry prior topics. Used when provenance is incomplete. */
-  forceError?: string;
+  /**
+   * LiveWhale department feeds that failed this run. A LiveWhale event keeps
+   * any prior topic that only those groups can give. Every other topic, and
+   * every other source, is assigned as usual.
+   */
+  missingGroups?: readonly string[];
+  /** Set when every group feed failed. The stage reports it as an error. */
+  provenanceError?: string;
 }
 
 function errorMessage(error: unknown): string {
@@ -106,18 +113,7 @@ export function assignTopicsResiliently(
     previousEvents.map((event) => [event.id, event]),
   );
   const preserveTopicIds = options.preserveTopicIds ?? new Set<string>();
-
-  if (options.forceError) {
-    return {
-      events,
-      status: {
-        outcome: "error",
-        assigned_count: 0,
-        carried_forward_count: applyPreviousTopics(events, previousById),
-        error: options.forceError,
-      },
-    };
-  }
+  const missingGroupTopics = groupTopicSlugs(options.missingGroups ?? []);
 
   let assignments: Array<TopicSlug[] | "preserved">;
   try {
@@ -140,23 +136,35 @@ export function assignTopicsResiliently(
   }
 
   let assignedCount = 0;
+  let carriedForwardCount = 0;
   for (const [index, event] of events.entries()) {
     const assignedTopics = assignments[index];
     if (assignedTopics === "preserved") {
       event.topics = validPreviousTopics(event);
+      if (event.topics.length > 0) carriedForwardCount += 1;
       continue;
     }
 
-    event.topics = assignedTopics ?? [];
-    if (event.topics.length > 0) assignedCount += 1;
+    const carried =
+      event.source === "livewhale" && missingGroupTopics.size > 0
+        ? validPreviousTopics(previousById.get(event.id)).filter(
+            (slug) =>
+              missingGroupTopics.has(slug) && !assignedTopics.includes(slug),
+          )
+        : [];
+    event.topics = [...assignedTopics, ...carried].slice(0, 3);
+    if (assignedTopics.length > 0) assignedCount += 1;
+    if (carried.length > 0) carriedForwardCount += 1;
   }
 
+  const counts = {
+    assigned_count: assignedCount,
+    carried_forward_count: carriedForwardCount,
+  };
   return {
     events,
-    status: {
-      outcome: "ok",
-      assigned_count: assignedCount,
-      carried_forward_count: 0,
-    },
+    status: options.provenanceError
+      ? { outcome: "error", ...counts, error: options.provenanceError }
+      : { outcome: "ok", ...counts },
   };
 }
