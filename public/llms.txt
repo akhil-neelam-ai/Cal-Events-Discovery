@@ -29,7 +29,7 @@ Each event in `events.json` has:
 - `tags`: primary category first, with optional secondary tags
 - `topics`: zero to three published topic slugs; independent of `tags`
 - `url`: official source URL
-- `source`: normalized source id such as `livewhale`, `bampfa`, `callink`, `calbears`, `cal_performances`, `haas`, `berkeley_law`, `simons`, `luma`, `begin`, `ai_risk`, or `brsl`
+- `source`: normalized source id such as `livewhale`, `bampfa`, `callink`, `calbears`, `cal_performances`, `haas`, `berkeley_law`, `simons`, `luma`, `begin`, `ai_risk`, `brsl`, or `cltc`
 
 ## Categories
 

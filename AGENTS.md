@@ -4,7 +4,7 @@ Guidance for any coding agent working in this repository (Codex, Claude Code, or
 
 ## What this is
 
-CalEvents Discovery aggregates roughly 1,450 UC Berkeley campus events from 12 sources into static JSON, served by a React frontend with entirely client-side search. Built and maintained by one person. Deployed on Vercel at `cal-events.com`.
+CalEvents Discovery aggregates roughly 1,450 UC Berkeley campus events from 13 sources into static JSON, served by a React frontend with entirely client-side search. Built and maintained by one person. Deployed on Vercel at `cal-events.com`.
 
 Stack: React 19, Vite 8, TypeScript, Tailwind v4, Fuse.js. Pipeline is TypeScript run through `tsx`, validated with Zod. Node 22.
 
@@ -45,19 +45,19 @@ Three layers, cleanly separated.
 
 ### 1. Data pipeline (`scripts/`)
 
-`scripts/updateEvents.ts` is the orchestrator. It runs 12 source adapters in parallel with a 60 s timeout each (Simons gets 100 s for its full-history download), dedupes the union, projects to legacy shape, writes 3 static JSON artifacts to `public/`.
+`scripts/updateEvents.ts` is the orchestrator. It runs 13 source adapters in parallel with a 60 s timeout each (Simons gets 100 s for its full-history download), dedupes the union, projects to legacy shape, writes 3 static JSON artifacts to `public/`.
 
 **Source priority** (used by dedupe to pick the winner when two sources have the same event):
 
 ```
-livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley_law / simons / luma / begin / ai_risk / brsl (3)
+livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley_law / simons / luma / begin / ai_risk / brsl / cltc (3)
 ```
 
 **Failure handling.** Each source has a `RecoveryPolicy` in `scripts/lib/lastGoodFallback.ts`, applied by `markRecovery`:
 
 - On error or below `minHealthyCount`: mark degraded, optionally restore last-good events from the previous `events.json` (filtered to today and later, PT)
 - Fallback age counts from each source's `last_healthy_at` in `status.json`, which carries forward while the source is degraded. A restore older than 48 hours expires
-- Quiet sources (`degradeOnFailure: false`: luma, begin, ai_risk, brsl) restore too, but stay out of `degraded_sources`, the top-level reason, and `data_age_hours`, so no banner appears
+- Quiet sources (`degradeOnFailure: false`: luma, begin, ai_risk, brsl, cltc) restore too, but stay out of `degraded_sources`, the top-level reason, and `data_age_hours`, so no banner appears
 - Each source carries `consecutive_failures` in `status.json`. Three failed fetches in a row open or update a `source-contracts` issue from the daily workflow
 - If every source returns 0 events: refuse to overwrite the existing file and exit non-zero
 - `status.json` is always written with per-source details, degradation flags, and fallback counts
@@ -73,7 +73,7 @@ livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley
 | `cal_performances.ts` | WordPress REST API | Arts presenter |
 | `calbears.ts` | iCal | Athletics schedule |
 | `bampfa.ts` | HTML scraper (cheerio) | Film and art museum |
-| `tribe.ts` | Tribe/WP REST API | Haas, Berkeley Law, BEGIN, BRSL. Generic adapter, reusable for any site running The Events Calendar plugin |
+| `tribe.ts` | Tribe/WP REST API | Haas, Berkeley Law, BEGIN, BRSL, CLTC. Generic adapter, reusable for any site running The Events Calendar plugin |
 | `simons.ts` | JSON API | CS theory research institute (`simons.berkeley.edu/api/events`) |
 | `luma.ts` | Luma JSON API | Berkeley-affiliated Luma calendars; IDs in `BERKELEY_LUMA_CALENDARS` |
 | `ai_risk.ts` | JSON feed | Berkeley AI Risk speaker series (`ai-risk.berkeley.edu/events.json`), which the site builds for its own calendar sync |
@@ -178,7 +178,7 @@ The September full-repo audit is `docs/code-review-2026-09-25.md`. Every item ha
 
 **LiveWhale group feeds**: the main feed misses events posted only to department calendars. Group feeds use path-based URLs, and group names are case-sensitive. The adapter fetches 40 groups with bounded concurrency and merges by UID first-wins, which discards which feed each event came from.
 
-**Tribe adapter reusability**: `scripts/sources/tribe.ts` exports `fetchHaas`, `fetchBerkeleyLaw`, `fetchBegin`, and `fetchBrsl` from one config-driven implementation. A new WordPress site running The Events Calendar needs only a new export.
+**Tribe adapter reusability**: `scripts/sources/tribe.ts` exports `fetchHaas`, `fetchBerkeleyLaw`, `fetchBegin`, `fetchBrsl`, and `fetchCltc` from one config-driven implementation. A new WordPress site running The Events Calendar needs only a new export.
 
 **Stemming must stay consistent**: `buildIndex.ts` and `searchEngine.ts` both call `stem()` from `utils/textUtils.ts`. Change the stemmer, the tokenizer, or the venue aliases and run `npm run rebuild-index`. A stability test fails until the committed index matches.
 

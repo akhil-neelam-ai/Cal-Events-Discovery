@@ -191,6 +191,7 @@ export const FALLBACK_POLICIES: Partial<Record<SourceName, RecoveryPolicy>> = {
   begin: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
   ai_risk: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
   brsl: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
+  cltc: { allowLastGood: true, degradeOnFailure: false, minHealthyCount: 1 },
 };
 
 export interface RecoveryState {

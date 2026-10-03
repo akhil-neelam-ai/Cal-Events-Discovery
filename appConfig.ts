@@ -13,6 +13,7 @@ export const SOURCE_LABELS: Record<string, string> = {
   begin: "Berkeley BEGIN",
   ai_risk: "Berkeley AI Risk",
   brsl: "Berkeley Risk and Security Lab",
+  cltc: "Center for Long-Term Cybersecurity",
 };
 
 export const SOURCE_URLS: Record<string, string> = {
@@ -28,6 +29,7 @@ export const SOURCE_URLS: Record<string, string> = {
   begin: "https://begin.berkeley.edu/events/",
   ai_risk: "https://ai-risk.berkeley.edu/#upcoming",
   brsl: "https://brsl.berkeley.edu/events/",
+  cltc: "https://cltc.berkeley.edu/events/",
 };
 
 export interface SourceOption {
@@ -66,6 +68,7 @@ export const ALL_SOURCES = [
   "begin",
   "ai_risk",
   "brsl",
+  "cltc",
 ];
 export const DateRanges = [
   { label: "Today", value: "today" },

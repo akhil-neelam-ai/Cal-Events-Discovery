@@ -27,6 +27,7 @@ const SOURCE_PRIORITY: Record<SourceName, number> = {
   begin: 3,
   ai_risk: 3,
   brsl: 3,
+  cltc: 3,
 };
 
 export interface DedupeResult {

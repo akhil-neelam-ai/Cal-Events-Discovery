@@ -28,6 +28,7 @@ export const SourceNameSchema = z.enum([
   "begin",
   "ai_risk",
   "brsl",
+  "cltc",
 ]);
 export type SourceName = z.infer<typeof SourceNameSchema>;
 

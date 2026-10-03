@@ -3,9 +3,9 @@
  * to the legacy CalEvent shape, write public/events.json + public/status.json.
  *
  * Source priority (configured in scripts/lib/dedupe.ts):
- *   livewhale (4), the official campus iCal feed, outranks the other 11,
+ *   livewhale (4), the official campus iCal feed, outranks the other 12,
  *   which share priority 3: callink, cal_performances, calbears, bampfa,
- *   haas, berkeley_law, simons, luma, begin, ai_risk, brsl.
+ *   haas, berkeley_law, simons, luma, begin, ai_risk, brsl, cltc.
  *
  * Failure handling: each source is independent. If a source throws, we
  * record it in status.json and continue. We refuse to overwrite a healthy
@@ -61,6 +61,7 @@ import {
   fetchBerkeleyLaw,
   fetchBegin,
   fetchBrsl,
+  fetchCltc,
 } from "./sources/tribe.js";
 import { fetchSimons, SIMONS_ADAPTER_TIMEOUT_MS } from "./sources/simons.js";
 import { fetchLuma } from "./sources/luma.js";
@@ -384,6 +385,7 @@ async function main(): Promise<void> {
         promise: runAdapterWithTimeout("ai_risk", fetchAiRisk),
       },
       { name: "brsl", promise: runAdapterWithTimeout("brsl", fetchBrsl) },
+      { name: "cltc", promise: runAdapterWithTimeout("cltc", fetchCltc) },
     ];
 
   const settledRuns = await Promise.allSettled(
@@ -566,6 +568,10 @@ async function main(): Promise<void> {
     {
       title: "Berkeley Risk and Security Lab Events",
       uri: "https://brsl.berkeley.edu/events/",
+    },
+    {
+      title: "Center for Long-Term Cybersecurity Events",
+      uri: "https://cltc.berkeley.edu/events/",
     },
     ...groundingSources,
   ];
