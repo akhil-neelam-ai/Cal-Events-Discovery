@@ -135,6 +135,7 @@ interface AdapterRun {
   filteredPast: number;
   invalid: number;
   groupFeedsDegraded?: boolean;
+  failedGroups?: string[];
 }
 
 async function runAdapter<
@@ -144,6 +145,7 @@ async function runAdapter<
     filteredPast?: number;
     invalid?: number;
     groupFeedsDegraded?: boolean;
+    failedGroups?: string[];
   },
 >(name: SourceStatus["name"], fn: () => Promise<T>): Promise<AdapterRun> {
   const started = Date.now();
@@ -163,6 +165,7 @@ async function runAdapter<
       filteredPast: result.filteredPast ?? 0,
       invalid: result.invalid ?? 0,
       groupFeedsDegraded: result.groupFeedsDegraded,
+      failedGroups: result.failedGroups,
     };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -511,7 +514,10 @@ async function main(): Promise<void> {
     recovery.degradedSources.add(name);
     recovery.degradedReasons.add(reason);
   }
+  // Group-feed failures touch topics only. They never mark LiveWhale
+  // degraded, so they cannot raise a visitor banner.
   const groupFeedsDegraded = runs.some((run) => run.groupFeedsDegraded);
+  const failedGroups = runs.flatMap((run) => run.failedGroups ?? []);
   const topicAssignment = assignTopicsResiliently(
     legacy.map((event) => ({
       published: event,
@@ -521,7 +527,8 @@ async function main(): Promise<void> {
     undefined,
     {
       preserveTopicIds: recovery.restoredIds,
-      forceError: groupFeedsDegraded
+      missingGroups: failedGroups,
+      provenanceError: groupFeedsDegraded
         ? "LiveWhale group feeds failed; topic provenance incomplete"
         : undefined,
     },

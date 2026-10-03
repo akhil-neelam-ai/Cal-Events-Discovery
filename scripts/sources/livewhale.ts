@@ -372,17 +372,27 @@ async function fetchFeed(
         },
       );
       const ics = await res.text();
-      const parsed = ical.sync.parseICS(ics);
-      const veventCount = Object.values(parsed).filter(
-        (c) => (c as { type?: string }).type === "VEVENT",
-      ).length;
-      if (veventCount >= minEvents) {
-        return parsed;
-      }
+      if (!ics.includes("BEGIN:VCALENDAR")) {
+        // An HTML error page served with status 200 parses as an empty
+        // calendar. Even an empty real feed starts with BEGIN:VCALENDAR.
+        lastErr = "response is not an iCal calendar";
+        console.warn(`[${label}] ${lastErr}`);
+        // A group feed gives up at once, so one broken group cannot spend
+        // the adapter's time budget on retries.
+        if (minEvents === 0) break;
+      } else {
+        const parsed = ical.sync.parseICS(ics);
+        const veventCount = Object.values(parsed).filter(
+          (c) => (c as { type?: string }).type === "VEVENT",
+        ).length;
+        if (veventCount >= minEvents) {
+          return parsed;
+        }
 
-      lastErr = `empty/short feed (${veventCount} VEVENTs, need ≥ ${minEvents})`;
-      console.warn(`[${label}] ${lastErr}`);
-      if (minEvents === 0) return parsed;
+        lastErr = `empty/short feed (${veventCount} VEVENTs, need ≥ ${minEvents})`;
+        console.warn(`[${label}] ${lastErr}`);
+        if (minEvents === 0) return parsed;
+      }
     } catch (err) {
       lastErr = err instanceof Error ? err.message : String(err);
       console.warn(`[${label}] fetch error: ${lastErr}`);
@@ -569,9 +579,16 @@ export async function fetchLiveWhale(
     fetchAllGroupFeeds(options),
   ]);
   const groupFeedsDegraded = groupFeedsAreDegraded(groupResults);
+  const failedGroups = groupResults
+    .filter((result) => !result.ok)
+    .map((result) => result.group);
   if (groupFeedsDegraded) {
     console.warn(
-      "[livewhale] every department group feed failed; topic assignment will carry prior topics",
+      "[livewhale] every department group feed failed; topic assignment will carry prior group topics",
+    );
+  } else if (failedGroups.length > 0) {
+    console.warn(
+      `[livewhale] ${failedGroups.length} group feed(s) failed; their events keep prior group topics: ${failedGroups.join(", ")}`,
     );
   }
 
@@ -717,5 +734,12 @@ export async function fetchLiveWhale(
   console.log(
     `[livewhale] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`,
   );
-  return { events, rawCount, filteredPast, invalid, groupFeedsDegraded };
+  return {
+    events,
+    rawCount,
+    filteredPast,
+    invalid,
+    groupFeedsDegraded,
+    failedGroups,
+  };
 }
