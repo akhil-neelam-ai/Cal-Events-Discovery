@@ -345,6 +345,28 @@ export async function fetchBampfa(
           location,
         } = parsed;
 
+        // The link's details hold only boilerplate, so the description used
+        // to fall back to the title. The event's card has what the link
+        // lacks: the popup carries the summary, and the teaser it opens from
+        // lists BAMPFA's labels for the event, such as "Film" or "Art".
+        const popup = $(el).closest(".popupboxthing");
+        const popupId = popup.attr("data-popup");
+        const eventTypes = popupId
+          ? $(`[data-id="${popupId}"]`)
+              .first()
+              .closest(".event-content")
+              .find("ul.calendar_filter li")
+              .map((_j, item) => $(item).text().trim())
+              .get()
+              .filter(Boolean)
+          : [];
+        const summary = popup
+          .find(".event-summary")
+          .first()
+          .text()
+          .replace(/\s+/g, " ")
+          .trim();
+
         const { iso: start_at, allDay: all_day } = gcalTokenToIso(startToken);
         const end_at = endToken ? gcalTokenToIso(endToken).iso : undefined;
 
@@ -372,7 +394,7 @@ export async function fetchBampfa(
           source_url: CALENDAR_URL,
           evidence_url: canonicalUrl,
           title,
-          description,
+          description: summary || description,
           start_at,
           end_at,
           timezone: "America/Los_Angeles",
@@ -389,6 +411,7 @@ export async function fetchBampfa(
           canonical_url: canonicalUrl,
           categories: ["Arts"],
           tags: ["Arts"],
+          event_types: eventTypes.length > 0 ? eventTypes : undefined,
           last_seen_at: fetched_at,
           confidence: 0.95,
           quality_flags: [],

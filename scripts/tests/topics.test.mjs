@@ -324,6 +324,52 @@ test("broad container identity does not assign without event evidence", () => {
   );
 });
 
+test("publisher event labels assign topics as event-level evidence", () => {
+  // BAMPFA rows carry only a title, so the calendar's own label is the
+  // evidence that "Band of Outsiders" is a film.
+  const bampfa = (title, eventTypes) =>
+    assignTopics(
+      baseEvent({
+        source: "bampfa",
+        title,
+        organizer: "BAMPFA",
+        description: title,
+        event_types: eventTypes,
+      }),
+    );
+  assert.deepEqual(bampfa("Band of Outsiders", ["Film"]), ["film"]);
+  assert.deepEqual(bampfa("Mean Streets", ["Film", "In-Person"]), ["film"]);
+  assert.deepEqual(
+    bampfa("Exhibition Tour: Maren Hassinger", ["Art", "Tours"]),
+    ["visual-arts-exhibitions"],
+  );
+  assert.deepEqual(bampfa("Cafe Hours", ["Free"]), []);
+
+  const calPerformances = (title, genre) =>
+    assignTopics(
+      baseEvent({
+        source: "cal_performances",
+        title,
+        organizer: "Cal Performances",
+        description: title,
+        event_types: [genre],
+      }),
+    );
+  assert.deepEqual(calPerformances("Tom Borrow", "recital"), [
+    "music-performance",
+  ]);
+  assert.deepEqual(calPerformances("The Australian Ballet", "dance"), [
+    "theater-dance",
+  ]);
+  assert.deepEqual(calPerformances("Gala Evening", "special-events"), []);
+
+  // A label only counts for the publisher that defines it.
+  assert.deepEqual(
+    assignTopics(baseEvent({ title: "Weekly Meetup", event_types: ["Film"] })),
+    [],
+  );
+});
+
 test("LLM degree abbreviations do not receive the AI topic", () => {
   assert.equal(
     assignTopics(

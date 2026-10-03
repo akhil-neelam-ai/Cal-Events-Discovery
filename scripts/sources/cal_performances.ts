@@ -288,6 +288,7 @@ export async function fetchCalPerformances(
         canonical_url: post.link,
         categories: ["Arts"],
         tags: ["Arts", ...(genre ? [genre] : [])],
+        event_types: genreSlug ? [genreSlug] : undefined,
         last_seen_at: fetched_at,
         confidence: 0.95,
         quality_flags: [],

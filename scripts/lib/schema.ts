@@ -126,6 +126,10 @@ export const CanonicalEventSchema = z.object({
   // pipeline uses it for high-confidence topic assignment and does not publish
   // it in the legacy event shape.
   livewhale_groups: z.array(z.string()).optional(),
+  // Internal-only labels a publisher gives the kind of event, such as BAMPFA's
+  // "Film" or a Cal Performances genre. Topic assignment reads them as
+  // event-level evidence. They are not published.
+  event_types: z.array(z.string()).optional(),
 
   // Quality / freshness
   last_seen_at: z.string(),

@@ -200,6 +200,7 @@ export interface TopicAssignableEvent {
   source?: string;
   source_name?: string;
   livewhale_groups?: readonly string[];
+  event_types?: readonly string[];
 }
 
 const ASSIGNMENT_TERMS: Partial<Record<TopicSlug, readonly string[]>> = {
@@ -413,6 +414,38 @@ const SOURCE_TOPICS: Readonly<Record<string, readonly TopicSlug[]>> = {
   simons: ["computer-science-data"],
 };
 
+// Publishers label the kind of each event. A label is event-level evidence,
+// unlike a source's identity: BAMPFA marks each showing "Film" or "Art", and
+// Cal Performances files each performance under a genre in its URL. Labels
+// with no subject, such as "Tours", "Free", or "family", map to nothing.
+const EVENT_TYPE_TOPICS: Readonly<
+  Record<string, Readonly<Record<string, readonly TopicSlug[]>>>
+> = {
+  bampfa: {
+    film: ["film"],
+    art: ["visual-arts-exhibitions"],
+    workshop: ["workshops-skills"],
+    performance: ["music-performance"],
+  },
+  cal_performances: {
+    recital: ["music-performance"],
+    "early-music": ["music-performance"],
+    "new-music": ["music-performance"],
+    "chamber-music": ["music-performance"],
+    "orchestra-chamber-music": ["music-performance"],
+    "chamber-music-orchestra": ["music-performance"],
+    orchestra: ["music-performance"],
+    jazz: ["music-performance"],
+    "vocal-celebration": ["music-performance"],
+    percussion: ["music-performance"],
+    "percussion-festival": ["music-performance"],
+    pop: ["music-performance"],
+    dance: ["theater-dance"],
+    theater: ["theater-dance"],
+    "theater-opera": ["theater-dance", "music-performance"],
+  },
+};
+
 const GROUP_TOPICS: Readonly<Record<string, readonly TopicSlug[]>> = {
   physics: ["physics-math-quantum"],
   mathematics: ["physics-math-quantum"],
@@ -448,6 +481,7 @@ const GROUP_TOPICS: Readonly<Record<string, readonly TopicSlug[]>> = {
 const CONFIDENCE_FLOOR = 20;
 const GROUP_WEIGHT = 100;
 const SOURCE_WEIGHT = 70;
+const EVENT_TYPE_WEIGHT = 70;
 const ORGANIZER_WEIGHT = 50;
 const TITLE_WEIGHT = 30;
 const DESCRIPTION_WEIGHT = 10;
@@ -503,6 +537,12 @@ export function assignTopics(event: TopicAssignableEvent): TopicSlug[] {
 
   const source = event.source_name ?? event.source ?? "";
   for (const slug of SOURCE_TOPICS[source] ?? []) add(slug, SOURCE_WEIGHT);
+
+  const typeTopics = EVENT_TYPE_TOPICS[source] ?? {};
+  for (const label of event.event_types ?? []) {
+    const key = label.trim().toLowerCase().replace(/\s+/g, "-");
+    for (const slug of typeTopics[key] ?? []) add(slug, EVENT_TYPE_WEIGHT);
+  }
 
   const organizer = [event.organizer, event.organizer_unit]
     .filter(Boolean)
