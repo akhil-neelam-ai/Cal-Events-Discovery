@@ -34,7 +34,7 @@
     "undici": "^7.29.0"
   },
   "dependencies": {
-    "@sentry/react": "^10.75.0",
+    "@sentry/react": "^11.1.0",
     "@vercel/analytics": "^2.0.1",
     "cheerio": "^1.2.0",
     "fuse.js": "^7.5.0",
