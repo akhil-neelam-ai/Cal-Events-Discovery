@@ -1,99 +1,131 @@
 {
-  "generated_at": "2026-10-03T15:01:58.369Z",
-  "total_events": 1445,
-  "duplicates_removed": 330,
-  "past_events_filtered": 3310,
+  "generated_at": "2026-10-04T15:36:46.739Z",
+  "total_events": 1467,
+  "duplicates_removed": 219,
+  "past_events_filtered": 3351,
   "invalid_events_filtered": 4,
   "topics": {
     "outcome": "ok",
-    "assigned_count": 670,
+    "assigned_count": 756,
     "carried_forward_count": 0
   },
   "sources": [
     {
       "name": "livewhale",
       "ok": true,
-      "count": 1541,
-      "duration_ms": 8645,
-      "fetched_at": "2026-10-03T15:01:33.081Z"
+      "count": 1462,
+      "duration_ms": 6693,
+      "fetched_at": "2026-10-04T15:36:23.458Z",
+      "last_healthy_at": "2026-10-04T15:36:23.458Z",
+      "consecutive_failures": 0
     },
     {
       "name": "callink",
       "ok": true,
-      "count": 10,
-      "duration_ms": 420,
-      "fetched_at": "2026-10-03T15:01:33.105Z"
+      "count": 23,
+      "duration_ms": 947,
+      "fetched_at": "2026-10-04T15:36:23.482Z",
+      "last_healthy_at": "2026-10-04T15:36:23.482Z",
+      "consecutive_failures": 0
     },
     {
       "name": "cal_performances",
       "ok": true,
       "count": 54,
-      "duration_ms": 23770,
-      "fetched_at": "2026-10-03T15:01:33.107Z"
+      "duration_ms": 15645,
+      "fetched_at": "2026-10-04T15:36:23.485Z",
+      "last_healthy_at": "2026-10-04T15:36:23.485Z",
+      "consecutive_failures": 0
     },
     {
       "name": "calbears",
       "ok": true,
-      "count": 271,
-      "duration_ms": 790,
-      "fetched_at": "2026-10-03T15:01:33.108Z"
+      "count": 264,
+      "duration_ms": 907,
+      "fetched_at": "2026-10-04T15:36:23.486Z",
+      "last_healthy_at": "2026-10-04T15:36:23.486Z",
+      "consecutive_failures": 0
     },
     {
       "name": "bampfa",
       "ok": true,
-      "count": 121,
-      "duration_ms": 3362,
-      "fetched_at": "2026-10-03T15:01:33.109Z"
+      "count": 108,
+      "duration_ms": 4619,
+      "fetched_at": "2026-10-04T15:36:23.487Z",
+      "last_healthy_at": "2026-10-04T15:36:23.487Z",
+      "consecutive_failures": 0
     },
     {
       "name": "haas",
       "ok": true,
-      "count": 23,
-      "duration_ms": 4930,
-      "fetched_at": "2026-10-03T15:01:33.112Z"
+      "count": 22,
+      "duration_ms": 4048,
+      "fetched_at": "2026-10-04T15:36:23.490Z",
+      "last_healthy_at": "2026-10-04T15:36:23.490Z",
+      "consecutive_failures": 0
     },
     {
       "name": "berkeley_law",
       "ok": true,
       "count": 140,
-      "duration_ms": 5550,
-      "fetched_at": "2026-10-03T15:01:33.114Z"
+      "duration_ms": 5229,
+      "fetched_at": "2026-10-04T15:36:23.491Z",
+      "last_healthy_at": "2026-10-04T15:36:23.491Z",
+      "consecutive_failures": 0
     },
     {
       "name": "simons",
       "ok": true,
       "count": 30,
-      "duration_ms": 20217,
-      "fetched_at": "2026-10-03T15:01:33.114Z"
+      "duration_ms": 21354,
+      "fetched_at": "2026-10-04T15:36:23.492Z",
+      "last_healthy_at": "2026-10-04T15:36:23.492Z",
+      "consecutive_failures": 0
     },
     {
       "name": "luma",
       "ok": true,
       "count": 3,
-      "duration_ms": 1383,
-      "fetched_at": "2026-10-03T15:01:33.115Z"
+      "duration_ms": 1017,
+      "fetched_at": "2026-10-04T15:36:23.493Z",
+      "last_healthy_at": "2026-10-04T15:36:23.493Z",
+      "consecutive_failures": 0
     },
     {
       "name": "begin",
       "ok": true,
       "count": 2,
-      "duration_ms": 1649,
-      "fetched_at": "2026-10-03T15:01:33.124Z"
+      "duration_ms": 1565,
+      "fetched_at": "2026-10-04T15:36:23.504Z",
+      "last_healthy_at": "2026-10-04T15:36:23.504Z",
+      "consecutive_failures": 0
     },
     {
       "name": "ai_risk",
-      "ok": false,
-      "count": 0,
-      "duration_ms": 5205,
-      "error": "ai_risk fetch failed after 3 attempts: 404 Not Found",
-      "fetched_at": "2026-10-03T15:01:33.125Z"
+      "ok": true,
+      "count": 3,
+      "duration_ms": 1052,
+      "fetched_at": "2026-10-04T15:36:23.505Z",
+      "last_healthy_at": "2026-10-04T15:36:23.505Z",
+      "consecutive_failures": 0
     },
     {
       "name": "brsl",
       "ok": true,
       "count": 4,
-      "duration_ms": 3614,
-      "fetched_at": "2026-10-03T15:01:33.126Z"
+      "duration_ms": 1728,
+      "fetched_at": "2026-10-04T15:36:23.506Z",
+      "last_healthy_at": "2026-10-04T15:36:23.506Z",
+      "consecutive_failures": 0
+    },
+    {
+      "name": "cltc",
+      "ok": true,
+      "count": 1,
+      "duration_ms": 1843,
+      "fetched_at": "2026-10-04T15:36:23.507Z",
+      "last_healthy_at": "2026-10-04T15:36:23.507Z",
+      "consecutive_failures": 0
     }
   ],
   "fallback_used": false,
