@@ -1,6 +1,7 @@
 ---
 title: All-or-nothing group feed health let one failed feed wipe its topics silently
 date: 2026-10-03
+last_updated: 2026-10-04
 category: integration-issues
 module: LiveWhale group feeds and topic carry-forward
 problem_type: integration_issue
@@ -88,9 +89,9 @@ Five new or updated tests failed on `main` and passed after. A full live `npm ru
 
 Limits remain:
 
-- A partial failure still reports `outcome: "ok"`. Its only traces are a warning line and a nonzero `carried_forward_count`.
+- A partial failure still reports `outcome: "ok"`. Since PR 224, the LiveWhale entry in `status.json` names the failed groups as `failed_groups`.
 - The fix keeps topics, not events. An event posted only to a failed group's feed is still missing that day.
-- So far only unit tests cover the partial path.
+- On 2026-10-04 a local pipeline run pointed one extra group at an HTML page. LiveWhale stayed healthy with `failed_groups` naming that group, and no banner fields changed.
 
 ## Prevention
 
@@ -105,11 +106,11 @@ assert.equal(result.groupFeedsDegraded, false);
 ```
 
 - **Make every assertion read a value the code produced.** Reject `assert.deepEqual(literal, literal)` in review, and never hard-code a status counter.
-- **Watch the quiet signals.** After a cron run, search the log for `group feed(s) failed` and read `jq '.topics' public/status.json`. A nonzero `carried_forward_count` means some rows kept yesterday's topics.
+- **Watch the quiet signals.** After a cron run, read `jq '.sources[] | select(.name == "livewhale") | .failed_groups' public/status.json` and `jq '.topics' public/status.json`. A nonzero `carried_forward_count` means some rows kept yesterday's topics.
 
 ## Related Issues
 
 - Fixed in PR 219. Review record: `docs/code-review-2026-10-02-topic-filter-fixes.md`, items 12, 13, 15, and 16.
 - Origin: `docs/code-review-2026-09-04-topic-filter-layer.md` item #23 asked to mark the stage as an error and carry prior topics. Its all-or-nothing version is what PR 219 replaced.
 - Logged earlier without a ticket: `docs/code-review-2026-09-25.md` residual risk on partial group-feed outages.
-- Possible follow-up: write `failedGroups` into `status.json`, so a partial outage is visible without reading logs.
+- PR 224 writes `failedGroups` into `status.json` as `failed_groups`, so a partial outage is visible without reading logs. It also fixed the failure log, which said "after 3 attempts" when a group had stopped after one.

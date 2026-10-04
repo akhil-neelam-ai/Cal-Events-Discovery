@@ -708,6 +708,7 @@ test("orchestrator preserves last-good topics and group-feed provenance", () => 
 
   assert.match(orchestrator, /preserveTopicIds: recovery\.restoredIds/);
   assert.match(orchestrator, /missingGroups: failedGroups/);
+  assert.match(orchestrator, /failed_groups: result\.failedGroups/);
   assert.match(
     orchestrator,
     /LiveWhale group feeds failed; topic provenance incomplete/,

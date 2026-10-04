@@ -159,6 +159,9 @@ async function runAdapter<
         count: result.events.length,
         duration_ms: Date.now() - started,
         fetched_at,
+        ...(result.failedGroups?.length
+          ? { failed_groups: result.failedGroups }
+          : {}),
       },
       events: result.events,
       groundingSources: result.groundingSources,

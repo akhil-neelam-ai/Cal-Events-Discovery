@@ -355,9 +355,11 @@ async function fetchFeed(
   options: FetchOptions = {},
 ): Promise<Record<string, unknown>> {
   let lastErr = "";
+  let attempts = 0;
   const label = minEvents === 0 ? "livewhale-group" : "livewhale";
 
   for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
+    attempts = attempt;
     try {
       const res = await fetchWithRetry(
         url,
@@ -404,7 +406,7 @@ async function fetchFeed(
   }
 
   throw new Error(
-    `LiveWhale fetch failed after ${MAX_FETCH_ATTEMPTS} attempts: ${lastErr}`,
+    `LiveWhale fetch failed after ${attempts} ${attempts === 1 ? "attempt" : "attempts"}: ${lastErr}`,
   );
 }
 

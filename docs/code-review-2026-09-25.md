@@ -399,7 +399,7 @@ The one new item is the token exposure in CI (#15).
 - LiveWhale publishes 4 to 5 "Building Hours" rows a day. Revisit them once #7 lands.
 - One missed publish never trips the 36 h smoke threshold, since the 20:00 UTC run sees about 28 h.
 - Canceled LiveWhale rows count as `invalid` in `status.json` (`livewhale.ts:627-637`).
-- A partial LiveWhale group-feed outage now keeps that group's prior topics (PR 219), but status still reports `ok`. `failedGroups` reaches only the log.
+- A partial LiveWhale group-feed outage now keeps that group's prior topics (PR 219), but topic status still reports `ok`. Since PR 224, `status.json` lists the failed groups on the LiveWhale entry as `failed_groups`.
 - Luma ignores `has_more` and `next_cursor` (`luma.ts:159-163`).
 - Simons `end` values have no zone and get `Z` appended (`simons.ts:52-56`). Nothing downstream reads `end_at` for single events today.
 - PT offset helpers are copied in `bampfa.ts` and `ai_risk.ts`, and `cal_performances.ts` has a third variant.
