@@ -262,6 +262,13 @@ export interface SourceStatus {
    * opens a source-contracts issue from the daily workflow.
    */
   consecutive_failures?: number;
+  /**
+   * LiveWhale only: department group feeds that failed this run, including
+   * a 200 response that was not iCal. Their events keep only the prior
+   * topics those groups can give. Never marks the source degraded, so it
+   * raises no visitor banner. Omitted when every group feed loaded.
+   */
+  failed_groups?: string[];
 }
 
 export interface TopicAssignmentStatus {

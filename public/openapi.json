@@ -250,7 +250,12 @@
           "fallback_count": { "type": "integer" },
           "fallback_age_hours": { "type": "number" },
           "fallback_expired": { "type": "boolean" },
-          "degraded_reason": { "type": "string" }
+          "degraded_reason": { "type": "string" },
+          "failed_groups": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "LiveWhale only: department group feeds that failed this run. Never marks the source degraded."
+          }
         }
       }
     }

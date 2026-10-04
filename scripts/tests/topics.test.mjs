@@ -279,9 +279,13 @@ test("a group feed that serves a non-calendar page counts as failed", async () =
   ].join("\r\n");
   const emptyCalendar = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nEND:VCALENDAR";
 
+  let physicsFetches = 0;
+  const warnings = [];
   const originalFetch = globalThis.fetch;
+  const originalWarn = console.warn;
   globalThis.fetch = async (url) => {
     const target = String(url);
+    if (target.endsWith("/group/physics")) physicsFetches += 1;
     const body =
       target === "https://events.berkeley.edu/live/ical/events"
         ? mainFeed
@@ -290,13 +294,25 @@ test("a group feed that serves a non-calendar page counts as failed", async () =
           : emptyCalendar;
     return { ok: true, status: 200, text: async () => body };
   };
+  console.warn = (...args) => warnings.push(args.join(" "));
   try {
     const result = await fetchLiveWhale();
 
     assert.deepEqual(result.failedGroups, ["physics"]);
     assert.equal(result.groupFeedsDegraded, false);
+    // A broken group gives up at once, and the log says so.
+    assert.equal(physicsFetches, 1);
+    assert.ok(
+      warnings.some((line) =>
+        line.includes(
+          "LiveWhale fetch failed after 1 attempt: response is not an iCal calendar",
+        ),
+      ),
+      warnings.join("\n"),
+    );
   } finally {
     globalThis.fetch = originalFetch;
+    console.warn = originalWarn;
   }
 });
 
