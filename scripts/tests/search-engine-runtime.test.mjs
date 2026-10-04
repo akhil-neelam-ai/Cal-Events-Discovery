@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 import { DESKTOP_HERO_PRESETS } from "../../appConfig.ts";
 import { buildSearchIndex } from "../lib/buildIndex.ts";
-import { assignTopics } from "../lib/topics.ts";
+import { assignTopics, TOPICS } from "../lib/topics.ts";
 import {
   buildSearchPlan,
   searchEvents,
@@ -787,6 +787,44 @@ test("a dismissed topic searches its synonym, not the multi-word label", () => {
   assert.deepEqual(
     output.results.map((event) => event.id),
     ["law-concert"],
+  );
+});
+
+test("every dismissed topic still finds an event that names only the typed word", () => {
+  // Searching the label after a dismissal broke 11 of 19 topics, while tests
+  // that used only AI or Music passed. Keep every field free of label words,
+  // or a label search would match the typed-word event and hide the bug.
+  const base = {
+    organizer: "Campus Events Office",
+    date: "2026-04-22",
+    time: "5:00 PM",
+    location: "Room 100",
+    description: "",
+    tags: ["Academic"],
+    url: "https://example.com/event",
+    source: "livewhale",
+    topics: [],
+  };
+  const misses = TOPICS.filter((topic) => {
+    const word = topic.synonyms[0];
+    const events = [
+      { ...base, id: "typed-word", title: `Weekly ${word}` },
+      // Gives the label's words real index postings, so Fuse does not step in.
+      { ...base, id: "label-words", title: `Panel on ${topic.label}` },
+    ];
+    const { results } = searchEvents(
+      events,
+      word,
+      buildSearchIndex(events),
+      new Set([`topic:${topic.slug}`]),
+    );
+    return !results.some((event) => event.id === "typed-word");
+  });
+
+  assert.ok(TOPICS.length >= 19);
+  assert.deepEqual(
+    misses.map((topic) => topic.slug),
+    [],
   );
 });
 

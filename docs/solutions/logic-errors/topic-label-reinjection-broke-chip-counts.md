@@ -1,6 +1,7 @@
 ---
 title: Topic search used the label, not the word the user typed
 date: 2026-10-03
+last_updated: 2026-10-04
 category: logic-errors
 module: Search intent and topic chip counts
 problem_type: logic_error
@@ -98,7 +99,7 @@ Ten new or updated tests failed on `main` and passed after PR 215. After deploy,
 
 ## Prevention
 
-- **Loop over every topic, not only AI.** This sketch is not in the repo yet. It fails 11 of 19 topics on the code just before PR 215 and passes all 19 on `main`:
+- **Loop over every topic, not only AI.** PR 223 added this check to `scripts/tests/search-engine-runtime.test.mjs`. Putting back the label re-injection fails 11 of 19 topics. A simplified version:
 
 ```js
 test("a dismissed topic still finds an event that names only the typed word", () => {
@@ -117,7 +118,7 @@ test("a dismissed topic still finds an event that names only the typed word", ()
 });
 ```
 
-  `base` is a plain event with an empty description and no topics. Collecting the misses reports every failing topic at once.
+  `base` is a plain event with an empty description and no topics. No field may hold a label word. A "Student Life" tag would let the "Biology and Life Sciences" search match the typed-word event and hide the bug. Collecting the misses reports every failing topic at once.
 - **Count from the list's own function.** A chip that describes a result list should use the list's function, pool, and keys. Assert both numbers in one UI test, as PR 215 does with "Climate and Energy, 3 events".
 - **Run search UI tests on a real index.** Pass `searchIndex: buildSearchIndex(events)`. The Fuse-only path never applies `requiredCoreMatches`.
 - **Match dismissed keys exactly.** Keep the test "a dismissed key for another topic keeps the query's own topic".
