@@ -143,5 +143,6 @@ The review read `git diff` of the PR 174 merge. PR 202, a separate September aud
 ## Related
 
 - PR 216 added the Center for Long-Term Cybersecurity as source 13. It had sat on a local branch since September 4.
-- Open: PR 207 (Sentry 11 removes `sendDefaultPii`, a privacy call) and PR 204 (TypeScript 7, blocked until typescript-eslint supports it).
+- PR 221 removed Sentry on 2026-10-03, which closed PR 207 (Sentry 11 drops `sendDefaultPii`). Sentry never ran, since no DSN was set in Vercel.
+- Open: PR 204 (TypeScript 7, blocked until typescript-eslint supports it).
 - Issue 184 tracks the advisory topic-quality suite, which failed daily on live-corpus decay. PR 202 froze its reference text on 2026-10-03, so the 2026-10-04 run should pass and close it.

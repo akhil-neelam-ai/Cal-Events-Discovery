@@ -1,5 +1,4 @@
 import { IngestionStatus, SearchResponse } from "../types";
-import { captureError } from "../utils/errorTracking";
 
 /**
  * Loads the pre-generated static artifacts published by scripts/updateEvents.ts.
@@ -47,9 +46,8 @@ export const fetchEventArtifacts = async (
     }
 
     // status.json drives the StatusBanner / StaleDataBanner. Silently dropping
-    // a fetch failure means degraded states never reach the UI, so log it and
-    // report through errorTracking even though events.json is the only hard
-    // requirement for the page to render.
+    // a fetch failure means degraded states never reach the UI, so log it even
+    // though events.json is the only hard requirement for the page to render.
     let status: IngestionStatus | undefined;
     if (statusResult.status === "fulfilled") {
       status = statusResult.value;
@@ -58,7 +56,6 @@ export const fetchEventArtifacts = async (
         "[eventsLoader] status.json fetch failed",
         statusResult.reason,
       );
-      captureError(statusResult.reason, { source: "status.json" });
     }
 
     return {

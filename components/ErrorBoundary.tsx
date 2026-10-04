@@ -1,7 +1,5 @@
 import React from "react";
 
-import { captureError } from "../utils/errorTracking";
-
 interface ErrorBoundaryState {
   error: Error | null;
 }
@@ -18,7 +16,6 @@ export class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, info: React.ErrorInfo): void {
     console.error("[ErrorBoundary]", error, info.componentStack);
-    captureError(error, { componentStack: info.componentStack });
   }
 
   private handleReload = (): void => {
