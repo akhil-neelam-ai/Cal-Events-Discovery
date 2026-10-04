@@ -182,7 +182,7 @@ npm run test:search-quality                 # live corpus golden queries
 
 | Source | Adapter | Method |
 |--------|---------|--------|
-| LiveWhale (campus calendar) | `livewhale.ts` | iCal + 35 department group feeds |
+| LiveWhale (campus calendar) | `livewhale.ts` | iCal + 40 department group feeds |
 | CalLink (student orgs) | `callink.ts` | CampusGroups JSON API (~16 event cap) |
 | Cal Performances | `cal_performances.ts` | WordPress REST |
 | Cal Bears athletics | `calbears.ts` | iCal |

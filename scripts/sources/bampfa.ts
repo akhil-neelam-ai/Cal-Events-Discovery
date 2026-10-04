@@ -30,6 +30,12 @@ import { endedBeforePT, todayPT } from "../lib/normalize.js";
 
 const BASE_URL = "https://bampfa.org";
 const CALENDAR_URL = `${BASE_URL}/visit/calendar`;
+/**
+ * BAMPFA lists closures, such as "Modified Hours: BAMPFA Closed", as calendar
+ * entries. Only a title that matches and carries no BAMPFA label counts, so a
+ * film called "After Hours" stays.
+ */
+const CLOSURE_NOTICE = /\b(closed|closure|modified hours)\b/i;
 const FETCH_TIMEOUT_MS = 12_000;
 const MAX_FETCH_ATTEMPTS = 2;
 const RETRY_DELAY_MS = 1_500;
@@ -298,6 +304,7 @@ export async function fetchBampfa(
   let rawCount = 0;
   let filteredPast = 0;
   let invalid = 0;
+  let notices = 0;
 
   // Month pages overlap, so the same showing can appear twice. A showing is
   // its canonical URL plus its start, so a second screening that day stays.
@@ -366,6 +373,11 @@ export async function fetchBampfa(
           .text()
           .replace(/\s+/g, " ")
           .trim();
+
+        if (eventTypes.length === 0 && CLOSURE_NOTICE.test(title)) {
+          notices++;
+          return;
+        }
 
         const { iso: start_at, allDay: all_day } = gcalTokenToIso(startToken);
         const end_at = endToken ? gcalTokenToIso(endToken).iso : undefined;
@@ -442,7 +454,7 @@ export async function fetchBampfa(
 
   numberSameDayShowings(events);
   console.log(
-    `[bampfa] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid})`,
+    `[bampfa] parsed ${events.length}/${rawCount} (past: ${filteredPast}, invalid: ${invalid}, closure notices: ${notices})`,
   );
   return { events, rawCount, filteredPast, invalid };
 }

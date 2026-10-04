@@ -338,6 +338,40 @@ test("BAMPFA reads the card's labels and summary, which the link lacks", async (
   }
 });
 
+test("BAMPFA skips unlabeled closure notices but keeps a film called After Hours", async () => {
+  const day = daysFromToday(4);
+  const token = `${day.replace(/-/g, "")}T190000`;
+  const card = (id, slug, title, labels) => `<div class="views-row">
+    <div class="views-field views-field-nothing"><span class="field-content">
+      <div class="calendar-event"><div class="event-content">
+        <div class="title month-title" data-id="${id}"><a href="/event/${slug}">${title}</a></div>
+        <ul class="calendar_filter">${labels.map((label) => `<li>${label}</li>`).join("")}</ul>
+      </div></div>
+    </span></div>
+    <div class="popupboxthing" data-popup="${id}"><div class="views-row"><div class="calendar-event">
+      <a class="add-to-cal-link" href="https://calendar.google.com/calendar/r/eventedit?text=${encodeURIComponent(title)}&amp;dates=${token}/${token}&amp;details=https%3A%2F%2Fbampfa.org%2Fevent%2F${slug}&amp;location=BAMPFA">Add</a>
+    </div></div></div>
+  </div>`;
+  const html = `<html><body>${card("1_0", "modified-hours", "Modified Hours: BAMPFA Closed", [])}${card("2_0", "after-hours", "After Hours", ["Film"])}</body></html>`;
+
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => ({
+    ok: true,
+    status: 200,
+    text: async () => html,
+  });
+  try {
+    const result = await fetchBampfa();
+
+    assert.deepEqual(
+      result.events.map((event) => event.title),
+      ["After Hours"],
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("Cal Performances keeps a run listed after its first performance", async () => {
   const stamp = (key, time) => {
     const [year, month, day] = key.split("-");

@@ -34,7 +34,7 @@
 
 ### #2. Category words erase the query (P1)
 
-**Status:** Fixed. The decision was plain search text, which differs from the default below. Only category names such as "arts" or "sports" lock a category. Subject words never do. "basketball" now returns 83 rows, and every one mentions basketball. "hackathon" shows the no-results state. A dismissed chip searches the words that set it. Covered by `scripts/tests/search-engine-runtime.test.mjs` and a golden check in `scripts/tests/search-quality.test.mjs`.
+**Status:** Fixed. The decision was plain search text, which differs from the default below. Only category names such as "arts" or "sports" lock a category. Subject words never do. "basketball" now returns 83 rows, and every one mentions basketball. "hackathon" shows the no-results state. A dismissed chip searches the words that set it. Covered by `scripts/tests/search-engine-runtime.test.mjs` and a golden check in `scripts/tests/search-quality.test.mjs`. Topic chips kept searching their label until PR 215 applied the same rule to them.
 **Files:** `utils/searchIntent.ts:417-424` (strip at `:421`), `utils/searchIntent.ts:65-87`, `utils/searchIntent.ts:488-505`, `scripts/tests/search-engine-runtime.test.mjs:764` and `:843`, `AGENTS.md:83`
 **Problem:** Commit `4664a0b` (2026-09-04) made the category detector strip its matched words. A subject word such as "tennis" now sets the Sports filter and leaves no keywords. `runScoring` then returns the whole category in date order. AGENTS.md:83 still says the category branch does not strip, and calls that asymmetry load-bearing.
 **Evidence (2026-09-25 corpus):**
@@ -174,7 +174,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 ### #14. The topic-quality gate fails every day by construction (P2)
 
-**Status:** Fixed. Each of the 56 references now stores its title, description, organizer, and source, frozen from the 2026-09-03 snapshot in commit `0a87587`. The suite runs `assignTopics` on those copies and no longer checks corpus membership. It passes today at 51 of 51. It fails when "ai" leaves the AI synonyms, at 35 of 51. Removing "machine learning" alone still passes at 49 of 51, so that verify step does not hold. Close #184 once this reaches `main`.
+**Status:** Fixed. Each of the 56 references now stores its title, description, organizer, and source, frozen from the 2026-09-03 snapshot in commit `0a87587`. The suite runs `assignTopics` on those copies and no longer checks corpus membership. It passes today at 51 of 51. It fails when "ai" leaves the AI synonyms, at 35 of 51. Removing "machine learning" alone still passes at 49 of 51, so that verify step does not hold. Close #184 once this reaches `main`. A copy of the same check inside `npm run validate` decayed the same way. PR 219 moved it to the frozen text.
 **Files:** `scripts/tests/topic-quality.test.mjs:44-67`, `scripts/tests/fixtures/topic-reference-sets.json`
 **Problem:** The test looks up the 56 frozen AI references by event id in the live corpus and needs 40 to remain. Events age out daily. The 2026-09-25 run reports `Only 23/56 frozen references remain in the current corpus`. The suite has failed on every run since 2026-09-12. Issue #184 has 13 identical comments, so a real topic regression would now go unseen.
 **Fix:** Store each reference's title, description, organizer, source, and groups in the fixture. Run `assignTopics` over those copies and drop the corpus-membership assertion. Then close #184.
@@ -375,7 +375,7 @@ The hero preset "A film at BAMPFA" has the same gap.
 
 Everything else from Tiers 1 to 8 is in the code, including the privacy footer and the mobile filter scrollbar.
 
-**Topic-filter review (`docs/code-review-2026-09-04-topic-filter-layer.md`):** F1 to F12 landed in PR 173, and leftover #1 to #23 landed in PR 174. #14 above is a new problem in the frozen reference check.
+**Topic-filter review (`docs/code-review-2026-09-04-topic-filter-layer.md`):** F1 to F12 landed in PR 173, and leftover #1 to #23 landed in PR 174. #14 above is a new problem in the frozen reference check. Follow-ups for #2, #5, #6, #8, #9, #11, #17, #22, and #23 landed in PRs 215, 217, 218, and 219. See `docs/code-review-2026-10-02-topic-filter-fixes.md`.
 
 ---
 
@@ -399,7 +399,7 @@ The one new item is the token exposure in CI (#15).
 - LiveWhale publishes 4 to 5 "Building Hours" rows a day. Revisit them once #7 lands.
 - One missed publish never trips the 36 h smoke threshold, since the 20:00 UTC run sees about 28 h.
 - Canceled LiveWhale rows count as `invalid` in `status.json` (`livewhale.ts:627-637`).
-- A partial LiveWhale group-feed outage is invisible. Only an all-feeds failure is flagged (`livewhale.ts:402-406`).
+- A partial LiveWhale group-feed outage now keeps that group's prior topics (PR 219), but status still reports `ok`. `failedGroups` reaches only the log.
 - Luma ignores `has_more` and `next_cursor` (`luma.ts:159-163`).
 - Simons `end` values have no zone and get `Z` appended (`simons.ts:52-56`). Nothing downstream reads `end_at` for single events today.
 - PT offset helpers are copied in `bampfa.ts` and `ai_risk.ts`, and `cal_performances.ts` has a third variant.
