@@ -156,6 +156,21 @@ test("published topic assignments are valid, bounded, and represented", () => {
   }
 });
 
+test("label-driven sources keep at least half their events tagged", () => {
+  // On 2026-10-03, 72 of 79 BAMPFA events had no topics while every topic
+  // floor above passed. These sources get topics from publisher labels.
+  for (const source of ["bampfa", "cal_performances"]) {
+    const rows = published.events.filter((event) => event.source === source);
+    // An empty source would pass the bound without checking anything.
+    assert.ok(rows.length > 0, `${source} has no published events`);
+    const untagged = rows.filter((event) => event.topics.length === 0).length;
+    assert.ok(
+      untagged <= rows.length / 2,
+      `${source}: ${untagged} of ${rows.length} events have no topics`,
+    );
+  }
+});
+
 test("labeled samples keep assignment precision at or above 90%", () => {
   const labeled = JSON.parse(
     fs.readFileSync(

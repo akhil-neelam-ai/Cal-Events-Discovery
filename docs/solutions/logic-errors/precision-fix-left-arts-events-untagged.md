@@ -1,6 +1,7 @@
 ---
 title: Precision fix removed the only topic evidence for BAMPFA and Cal Performances
 date: 2026-10-03
+last_updated: 2026-10-04
 category: logic-errors
 module: Pipeline topic assignment
 problem_type: logic_error
@@ -104,7 +105,7 @@ assert.deepEqual(bampfa("Band of Outsiders", ["Film"]), ["film"]);
 assert.deepEqual(bampfa("Cafe Hours", ["Free"]), []);
 ```
 
-- **Bound coverage per source, not only per topic.** A sketch for the advisory suite, not in the repo yet. It fails on the 2026-10-03 snapshot and passes on the fixed local run:
+- **Bound coverage per source, not only per topic.** PR 223 added this bound to the advisory topic-quality suite. It fails on the 2026-10-03 snapshot, with 72 of 79 BAMPFA rows untagged, and passes on 2026-10-04 with 1 of 77:
 
 ```js
 for (const source of ["bampfa", "cal_performances"]) {
@@ -122,5 +123,5 @@ for (const source of ["bampfa", "cal_performances"]) {
 
 - Fixed in PR 217. Review record: `docs/code-review-2026-10-02-topic-filter-fixes.md`, item 1.
 - Origin: `docs/code-review-2026-09-04-topic-filter-layer.md` item #6 asked for two halves, dropping the broad mappings and requiring event-level evidence. Only the first landed in PR 174.
-- Not covered yet: PR 174 also removed the Haas mapping to Startups. Startups fell from 49 events to 9. Haas hikes were false positives, so part of that drop is intended, but nobody has measured the rest.
+- PR 174 also removed the Haas mappings to Startups. A 2026-10-04 measurement found the cut was all precision. Its first run, on 2026-09-05, took Startups from 49 events to 17. All 31 lost tags were on Haas alumni events or Haas research seminars, and none was a startup event. The later fall to 9 was events passing.
 - Same blind spot, different checks: `docs/solutions/logic-errors/topic-label-reinjection-broke-chip-counts.md` and `docs/solutions/best-practices/publish-gate-recall-checks-need-frozen-fixtures.md`.
