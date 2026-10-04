@@ -8,6 +8,12 @@ updates:
       time: "09:00"
       timezone: America/Los_Angeles
     open-pull-requests-limit: 5
+    ignore:
+      # TypeScript 7 fails npm install: typescript-eslint 8.71 accepts only
+      # typescript <6.1.0. Delete this rule once typescript-eslint supports
+      # TypeScript 7. Dependabot then reopens the update (closed PR 204).
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
     groups:
       npm-production:
         dependency-type: production
