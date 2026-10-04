@@ -123,7 +123,7 @@ Implementation note (2026-09-04): leftover #1–#23 are implemented on `feat/top
 **Verify:** Indexed and no-index WebMCP tests: `topic=law`, `query=AI` must match the UI result IDs and fallback flag.
 
 ### #2 — Missing search index plus Fuse cap auto-clears a valid topic (P1)
-**Status:** Fixed.
+**Status:** Fixed for the results grid in PR 174. Chip counts kept the Fuse cap until PR 215, and auto-clear waits for the index since PR 218. See `docs/code-review-2026-10-02-topic-filter-fixes.md`.
 **File:** `hooks/useEventBrowserState.ts:298`
 **Problem:** An explicit `filters.topic` is applied after `searchEvents` ranks the category/source pool. Without an index, Fuse keeps 100 hits. If 101 stronger non-Law matches precede a Law match, Law counts as zero and auto-clear removes a valid URL topic.
 **Fix:** Apply the explicit topic to the search pool before scoring and Fuse truncation. Compute availability from a separate pre-topic pool.
@@ -144,7 +144,7 @@ Implementation note (2026-09-04): leftover #1–#23 are implemented on `feat/top
 **Verify:** Publish-guard tests for four-slug, duplicate, unknown-slug, and non-array returns. Each must set `topics.outcome` to `error` and still produce a publishable snapshot.
 
 ### #5 — Successful empty assignment keeps yesterday's topic (P1)
-**Status:** Fixed.
+**Status:** Fixed. PR 219 adds one exception: a LiveWhale event whose group feed failed keeps the prior topics only that group gives.
 **File:** `scripts/lib/topicAssignmentResilience.ts:87`
 **Decision needed:** R2 says an unconfident event carries no topic. R5 limits carry-forward to assignment failure or timeout. The current code copies prior topics whenever the assigner returns `[]` and still reports `outcome: ok`. The plan text broadened this; the requirements did not.
 **Recommended default:** A successful `[]` is authoritative. Carry prior topics only on the caught failure path.
@@ -153,7 +153,7 @@ Implementation note (2026-09-04): leftover #1–#23 are implemented on `feat/top
 **Verify:** A fixture event with yesterday's `ai-machine-learning` and a successful `[]` today publishes `topics: []` (default) or a documented stale outcome (alternate).
 
 ### #6 — Container identity assigns topics without event evidence (P1)
-**Status:** Fixed.
+**Status:** Broad mappings dropped in PR 174. The replacement evidence came a month later in PR 217, as publisher labels in `event_types`. See `docs/code-review-2026-10-02-topic-filter-fixes.md`.
 **File:** `scripts/lib/topics.ts:360`
 **Decision needed:** Which organizers, groups, and sources are homogeneous enough to assign a topic with no title or description match?
 **Recommended default:** Drop broad mappings. Keep identity weights only for containers that are one subject (for example Berkeley AI Risk → AI). Require title, source-category, or other event-level evidence for Chemistry, BAMPFA, Cal Performances, Haas, Library, and broad Engineering units.
@@ -173,14 +173,14 @@ Implementation note (2026-09-04): leftover #1–#23 are implemented on `feat/top
 ## Tier 2 — Search and UI mismatches
 
 ### #8 — Auto-clear leaves the query-inferred topic on (P2)
-**Status:** Fixed.
+**Status:** Fixed in PR 174. Its `topic:<slug>` dismissal also removed other inferred topics until PR 215 made dismissal match the exact key.
 **File:** `App.tsx:211`
 **Problem:** `clearUnavailableTopic` clears only `filters.topic`. If the query still infers that topic, the next render reapplies the hard filter while the notice says the topic was cleared.
 **Fix:** Also add `topic:<slug>` to `dismissedInterpretationKeys` in the auto-clear path.
 **Verify:** App test for `?q=AI&topic=ai-machine-learning` plus a category or source with no AI-topic events. After auto-clear, the inferred AI filter is gone and AI is ranking text only.
 
 ### #9 — UI date buckets run after topic fallback (P2)
-**Status:** Fixed.
+**Status:** Fixed in PR 174 with a hook fallback that dropped the rest of the query. PR 218 replaced it with the engine's own topic fallback.
 **File:** `hooks/useEventBrowserState.ts:200`
 **Problem:** `searchEvents` sees every date. A future AI event keeps the topic pool non-empty. The later Today bucket can then be empty, with no fallback and no auto-clear for a typed topic.
 **Fix:** Evaluate inferred-topic emptiness against the active date/source/category pool, or run topic fallback after the date partition.
@@ -194,7 +194,7 @@ Implementation note (2026-09-04): leftover #1–#23 are implemented on `feat/top
 **Verify:** Shared UI and WebMCP fixture: AI tomorrow, Law today, `query=AI`, `datePreset=today`.
 
 ### #11 — Inferred-topic counts disable replacement chips (P2)
-**Status:** Fixed.
+**Status:** Fixed in PR 174, but the counts searched the topic label. PR 215 counts the typed and selected topics with the grid's own search.
 **File:** `hooks/useEventBrowserState.ts:288`
 **Problem:** R10 and R12 say a clicked topic replaces typed topic intent. Counts are taken from results that already have the inferred topic applied. A Law event that matches AI as text but is not tagged AI shows count 0, so the Law chip is disabled.
 **Fix:** Count availability from a search with the inferred topic dismissed and restored as ranking text. Keep date, source, category, and residual query.
@@ -240,7 +240,7 @@ Implementation note (2026-09-04): leftover #1–#23 are implemented on `feat/top
 **Verify:** A Haas hike labeled "not startups" fails the suite if the assigner still tags it.
 
 ### #17 — Live AI search asserts 50 hits, not reference overlap (P1, quality)
-**Status:** Fixed.
+**Status:** Fixed in PR 174 with a live-feed check that decayed toward 100% of a shrinking set. PR 219 moved it to frozen reference text.
 **File:** `scripts/tests/search-engine-runtime.test.mjs:524`
 **Problem:** AE1 is written as 50 of the 56 AI reference events. The test only checks `results.length >= 50`. Homonyms can pad the count.
 **Fix:** Assert the intersection of result IDs with the 56-item reference set meets the stated floor. Move known homonyms to explicit negatives.
@@ -277,14 +277,14 @@ Implementation note (2026-09-04): leftover #1–#23 are implemented on `feat/top
 **Verify:** Agent-readiness fails if any one of the three versions drifts.
 
 ### #22 — Legacy payload without vocabulary leaves a topic link stuck (P2)
-**Status:** Fixed.
+**Status:** Fixed in PR 174, but a failed load also counted as settled and dropped the link's topic. PR 218 waits for a successful load.
 **File:** `App.tsx:100`
 **Problem:** A successful load with no `topic_vocabulary` leaves `allowedTopicSlugs` null, which is the same sentinel as "still loading." A `?topic=law` link stays provisional. Legacy events have no `topics`, so the page stays empty.
 **Fix:** Distinguish "feed still loading" from "loaded, no vocabulary." After a successful load, reject topic links against an empty allow-list or fall back to text search.
 **Verify:** UI test that loads a pre-topic `events.json` with `?topic=law` and does not keep an empty hard filter.
 
 ### #23 — LiveWhale group-feed failures drop assignment provenance (P2)
-**Status:** Fixed.
+**Status:** Fixed in PR 174 as all-or-nothing. PR 219 tracks each failed group feed and leaves other sources alone.
 **File:** `scripts/sources/livewhale.ts:397`
 **Problem:** `fetchGroupFeed` swallows every error and returns `{}`. If the main feed succeeds and every department feed fails, LiveWhale still looks healthy. Assignment then runs without `livewhale_groups`, can replace group-derived topics, and reports `topics.outcome: ok`.
 **Fix:** Return group-fetch health. When that input is degraded, mark the topic stage as error and carry prior topic sets. Do not set visitor-facing degraded-source flags.

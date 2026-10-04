@@ -14,7 +14,7 @@ Stack: React 19, Vite 8, TypeScript, Tailwind v4, Fuse.js. Pipeline is TypeScrip
 npm run dev                  # Vite dev server → localhost:5173
 npm run build                # tsc + vite build → dist/
 npm run validate             # Publish-critical suite: lint, format, typecheck, script tests, UI tests
-npm run test:scripts         # node:test suite in scripts/tests/ (excludes search-quality)
+npm run test:scripts         # node:test suite in scripts/tests/ (excludes search-quality and topic-quality)
 npm run test:ui              # vitest, tests/*.tsx
 npm run test:e2e             # Playwright, tests/e2e/
 npm run test:search-quality  # Live golden queries against public/ artifacts (non-blocking in CI)
@@ -84,7 +84,7 @@ Loads `events.json` and `search-index.json` at startup. Search is entirely clien
 
 **Search flow** (`utils/searchIntent.ts` + `utils/searchEngine.ts`):
 
-1. `buildSearchPlan(query, { topics })` detects intent in a fixed detector order: temporal, source, topic, time-of-day, modality, free, category, campus area. Topic uses the published vocabulary when the feed has loaded. Later topic phrases stay ranking text. Each detector strips its matched words from the residual query text. **Only category names such as "arts" or "sports" lock a category.** Subject words such as "seminar" or "basketball" stay ranking text, because a lock hides matches filed under another primary category. Dismissing a source or category chip searches the words that set it.
+1. `buildSearchPlan(query, { topics })` detects intent in a fixed detector order: temporal, source, topic, time-of-day, modality, free, category, campus area. Topic uses the published vocabulary when the feed has loaded. Later topic phrases stay ranking text. Each detector strips its matched words from the residual query text. **Only category names such as "arts" or "sports" lock a category.** Subject words such as "seminar" or "basketball" stay ranking text, because a lock hides matches filed under another primary category. Dismissing a source, category, or topic chip searches the words that set it.
 2. `searchEvents` applies plan filters as a hard pool filter, then scores against the inverted index, falls back to Fuse.js, then broadens (drop the weekend filter, then category, then topic) with an explanatory message. Callers narrow the pool to the date range first.
 
 **Search index** (`scripts/lib/buildIndex.ts` → `public/search-index.json`): field-differentiated inverted index. Fields: `t` title (60), `g` tags (45), `o` organizer (30), `l` location (20), `d` description (10). Values are event-position integers into `ids[]`. Venue aliases are injected at build time.
@@ -141,7 +141,9 @@ Established in `docs/brainstorms/2026-08-17-publish-vs-quality-pipeline-requirem
 
 The topic filter layer from `docs/plans/2026-09-03-001-feat-topic-filter-layer-plan.md` is on `main` (PR 173). Do not re-implement U1 through U9.
 
-Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` merged in PR 174 on 2026-09-04. Successful empty assignments clear topics. Broad identity mappings are gone. In their place, BAMPFA's calendar labels and Cal Performances genres reach `assignTopics` as internal `event_types`. The breadth cap stays 200. Public discovery versions are 1.3.0, since the September audit added the multi-day fields.
+Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` merged in PR 174 on 2026-09-04. Successful empty assignments clear topics. Broad identity mappings are gone. The breadth cap stays 200. Public discovery versions are 1.3.0, since the September audit added the multi-day fields.
+
+The October 2 review of PR 174 is `docs/code-review-2026-10-02-topic-filter-fixes.md`. PRs 215, 217, 218, and 219 fixed all 15 findings on 2026-10-03. Since PR 217, BAMPFA's calendar labels and Cal Performances genres reach `assignTopics` as internal `event_types`. Lessons that apply beyond one bug are in `docs/solutions/`.
 
 The June full-repo audit is `docs/code-review-2026-06-02.md`. It is a different pass.
 
@@ -159,6 +161,7 @@ The September full-repo audit is `docs/code-review-2026-09-25.md`. Every item ha
 | `scripts/lib/lastGoodFallback.ts` | Recovery policies, `markRecovery`, and last-good restore with cancellation filtering |
 | `scripts/lib/topics.ts` | Topic vocabulary and deterministic assignment |
 | `docs/code-review-2026-09-04-topic-filter-layer.md` | Leftover topic-filter review items after PR 173 |
+| `docs/solutions/` | Documented solutions to past problems, one file each, in category folders such as `logic-errors/`. YAML frontmatter carries `module`, `tags`, and `problem_type`. Relevant when debugging or changing a documented area. |
 | `utils/searchIntent.ts` | Query intent: `buildSearchPlan`, topic phrases, dismissed-key rebuild |
 | `utils/searchEngine.ts` | `searchEvents`: pool filters, scoring, and fallback |
 | `utils/textUtils.ts` | Stemmer, tokenizer, `DOMAIN_SYNONYMS`, venue aliases |

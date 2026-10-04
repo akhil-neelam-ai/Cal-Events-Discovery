@@ -274,6 +274,7 @@ Origin requirements are carried by ID. Requirements below that have no origin ID
   - `utils/searchEngine.ts` (topic detector, dismissal, pool filter, fallback)
   - `scripts/tests/search-engine-runtime.test.mjs`
 - **Approach:** Insert topic detection ahead of modality, free, source, and category, matching against the vocabulary synonyms from U2 and stripping on match so later detectors never see the claimed word. Multi-topic queries take the first in query order as the filter and leave the rest as ranking text. The dismissal helper needs a topic case beside the existing per-field cases, including the re-injection of the dismissed label as searchable text that category and source already do. The empty-pool fallback mirrors the existing drop-category branch, relaxing the topic and explaining the relaxation.
+- **Superseded 2026-10-03:** a dismissed topic now searches the words the user typed, not its label, and dismissal matches the exact key. See `docs/code-review-2026-10-02-topic-filter-fixes.md`, items 3 and 4.
 - **Patterns to follow:** the strip-on-match detector shape; the per-field deletion switch in the dismissal helper; the two-stage broaden-then-explain fallback already in `searchEvents`.
 - **Test scenarios:**
   - Covers AE1. "AI" sets the AI topic, shows an AI interpretation chip rather than a category chip, and returns AI events from more than one category.
