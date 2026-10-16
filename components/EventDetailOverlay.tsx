@@ -97,98 +97,157 @@ function DetailActions({
         ? "Copy failed"
         : "Copy link";
 
+  const copyIcon = copied ? (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5 text-green-600"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        fillRule="evenodd"
+        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+        clipRule="evenodd"
+      />
+    </svg>
+  ) : (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+      />
+    </svg>
+  );
+
+  const tileClassName =
+    "flex min-w-0 flex-col items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2 py-3 text-sm font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2";
+
   return compact ? (
     <div className="space-y-3">
-      <div className="flex gap-2">
-        {event.url && (
-          <a
-            href={event.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block flex-1 select-none rounded-xl bg-berkeley-blue py-3.5 text-center font-bold text-white tap-highlight"
-            style={{
-              transition:
-                "transform 150ms cubic-bezier(0.32,0.72,0,1), opacity 150ms ease",
-            }}
-            onClick={() =>
-              trackExternalLink({
-                event_id: event.id,
-                event_title: event.title,
-                destination_url: event.url,
-              })
-            }
+      {event.url && (
+        <a
+          href={event.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex w-full select-none items-center justify-center gap-2 rounded-xl bg-berkeley-blue py-3.5 font-bold text-white tap-highlight"
+          style={{
+            transition:
+              "transform 150ms cubic-bezier(0.32,0.72,0,1), opacity 150ms ease",
+          }}
+          onClick={() =>
+            trackExternalLink({
+              event_id: event.id,
+              event_title: event.title,
+              destination_url: event.url,
+            })
+          }
+        >
+          View Official Page
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
           >
-            View Official Page
-          </a>
-        )}
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            />
+          </svg>
+        </a>
+      )}
+      <div
+        className={`grid gap-2 ${directionsUrl ? "grid-cols-3" : "grid-cols-2"}`}
+      >
         <button
           type="button"
-          className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+          aria-label={calendarLabel}
+          className={tileClassName}
           style={{ transition: "background-color 150ms ease" }}
           onClick={handleAddToCalendar}
         >
-          {calendarLabel}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+          <span className="whitespace-nowrap">Calendar</span>
         </button>
         <button
           type="button"
-          className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-3.5 font-semibold text-slate-700 tap-highlight active:bg-slate-50 select-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+          className={tileClassName}
           style={{ transition: "background-color 150ms ease" }}
           onClick={handleCopyLink}
         >
-          {copied ? (
+          {copyIcon}
+          <span className="whitespace-nowrap">{copyLabel}</span>
+        </button>
+        {directionsUrl && (
+          <a
+            href={directionsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Map & Directions"
+            className={tileClassName}
+            style={{ transition: "background-color 150ms ease" }}
+            onClick={(eventClick) => {
+              eventClick.stopPropagation();
+              trackExternalLink({
+                event_id: event.id,
+                event_title: event.title,
+                destination_url: directionsUrl,
+              });
+            }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 text-green-600"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
+              className="h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-          )}
-          <span>{copyLabel}</span>
-        </button>
+            <span className="whitespace-nowrap">Directions</span>
+          </a>
+        )}
       </div>
-      {directionsUrl && (
-        <a
-          href={directionsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full select-none rounded-xl border border-slate-200 py-3.5 text-center font-semibold text-slate-700 tap-highlight active:bg-slate-50"
-          style={{
-            transition:
-              "transform 150ms cubic-bezier(0.32,0.72,0,1), background-color 150ms ease",
-          }}
-          onClick={(eventClick) => {
-            eventClick.stopPropagation();
-            trackExternalLink({
-              event_id: event.id,
-              event_title: event.title,
-              destination_url: directionsUrl,
-            });
-          }}
-        >
-          Map & Directions
-        </a>
-      )}
     </div>
   ) : (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
