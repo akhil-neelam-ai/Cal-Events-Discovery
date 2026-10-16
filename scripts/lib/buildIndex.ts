@@ -36,9 +36,9 @@ function finalise(map: FieldMap): Record<string, number[]> {
 }
 
 /** Tokenize text and also inject alias expansions for known Berkeley venues. */
-function tokenizeWithAliases(text: string): string[] {
+function tokenizeWithAliases(text: string, location: string): string[] {
   const base = tokenize(text);
-  const extra = venueAliasExpansions(text).flatMap((expansion) =>
+  const extra = venueAliasExpansions(text, location).flatMap((expansion) =>
     tokenize(expansion),
   );
   return [...new Set([...base, ...extra])];
@@ -55,11 +55,18 @@ export function buildSearchIndex(events: LegacyCalEvent[]): SearchIndex {
   for (let pos = 0; pos < events.length; pos++) {
     const ev = events[pos];
 
-    for (const token of tokenizeWithAliases(ev.title)) add(t, token, pos);
+    for (const token of tokenizeWithAliases(ev.title, ev.location ?? ""))
+      add(t, token, pos);
     for (const token of tokenize((ev.tags ?? []).join(" "))) add(g, token, pos);
-    for (const token of tokenizeWithAliases(ev.organizer ?? ""))
+    for (const token of tokenizeWithAliases(
+      ev.organizer ?? "",
+      ev.location ?? "",
+    ))
       add(o, token, pos);
-    for (const token of tokenizeWithAliases(ev.location ?? ""))
+    for (const token of tokenizeWithAliases(
+      ev.location ?? "",
+      ev.location ?? "",
+    ))
       add(l, token, pos);
     for (const token of tokenize(ev.description ?? "")) add(d, token, pos);
   }
