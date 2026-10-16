@@ -294,11 +294,16 @@ const VENUE_ALIAS_PATTERNS: Array<[string, RegExp]> = Object.keys(
  * Alias expansions for venues the text names as whole words. A plain
  * substring match gave "Bakersfield" the RSF gym terms, and every Haas
  * Pavilion game the business-school terms.
+ *
+ * Pass the event's location when indexing. An event held at an excluded
+ * venue gets no alias terms from any field, because game titles call the
+ * arena "the Haas" ("WARM THE HAAS").
  */
-export function venueAliasExpansions(text: string): string[] {
+export function venueAliasExpansions(text: string, location = ""): string[] {
   const expansions: string[] = [];
   for (const [alias, pattern] of VENUE_ALIAS_PATTERNS) {
     const exclusion = VENUE_ALIAS_EXCLUSIONS[alias];
+    if (exclusion && location.search(exclusion) !== -1) continue;
     const scanned = exclusion ? text.replace(exclusion, " ") : text;
     if (pattern.test(scanned)) expansions.push(BERKELEY_VENUE_ALIASES[alias]);
   }
