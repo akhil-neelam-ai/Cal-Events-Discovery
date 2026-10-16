@@ -1083,6 +1083,11 @@ test("venue aliases match whole words and skip Haas Pavilion", () => {
     venueAliasExpansions("Haas Pavilion, then a Haas School mixer"),
     ["business school management haas"],
   );
+  // At the arena, "the Haas" in a game title names the arena too.
+  assert.deepEqual(venueAliasExpansions("WARM THE HAAS", "Haas Pavilion"), []);
+  assert.deepEqual(venueAliasExpansions("Haas School mixer", "Chou Hall"), [
+    "business school management haas",
+  ]);
 });
 
 test("business-school words skip Haas Pavilion games", () => {
@@ -1093,6 +1098,13 @@ test("business-school words skip Haas Pavilion games", () => {
       title: "Women's Volleyball vs. Stanford",
       location: "Haas Pavilion",
       description: "Conference match.",
+    },
+    {
+      ...SYNTHETIC_EVENTS[12],
+      id: "evt-haas-nickname",
+      title: "Men's Basketball vs. UC Riverside - WARM THE HAAS",
+      location: "Haas Pavilion",
+      description: "Home opener.",
     },
     {
       ...SYNTHETIC_EVENTS[2],
