@@ -41,6 +41,7 @@ type MockFeedState = {
 };
 
 let mockFeedState: MockFeedState;
+let mockNowMinutes = 0;
 
 vi.mock("@vercel/analytics/react", () => ({
   Analytics: () => null,
@@ -76,6 +77,7 @@ vi.mock("../hooks/usePacificDateKeys", () => ({
     todayKey: TODAY_KEY,
     tomorrowKey: TOMORROW_KEY,
     weekEndKey: WEEK_END_KEY,
+    nowMinutes: mockNowMinutes,
   }),
 }));
 
@@ -125,6 +127,7 @@ function makeEvent(overrides: Partial<CalEvent> = {}): CalEvent {
     source: overrides.source ?? "livewhale",
     ...(overrides.end_date ? { end_date: overrides.end_date } : {}),
     ...(overrides.dates ? { dates: overrides.dates } : {}),
+    ...(overrides.end_time ? { end_time: overrides.end_time } : {}),
   };
 }
 
@@ -157,6 +160,7 @@ describe("App UI regressions", () => {
     window.history.replaceState({}, "", "/");
     window.sessionStorage.clear();
     mockFeedState = makeFeedState([]);
+    mockNowMinutes = 0;
   });
 
   it("replaces one selected topic and toggles the active topic off", () => {
@@ -590,6 +594,62 @@ describe("App UI regressions", () => {
       }
       unmount();
     }
+  });
+
+  it("hides today's events once their end time passes", () => {
+    mockNowMinutes = 22 * 60;
+    const events = [
+      makeEvent({
+        id: "ended",
+        title: "Morning Robotics Talk",
+        time: "10:00 AM",
+        end_time: "11:30 AM",
+      }),
+      makeEvent({
+        id: "running",
+        title: "Late Jazz Set",
+        time: "9:00 PM",
+        end_time: "11:00 PM",
+      }),
+      makeEvent({
+        id: "no-end",
+        title: "Open Studio Hours",
+        time: "10:00 AM",
+      }),
+      makeEvent({
+        id: "tomorrow",
+        title: "Tomorrow Morning Talk",
+        date: TOMORROW_KEY,
+        time: "10:00 AM",
+        end_time: "11:30 AM",
+      }),
+    ];
+
+    for (const range of ["today", "week", "upcoming"]) {
+      mockFeedState = makeFeedState(events);
+      window.history.replaceState({}, "", `/?date=${range}`);
+      const { unmount } = render(<App />);
+
+      expect(screen.queryByText("Morning Robotics Talk"), range).toBeNull();
+      expect(screen.getByText("Late Jazz Set"), range).toBeInTheDocument();
+      // Without a published end there is nothing to compare against.
+      expect(screen.getByText("Open Studio Hours"), range).toBeInTheDocument();
+      if (range !== "today") {
+        expect(screen.getByText("Tomorrow Morning Talk")).toBeInTheDocument();
+      }
+      unmount();
+    }
+
+    // When everything today is over, Today falls back to the week.
+    mockFeedState = makeFeedState([events[0], events[3]]);
+    window.history.replaceState({}, "", "/?date=today");
+    render(<App />);
+
+    expect(
+      screen.getByText("Nothing today — showing this week instead."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Morning Robotics Talk")).toBeNull();
+    expect(screen.getByText("Tomorrow Morning Talk")).toBeInTheDocument();
   });
 
   it("ends This Week six days after today, like the agent preset", () => {

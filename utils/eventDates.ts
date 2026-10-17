@@ -24,6 +24,13 @@ const PACIFIC_DATE_PARTS_FORMATTER = new Intl.DateTimeFormat("en-US", {
   day: "2-digit",
 });
 
+const PACIFIC_CLOCK_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  timeZone: PACIFIC_TIME_ZONE,
+  hour: "numeric",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
 const PACIFIC_SYNC_FORMATTER = new Intl.DateTimeFormat("en-US", {
   timeZone: PACIFIC_TIME_ZONE,
   month: "short",
@@ -73,6 +80,16 @@ export function getPacificDateKey(dateString: string): string {
 
 export function getCurrentPacificDateKey(now = new Date()): string {
   return formatDateKeyInTimeZone(now);
+}
+
+/** Minutes since midnight on the Pacific wall clock. */
+export function getCurrentPacificMinutes(now = new Date()): number {
+  const parts = PACIFIC_CLOCK_FORMATTER.formatToParts(now);
+  const hour = Number(parts.find((part) => part.type === "hour")?.value ?? 0);
+  const minute = Number(
+    parts.find((part) => part.type === "minute")?.value ?? 0,
+  );
+  return (hour % 24) * 60 + minute;
 }
 
 /**
@@ -408,17 +425,11 @@ export function sortEventsChronologically(
   });
 }
 
-function timeSortValue(time: string | undefined): number {
-  if (!time || /all\s*day/i.test(time)) {
-    // Sink all-day / ongoing items below timed events within the same day, so a
-    // months-long exhibit doesn't bury the day's lectures, games, and films.
-    // MAX_SAFE_INTEGER - 1 keeps genuinely unparseable times (below) last.
-    return Number.MAX_SAFE_INTEGER - 1;
-  }
-
-  const match = time.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
+/** Minutes past midnight for a time like "7:30 PM", or null without one. */
+function clockMinutes(time: string | undefined): number | null {
+  const match = time?.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
   if (!match) {
-    return Number.MAX_SAFE_INTEGER;
+    return null;
   }
 
   let hour = Number(match[1]);
@@ -426,7 +437,7 @@ function timeSortValue(time: string | undefined): number {
   const meridiem = match[3].toLowerCase();
 
   if (hour < 1 || hour > 12 || minute < 0 || minute > 59) {
-    return Number.MAX_SAFE_INTEGER;
+    return null;
   }
 
   if (meridiem === "am" && hour === 12) {
@@ -436,6 +447,40 @@ function timeSortValue(time: string | undefined): number {
   }
 
   return hour * 60 + minute;
+}
+
+function timeSortValue(time: string | undefined): number {
+  if (!time || /all\s*day/i.test(time)) {
+    // Sink all-day / ongoing items below timed events within the same day, so a
+    // months-long exhibit doesn't bury the day's lectures, games, and films.
+    // MAX_SAFE_INTEGER - 1 keeps genuinely unparseable times (below) last.
+    return Number.MAX_SAFE_INTEGER - 1;
+  }
+
+  return clockMinutes(time) ?? Number.MAX_SAFE_INTEGER;
+}
+
+/**
+ * True once an event on `todayKey` has passed its published `end_time` on
+ * the Pacific clock. Only single-day timed events publish one. An end before
+ * the start runs past midnight, so that event lasts the rest of today.
+ */
+export function hasEventEnded(
+  event: Pick<CalEvent, "date" | "time" | "end_time">,
+  todayKey: string,
+  nowMinutes: number,
+): boolean {
+  if (getPacificDateKey(event.date) !== todayKey) {
+    return false;
+  }
+
+  const start = clockMinutes(event.time);
+  const end = clockMinutes(event.end_time);
+  if (start === null || end === null || end <= start) {
+    return false;
+  }
+
+  return nowMinutes >= end;
 }
 
 /**

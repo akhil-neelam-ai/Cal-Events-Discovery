@@ -4,6 +4,8 @@ import {
   addDaysToDateKey,
   firstOccurrenceInRange,
   getCurrentPacificDateKey,
+  getCurrentPacificMinutes,
+  hasEventEnded,
   sortEventsChronologically,
   weekEndKey,
 } from "../utils/eventDates";
@@ -62,6 +64,8 @@ function summarizeEvent(event: CalEvent) {
     end_date: event.end_date,
     dates: event.dates,
     time: event.time,
+    // Single-day timed events only, when the source gives an end.
+    end_time: event.end_time,
     location: event.location,
     organizer: event.organizer,
     category: event.tags?.[0] ?? null,
@@ -327,7 +331,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
           type: "string",
           pattern: "^\\d{4}-\\d{2}-\\d{2}$",
           description:
-            "Optional inclusive Pacific date lower bound in YYYY-MM-DD. Defaults to today, as in the UI.",
+            "Optional inclusive Pacific date lower bound in YYYY-MM-DD. Defaults to today, as in the UI. A window that starts today leaves out events whose end_time has passed.",
         },
         endDate: {
           type: "string",
@@ -404,6 +408,10 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         source,
       });
 
+      // A window that starts today starts now, as in the UI. An event that
+      // already ended today is left out.
+      const todayKey = getCurrentPacificDateKey();
+      const nowMinutes = getCurrentPacificMinutes();
       const pool = allEvents.filter((event) => {
         const primaryCategory = event.tags?.[0]?.toLowerCase() ?? "";
         const matchesCategory =
@@ -411,7 +419,9 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         const matchesSource = !source || event.source === source;
         const matchesTopic =
           !topic || (event.topics ?? []).some((slug) => slug === topic);
-        const matchesDate = eventMatchesDateBounds(event, startDate, endDate);
+        const matchesDate =
+          eventMatchesDateBounds(event, startDate, endDate) &&
+          (startDate < todayKey || !hasEventEnded(event, todayKey, nowMinutes));
         return matchesCategory && matchesSource && matchesTopic && matchesDate;
       });
 
@@ -444,7 +454,6 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         }
       }
 
-      const todayKey = getCurrentPacificDateKey();
       const limit = parseLimit(input.limit);
       const results = ranked.slice(0, limit).map(summarizeEvent);
 

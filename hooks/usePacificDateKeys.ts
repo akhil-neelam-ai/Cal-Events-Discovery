@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   addDaysToDateKey,
   getCurrentPacificDateKey,
+  getCurrentPacificMinutes,
   weekEndKey,
 } from "../utils/eventDates";
 
@@ -26,27 +27,26 @@ function msUntilNextPacificMidnight(now = new Date()): number {
   return Math.max(0, midnightUtc - now.getTime() + 1_000);
 }
 
+function readDateKeys(now = new Date()) {
+  const today = getCurrentPacificDateKey(now);
+  return {
+    todayKey: today,
+    tomorrowKey: addDaysToDateKey(today, 1),
+    weekEndKey: weekEndKey(today),
+    // The minute tick lets today's events drop out once they end.
+    nowMinutes: getCurrentPacificMinutes(now),
+  };
+}
+
 export function usePacificDateKeys() {
-  const [dateKeys, setDateKeys] = useState(() => {
-    const today = getCurrentPacificDateKey();
-    return {
-      todayKey: today,
-      tomorrowKey: addDaysToDateKey(today, 1),
-      weekEndKey: weekEndKey(today),
-    };
-  });
+  const [dateKeys, setDateKeys] = useState(() => readDateKeys());
 
   useEffect(() => {
     let intervalId: number | undefined;
     let midnightTimeoutId: number | undefined;
 
     const refresh = () => {
-      const today = getCurrentPacificDateKey();
-      setDateKeys({
-        todayKey: today,
-        tomorrowKey: addDaysToDateKey(today, 1),
-        weekEndKey: weekEndKey(today),
-      });
+      setDateKeys(readDateKeys());
     };
 
     const scheduleMidnightRefresh = () => {

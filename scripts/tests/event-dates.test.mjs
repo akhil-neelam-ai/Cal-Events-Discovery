@@ -7,6 +7,8 @@ import {
   firstOccurrenceInRange,
   formatMultiDayWhen,
   formatRelativeEventDate,
+  getCurrentPacificMinutes,
+  hasEventEnded,
   listingDateKey,
   occurrenceDateKeys,
   weekEndKey,
@@ -26,6 +28,7 @@ function event(overrides = {}) {
     source: "livewhale",
     ...(overrides.end_date ? { end_date: overrides.end_date } : {}),
     ...(overrides.dates ? { dates: overrides.dates } : {}),
+    ...(overrides.end_time ? { end_time: overrides.end_time } : {}),
   };
 }
 
@@ -280,4 +283,48 @@ test("multi-day labels follow the synced today key", () => {
     "May 2 – May 4",
   );
   assert.equal(formatRelativeEventDate(run, now, "upcoming"), "Through May 4");
+});
+
+test("getCurrentPacificMinutes reads the Pacific wall clock", () => {
+  // 05:00Z on Oct 18 is 10:00 PM PDT on Oct 17.
+  assert.equal(
+    getCurrentPacificMinutes(new Date("2026-10-18T05:00:00Z")),
+    22 * 60,
+  );
+  // 08:30Z on Jan 15 is 12:30 AM PST.
+  assert.equal(getCurrentPacificMinutes(new Date("2026-01-15T08:30:00Z")), 30);
+});
+
+test("hasEventEnded hides today's events once their end time passes", () => {
+  const today = "2026-05-13";
+  const tenPm = 22 * 60;
+  const morning = event({ time: "10:00 AM", end_time: "11:30 AM" });
+
+  assert.equal(hasEventEnded(morning, today, tenPm), true);
+  assert.equal(hasEventEnded(morning, today, 11 * 60 + 29), false);
+  assert.equal(hasEventEnded(morning, today, 11 * 60 + 30), true);
+  // Only today's events end early. Later days wait for their own day.
+  assert.equal(
+    hasEventEnded({ ...morning, date: "2026-05-14" }, today, tenPm),
+    false,
+  );
+
+  // No published end, or an end past midnight, keeps the event all day.
+  assert.equal(hasEventEnded(event({ time: "10:00 AM" }), today, tenPm), false);
+  assert.equal(
+    hasEventEnded(
+      event({ time: "9:00 PM", end_time: "1:00 AM" }),
+      today,
+      23 * 60 + 59,
+    ),
+    false,
+  );
+  assert.equal(
+    hasEventEnded(
+      event({ time: "All day", end_time: "5:00 PM" }),
+      today,
+      tenPm,
+    ),
+    false,
+  );
 });

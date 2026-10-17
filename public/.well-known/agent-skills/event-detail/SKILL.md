@@ -14,6 +14,7 @@ deep link, directions, or the official page for one event id.
    - `googleCalendarUrl` (Google Calendar template; may be null for multi-day gaps)
    - `permalink` (`https://cal-events.com/?event=<id>`)
    - `end_date` and `dates` for a multi-day event, so the user sees every day
+   - `end_time` for a single-day timed event, so the user sees when it ends
 4. Hand the user the official `url` for registration or tickets.
 
 ## Notes

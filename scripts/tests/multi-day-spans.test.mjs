@@ -123,6 +123,7 @@ test("a running span publishes today as its date and every day left", () => {
   assert.equal(legacy.date, TODAY);
   assert.deepEqual(legacy.dates, [TODAY, TOMORROW]);
   assert.equal(legacy.end_date, TOMORROW);
+  assert.equal(legacy.end_time, undefined);
 });
 
 test("a span on its last day publishes as a one-day event today", () => {
@@ -132,6 +133,42 @@ test("a span on its last day publishes as a one-day event today", () => {
   assert.equal(legacy.date, TODAY);
   assert.equal(legacy.dates, undefined);
   assert.equal(legacy.end_date, undefined);
+  // Its `time` is the first day's start, so an end time would mislead.
+  assert.equal(legacy.end_time, undefined);
+});
+
+test("a single-day timed event publishes its Pacific end time", () => {
+  // 17:00Z to 19:30Z is 10:00 AM to 12:30 PM PDT.
+  const talk = canonical({
+    start_at: "2026-10-17T17:00:00.000Z",
+    end_at: "2026-10-17T19:30:00.000Z",
+  });
+  const legacy = projectToLegacy(talk);
+  assert.equal(legacy.time, "10:00 AM");
+  assert.equal(legacy.end_time, "12:30 PM");
+
+  // 10 PM to 1 AM keeps the early end, so the UI knows it runs past midnight.
+  const lateShow = projectToLegacy(
+    canonical({
+      start_at: "2026-10-18T05:00:00.000Z",
+      end_at: "2026-10-18T08:00:00.000Z",
+    }),
+  );
+  assert.equal(lateShow.time, "10:00 PM");
+  assert.equal(lateShow.end_time, "1:00 AM");
+
+  for (const overrides of [
+    { end_at: undefined },
+    { end_at: "2026-10-17T17:00:00.000Z" },
+    { end_at: "2026-10-17T16:00:00.000Z" },
+    { end_at: "not-a-date" },
+    { start_at: "2026-10-17", end_at: "2026-10-18", all_day: true },
+  ]) {
+    const legacy = projectToLegacy(
+      canonical({ start_at: "2026-10-17T17:00:00.000Z", ...overrides }),
+    );
+    assert.equal(legacy.end_time, undefined, JSON.stringify(overrides));
+  }
 });
 
 test("a long span caps its dates but keeps the real end date", () => {

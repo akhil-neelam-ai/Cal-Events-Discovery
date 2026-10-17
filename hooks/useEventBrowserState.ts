@@ -11,6 +11,7 @@ import {
   dateRangeStartKey,
   firstOccurrenceInRange,
   getPacificDateKey,
+  hasEventEnded,
   sortEventsChronologically,
 } from "../utils/eventDates";
 import {
@@ -32,6 +33,8 @@ interface UseEventBrowserStateParams {
   todayKey: string;
   tomorrowKey: string;
   weekEndKey: string;
+  /** Minutes since midnight on the Pacific clock. */
+  nowMinutes: number;
   userSetDateRange: boolean;
   topicAvailabilityReady: boolean;
   topicDefinitions: readonly TopicDefinition[] | null;
@@ -57,6 +60,7 @@ function partitionDateBuckets(
   todayKey: string,
   tomorrowKey: string,
   weekEndKey: string,
+  nowMinutes: number,
 ) {
   const today: CalEvent[] = [];
   const tomorrow: CalEvent[] = [];
@@ -65,8 +69,11 @@ function partitionDateBuckets(
 
   // Bucket by occurrence, not by `date`. A multi-day event runs on every day
   // in `dates`, and its `date` is already past from midnight until the next
-  // publish.
+  // publish. An event that already ended today is no longer upcoming.
   for (const event of events) {
+    if (hasEventEnded(event, todayKey, nowMinutes)) {
+      continue;
+    }
     const next = firstOccurrenceInRange(event, todayKey);
     if (!next) {
       continue;
@@ -117,6 +124,7 @@ export function useEventBrowserState({
   todayKey,
   tomorrowKey,
   weekEndKey,
+  nowMinutes,
   userSetDateRange,
   topicAvailabilityReady,
   topicDefinitions,
@@ -213,8 +221,9 @@ export function useEventBrowserState({
         todayKey,
         tomorrowKey,
         weekEndKey,
+        nowMinutes,
       ),
-    [categorySourcePool, todayKey, tomorrowKey, weekEndKey],
+    [categorySourcePool, nowMinutes, todayKey, tomorrowKey, weekEndKey],
   );
 
   const derivedDateRange = useMemo<SearchFilters["dateRange"]>(() => {
@@ -293,11 +302,13 @@ export function useEventBrowserState({
       todayKey,
       tomorrowKey,
       weekEndKey,
+      nowMinutes,
     );
   }, [
     derivedDateRange,
     filters.searchQuery,
     filters.topic,
+    nowMinutes,
     planOptions,
     rawDateBuckets.week,
     searchDismissedKeys,
@@ -373,8 +384,9 @@ export function useEventBrowserState({
         todayKey,
         tomorrowKey,
         weekEndKey,
+        nowMinutes,
       ),
-    [availabilityOutput.results, todayKey, tomorrowKey, weekEndKey],
+    [availabilityOutput.results, nowMinutes, todayKey, tomorrowKey, weekEndKey],
   );
 
   // The selected topic and the typed topic count what choosing them shows:
