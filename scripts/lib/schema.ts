@@ -209,6 +209,9 @@ export const LegacyCalEventSchema = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/)
     .optional(),
   dates: z.array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)).optional(),
+  // Single-day timed events only, when the source gives an end after the
+  // start. Same format as `time`. An end before `time` runs past midnight.
+  end_time: z.string().optional(),
 });
 export type LegacyCalEvent = z.infer<typeof LegacyCalEventSchema>;
 

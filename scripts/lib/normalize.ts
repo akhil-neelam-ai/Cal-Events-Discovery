@@ -512,6 +512,21 @@ export function displayTime(start_at: string, all_day: boolean): string {
   }).format(d);
 }
 
+/**
+ * When a single-day timed event ends, in the same format as `time`. The UI
+ * hides today's events once this passes. Undefined when the source gives no
+ * end or an end at the start.
+ */
+function displayEndTime(event: CanonicalEvent): string | undefined {
+  if (event.all_day || !event.end_at || DATE_KEY_RE.test(event.end_at)) {
+    return undefined;
+  }
+  const start = Date.parse(event.start_at);
+  const end = Date.parse(event.end_at);
+  if (isNaN(start) || isNaN(end) || end <= start) return undefined;
+  return displayTime(event.end_at, false);
+}
+
 export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
   const date = firstOccurrencePT(event);
   const time = displayTime(event.start_at, event.all_day);
@@ -554,6 +569,11 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
     legacy.end_date = event.end_at
       ? isoDateInPT(event.end_at)
       : dates[dates.length - 1];
+  } else if (!event.occurrence_dates) {
+    // A span on its last day keeps one occurrence and its first day's
+    // `time`, so it gets no end time.
+    const endTime = displayEndTime(event);
+    if (endTime) legacy.end_time = endTime;
   }
 
   return legacy;

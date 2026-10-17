@@ -24,6 +24,7 @@ Each event in `events.json` has:
 - `end_date`: multi-day events only, the last Pacific date the event occurs
 - `dates`: multi-day events only, every upcoming Pacific date the event occurs
 - `time`: display time
+- `end_time`: single-day timed events only, the Pacific end time in the same format as `time`, when the source gives one
 - `location`: venue or location text
 - `description`: event summary
 - `tags`: primary category first, with optional secondary tags
@@ -69,6 +70,7 @@ CalEvents is **read-only**. Events and feed status cannot be created, updated, o
 - Use `status.json` to understand freshness and source-level health.
 - Dates are intended for America/Los_Angeles.
 - Match a date window against `dates` when an event has it. `date` is only its first upcoming day.
+- For a window that starts today, drop a single-day event whose `end_time` has passed on the Pacific clock. The UI hides it.
 - Use official event `url` values for final user-facing citations or handoff links.
 - Do not treat fallback/degraded source status as user-facing copy unless `data_quality_blocked` is true.
 

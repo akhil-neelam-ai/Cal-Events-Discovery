@@ -54,6 +54,7 @@ function event(overrides = {}) {
     topics: overrides.topics,
     url: "https://example.com",
     source: overrides.source ?? "livewhale",
+    ...(overrides.end_time ? { end_time: overrides.end_time } : {}),
   };
 }
 
@@ -580,4 +581,55 @@ test("WebMCP get_event_directions returns maps URL", async () => {
 
   const byLocation = await directions.execute({ location: "Sproul Plaza" });
   assert.match(byLocation.directionsUrl, /Sproul/);
+});
+
+test("WebMCP search leaves out today's events once they end, like the UI", async (t) => {
+  // 05:00Z on Oct 18 is 10:00 PM PDT on Oct 17.
+  t.mock.timers.enable({
+    apis: ["Date"],
+    now: new Date("2026-10-18T05:00:00Z"),
+  });
+  const { tools } = loadTools(
+    makePayload([
+      event({
+        id: "ended",
+        date: "2026-10-17",
+        time: "10:00 AM",
+        end_time: "11:30 AM",
+      }),
+      event({
+        id: "running",
+        date: "2026-10-17",
+        time: "9:00 PM",
+        end_time: "11:00 PM",
+      }),
+      event({
+        id: "tomorrow",
+        date: "2026-10-18",
+        time: "10:00 AM",
+        end_time: "11:30 AM",
+      }),
+    ]),
+  );
+  const search = tools.get("search_berkeley_events");
+
+  const today = await search.execute({ datePreset: "today" });
+  assert.deepEqual(
+    today.events.map((item) => item.id),
+    ["running"],
+  );
+  assert.equal(today.events[0].end_time, "11:00 PM");
+
+  const upcoming = await search.execute({});
+  assert.deepEqual(
+    upcoming.events.map((item) => item.id),
+    ["running", "tomorrow"],
+  );
+
+  // A window that starts before today asks about the past, so it keeps them.
+  const pastWindow = await search.execute({ startDate: "2026-10-16" });
+  assert.deepEqual(
+    pastWindow.events.map((item) => item.id),
+    ["ended", "running", "tomorrow"],
+  );
 });
