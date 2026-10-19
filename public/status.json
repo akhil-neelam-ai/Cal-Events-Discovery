@@ -1,156 +1,153 @@
 {
-  "generated_at": "2026-10-18T14:14:26.807Z",
-  "total_events": 1398,
-  "duplicates_removed": 250,
-  "past_events_filtered": 3477,
-  "invalid_events_filtered": 4,
+  "generated_at": "2026-10-19T17:18:17.728Z",
+  "total_events": 1372,
+  "duplicates_removed": 246,
+  "past_events_filtered": 3488,
+  "invalid_events_filtered": 5,
   "topics": {
     "outcome": "ok",
-    "assigned_count": 697,
-    "carried_forward_count": 9
+    "assigned_count": 686,
+    "carried_forward_count": 0
   },
   "sources": [
     {
       "name": "livewhale",
       "ok": true,
-      "count": 1441,
-      "duration_ms": 9298,
-      "fetched_at": "2026-10-18T14:14:01.227Z",
-      "last_healthy_at": "2026-10-18T14:14:01.227Z",
+      "count": 1437,
+      "duration_ms": 11269,
+      "fetched_at": "2026-10-19T17:17:54.862Z",
+      "last_healthy_at": "2026-10-19T17:17:54.862Z",
       "consecutive_failures": 0
     },
     {
       "name": "callink",
       "ok": false,
       "count": 0,
-      "duration_ms": 1753,
+      "duration_ms": 6137,
       "error": "Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
-      "fetched_at": "2026-10-18T14:14:01.251Z",
+      "fetched_at": "2026-10-19T17:17:54.886Z",
       "last_healthy_at": "2026-10-16T15:07:41.413Z",
-      "consecutive_failures": 2,
+      "consecutive_failures": 3,
       "degraded": true,
-      "degraded_reason": "callink failed: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
-      "fallback_used": true,
-      "fallback_count": 23,
-      "fallback_age_hours": 47.1
+      "degraded_reason": "callink failed: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON; callink fallback expired (74.2h old, exceeding 48h); last-good events dropped",
+      "fallback_expired": true,
+      "fallback_age_hours": 74.2
     },
     {
       "name": "cal_performances",
       "ok": true,
-      "count": 51,
-      "duration_ms": 15370,
-      "fetched_at": "2026-10-18T14:14:01.253Z",
-      "last_healthy_at": "2026-10-18T14:14:01.253Z",
+      "count": 49,
+      "duration_ms": 16644,
+      "fetched_at": "2026-10-19T17:17:54.889Z",
+      "last_healthy_at": "2026-10-19T17:17:54.889Z",
       "consecutive_failures": 0
     },
     {
       "name": "calbears",
       "ok": true,
-      "count": 234,
-      "duration_ms": 921,
-      "fetched_at": "2026-10-18T14:14:01.254Z",
-      "last_healthy_at": "2026-10-18T14:14:01.254Z",
+      "count": 232,
+      "duration_ms": 1251,
+      "fetched_at": "2026-10-19T17:17:54.890Z",
+      "last_healthy_at": "2026-10-19T17:17:54.890Z",
       "consecutive_failures": 0
     },
     {
       "name": "bampfa",
       "ok": true,
-      "count": 82,
-      "duration_ms": 2135,
-      "fetched_at": "2026-10-18T14:14:01.256Z",
-      "last_healthy_at": "2026-10-18T14:14:01.256Z",
+      "count": 78,
+      "duration_ms": 5912,
+      "fetched_at": "2026-10-19T17:17:54.892Z",
+      "last_healthy_at": "2026-10-19T17:17:54.892Z",
       "consecutive_failures": 0
     },
     {
       "name": "haas",
       "ok": true,
       "count": 21,
-      "duration_ms": 5105,
-      "fetched_at": "2026-10-18T14:14:01.258Z",
-      "last_healthy_at": "2026-10-18T14:14:01.258Z",
+      "duration_ms": 8032,
+      "fetched_at": "2026-10-19T17:17:54.894Z",
+      "last_healthy_at": "2026-10-19T17:17:54.894Z",
       "consecutive_failures": 0
     },
     {
       "name": "berkeley_law",
       "ok": true,
-      "count": 139,
-      "duration_ms": 5901,
-      "fetched_at": "2026-10-18T14:14:01.259Z",
-      "last_healthy_at": "2026-10-18T14:14:01.259Z",
+      "count": 142,
+      "duration_ms": 9467,
+      "fetched_at": "2026-10-19T17:17:54.895Z",
+      "last_healthy_at": "2026-10-19T17:17:54.895Z",
       "consecutive_failures": 0
     },
     {
       "name": "simons",
       "ok": true,
-      "count": 27,
-      "duration_ms": 23596,
-      "fetched_at": "2026-10-18T14:14:01.260Z",
-      "last_healthy_at": "2026-10-18T14:14:01.260Z",
+      "count": 28,
+      "duration_ms": 20913,
+      "fetched_at": "2026-10-19T17:17:54.896Z",
+      "last_healthy_at": "2026-10-19T17:17:54.896Z",
       "consecutive_failures": 0
     },
     {
       "name": "luma",
       "ok": true,
       "count": 6,
-      "duration_ms": 1328,
-      "fetched_at": "2026-10-18T14:14:01.262Z",
-      "last_healthy_at": "2026-10-18T14:14:01.262Z",
+      "duration_ms": 4979,
+      "fetched_at": "2026-10-19T17:17:54.897Z",
+      "last_healthy_at": "2026-10-19T17:17:54.897Z",
       "consecutive_failures": 0
     },
     {
       "name": "begin",
       "ok": true,
       "count": 2,
-      "duration_ms": 2202,
-      "fetched_at": "2026-10-18T14:14:01.268Z",
-      "last_healthy_at": "2026-10-18T14:14:01.268Z",
+      "duration_ms": 5936,
+      "fetched_at": "2026-10-19T17:17:54.904Z",
+      "last_healthy_at": "2026-10-19T17:17:54.904Z",
       "consecutive_failures": 0
     },
     {
       "name": "ai_risk",
       "ok": true,
       "count": 2,
-      "duration_ms": 1269,
-      "fetched_at": "2026-10-18T14:14:01.269Z",
-      "last_healthy_at": "2026-10-18T14:14:01.269Z",
+      "duration_ms": 8586,
+      "fetched_at": "2026-10-19T17:17:54.905Z",
+      "last_healthy_at": "2026-10-19T17:17:54.905Z",
       "consecutive_failures": 0
     },
     {
       "name": "brsl",
       "ok": true,
       "count": 1,
-      "duration_ms": 3711,
-      "fetched_at": "2026-10-18T14:14:01.270Z",
-      "last_healthy_at": "2026-10-18T14:14:01.270Z",
+      "duration_ms": 7583,
+      "fetched_at": "2026-10-19T17:17:54.906Z",
+      "last_healthy_at": "2026-10-19T17:17:54.906Z",
       "consecutive_failures": 0
     },
     {
       "name": "cltc",
       "ok": true,
       "count": 0,
-      "duration_ms": 2217,
-      "fetched_at": "2026-10-18T14:14:01.271Z",
+      "duration_ms": 6170,
+      "fetched_at": "2026-10-19T17:17:54.907Z",
       "last_healthy_at": "2026-10-08T17:41:07.969Z",
       "consecutive_failures": 0,
       "degraded": true,
-      "degraded_reason": "cltc returned 0 events (below healthy threshold 1); cltc fallback expired (236.6h old, exceeding 48h); last-good events dropped",
+      "degraded_reason": "cltc returned 0 events (below healthy threshold 1); cltc fallback expired (263.6h old, exceeding 48h); last-good events dropped",
       "fallback_expired": true,
-      "fallback_age_hours": 236.6
+      "fallback_age_hours": 263.6
     }
   ],
-  "fallback_used": true,
+  "fallback_used": false,
   "degraded": true,
-  "degraded_reason": "callink failed: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
-  "last_good_used": 23,
-  "fallback_age_hours": 47.1,
+  "degraded_reason": "callink failed: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON; callink fallback expired (74.2h old, exceeding 48h); last-good events dropped",
+  "last_good_used": 0,
   "data_quality_blocked": false,
-  "fallback_sources": [
-    "callink"
-  ],
+  "fallback_sources": [],
   "degraded_sources": [
     "callink"
   ],
   "stale_fallback_sources": [
+    "callink",
     "cltc"
   ]
 }
