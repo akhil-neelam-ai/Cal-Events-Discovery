@@ -14,6 +14,11 @@ updates:
       # TypeScript 7. Dependabot then reopens the update (closed PR 204).
       - dependency-name: typescript
         update-types: ["version-update:semver-major"]
+      # @vercel/og 1.0.2 and 1.0.3 crash under plain Node ESM, which is how
+      # Vercel runs api/event-image.tsx. Delete this rule once a release
+      # passes scripts/tests/event-preview.test.mjs.
+      - dependency-name: "@vercel/og"
+        versions: [">=1.0.2"]
     groups:
       npm-production:
         dependency-type: production

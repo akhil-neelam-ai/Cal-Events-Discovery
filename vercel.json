@@ -1,4 +1,12 @@
 {
+  "functions": {
+    "api/event-preview.ts": {
+      "includeFiles": "public/events.json"
+    },
+    "api/event-image.tsx": {
+      "includeFiles": "{public/events.json,api/_fonts/*.woff}"
+    }
+  },
   "routes": [
     {
       "src": "^/(.*)$",
@@ -36,6 +44,21 @@
         "Link": "</.well-known/api-catalog>; rel=\"api-catalog\", </openapi.json>; rel=\"service-desc\"; type=\"application/vnd.oai.openapi+json\", </.well-known/mcp/server-card.json>; rel=\"service-desc\"; type=\"application/json\", </.well-known/agent-skills/index.json>; rel=\"describedby\"; type=\"application/json\", </llms.txt>; rel=\"alternate\"; type=\"text/markdown\""
       },
       "continue": true
+    },
+    {
+      "src": "^/$",
+      "has": [
+        {
+          "type": "query",
+          "key": "event"
+        },
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "^(WhatsApp/.*|.*(facebookexternalhit|Facebot|meta-externalfetcher|Twitterbot|Slackbot|Discordbot|TelegramBot|LinkedInBot|Pinterestbot|redditbot|SkypeUriPreview|Google-PageRenderer|Googlebot|bingbot|Applebot|Embedly|Iframely|Mastodon|Cardyb|kakaotalk-scrap|vkShare|Snap URL Preview).*)$"
+        }
+      ],
+      "dest": "/api/event-preview"
     },
     {
       "src": "^/llms\\.txt$",

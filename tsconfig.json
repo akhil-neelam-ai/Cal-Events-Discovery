@@ -19,6 +19,8 @@
   },
   "include": [
     "App.tsx",
+    "api/**/*.ts",
+    "api/**/*.tsx",
     "appConfig.ts",
     "agent/**/*.ts",
     "components/**/*.ts",

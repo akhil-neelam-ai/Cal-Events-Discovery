@@ -162,6 +162,7 @@ The September full-repo audit is `docs/code-review-2026-09-25.md`. Every item ha
 | `scripts/lib/topics.ts` | Topic vocabulary and deterministic assignment |
 | `docs/code-review-2026-09-04-topic-filter-layer.md` | Leftover topic-filter review items after PR 173 |
 | `docs/solutions/` | Documented solutions to past problems, one file each, in category folders such as `logic-errors/`. YAML frontmatter carries `module`, `tags`, and `problem_type`. Relevant when debugging or changing a documented area. |
+| `api/_lib/eventPreview.ts` | Link-preview tags and card data for shared event URLs |
 | `utils/searchIntent.ts` | Query intent: `buildSearchPlan`, topic phrases, dismissed-key rebuild |
 | `utils/searchEngine.ts` | `searchEvents`: pool filters, scoring, and fallback |
 | `utils/textUtils.ts` | Stemmer, tokenizer, `DOMAIN_SYNONYMS`, venue aliases |
@@ -178,6 +179,8 @@ The September full-repo audit is `docs/code-review-2026-09-25.md`. Every item ha
 **All-day events**: iCal VEVENTs with `VALUE=DATE` become `all_day: true` with a bare `YYYY-MM-DD` start. `displayTime()` returns "All day".
 
 **Running spans**: adapters drop an event only after its last day (`endedBeforePT`). A bare all-day end is exclusive. `withSpanOccurrences` then gives a multi-day span one `dates` entry per remaining day, capped at 120, and publishes today as its `date`.
+
+**Shared-link previews**: chat apps read Open Graph tags without running JavaScript. A `vercel.json` route sends `/?event=<id>` to `api/event-preview.ts` only when the user agent matches a known link-preview crawler. People still get the static app. That page names `api/event-image.tsx` as its `og:image`, a 1200x630 card drawn with `@vercel/og`. Both functions read the committed `public/events.json` through `includeFiles`, so previews match the last deploy. An unknown or ended event gets the site-wide preview. `@vercel/og` is pinned to 1.0.1 because 1.0.2 and 1.0.3 crash under plain Node ESM. Relative imports under `api/` need a `.js` extension for the same reason.
 
 **LiveWhale group feeds**: the main feed misses events posted only to department calendars. Group feeds use path-based URLs, and group names are case-sensitive. The adapter fetches 40 groups with bounded concurrency and merges by UID, keeping every group that listed an event as topic evidence. A failed group feed, including a 200 response that is not iCal, lands in `failedGroups`. Its events keep only the prior topics that group can give. Group failures never mark LiveWhale degraded, so they raise no visitor banner. `status.json` lists them on the LiveWhale entry as `failed_groups`.
 
