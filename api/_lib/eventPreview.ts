@@ -136,10 +136,9 @@ export function buildEventPreview(
     ? `${card.when} · ${truncate(card.location, 60)}`
     : card.when;
   const summary = truncate(plainText(event.description), 160);
-  const description = truncate(
-    summary ? `${logistics}. ${summary}` : logistics,
-    300,
-  );
+  // A shortened location already ends in "…", so it takes no period.
+  const lead = logistics.endsWith("…") ? logistics : `${logistics}.`;
+  const description = truncate(summary ? `${lead} ${summary}` : logistics, 300);
 
   return {
     title: card.title,

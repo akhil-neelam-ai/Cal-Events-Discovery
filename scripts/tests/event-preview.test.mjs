@@ -87,6 +87,22 @@ test("event preview links the clean event URL and its card image", () => {
   assert.ok(preview.indexable);
 });
 
+test("a shortened location is not followed by a stray period", () => {
+  const preview = buildEventPreview(
+    makeEvent({
+      location:
+        "9Zero Climate Innovation Hub, 350 California St 4th floor, San Francisco, CA 94104, USA",
+    }),
+    ORIGIN,
+    NOW,
+  );
+
+  assert.equal(
+    preview.description,
+    "Thu, Oct 29 · 5:00 PM – 8:00 PM · 9Zero Climate Innovation Hub, 350 California St 4th floor… Rescheduled. Designers and alumni meet.",
+  );
+});
+
 test("preview HTML escapes event text inside tags and attributes", () => {
   const html = renderPreviewHtml(
     buildEventPreview(
