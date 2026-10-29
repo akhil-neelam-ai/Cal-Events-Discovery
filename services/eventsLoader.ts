@@ -1,8 +1,9 @@
-import { IngestionStatus, SearchResponse } from "../types";
+import { SearchResponse } from "../types";
 
 /**
  * Loads the pre-generated static artifacts published by scripts/updateEvents.ts.
- * The browser only reads `public/events.json` and `public/status.json`.
+ * The page reads only `public/events.json`. `public/status.json` is for
+ * operators and agents, so visitors never see pipeline health.
  */
 type EventsPayload = SearchResponse & { lastUpdated?: number };
 
@@ -27,35 +28,11 @@ async function fetchJson<T>(path: string, timeoutMs = 8000): Promise<T> {
 
 export const fetchEventArtifacts = async (
   _forceRefresh: boolean = false,
-): Promise<
-  SearchResponse & { lastUpdated: number; status?: IngestionStatus }
-> => {
+): Promise<SearchResponse & { lastUpdated: number }> => {
   try {
-    const [eventsResult, statusResult] = await Promise.allSettled([
-      fetchJson<EventsPayload>("/events.json"),
-      fetchJson<IngestionStatus>("/status.json"),
-    ]);
-
-    if (eventsResult.status === "rejected") {
-      throw eventsResult.reason;
-    }
-
-    const data = eventsResult.value;
+    const data = await fetchJson<EventsPayload>("/events.json");
     if (!Array.isArray(data.events)) {
       throw new Error("Invalid events payload: events must be an array");
-    }
-
-    // status.json drives the StatusBanner / StaleDataBanner. Silently dropping
-    // a fetch failure means degraded states never reach the UI, so log it even
-    // though events.json is the only hard requirement for the page to render.
-    let status: IngestionStatus | undefined;
-    if (statusResult.status === "fulfilled") {
-      status = statusResult.value;
-    } else {
-      console.warn(
-        "[eventsLoader] status.json fetch failed",
-        statusResult.reason,
-      );
     }
 
     return {
@@ -63,12 +40,6 @@ export const fetchEventArtifacts = async (
       sources: Array.isArray(data.sources) ? data.sources : [],
       topic_vocabulary: data.topic_vocabulary,
       lastUpdated: data.lastUpdated ?? 0,
-      data_age_hours:
-        typeof data.data_age_hours === "number" ? data.data_age_hours : 0,
-      degraded_sources: Array.isArray(data.degraded_sources)
-        ? data.degraded_sources.map(String)
-        : [],
-      status,
     };
   } catch (error) {
     console.error("Error loading events:", error);

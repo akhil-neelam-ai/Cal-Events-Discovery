@@ -25,47 +25,7 @@ import { usePacificDateKeys } from "./hooks/usePacificDateKeys";
 import { usePrefersReducedMotion } from "./hooks/usePrefersReducedMotion";
 import { readAppUrlState, useUrlStateSync } from "./hooks/useUrlStateSync";
 import { initGA, trackPageView, trackEventClick } from "./utils/analytics";
-import { buildStatusBanner } from "./utils/statusUi";
 import { addRecentSearch } from "./utils/recentSearches";
-import type { StatusBannerData } from "./utils/statusUi";
-
-const STATUS_BANNER_DISMISS_PREFIX = "statusBannerDismissed:";
-const STALE_BANNER_DISMISS_PREFIX = "staleBannerDismissed:";
-
-function getStatusBannerDismissalKey(banner: StatusBannerData): string {
-  return `${STATUS_BANNER_DISMISS_PREFIX}${banner.tone}:${banner.title}:${banner.message}`;
-}
-
-// Key the stale banner by the degraded-source set so dismissing it stays
-// dismissed for that degradation through the session, rather than re-appearing
-// every load as the (fluctuating) data-age changes.
-function getStaleBannerDismissalKey(degradedSources: string[]): string {
-  const sources = degradedSources.slice().sort().join(",");
-  return `${STALE_BANNER_DISMISS_PREFIX}${sources || "stale-only"}`;
-}
-
-function readBannerDismissed(key: string | null): boolean {
-  if (!key) {
-    return false;
-  }
-
-  try {
-    return (
-      typeof sessionStorage !== "undefined" &&
-      sessionStorage.getItem(key) === "1"
-    );
-  } catch {
-    return false;
-  }
-}
-
-function persistBannerDismissed(key: string): void {
-  try {
-    sessionStorage.setItem(key, "1");
-  } catch {
-    // Storage can be unavailable in private or locked-down browser contexts.
-  }
-}
 
 export default function App() {
   const initialUrlState = readAppUrlState();
@@ -74,10 +34,7 @@ export default function App() {
   );
   const {
     allEvents,
-    dataAgeHours,
-    degradedSources,
     loading,
-    statusReport,
     searchIndex,
     searchIndexSettled,
     topicVocabulary,
@@ -141,39 +98,6 @@ export default function App() {
       page_title: "CalEvents - UC Berkeley Events",
     });
   }, []);
-
-  const statusBanner = buildStatusBanner(statusReport);
-  const statusBannerDismissalKey = statusBanner
-    ? getStatusBannerDismissalKey(statusBanner)
-    : null;
-  const [dismissedStatusBannerKey, setDismissedStatusBannerKey] = useState<
-    string | null
-  >(null);
-  const bannerDismissed =
-    dismissedStatusBannerKey === statusBannerDismissalKey ||
-    readBannerDismissed(statusBannerDismissalKey);
-  const dismissBanner = () => {
-    if (!statusBannerDismissalKey) {
-      return;
-    }
-
-    setDismissedStatusBannerKey(statusBannerDismissalKey);
-    persistBannerDismissed(statusBannerDismissalKey);
-  };
-
-  const staleBannerDismissalKey = getStaleBannerDismissalKey(
-    degradedSources ?? [],
-  );
-  const [dismissedStaleBannerKey, setDismissedStaleBannerKey] = useState<
-    string | null
-  >(null);
-  const staleBannerDismissed =
-    dismissedStaleBannerKey === staleBannerDismissalKey ||
-    readBannerDismissed(staleBannerDismissalKey);
-  const dismissStaleBanner = () => {
-    setDismissedStaleBannerKey(staleBannerDismissalKey);
-    persistBannerDismissed(staleBannerDismissalKey);
-  };
 
   const { todayKey, tomorrowKey, weekEndKey, nowMinutes } =
     usePacificDateKeys();
@@ -334,13 +258,6 @@ export default function App() {
         onTopicChange={handleTopicChange}
         onSourceChange={handleSourceChange}
         onPresetSelect={handleQuickPreset}
-        statusBanner={statusBanner}
-        bannerDismissed={bannerDismissed}
-        onDismissBanner={dismissBanner}
-        dataAgeHours={dataAgeHours}
-        degradedSources={degradedSources}
-        staleBannerDismissed={staleBannerDismissed}
-        onDismissStaleBanner={dismissStaleBanner}
       />
 
       {/* Main Content */}

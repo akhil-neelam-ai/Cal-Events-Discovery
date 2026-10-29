@@ -31,8 +31,6 @@ import { projectToLegacy, todayPT } from "../lib/normalize.ts";
 import { PublishedEventsPayloadSchema } from "../lib/schema.ts";
 import { assignTopicsResiliently } from "../lib/topicAssignmentResilience.ts";
 import { TOPIC_VOCABULARY } from "../lib/topics.ts";
-import { shouldShowStaleDataBanner } from "../../utils/staleDataUi.ts";
-import { buildStatusBanner } from "../../utils/statusUi.ts";
 
 const rootDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -282,7 +280,7 @@ test("topic assignment failure preserves a publishable event snapshot", () => {
   );
 });
 
-test("topic assignment failure does not activate degraded-source banners", () => {
+test("topic assignment failure does not set degraded-source flags", () => {
   const status = {
     generated_at: "2026-09-04T12:00:00.000Z",
     total_events: 1,
@@ -306,7 +304,6 @@ test("topic assignment failure does not activate degraded-source banners", () =>
 
   assert.equal(status.degraded, false);
   assert.deepEqual(status.degraded_sources, []);
-  assert.equal(buildStatusBanner(status), null);
 });
 
 test("an unassigned new event publishes with an empty topics list", () => {
@@ -494,7 +491,7 @@ function inDays(days) {
 
 const DAY_AGO = new Date(Date.now() - 86_400_000).toISOString();
 
-test("a quiet source restores last-good events without visitor banners", () => {
+test("a quiet source restores last-good events without degraded flags", () => {
   const talk = legacy({
     id: "ai_risk_talk-1",
     title: "Scaling Oversight",
@@ -524,17 +521,12 @@ test("a quiet source restores last-good events without visitor banners", () => {
     fallback_sources: [...recovery.fallbackSources],
     degraded_sources: [...recovery.degradedSources],
   };
-  assert.equal(buildStatusBanner(report), null);
-  assert.equal(
-    shouldShowStaleDataBanner(
-      recovery.fallbackAgeHours,
-      report.degraded_sources,
-    ),
-    false,
-  );
+  assert.equal(report.degraded, false);
+  assert.deepEqual(report.degraded_sources, []);
+  assert.equal(recovery.fallbackAgeHours, undefined);
 });
 
-test("a failure streak carries forward without touching banner fields", () => {
+test("a failure streak carries forward without touching degraded fields", () => {
   const status = failedRun("ai_risk");
   const recovery = emptyRecoveryState();
   markRecovery(status, FALLBACK_POLICIES.ai_risk, {
@@ -552,7 +544,7 @@ test("a failure streak carries forward without touching banner fields", () => {
   assert.deepEqual([...recovery.degradedSources], []);
 });
 
-test("a quiet source with expired fallback stays out of the banner fields", () => {
+test("a quiet source with expired fallback stays out of the degraded fields", () => {
   const status = failedRun("ai_risk");
   const threeDaysAgo = new Date(Date.now() - 3 * 86_400_000).toISOString();
   const { published, recovery } = recoverFrom(status, [], threeDaysAgo);
@@ -605,7 +597,7 @@ test("a failed group feed keeps only that group's prior topics", () => {
   });
 });
 
-test("every group feed failing still assigns other sources, without banners", () => {
+test("every group feed failing still assigns other sources, without degraded flags", () => {
   const lawForum = legacy({
     id: "berkeley_law_forum",
     title: "Constitutional Law Forum",
@@ -630,7 +622,7 @@ test("every group feed failing still assigns other sources, without banners", ()
   assert.match(result.status.error ?? "", /group feeds failed/);
 
   // The LiveWhale run itself succeeded, so recovery marks nothing degraded
-  // and the topic error raises no visitor banner.
+  // and the topic error sets no degraded flags.
   const liveWhale = {
     name: "livewhale",
     ok: true,
@@ -650,14 +642,9 @@ test("every group feed failing still assigns other sources, without banners", ()
     degraded_sources: [...recovery.degradedSources],
   };
   assert.deepEqual(report.degraded_sources, []);
-  assert.equal(buildStatusBanner(report), null);
-  assert.equal(
-    shouldShowStaleDataBanner(
-      recovery.fallbackAgeHours,
-      report.degraded_sources,
-    ),
-    false,
-  );
+  assert.equal(report.degraded, false);
+  assert.deepEqual(report.degraded_sources, []);
+  assert.equal(recovery.fallbackAgeHours, undefined);
 });
 
 test("successful topic assignment reports assigned and carry-forward counts", () => {
