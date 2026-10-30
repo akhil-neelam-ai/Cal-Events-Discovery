@@ -1,6 +1,7 @@
 ---
 title: LiveWhale's iCal feed silently caps and cuts responses mid-event
 date: 2026-10-29
+last_updated: 2026-10-30
 category: integration-issues
 module: LiveWhale main feed and source contract
 problem_type: integration_issue
@@ -83,7 +84,8 @@ LiveWhale's `end_date` is exclusive for timed events but includes the all-day ev
 - Group feed URLs need the group's exact LiveWhale full name. A near miss, such as "and" for "&", returns a valid empty calendar. Check that a new group returns more than 0 events before adding it.
 - When adding a LiveWhale endpoint, probe it twice and compare byte counts. An identical size that ends mid-line is the cut, not a timeout.
 - `scripts/tests/livewhale-windows.test.mjs` pins the window keys across DST, the boundary day, splitting, salvage, the near-cap split (its stub caps windows wider than one day), and the health floor.
-- If a cut day ever has to be fully recovered, LiveWhale's JSON endpoint (`/live/json/events/start_date/<d>/end_date/<d+1>`) returned all 31 events for 2026-11-21 while the iCal window was cut. It is not wired in.
+- A cut day is refilled from LiveWhale's JSON endpoint (`/live/json/events/start_date/<d>/end_date/<d+1>/response_fields/location,description,event_types`), which returned all 31 events for 2026-11-21 while the iCal window was cut. Its IDs and UTC start times rebuild the iCal UID, so group-feed copies still merge. Without `response_fields`, the JSON omits location and description.
+- A failed, unfilled, or empty window lands in `failed_windows`, and the daily workflow opens a `data-quality` issue for it. Nothing about a partial day degrades the source.
 
 ## Related
 

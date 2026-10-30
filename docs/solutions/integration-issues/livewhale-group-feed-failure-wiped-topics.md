@@ -1,7 +1,7 @@
 ---
 title: All-or-nothing group feed health let one failed feed wipe its topics silently
 date: 2026-10-03
-last_updated: 2026-10-04
+last_updated: 2026-10-30
 category: integration-issues
 module: LiveWhale group feeds and topic carry-forward
 problem_type: integration_issue
@@ -15,7 +15,17 @@ root_cause: logic_error
 resolution_type: code_fix
 severity: medium
 related_components: [service_object]
-tags: [livewhale, group-feeds, partial-failure, failed-groups, topic-carry-forward, silent-failure, html-200, daily-pipeline]
+tags:
+  [
+    livewhale,
+    group-feeds,
+    partial-failure,
+    failed-groups,
+    topic-carry-forward,
+    silent-failure,
+    html-200,
+    daily-pipeline,
+  ]
 ---
 
 # All-or-nothing group feed health let one failed feed wipe its topics silently
@@ -45,16 +55,12 @@ The October 2 review found these in the code, and PR 219's tests reproduce them.
 
 PR 219 tracks failure per group and carries only the topics a failed group could have given.
 
-1. In `fetchFeed`, a body without `BEGIN:VCALENDAR` counts as failed, and a group feed stops at once:
+1. A group feed body that is not a complete calendar counts as failed, and a group feed gets one attempt. PR 219 checked only for `BEGIN:VCALENDAR` inside the old `fetchFeed`. Since the windowed-feed change, `calendarProblem` in `scripts/sources/livewhale.ts` also requires a trailing `END:VCALENDAR`, because LiveWhale sometimes cuts a body off mid-event and node-ical parses that as an empty calendar. Group feeds call it through:
 
 ```ts
-const ics = await res.text();
-if (!ics.includes("BEGIN:VCALENDAR")) {
-  lastErr = "response is not an iCal calendar";
-  // A group feed gives up at once, so one broken group cannot spend
-  // the adapter's time budget on retries.
-  if (minEvents === 0) break;
-}
+parsed: await limit(() =>
+  fetchCalendar(url, "livewhale-group", 1, options),
+),
 ```
 
 2. `fetchLiveWhale` returns `failedGroups`, the names of the feeds that failed.
@@ -84,19 +90,19 @@ Five new or updated tests failed on `main` and passed after. A full live `npm ru
 - A failed group can only remove the topics in its own `GROUP_TOPICS` entry. Only those carry over, and only on LiveWhale events. Everything else comes from fresh evidence, so stale topics still clear.
 - With the physics feed down, a colloquium keeps yesterday's `physics-math-quantum` next to a fresh `law`. A reception's stale `history-humanities` stays gone.
 - Assignment always runs now, so a new Berkeley Law event gets Law even when every group fails.
-- Group failures never touch `degradedSources`, so visitors see no banner. AGENTS.md forbids routing non-source problems through those fields.
-- The `break` skips the retry loop, so one broken group cannot use up the 60 s adapter budget.
+- Group failures never touch `degradedSources`. AGENTS.md forbids routing non-source problems through those fields.
+- A group feed gets one attempt, and group feeds stop at a 60 s deadline inside LiveWhale's 90 s adapter budget, so broken or slow groups cannot use up the time the required date windows need.
 
 Limits remain:
 
-- A partial failure still reports `outcome: "ok"`. Since PR 224, the LiveWhale entry in `status.json` names the failed groups as `failed_groups`.
+- A partial failure still reports `outcome: "ok"`. Since PR 224, the LiveWhale entry in `status.json` names the failed groups as `failed_groups`, and the daily workflow now opens a `data-quality` issue whenever that list is non-empty.
 - The fix keeps topics, not events. An event posted only to a failed group's feed is still missing that day.
 - On 2026-10-04 a local pipeline run pointed one extra group at an HTML page. LiveWhale stayed healthy with `failed_groups` naming that group, and no banner fields changed.
 
 ## Prevention
 
 - **Report failure per unit.** A fan-out fetch should return the list of failed units, not one boolean. Test one failure among many, not only all failing.
-- **Check the body, not only the status.** A 200 can carry an error page. Look for the format marker before parsing.
+- **Check the body, not only the status.** A 200 can carry an error page or a cut-off calendar. Check both the opening and the closing format markers before parsing (see `docs/solutions/integration-issues/livewhale-feed-caps-and-cuts-responses.md`).
 - **Scope carry-forward to the missing evidence.** When empty output clears data, carry only what the failed input could have given.
 - **Test each failure shape.** Cover one group failing, every group failing, and a group returning HTML with status 200. From PR 219:
 
