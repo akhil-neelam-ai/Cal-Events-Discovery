@@ -616,11 +616,14 @@ interface LiveWhaleJsonEvent {
 }
 
 function decodeHtmlEntities(text: string): string {
+  // An out-of-range code point would make fromCodePoint throw; keep it as is.
+  const fromCode = (match: string, code: number) =>
+    code <= 0x10ffff ? String.fromCodePoint(code) : match;
   return text
-    .replace(/&#x([0-9a-f]+);/gi, (_, hex: string) =>
-      String.fromCodePoint(parseInt(hex, 16)),
+    .replace(/&#x([0-9a-f]+);/gi, (match, hex: string) =>
+      fromCode(match, parseInt(hex, 16)),
     )
-    .replace(/&#(\d+);/g, (_, dec: string) => String.fromCodePoint(Number(dec)))
+    .replace(/&#(\d+);/g, (match, dec: string) => fromCode(match, Number(dec)))
     .replace(/&quot;/g, '"')
     .replace(/&#39;|&apos;/g, "'")
     .replace(/&lt;/g, "<")
@@ -982,7 +985,11 @@ async function fetchGroupFeed(
         options,
         false,
       );
-      if (refill && veventCount(refill) >= veventCount(salvaged)) {
+      if (
+        refill &&
+        veventCount(refill) > 0 &&
+        veventCount(refill) >= veventCount(salvaged)
+      ) {
         console.warn(
           `[livewhale] group feed "${group}" was cut off; filled it from the JSON feed`,
         );

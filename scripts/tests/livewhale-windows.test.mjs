@@ -520,6 +520,65 @@ test("a cut-off group feed is filled from the JSON group feed", async () => {
   assert.deepEqual(result.failedGroups, []);
 });
 
+test("a cut group feed with an empty JSON refill stays failed", async () => {
+  const cutGroup = (url) =>
+    url.endsWith("/group/ASUC%20Student%20Union")
+      ? "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nSUMMARY:"
+      : null;
+  const serve = windowServer(FILLERS, cutGroup);
+  const respond = (url) =>
+    url.includes("/live/json/events/group/")
+      ? {
+          ok: true,
+          status: 200,
+          json: async () => ({ meta: {}, links: { next: null }, data: [] }),
+        }
+      : serve(url);
+
+  const { result } = await withStubbedFetch(respond, () => fetchLiveWhale());
+
+  assert.deepEqual(result.failedGroups, ["ASUC Student Union"]);
+});
+
+test("a JSON title with an out-of-range entity keeps its row", async () => {
+  const day = addDaysToKey(TODAY, 4);
+  const cutGroup = (url) =>
+    url.endsWith("/group/ASUC%20Student%20Union")
+      ? "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nSUMMARY:"
+      : null;
+  const serve = windowServer(FILLERS, cutGroup);
+  const respond = (url) =>
+    url.includes("/live/json/events/group/ASUC%20Student%20Union/")
+      ? {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            meta: {},
+            links: { next: null },
+            data: [
+              {
+                id: 5151,
+                title: "Odd &#9999999; title",
+                url: "https://events.berkeley.edu/ASUC/event/5151-odd",
+                date_utc: `${day} 02:00:00`,
+                date_iso: `${day}T18:00:00-08:00`,
+                date2_iso: null,
+                is_all_day: null,
+                location: null,
+                description: null,
+                event_types: null,
+              },
+            ],
+          }),
+        }
+      : serve(url);
+
+  const { result } = await withStubbedFetch(respond, () => fetchLiveWhale());
+
+  assert.ok(result.events.some((event) => event.title.startsWith("Odd")));
+  assert.deepEqual(result.failedGroups, []);
+});
+
 test("a cut-off group feed counts as a failed group", async () => {
   const cutGroup = (url) =>
     url.endsWith("/group/physics")
