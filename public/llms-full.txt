@@ -85,7 +85,7 @@ Returns a compact generated index for local search. Agents can use this for fast
 
 ## Recommended Agent Workflow
 
-1. Prefer homepage WebMCP `search_berkeley_events` when available (same ranked path as the UI).
+1. Prefer homepage WebMCP `search_berkeley_events` when available (same ranked path as the UI). Call `list_filter_options` first for valid categories, sources, date presets, and topic slugs.
 2. Otherwise fetch `https://cal-events.com/events.json`.
 3. Keep events with a day on or after today in America/Los_Angeles. Check each day in `dates` when present, or `date` otherwise.
 4. Filter by `tags[0]` for the primary displayed category.

@@ -21,7 +21,7 @@
     },
     "tools": {
       "discovery": "https://cal-events.com/.well-known/agent-skills/index.json",
-      "browser": "WebMCP tools register on the homepage from the app bundle when navigator.modelContext is available: search_berkeley_events (optional topic slug validated against events.json.topic_vocabulary), get_event_by_id, generate_event_ics, get_cal_events_feed_status, get_ui_state, apply_ui_state, build_calevents_url, get_event_directions."
+      "browser": "WebMCP tools register on the homepage from the app bundle when navigator.modelContext is available: search_berkeley_events (optional topic slug validated against events.json.topic_vocabulary), get_event_by_id, generate_event_ics, get_cal_events_feed_status, get_ui_state, apply_ui_state, build_calevents_url, get_event_directions, list_filter_options."
     },
     "prompts": {
       "whats-on-tonight": {

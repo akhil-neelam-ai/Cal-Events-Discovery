@@ -57,7 +57,7 @@ WebMCP helpers: `build_calevents_url`, `get_ui_state`, `apply_ui_state`.
 
 ## WebMCP Tools (homepage)
 
-Primitives (capability, not multi-step workflows): `search_berkeley_events` (ranked UI path), `get_event_by_id`, `generate_event_ics`, `get_cal_events_feed_status`, `get_ui_state`, `apply_ui_state`, `build_calevents_url`, `get_event_directions`. Named outcomes live in MCP prompts and agent skills.
+Primitives (capability, not multi-step workflows): `search_berkeley_events` (ranked UI path), `get_event_by_id`, `generate_event_ics`, `get_cal_events_feed_status`, `get_ui_state`, `apply_ui_state`, `build_calevents_url`, `get_event_directions`, `list_filter_options` (valid categories, sources, date presets, topic slugs). Named outcomes live in MCP prompts and agent skills.
 
 ## CRUD Limits
 

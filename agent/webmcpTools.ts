@@ -1,4 +1,9 @@
-import { ALL_SOURCES, Categories, DEFAULT_FILTERS } from "../appConfig";
+import {
+  ALL_SOURCES,
+  Categories,
+  DEFAULT_FILTERS,
+  SOURCE_LABELS,
+} from "../appConfig";
 import type { CalEvent, SearchFilters, SearchResponse } from "../types";
 import {
   addDaysToDateKey,
@@ -104,56 +109,112 @@ function resolveDatePreset(
   return { startDate: todayKey };
 }
 
+type DatePreset = SearchFilters["dateRange"];
+
+const DATE_PRESETS: readonly { value: DatePreset; label: string }[] = [
+  { value: "today", label: "Today" },
+  { value: "tomorrow", label: "Tomorrow" },
+  { value: "week", label: "This Week" },
+  { value: "upcoming", label: "All Upcoming" },
+];
+
+// CalLink was retired in October 2026. RETIRED_SOURCES in
+// scripts/lib/schema.ts keeps the id valid for old data. A test checks that
+// the two lists agree.
+export const RETIRED_SOURCE_IDS: readonly string[] = ["callink"];
+
+export function activeSourceIds(): string[] {
+  return ALL_SOURCES.filter(
+    (source) => source !== "All" && !RETIRED_SOURCE_IDS.includes(source),
+  );
+}
+
+function filterCategories(): string[] {
+  return Categories.filter((category) => category !== "All");
+}
+
+type FiltersResolution =
+  { ok: true; filters: SearchFilters } | { ok: false; error: string };
+
+function readQuery(input: Record<string, unknown>): string | undefined {
+  if (typeof input.q === "string") return input.q;
+  if (typeof input.query === "string") return input.query;
+  return undefined;
+}
+
+// Builds filters from tool input on top of `base`. A field the input leaves
+// out keeps its base value. An empty string or "All" clears a field. An
+// unknown value returns an error instead of falling back to "All".
 function buildFiltersFromInput(
   input: Record<string, unknown>,
   allowedTopics: readonly string[] = [],
-): SearchFilters {
+  base: SearchFilters = DEFAULT_FILTERS,
+): FiltersResolution {
+  const filters: SearchFilters = { ...base };
+
+  const query = readQuery(input);
+  if (query !== undefined) filters.searchQuery = query.trim();
+
   const datePreset =
-    typeof input.date === "string"
-      ? input.date
-      : typeof input.datePreset === "string"
-        ? input.datePreset
-        : undefined;
+    typeof input.date === "string" ? input.date : input.datePreset;
+  if (typeof datePreset === "string") {
+    const match = DATE_PRESETS.find((preset) => preset.value === datePreset);
+    if (!match) {
+      const valid = DATE_PRESETS.map((preset) => preset.value).join(", ");
+      return {
+        ok: false,
+        error: `Unknown date "${datePreset}". Valid dates: ${valid}.`,
+      };
+    }
+    filters.dateRange = match.value;
+  }
 
-  const dateRange =
-    datePreset === "today" ||
-    datePreset === "tomorrow" ||
-    datePreset === "week" ||
-    datePreset === "upcoming"
-      ? datePreset
-      : DEFAULT_FILTERS.dateRange;
+  if (typeof input.category === "string") {
+    const category = input.category.trim();
+    const match = filterCategories().find(
+      (item) => item.toLowerCase() === category.toLowerCase(),
+    );
+    if (!category || category.toLowerCase() === "all") {
+      filters.category = DEFAULT_FILTERS.category;
+    } else if (match) {
+      filters.category = match;
+    } else {
+      return {
+        ok: false,
+        error: `Unknown category "${category}". Valid categories: ${filterCategories().join(", ")}, or All.`,
+      };
+    }
+  }
 
-  const category =
-    typeof input.category === "string" && input.category.trim()
-      ? input.category.trim()
-      : DEFAULT_FILTERS.category;
+  if (typeof input.source === "string") {
+    const source = input.source.trim();
+    if (!source || source.toLowerCase() === "all") {
+      filters.source = DEFAULT_FILTERS.source;
+    } else if (activeSourceIds().includes(source)) {
+      filters.source = source;
+    } else {
+      const reason = RETIRED_SOURCE_IDS.includes(source)
+        ? `Source "${source}" is retired and has no events.`
+        : `Unknown source "${source}".`;
+      return {
+        ok: false,
+        error: `${reason} Valid sources: ${activeSourceIds().join(", ")}, or All.`,
+      };
+    }
+  }
 
-  const source =
-    typeof input.source === "string" && input.source.trim()
-      ? input.source.trim()
-      : DEFAULT_FILTERS.source;
+  if (typeof input.topic === "string") {
+    try {
+      filters.topic = validateTopic(input, allowedTopics) ?? "";
+    } catch (error) {
+      return {
+        ok: false,
+        error: error instanceof Error ? error.message : "invalid topic",
+      };
+    }
+  }
 
-  const searchQuery =
-    typeof input.q === "string"
-      ? input.q
-      : typeof input.query === "string"
-        ? input.query
-        : DEFAULT_FILTERS.searchQuery;
-
-  const topic =
-    typeof input.topic === "string" && input.topic.trim()
-      ? input.topic.trim()
-      : DEFAULT_FILTERS.topic;
-
-  return {
-    dateRange,
-    category: Categories.includes(category)
-      ? category
-      : DEFAULT_FILTERS.category,
-    topic: allowedTopics.includes(topic) ? topic : DEFAULT_FILTERS.topic,
-    source: ALL_SOURCES.includes(source) ? source : DEFAULT_FILTERS.source,
-    searchQuery: String(searchQuery ?? "").trim(),
-  };
+  return { ok: true, filters };
 }
 
 function getPublishedTopicSlugs(payload: EventsPayload): string[] {
@@ -196,8 +257,11 @@ function validateTopic(
   if (typeof input.topic !== "string" || !input.topic.trim()) return null;
   const topic = input.topic.trim();
   if (!allowedTopics.includes(topic)) {
+    const valid = allowedTopics.length
+      ? `Valid slugs: ${allowedTopics.join(", ")}.`
+      : "No topic vocabulary is published.";
     throw new Error(
-      `Unknown topic "${topic}". Use a slug from events.json.topic_vocabulary.topics.`,
+      `Unknown topic "${topic}". ${valid} Slugs come from events.json.topic_vocabulary.topics or list_filter_options.`,
     );
   }
   return topic;
@@ -612,7 +676,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
   const buildCaleventsUrl: WebMcpTool = {
     name: "build_calevents_url",
     description:
-      "Build a CalEvents deep-link URL from query/date/category/topic/source/event without changing the open page. Query params: q, date, category, topic, source, event. Topic slugs come from events.json.topic_vocabulary.topics.",
+      "Build a CalEvents deep-link URL from query/date/category/topic/source/event without changing the open page. Query params: q, date, category, topic, source, event. Valid categories, sources, dates and topic slugs come from list_filter_options. An unknown value returns an error.",
     inputSchema: {
       type: "object",
       properties: {
@@ -633,11 +697,11 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         },
         category: {
           type: "string",
-          description: 'Category or "All".',
+          description: 'Category or "All". See list_filter_options.',
         },
         source: {
           type: "string",
-          description: 'Source id or "All".',
+          description: 'Active source id or "All". See list_filter_options.',
         },
         topic: {
           type: "string",
@@ -654,14 +718,9 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
     execute: async function executeBuildUrl(input) {
       input = input ?? {};
       const allowedTopics = await allowedTopicsIfNeeded(inputHasTopic(input));
-      try {
-        validateTopic(input, allowedTopics);
-      } catch (error) {
-        return {
-          error: error instanceof Error ? error.message : "invalid topic",
-        };
-      }
-      const filters = buildFiltersFromInput(input, allowedTopics);
+      const resolved = buildFiltersFromInput(input, allowedTopics);
+      if (!resolved.ok) return { error: resolved.error };
+      const { filters } = resolved;
       const eventId =
         typeof input.event === "string" && input.event.trim()
           ? input.event.trim()
@@ -681,56 +740,151 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
   const applyUiState: WebMcpTool = {
     name: "apply_ui_state",
     description:
-      "Update the open CalEvents page to match shared URL workspace state (q/date/category/topic/source/event). Topic slugs come from events.json.topic_vocabulary.topics. The React UI syncs via history + popstate.",
+      "Update the open CalEvents page to match shared URL workspace state (q/date/category/topic/source/event). The default mode is replace: every field you leave out returns to its default, and the detail panel closes unless you pass event. Use mode merge to change only the fields you pass and keep the rest of the current URL. Pass reset true to return to the default view. Pass event null to close the detail panel. Valid categories, sources, dates and topic slugs come from list_filter_options. An unknown value or event id returns applied false with an error. The React UI syncs via history + popstate.",
     inputSchema: {
       type: "object",
       properties: {
+        mode: {
+          type: "string",
+          enum: ["replace", "merge"],
+          default: "replace",
+          description:
+            "replace starts from the default view. merge starts from the current URL state.",
+        },
+        reset: {
+          type: "boolean",
+          description:
+            "When true, start from the default view whatever the mode. Fields you pass still apply.",
+        },
         q: { type: "string" },
-        query: { type: "string" },
+        query: { type: "string", description: "Alias for q." },
         date: {
           type: "string",
-          enum: ["today", "tomorrow", "week", "upcoming"],
+          enum: DATE_PRESETS.map((preset) => preset.value),
         },
         datePreset: {
           type: "string",
-          enum: ["today", "tomorrow", "week", "upcoming"],
+          enum: DATE_PRESETS.map((preset) => preset.value),
+          description: "Alias for date.",
         },
-        category: { type: "string" },
-        source: { type: "string" },
+        category: {
+          type: "string",
+          description: 'Category or "All". See list_filter_options.',
+        },
+        source: {
+          type: "string",
+          description: 'Active source id or "All". See list_filter_options.',
+        },
         topic: {
           type: "string",
           description:
-            "Published topic slug from events.json.topic_vocabulary.",
+            'Published topic slug from list_filter_options, or "" to clear.',
         },
-        event: { type: "string" },
+        event: {
+          type: ["string", "null"],
+          description:
+            "Event id to open in the detail panel. Must exist in events.json. null closes the panel.",
+        },
       },
     },
     annotations: { readOnlyHint: false },
     execute: async function executeApplyUiState(input) {
       input = input ?? {};
-      const allowedTopics = await allowedTopicsIfNeeded(inputHasTopic(input));
-      try {
-        validateTopic(input, allowedTopics);
-      } catch (error) {
+      const mode = input.mode ?? "replace";
+      if (mode !== "replace" && mode !== "merge") {
         return {
-          error: error instanceof Error ? error.message : "invalid topic",
+          applied: false,
+          error: `Unknown mode "${String(mode)}". Use replace or merge.`,
         };
       }
-      const filters = buildFiltersFromInput(input, allowedTopics);
-      const eventId =
-        typeof input.event === "string" && input.event.trim()
-          ? input.event.trim()
-          : null;
+      const fromCurrent = mode === "merge" && input.reset !== true;
+      const locationSearch = fromCurrent ? deps.getLocationSearch() : "";
+
+      const allowedTopics = await allowedTopicsIfNeeded(
+        inputHasTopic(input) || searchHasTopic(locationSearch),
+      );
+      const current = fromCurrent
+        ? parseUrlState(locationSearch, {
+            defaultFilters: DEFAULT_FILTERS,
+            allowedCategories: Categories,
+            allowedSources: ALL_SOURCES,
+            allowedTopics,
+          })
+        : { filters: DEFAULT_FILTERS, selectedEventId: null };
+
+      const resolved = buildFiltersFromInput(
+        input,
+        allowedTopics,
+        current.filters,
+      );
+      if (!resolved.ok) return { applied: false, error: resolved.error };
+      const { filters } = resolved;
+
+      let eventId: string | null = current.selectedEventId;
+      if (input.event === null) {
+        eventId = null;
+      } else if (typeof input.event === "string") {
+        eventId = input.event.trim() || null;
+      }
+      if (eventId && eventId !== current.selectedEventId) {
+        const data = await fetchEventsPayload();
+        const events = Array.isArray(data.events) ? data.events : [];
+        if (!findEventById(events, eventId)) {
+          return {
+            applied: false,
+            error: `No event found for id ${eventId}. Find ids with search_berkeley_events.`,
+          };
+        }
+      }
+
       const search = buildUrlStateSearch(filters, eventId, {
         defaultFilters: DEFAULT_FILTERS,
       });
       deps.applyUrlSearch(search);
       return {
         applied: true,
+        mode,
+        reset: input.reset === true,
         search,
         url: absoluteUrl(search || ""),
         filters,
         selectedEventId: eventId,
+      };
+    },
+  };
+
+  const listFilterOptions: WebMcpTool = {
+    name: "list_filter_options",
+    description:
+      'List the values the filter inputs accept: categories, active sources with labels, date presets, and published topics (slug, label, group). Pass these to search_berkeley_events, build_calevents_url and apply_ui_state. "All" clears a category or source filter.',
+    inputSchema: { type: "object", properties: {} },
+    annotations: { readOnlyHint: true },
+    execute: async function executeListFilterOptions() {
+      const data = await fetchEventsPayload();
+      const topics = Array.isArray(data.topic_vocabulary?.topics)
+        ? data.topic_vocabulary.topics
+            .filter(
+              (topic) =>
+                typeof topic?.slug === "string" &&
+                typeof topic.label === "string",
+            )
+            .map((topic) => ({
+              slug: topic.slug,
+              label: topic.label,
+              group: topic.group,
+            }))
+        : [];
+
+      return {
+        lastUpdated: data.lastUpdated,
+        categories: filterCategories(),
+        sources: activeSourceIds().map((id) => ({
+          id,
+          label: SOURCE_LABELS[id] ?? id,
+        })),
+        datePresets: DATE_PRESETS.map((preset) => ({ ...preset })),
+        defaultDatePreset: DEFAULT_FILTERS.dateRange,
+        topics,
       };
     },
   };
@@ -795,5 +949,6 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
     buildCaleventsUrl,
     applyUiState,
     getEventDirections,
+    listFilterOptions,
   ];
 }
