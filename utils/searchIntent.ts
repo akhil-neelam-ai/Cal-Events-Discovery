@@ -95,7 +95,6 @@ const SOURCE_PATTERNS: Array<[string, RegExp, string]> = [
     "Cal Bears",
   ],
   ["cal_performances", /\b(cal performances)\b/i, "Cal Performances"],
-  ["callink", /\b(callink|cal link)\b/i, "CalLink"],
   ["haas", /\b(haas|berkeley haas|business school)\b/i, "Berkeley Haas"],
   ["berkeley_law", /\b(berkeley law|law school|bclt)\b/i, "Berkeley Law"],
   ["simons", /\b(simons|simons institute)\b/i, "Simons Institute"],

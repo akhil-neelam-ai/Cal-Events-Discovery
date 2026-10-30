@@ -517,6 +517,9 @@ async function fetchCalendar(
       lastErr = problem.message;
       cutBody = problem.incomplete ? ics : null;
       console.warn(`[${label}] ${lastErr}`);
+      // The same URL returns the same cut body, so a retry only spends time;
+      // the caller recovers a cut calendar with smaller windows instead.
+      if (cutBody !== null) break;
     } catch (err) {
       lastErr = err instanceof Error ? err.message : String(err);
       cutBody = null;
@@ -752,6 +755,20 @@ async function fetchWindow(
   options: FetchOptions,
 ): Promise<WindowResult> {
   const days = daysBetween(start, end);
+  // Days fetch in parallel, so a cut week costs one extra round trip
+  // instead of three halvings in a row.
+  const splitIntoDays = async (): Promise<WindowResult> => {
+    const results = await Promise.all(
+      Array.from({ length: days }, (_, offset) => {
+        const day = addDaysToKey(start, offset);
+        return fetchWindow(day, addDaysToKey(day, 1), limit, options);
+      }),
+    );
+    return {
+      parts: results.flatMap((result) => result.parts),
+      failures: results.flatMap((result) => result.failures),
+    };
+  };
   const split = async (): Promise<WindowResult> => {
     const mid = addDaysToKey(start, Math.floor(days / 2));
     const halves = await Promise.all([
@@ -780,9 +797,9 @@ async function fetchWindow(
     if (err instanceof IncompleteCalendarError) {
       if (days > 1) {
         console.warn(
-          `[livewhale] window ${start}..${end} was incomplete; splitting it`,
+          `[livewhale] window ${start}..${end} was incomplete; fetching its days`,
         );
-        return split();
+        return splitIntoDays();
       }
       const salvaged = salvageCutCalendar(err.body);
       const refill = await fetchJsonCalendar(

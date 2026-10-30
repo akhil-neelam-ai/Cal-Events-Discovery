@@ -48,7 +48,7 @@ React app loads JSON client-side, search runs in-browser
 Vercel CDN → cal-events.com
 ```
 
-1. **Ingestion** — `scripts/updateEvents.ts` runs 13 source adapters in parallel (60 s timeout each, 100 s for Simons), dedupes, writes three JSON files.
+1. **Ingestion** — `scripts/updateEvents.ts` runs 12 source adapters in parallel (60 s timeout each, 100 s for Simons), dedupes, writes three JSON files.
 2. **Automation** — Daily cron opens a PR on `automation/update-events` with updated artifacts.
 3. **Merge** — PR runs validate + E2E, auto-merges to `main` if green.
 4. **Deploy** — Vercel deploys `main`. Production smoke test hits live URLs.
@@ -130,7 +130,7 @@ After every pipeline run, check `public/status.json` (or `https://cal-events.com
 | `fallback_age_hours`   | How old the fallback data is                                               |
 | `data_quality_blocked` | Pipeline refused to publish (strict mode in CI)                            |
 
-**Thin coverage warnings** (non-blocking): CalLink returning 1 event when ≥5 is expected, etc. Surfaced as `::warning::` in CI via `scripts/lib/sourceCoveragePolicy.ts`.
+**Thin coverage warnings** (non-blocking): Cal Bears returning 1 event when ≥15 is expected, etc. Surfaced as `::warning::` in CI via `scripts/lib/sourceCoveragePolicy.ts`.
 
 ## Troubleshooting
 
@@ -183,7 +183,6 @@ npm run test:search-quality                 # live corpus golden queries
 | Source                                    | Adapter               | Method                                                           |
 | ----------------------------------------- | --------------------- | ---------------------------------------------------------------- |
 | LiveWhale (campus calendar)               | `livewhale.ts`        | iCal weekly windows + 70 department and student-life group feeds |
-| CalLink (student orgs)                    | `callink.ts`          | CampusGroups JSON API (~16 event cap)                            |
 | Cal Performances                          | `cal_performances.ts` | WordPress REST                                                   |
 | Cal Bears athletics                       | `calbears.ts`         | iCal                                                             |
 | BAMPFA                                    | `bampfa.ts`           | HTML scraper                                                     |

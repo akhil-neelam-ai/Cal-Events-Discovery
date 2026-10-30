@@ -57,7 +57,7 @@ Fixed in PR 267 (windowed fetch) and extended by PR 269 (JSON refill of cut days
 
 1. **Weekly windows.** `liveWhaleWindowKeys` builds PT date keys from a week back to eight weeks ahead in 7-day steps. Consecutive keys form one window each through `liveWhaleWindowUrl`.
 2. **A complete calendar or nothing.** `calendarProblem` rejects a body without `BEGIN:VCALENDAR`, and treats one that does not end with `END:VCALENDAR` as cut.
-3. **Split, then salvage.** `fetchWindow` refetches a cut window, or one at `WINDOW_SPLIT_THRESHOLD` (900) or more events, as two halves down to single days. A single day that stays cut keeps every complete event before the cut through `salvageCutCalendar`:
+3. **Split, then salvage.** `fetchWindow` refetches a cut window as its single days, in parallel and without retrying the cut URL, and splits a window at `WINDOW_SPLIT_THRESHOLD` (900) or more events in halves down to single days. Halving a cut window instead cost three sequential round trips, which at 14 s per request overran the 90 s budget (150 s in the budget check). A single day that stays cut keeps every complete event before the cut through `salvageCutCalendar`:
 
 ```ts
 const lastEnd = body.lastIndexOf("END:VEVENT");
@@ -77,7 +77,7 @@ The upstream fault is in how LiveWhale renders some responses. Every observed cu
 
 LiveWhale's `end_date` is exclusive for timed events but includes the all-day events of the end day. Windows therefore share keys (`[a,b)`, then `[b,c)`), and the all-day rows that appear in both merge by UID. Building each window as `start..start+6` would drop every timed event on every seventh day, with no error anywhere.
 
-A simulated uniformly slow upstream (every request, redirect lookups included, answering after 10 s, then 14 s, just under the 15 s per-request timeout) finished in 80 s of the 90 s budget both times. The required windows all returned, group feeds past their 60 s deadline were recorded as failed, and redirect lookups that ran out of time fell back to the generic organizer. Window requests take an urgent lane in the shared pool, which is what keeps them from queueing behind the group feeds.
+A simulated uniformly slow upstream (every request, redirect lookups included, answering after 10 s, then 14 s, just under the 15 s per-request timeout) finished in 80 s of the 90 s budget both times. The required windows all returned, group feeds past their 60 s deadline were recorded as failed, and redirect lookups that ran out of time fell back to the generic organizer. Window requests take an urgent lane in the shared pool, which is what keeps them from queueing behind the group feeds. `npm run check:livewhale-budget` reruns that simulation, and the Source Contracts workflow runs it weekly and on adapter changes.
 
 ## Prevention
 

@@ -4,7 +4,7 @@
  *
  * Source priority (configured in scripts/lib/dedupe.ts):
  *   livewhale (4), the official campus iCal feed, outranks the other 12,
- *   which share priority 3: callink, cal_performances, calbears, bampfa,
+ *   which share priority 3: cal_performances, calbears, bampfa,
  *   haas, berkeley_law, simons, luma, begin, ai_risk, brsl, cltc.
  *
  * Failure handling: each source is independent. If a source throws, we
@@ -55,7 +55,6 @@ import {
   LIVEWHALE_ADAPTER_TIMEOUT_MS,
 } from "./sources/livewhale.js";
 
-import { fetchCallink } from "./sources/callink.js";
 import { fetchCalPerformances } from "./sources/cal_performances.js";
 import { fetchCalBears } from "./sources/calbears.js";
 import { fetchBampfa } from "./sources/bampfa.js";
@@ -367,10 +366,6 @@ async function main(): Promise<void> {
         ),
       },
       {
-        name: "callink",
-        promise: runAdapterWithTimeout("callink", fetchCallink),
-      },
-      {
         name: "cal_performances",
         promise: runAdapterWithTimeout(
           "cal_performances",
@@ -560,10 +555,6 @@ async function main(): Promise<void> {
     {
       title: "UC Berkeley Events (LiveWhale)",
       uri: "https://events.berkeley.edu/",
-    },
-    {
-      title: "CalLink Student Org Events",
-      uri: "https://callink.berkeley.edu/events",
     },
     { title: "Cal Performances", uri: "https://calperformances.org/events/" },
     { title: "Cal Bears Athletics", uri: "https://calbears.com/calendar" },

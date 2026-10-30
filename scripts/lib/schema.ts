@@ -32,6 +32,13 @@ export const SourceNameSchema = z.enum([
 ]);
 export type SourceName = z.infer<typeof SourceNameSchema>;
 
+/**
+ * Sources no longer fetched. Their ids stay valid so old events, links, and
+ * URL state still parse. CalLink retired in October 2026 when CampusLabs put
+ * every page behind a login; LiveWhale's student-life groups carry its events.
+ */
+export const RETIRED_SOURCES: ReadonlySet<SourceName> = new Set(["callink"]);
+
 export const ModalitySchema = z.enum([
   "in_person",
   "virtual",

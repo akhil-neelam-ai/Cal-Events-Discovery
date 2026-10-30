@@ -105,7 +105,7 @@ Read-only. No create/update/delete for events or status via CalEvents.
 ## Source Ids
 
 - `livewhale`: UC Berkeley Events
-- `callink`: CalLink student organization events
+- `callink`: CalLink student organization events (retired October 2026; student events now arrive under `livewhale`)
 - `cal_performances`: Cal Performances
 - `calbears`: Cal Bears Athletics
 - `bampfa`: Berkeley Art Museum and Pacific Film Archive

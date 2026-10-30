@@ -6,7 +6,6 @@
 
 export const SOURCE_EXPECTED_MIN_COUNTS: Record<string, number> = {
   livewhale: 100,
-  callink: 5,
   cal_performances: 10,
   calbears: 15,
   bampfa: 20,

@@ -28,6 +28,7 @@
     "validate": "npm run lint && npm run format:check && npm run typecheck && npm run test:scripts && npm run test:ui",
     "test": "npm run validate",
     "update-events": "tsx scripts/updateEvents.ts",
+    "check:livewhale-budget": "tsx scripts/checkLiveWhaleBudget.ts",
     "rebuild-index": "tsx scripts/rebuildSearchIndex.ts"
   },
   "overrides": {
