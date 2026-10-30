@@ -542,11 +542,18 @@ function runScoring(
 
 // ─── Main search function ─────────────────────────────────────────────────────
 
+/** The filter an empty result set dropped to find matches. */
+export interface RelaxedFilter {
+  filter: "weekend" | "category" | "topic";
+  value: string;
+}
+
 export interface SearchOutput {
   results: CalEvent[];
   plan: SearchPlan;
   fallbackUsed: boolean;
   fallbackMessage?: string;
+  relaxed?: RelaxedFilter;
 }
 
 // The words still searched, for a fallback message. A query that was only a
@@ -598,6 +605,7 @@ export function searchEvents(
           plan: relaxedPlan,
           fallbackUsed: true,
           fallbackMessage: `No matches${forKeywords(plan)} this weekend. Showing other dates instead.`,
+          relaxed: { filter: "weekend", value: "true" },
         };
       }
     }
@@ -614,6 +622,7 @@ export function searchEvents(
           plan,
           fallbackUsed: true,
           fallbackMessage: `No "${cat}" results${forKeywords(plan)}. Showing all categories.`,
+          relaxed: { filter: "category", value: cat },
         };
       }
     }
@@ -632,6 +641,7 @@ export function searchEvents(
           plan,
           fallbackUsed: true,
           fallbackMessage: `No "${topic?.label ?? plan.filters.topic}" results${forKeywords(plan)}. Showing all topics.`,
+          relaxed: { filter: "topic", value: plan.filters.topic },
         };
       }
     }

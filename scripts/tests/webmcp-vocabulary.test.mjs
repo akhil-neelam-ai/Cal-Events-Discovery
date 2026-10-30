@@ -224,6 +224,27 @@ test("apply_ui_state merge mode keeps the current URL state", async () => {
   assert.equal(applied.at(-1), "?date=today&source=haas");
 });
 
+test("an agent-chosen date stays in the URL even when it is the default", async () => {
+  const { tools, applied } = loadTools("?q=jazz+tonight&date=week");
+  const apply = tools.get("apply_ui_state");
+
+  await apply.execute({ q: "jazz tonight", date: "week" });
+  assert.equal(applied.at(-1), "?q=jazz+tonight&date=week");
+
+  // Merge keeps a date the user already pinned.
+  await apply.execute({ mode: "merge", category: "Arts" });
+  assert.equal(applied.at(-1), "?q=jazz+tonight&date=week&category=Arts");
+
+  // With no date given, the default stays out of the URL.
+  await apply.execute({ q: "jazz" });
+  assert.equal(applied.at(-1), "?q=jazz");
+
+  const built = await tools
+    .get("build_calevents_url")
+    .execute({ q: "jazz", datePreset: "week" });
+  assert.equal(built.search, "?q=jazz&date=week");
+});
+
 test("apply_ui_state merge keeps a topic from the current URL", async () => {
   const { tools, applied } = loadTools("?topic=law&q=moot");
   const result = await tools

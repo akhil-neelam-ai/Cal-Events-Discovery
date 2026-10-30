@@ -1,7 +1,9 @@
 import {
+  ACTIVE_SOURCES,
   ALL_SOURCES,
   Categories,
   DEFAULT_FILTERS,
+  RETIRED_SOURCES,
   SOURCE_LABELS,
 } from "../appConfig";
 import type { CalEvent, SearchFilters, SearchResponse } from "../types";
@@ -19,6 +21,7 @@ import { buildEventIcs, buildGoogleCalendarUrl } from "../utils/icsExport";
 import {
   buildSearchPlan,
   dismissedKeysForExplicitFilters,
+  type RelaxedFilter,
   searchEvents,
 } from "../utils/searchEngine";
 import type { SearchTopicDefinition } from "../utils/searchIntent";
@@ -57,6 +60,71 @@ function parseLimit(value: unknown): number {
   const parsed = Number(value ?? 10);
   if (!Number.isFinite(parsed)) return 10;
   return Math.min(Math.max(Math.trunc(parsed), 1), 50);
+}
+
+type DatePreset = SearchFilters["dateRange"];
+
+// With no date input and no date in the query, search runs from today with
+// no end. The UI opens on "week", but an agent asking about a lecture next
+// month should still find it.
+const DEFAULT_SEARCH_RANGE: DatePreset = "upcoming";
+
+const SEARCH_CATEGORIES = Categories.filter((category) => category !== "All");
+
+function isDatePreset(value: unknown): value is DatePreset {
+  return (
+    value === "today" ||
+    value === "tomorrow" ||
+    value === "week" ||
+    value === "upcoming"
+  );
+}
+
+function parseOffset(value: unknown): number {
+  const parsed = Number(value ?? 0);
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.max(Math.trunc(parsed), 0);
+}
+
+type Checked<T> = { value: T } | { error: string };
+
+function checkSearchCategory(value: unknown): Checked<string> {
+  if (typeof value !== "string" || !value.trim()) return { value: "" };
+  const wanted = value.trim().toLowerCase();
+  if (wanted === "all") return { value: "" };
+  const match = SEARCH_CATEGORIES.find(
+    (category) => category.toLowerCase() === wanted,
+  );
+  return match
+    ? { value: match }
+    : {
+        error: `Unknown category "${value.trim()}". Use one of: ${SEARCH_CATEGORIES.join(", ")}.`,
+      };
+}
+
+function checkSearchSource(value: unknown): Checked<string> {
+  if (typeof value !== "string" || !value.trim()) return { value: "" };
+  const source = value.trim();
+  if (source === "All") return { value: "" };
+  if (ACTIVE_SOURCES.includes(source)) return { value: source };
+  const reason = RETIRED_SOURCES.includes(source)
+    ? `Source "${source}" is retired.`
+    : `Unknown source "${source}".`;
+  return { error: `${reason} Use one of: ${ACTIVE_SOURCES.join(", ")}.` };
+}
+
+function checkDismiss(value: unknown): Checked<string[]> {
+  if (value === undefined || value === null) return { value: [] };
+  if (
+    !Array.isArray(value) ||
+    !value.every((key): key is string => typeof key === "string")
+  ) {
+    return {
+      error:
+        'dismiss must be an array of chip keys such as "topic:law" or "dateRange:today".',
+    };
+  }
+  return { value: value.map((key) => key.trim()).filter(Boolean) };
 }
 
 function findEventById(events: CalEvent[], id: string): CalEvent | null {
@@ -112,8 +180,6 @@ function resolveDatePreset(
   return { startDate: todayKey };
 }
 
-type DatePreset = SearchFilters["dateRange"];
-
 const DATE_PRESETS: readonly { value: DatePreset; label: string }[] = [
   { value: "today", label: "Today" },
   { value: "tomorrow", label: "Tomorrow" },
@@ -121,15 +187,16 @@ const DATE_PRESETS: readonly { value: DatePreset; label: string }[] = [
   { value: "upcoming", label: "All Upcoming" },
 ];
 
-// CalLink was retired in October 2026. RETIRED_SOURCES in
-// scripts/lib/schema.ts keeps the id valid for old data. A test checks that
-// the two lists agree.
-export const RETIRED_SOURCE_IDS: readonly string[] = ["callink"];
+// Retired sources (CalLink, October 2026) come from appConfig, which a test
+// keeps in step with scripts/lib/schema.ts.
+function inputHasDate(input: Record<string, unknown>): boolean {
+  return typeof input.date === "string" || typeof input.datePreset === "string";
+}
+
+export const RETIRED_SOURCE_IDS: readonly string[] = RETIRED_SOURCES;
 
 export function activeSourceIds(): string[] {
-  return ALL_SOURCES.filter(
-    (source) => source !== "All" && !RETIRED_SOURCE_IDS.includes(source),
-  );
+  return [...ACTIVE_SOURCES];
 }
 
 function filterCategories(): string[] {
@@ -356,31 +423,24 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
   const searchBerkeleyEvents: WebMcpTool = {
     name: "search_berkeley_events",
     description:
-      "Search upcoming UC Berkeley campus events using the same ranked relevance engine as the CalEvents UI (search-index tokens, synonym expansion, intent chips, fuzzy fallback). Optional category/topic/source/date filters match the UI. Topic slugs come from events.json.topic_vocabulary.topics. Prefer this for discovery; use get_event_by_id for a single known id.",
+      'Search upcoming UC Berkeley campus events using the same ranked relevance engine as the CalEvents UI (search-index tokens, synonym expansion, intent chips, fuzzy fallback). Optional category/topic/source/date filters match the UI. Topic slugs come from events.json.topic_vocabulary.topics. With no date input, a date in the query ("tomorrow", "this weekend") sets the range, as in the UI; otherwise search runs from today with no end. Results report interpretations (the chips the query set), effectiveDateRange, fallbackMessage, relaxed, and total for paging with offset. Prefer this for discovery; use get_event_by_id for a single known id.',
     inputSchema: {
       type: "object",
       properties: {
         query: {
           type: "string",
           description:
-            "Natural-language or keyword query. Uses the website ranked search path when length is at least 2 characters.",
+            'Natural-language or keyword query. Uses the website ranked search path when length is at least 2 characters. Words such as "tomorrow", "free", or "arts" become filters, listed in interpretations.',
         },
         datePreset: {
           type: "string",
           enum: ["today", "tomorrow", "week", "upcoming"],
           description:
-            "Optional Pacific-time date bucket. Explicit startDate/endDate override the matching bound.",
+            "Optional Pacific-time date bucket. Overrides a date in the query. Explicit startDate/endDate override the matching bound.",
         },
         category: {
           type: "string",
-          enum: [
-            "Academic",
-            "Arts",
-            "Sports",
-            "Science & Tech",
-            "Student Life",
-            "Entrepreneurship",
-          ],
+          enum: SEARCH_CATEGORIES,
           description:
             "Optional category filter (primary tag), same as the UI category control.",
         },
@@ -391,8 +451,8 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         },
         source: {
           type: "string",
-          description:
-            "Optional source id: livewhale, callink, cal_performances, calbears, bampfa, haas, berkeley_law, simons, luma, begin, ai_risk, brsl, or cltc.",
+          enum: [...ACTIVE_SOURCES],
+          description: `Optional source id: ${ACTIVE_SOURCES.join(", ")}.`,
         },
         startDate: {
           type: "string",
@@ -406,39 +466,71 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
           description:
             "Optional inclusive Pacific date upper bound in YYYY-MM-DD.",
         },
+        dismiss: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            'Optional chip keys to drop, taken from a previous result\'s interpretations (for example "topic:law" or "dateRange:tomorrow"). Same as the "x" on a UI chip: the words that set a source, category, or topic chip become search text again.',
+        },
         limit: {
           type: "integer",
           minimum: 1,
           maximum: 50,
           default: 10,
         },
+        offset: {
+          type: "integer",
+          minimum: 0,
+          default: 0,
+          description:
+            "Skip this many ranked results. Page with offset += limit while offset < total.",
+        },
       },
     },
     annotations: { readOnlyHint: true },
     execute: async function executeSearchEvents(input) {
       input = input ?? {};
+      const invalid = (error: string) => ({
+        error,
+        count: 0,
+        total: 0,
+        events: [],
+      });
 
-      const preset = resolveDatePreset(input.datePreset);
-      // With no lower bound, rows the feed still holds from yesterday would
-      // sort first before each morning's publish. The UI never shows them.
-      const startDate =
-        typeof input.startDate === "string"
-          ? input.startDate
-          : (preset?.startDate ?? getCurrentPacificDateKey());
-      const endDate =
-        typeof input.endDate === "string"
-          ? input.endDate
-          : (preset?.endDate ?? undefined);
+      const categoryCheck = checkSearchCategory(input.category);
+      if ("error" in categoryCheck) return invalid(categoryCheck.error);
+      const sourceCheck = checkSearchSource(input.source);
+      if ("error" in sourceCheck) return invalid(sourceCheck.error);
+      const dismissCheck = checkDismiss(input.dismiss);
+      if ("error" in dismissCheck) return invalid(dismissCheck.error);
+      const category = categoryCheck.value;
+      const source = sourceCheck.value;
 
-      if (startDate && endDate && startDate > endDate) {
-        const startGiven = typeof input.startDate === "string" || preset;
-        return {
-          error: startGiven
-            ? "startDate must be earlier than or equal to endDate"
-            : "endDate is before today. Pass startDate to search earlier days.",
-          count: 0,
-          events: [],
-        };
+      const presetInput = isDatePreset(input.datePreset)
+        ? input.datePreset
+        : null;
+      const startInput =
+        typeof input.startDate === "string" ? input.startDate : null;
+      const endInput = typeof input.endDate === "string" ? input.endDate : null;
+      const explicitDate = Boolean(presetInput || startInput || endInput);
+
+      const todayKey = getCurrentPacificDateKey();
+      const nowMinutes = getCurrentPacificMinutes();
+
+      if (explicitDate) {
+        const preset = resolveDatePreset(presetInput);
+        // With no lower bound, rows the feed still holds from yesterday
+        // would sort first before each morning's publish. The UI never
+        // shows them.
+        const startDate = startInput ?? preset?.startDate ?? todayKey;
+        const endDate = endInput ?? preset?.endDate;
+        if (endDate && startDate > endDate) {
+          return invalid(
+            startInput || preset
+              ? "startDate must be earlier than or equal to endDate"
+              : "endDate is before today. Pass startDate to search earlier days.",
+          );
+        }
       }
 
       const [data, index] = await Promise.all([
@@ -448,60 +540,120 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
       const allEvents = Array.isArray(data.events) ? data.events : [];
       const publishedTopics = getPublishedTopics(data);
       const allowedTopics = publishedTopics.map((item) => item.slug);
+      const planOptions = { topics: publishedTopics };
       let topic: string | null;
       try {
         topic = validateTopic(input, allowedTopics);
       } catch (error) {
-        return {
-          error: error instanceof Error ? error.message : "invalid topic",
-          count: 0,
-          events: [],
-        };
+        return invalid(
+          error instanceof Error ? error.message : "invalid topic",
+        );
       }
-      const category =
-        typeof input.category === "string" ? input.category.trim() : "";
-      const source =
-        typeof input.source === "string" ? input.source.trim() : "";
       const query = typeof input.query === "string" ? input.query.trim() : "";
       const plan =
-        query.length >= 2
-          ? buildSearchPlan(query, { topics: publishedTopics })
-          : null;
+        query.length >= 2 ? buildSearchPlan(query, planOptions) : null;
       // The same rule as the UI: an explicit filter dismisses a different
-      // one the query implies.
-      const dismissedKeys = dismissedKeysForExplicitFilters(plan, {
-        topic,
-        category,
-        source,
-      });
+      // one the query implies, and a dismissed chip stays dismissed.
+      const dismissedKeys = dismissedKeysForExplicitFilters(
+        plan,
+        { topic, category, source },
+        dismissCheck.value,
+      );
 
       // A window that starts today starts now, as in the UI. An event that
       // already ended today is left out.
-      const todayKey = getCurrentPacificDateKey();
-      const nowMinutes = getCurrentPacificMinutes();
-      const pool = allEvents.filter((event) => {
+      const inBounds =
+        (bounds: { startDate: string; endDate?: string }) =>
+        (event: CalEvent) =>
+          eventMatchesDateBounds(event, bounds.startDate, bounds.endDate) &&
+          (bounds.startDate < todayKey ||
+            !hasEventEnded(event, todayKey, nowMinutes));
+      const withTopic = (events: CalEvent[]) =>
+        topic
+          ? events.filter((event) =>
+              (event.topics ?? []).some((slug) => slug === topic),
+            )
+          : events;
+      // The UI's category and source pool, before dates and topic.
+      const filterPool = allEvents.filter((event) => {
         const primaryCategory = event.tags?.[0]?.toLowerCase() ?? "";
         const matchesCategory =
           !category || primaryCategory === category.toLowerCase();
         const matchesSource = !source || event.source === source;
-        const matchesTopic =
-          !topic || (event.topics ?? []).some((slug) => slug === topic);
-        const matchesDate =
-          eventMatchesDateBounds(event, startDate, endDate) &&
-          (startDate < todayKey || !hasEventEnded(event, todayKey, nowMinutes));
-        return matchesCategory && matchesSource && matchesTopic && matchesDate;
+        return matchesCategory && matchesSource;
       });
+
+      // The date range, in the UI's order: explicit input, then the
+      // query's date chip unless dismissed, then the default.
+      const inferredRange = plan?.filters.dateRange;
+      const basis: "input" | "query" | "default" = explicitDate
+        ? "input"
+        : inferredRange && !dismissedKeys.has(`dateRange:${inferredRange}`)
+          ? "query"
+          : "default";
+      const requested: DatePreset | null =
+        basis === "input"
+          ? presetInput
+          : basis === "query" && inferredRange
+            ? inferredRange
+            : DEFAULT_SEARCH_RANGE;
+
+      // A query's "today" or "tomorrow" widens to the week when nothing
+      // matches that day but something matches later in the week. This
+      // mirrors effectiveDateRange in hooks/useEventBrowserState.ts.
+      // Matches found only by dropping a filter do not count. Explicit date
+      // input is a hard bound and never widens.
+      let effective = requested;
+      if (
+        basis === "query" &&
+        (requested === "today" || requested === "tomorrow")
+      ) {
+        const weekBounds = resolveDatePreset("week");
+        const dayBounds = resolveDatePreset(requested);
+        if (weekBounds && dayBounds) {
+          const week = filterPool.filter(inBounds(weekBounds));
+          const weekOutput = searchEvents(
+            withTopic(week),
+            query,
+            index,
+            dismissedKeys,
+            planOptions,
+          );
+          const matches =
+            !weekOutput.fallbackUsed && weekOutput.results.length > 0
+              ? weekOutput.results
+              : week;
+          if (matches.length > 0 && !matches.some(inBounds(dayBounds))) {
+            effective = "week";
+          }
+        }
+      }
+
+      const effectivePreset = resolveDatePreset(effective);
+      const startDate = startInput ?? effectivePreset?.startDate ?? todayKey;
+      const endDate = endInput ?? effectivePreset?.endDate;
+      const pool = withTopic(filterPool).filter(
+        inBounds({ startDate, endDate }),
+      );
 
       let ranked: CalEvent[];
       let fallbackUsed = false;
+      let fallbackMessage: string | null = null;
+      let relaxed: RelaxedFilter | null = null;
       if (query.length < 2) {
         ranked = sortEventsChronologically(pool, startDate);
       } else {
-        const output = searchEvents(pool, query, index, dismissedKeys, {
-          topics: publishedTopics,
-        });
+        const output = searchEvents(
+          pool,
+          query,
+          index,
+          dismissedKeys,
+          planOptions,
+        );
         ranked = output.results;
         fallbackUsed = output.fallbackUsed;
+        fallbackMessage = output.fallbackMessage ?? null;
+        relaxed = output.relaxed ?? null;
         // Older published fixtures may predate topic_vocabulary. Preserve
         // their text-search behavior when pure topic intent cannot be applied.
         if (
@@ -518,17 +670,37 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
             ),
             startDate,
           );
+          fallbackMessage = null;
+          relaxed = null;
         }
       }
 
+      const offset = parseOffset(input.offset);
       const limit = parseLimit(input.limit);
-      const results = ranked.slice(0, limit).map(summarizeEvent);
+      const results = ranked.slice(offset, offset + limit).map(summarizeEvent);
+      const interpretations = (plan?.interpretations ?? [])
+        .filter((chip) => !dismissedKeys.has(chip.key))
+        .map(({ key, label }) => ({ key, label }));
 
       return {
         lastUpdated: data.lastUpdated,
         count: results.length,
+        total: ranked.length,
+        offset,
+        limit,
         fallbackUsed,
+        fallbackMessage,
+        relaxed,
         ranked: query.length >= 2,
+        interpretations,
+        effectiveDateRange: {
+          preset: startInput || endInput ? null : effective,
+          startDate,
+          endDate: endDate ?? null,
+          basis,
+          requested,
+          widened: effective !== requested,
+        },
         events: results,
         todayKey,
       };
@@ -732,6 +904,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
           : null;
       const search = buildUrlStateSearch(filters, eventId, {
         defaultFilters: DEFAULT_FILTERS,
+        explicitDateRange: inputHasDate(input),
       });
       return {
         search,
@@ -815,7 +988,11 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
             allowedSources: ALL_SOURCES,
             allowedTopics,
           })
-        : { filters: DEFAULT_FILTERS, selectedEventId: null };
+        : {
+            filters: DEFAULT_FILTERS,
+            selectedEventId: null,
+            hasExplicitDateRange: false,
+          };
 
       const resolved = buildFiltersFromInput(
         input,
@@ -842,8 +1019,11 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         }
       }
 
+      // A date the agent chose, or one the user already pinned, stays in the
+      // URL so a date implied by the query cannot override it.
       const search = buildUrlStateSearch(filters, eventId, {
         defaultFilters: DEFAULT_FILTERS,
+        explicitDateRange: inputHasDate(input) || current.hasExplicitDateRange,
       });
       deps.applyUrlSearch(search);
       return {
