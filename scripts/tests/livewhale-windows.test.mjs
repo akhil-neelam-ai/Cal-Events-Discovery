@@ -477,6 +477,49 @@ test("a window near the feed cap is split and every event is published", async (
   assert.equal(busyTitles.size, 1000);
 });
 
+test("a cut-off group feed is filled from the JSON group feed", async () => {
+  const day = addDaysToKey(TODAY, 4);
+  const cutGroup = (url) =>
+    url.endsWith("/group/ASUC%20Student%20Union")
+      ? "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nSUMMARY:"
+      : null;
+  const serve = windowServer(FILLERS, cutGroup);
+  const respond = (url) =>
+    url.includes("/live/json/events/group/ASUC%20Student%20Union/")
+      ? {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            meta: { total_pages: 1 },
+            links: { next: null },
+            data: [
+              {
+                id: 5150,
+                title: "CrafterDark at Anchor House",
+                url: "https://events.berkeley.edu/ASUC/event/5150-crafterdark",
+                date_utc: `${day} 02:00:00`,
+                date_iso: `${day}T18:00:00-08:00`,
+                date2_iso: `${day}T21:00:00-08:00`,
+                is_all_day: null,
+                location: "Anchor House",
+                description: null,
+                event_types: ["Social"],
+              },
+            ],
+          }),
+        }
+      : serve(url);
+
+  const { result } = await withStubbedFetch(respond, () => fetchLiveWhale());
+
+  const crafter = result.events.find(
+    (event) => event.title === "CrafterDark at Anchor House",
+  );
+  assert.ok(crafter);
+  assert.deepEqual(crafter.livewhale_groups, ["ASUC Student Union"]);
+  assert.deepEqual(result.failedGroups, []);
+});
+
 test("a cut-off group feed counts as a failed group", async () => {
   const cutGroup = (url) =>
     url.endsWith("/group/physics")
