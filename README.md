@@ -21,16 +21,16 @@ npm run update-events
 
 ## Commands
 
-| Command | What it does |
-|---------|--------------|
-| `npm run dev` | Vite dev server |
-| `npm run build` | Typecheck + production build → `dist/` |
-| `npm run typecheck` | `tsc --noEmit` only |
-| `npm run validate` | Lint, format, typecheck, publish-critical script tests, UI tests |
+| Command                       | What it does                                                        |
+| ----------------------------- | ------------------------------------------------------------------- |
+| `npm run dev`                 | Vite dev server                                                     |
+| `npm run build`               | Typecheck + production build → `dist/`                              |
+| `npm run typecheck`           | `tsc --noEmit` only                                                 |
+| `npm run validate`            | Lint, format, typecheck, publish-critical script tests, UI tests    |
 | `npm run test:search-quality` | Live corpus golden queries (non-blocking on the daily publish path) |
-| `npm run update-events` | Full ingestion pipeline → `public/*.json` |
-| `npm run test:e2e` | Build + Playwright |
-| `vercel --prod` | Deploy to Vercel |
+| `npm run update-events`       | Full ingestion pipeline → `public/*.json`                           |
+| `npm run test:e2e`            | Build + Playwright                                                  |
+| `vercel --prod`               | Deploy to Vercel                                                    |
 
 ## How it works
 
@@ -57,17 +57,17 @@ Deep architecture: see [ARCHITECTURE.md](./ARCHITECTURE.md). Agent, adapter, and
 
 ## CI/CD workflows
 
-| Workflow | Trigger | Purpose |
-|----------|---------|---------|
-| **Validate** | PR + push to `main` (ignores artifact-only commits) | Lint, format, typecheck, script and UI tests |
-| **Browser E2E** | PR + push to `main` (ignores artifacts) | Playwright against production build |
-| **Update Events Daily** | 4:00 AM Pacific (cron) + manual | Fetch sources, health check, publish-critical validate, open automation PR; corpus search-quality is non-blocking |
-| **Security Audit** | Weekly Monday + manual | `npm audit` (prod deps); opens a `security-audit` issue on findings |
-| **Source Contracts** | Weekly Monday + manual | Live HTTP checks against every source endpoint |
-| **Production Smoke** | Every push to `main` | Verify `cal-events.com` serves fresh events + status |
+| Workflow                | Trigger                                             | Purpose                                                                                                           |
+| ----------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Validate**            | PR + push to `main` (ignores artifact-only commits) | Lint, format, typecheck, script and UI tests                                                                      |
+| **Browser E2E**         | PR + push to `main` (ignores artifacts)             | Playwright against production build                                                                               |
+| **Update Events Daily** | 4:00 AM Pacific (cron) + manual                     | Fetch sources, health check, publish-critical validate, open automation PR; corpus search-quality is non-blocking |
+| **Security Audit**      | Weekly Monday + manual                              | `npm audit` (prod deps); opens a `security-audit` issue on findings                                               |
+| **Source Contracts**    | Weekly Monday + manual                              | Live HTTP checks against every source endpoint                                                                    |
+| **Production Smoke**    | Every push to `main`                                | Verify `cal-events.com` serves fresh events + status                                                              |
 
 The daily merge gates on the **data-relevant** checks only (`validate` and
-`browser-e2e`). Dependency auditing is deliberately *not* a merge gate: a newly
+`browser-e2e`). Dependency auditing is deliberately _not_ a merge gate: a newly
 published upstream CVE surfaces as a tracked issue via the Security Audit
 workflow instead of blocking the daily data PR.
 
@@ -88,8 +88,8 @@ flowchart LR
 
 Set these in **Settings → Secrets and variables → Actions**:
 
-| Secret | Required | Purpose |
-|--------|----------|---------|
+| Secret                | Required         | Purpose                                                                                                                                    |
+| --------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `AUTOMATION_PR_TOKEN` | **Yes for cron** | PAT with `contents` + `pull_requests` write. Lets the automation PR trigger downstream E2E and auto-merge. Scheduled runs fail without it. |
 
 `workflow_dispatch` runs work without `AUTOMATION_PR_TOKEN`, but the PR won't auto-merge.
@@ -123,12 +123,12 @@ After every pipeline run, check `public/status.json` (or `https://cal-events.com
 }
 ```
 
-| Field | Meaning |
-|-------|---------|
-| `degraded` | At least one source failed or fell below its health threshold |
-| `fallback_used` | Stale events from the previous snapshot were restored for a failing source |
-| `fallback_age_hours` | How old the fallback data is |
-| `data_quality_blocked` | Pipeline refused to publish (strict mode in CI) |
+| Field                  | Meaning                                                                    |
+| ---------------------- | -------------------------------------------------------------------------- |
+| `degraded`             | At least one source failed or fell below its health threshold              |
+| `fallback_used`        | Stale events from the previous snapshot were restored for a failing source |
+| `fallback_age_hours`   | How old the fallback data is                                               |
+| `data_quality_blocked` | Pipeline refused to publish (strict mode in CI)                            |
 
 **Thin coverage warnings** (non-blocking): CalLink returning 1 event when ≥5 is expected, etc. Surfaced as `::warning::` in CI via `scripts/lib/sourceCoveragePolicy.ts`.
 
@@ -143,7 +143,7 @@ After every pipeline run, check `public/status.json` (or `https://cal-events.com
    - Missing `AUTOMATION_PR_TOKEN` on scheduled runs
    - **Expired or revoked `AUTOMATION_PR_TOKEN`.** The pipeline is healthy and
      every check passes, then the run dies at `Create artifact update pull
-     request` with `fatal: could not read Username for 'https://github.com'`.
+request` with `fatal: could not read Username for 'https://github.com'`.
      That git message means the token was rejected, not that a username is
      missing — see [Rotating `AUTOMATION_PR_TOKEN`](#rotating-automation_pr_token).
    - LiveWhale (the backbone source) down with no fallback (`checkFeedHealth`
@@ -180,17 +180,17 @@ npm run test:search-quality                 # live corpus golden queries
 
 ## Sources
 
-| Source | Adapter | Method |
-|--------|---------|--------|
-| LiveWhale (campus calendar) | `livewhale.ts` | iCal + 40 department group feeds |
-| CalLink (student orgs) | `callink.ts` | CampusGroups JSON API (~16 event cap) |
-| Cal Performances | `cal_performances.ts` | WordPress REST |
-| Cal Bears athletics | `calbears.ts` | iCal |
-| BAMPFA | `bampfa.ts` | HTML scraper |
-| Berkeley Haas / Law / BEGIN / BRSL / CLTC | `tribe.ts` | Tribe Events Calendar REST |
-| Simons Institute | `simons.ts` | JSON API |
-| Luma (Berkeley calendars) | `luma.ts` | Luma JSON API |
-| Berkeley AI Risk | `ai_risk.ts` | JSON feed (`events.json`) |
+| Source                                    | Adapter               | Method                                          |
+| ----------------------------------------- | --------------------- | ----------------------------------------------- |
+| LiveWhale (campus calendar)               | `livewhale.ts`        | iCal weekly windows + 62 department group feeds |
+| CalLink (student orgs)                    | `callink.ts`          | CampusGroups JSON API (~16 event cap)           |
+| Cal Performances                          | `cal_performances.ts` | WordPress REST                                  |
+| Cal Bears athletics                       | `calbears.ts`         | iCal                                            |
+| BAMPFA                                    | `bampfa.ts`           | HTML scraper                                    |
+| Berkeley Haas / Law / BEGIN / BRSL / CLTC | `tribe.ts`            | Tribe Events Calendar REST                      |
+| Simons Institute                          | `simons.ts`           | JSON API                                        |
+| Luma (Berkeley calendars)                 | `luma.ts`             | Luma JSON API                                   |
+| Berkeley AI Risk                          | `ai_risk.ts`          | JSON feed (`events.json`)                       |
 
 ## Deploy
 
