@@ -28,10 +28,6 @@ const TIMEOUT_MS = 30_000;
  */
 export const CRITICAL_CONTRACT_SOURCES = new Set(["livewhale"]);
 
-function todayUtcIso() {
-  return new Date().toISOString();
-}
-
 /** LiveWhale's one-day window for today (UTC date; end_date is exclusive). */
 function liveWhaleDayWindowUrl() {
   const start = new Date();
@@ -39,8 +35,6 @@ function liveWhaleDayWindowUrl() {
   const key = (date) => date.toISOString().slice(0, 10);
   return `https://events.berkeley.edu/live/ical/events/start_date/${key(start)}/end_date/${key(end)}`;
 }
-
-const CALLINK_CONTRACT_TAKE = 25;
 
 /** @type {Array<{ name: string, url: string, validate: (response: Response, body: string) => void }>} */
 export const CONTRACTS = [
@@ -61,30 +55,6 @@ export const CONTRACTS = [
       // URL shape stopped matching.
       if (!body.includes("BEGIN:VEVENT")) {
         throw new Error("response is an iCalendar with no events");
-      }
-    },
-  },
-  {
-    name: "callink",
-    // Asks for more than the default page of 10 rows. If `take` stops
-    // working, the adapter quietly drops to 10 events a day.
-    url: `https://callink.berkeley.edu/api/discovery/event/search?endsAfter=${encodeURIComponent(todayUtcIso())}&status=Approved&orderByField=endsOn&orderByDirection=ascending&take=${CALLINK_CONTRACT_TAKE}&skip=0`,
-    validate(response, body) {
-      if (!response.headers.get("content-type")?.includes("json")) {
-        throw new Error(
-          `unexpected content-type: ${response.headers.get("content-type")}`,
-        );
-      }
-      const parsed = JSON.parse(body);
-      if (!Array.isArray(parsed.value)) {
-        throw new Error("CampusGroups response missing value[]");
-      }
-      const count = parsed["@odata.count"];
-      const expected = Math.min(CALLINK_CONTRACT_TAKE, count);
-      if (typeof count === "number" && parsed.value.length !== expected) {
-        throw new Error(
-          `returned ${parsed.value.length} of ${count} events for take=${CALLINK_CONTRACT_TAKE}; paging parameters may have changed`,
-        );
       }
     },
   },

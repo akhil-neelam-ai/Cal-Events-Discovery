@@ -11,7 +11,7 @@ import {
   runAllContracts,
   writeGithubOutputs,
 } from "../lib/sourceContracts.mjs";
-import { SourceNameSchema } from "../lib/schema.ts";
+import { RETIRED_SOURCES, SourceNameSchema } from "../lib/schema.ts";
 
 const healthyStatus = {
   generated_at: new Date().toISOString(),
@@ -251,7 +251,9 @@ test("every contract source is a real, non-retired source", () => {
   const contractNames = CONTRACTS.map((contract) => contract.name);
   assert.deepEqual(
     contractNames.toSorted(),
-    SourceNameSchema.options.toSorted(),
+    SourceNameSchema.options
+      .filter((name) => !RETIRED_SOURCES.has(name))
+      .toSorted(),
     "live contracts must exactly match active source ids",
   );
   assert.ok(
@@ -310,7 +312,7 @@ test("evaluateFeedHealth warns on thin source coverage", () => {
       ...healthyStatus,
       sources: [
         {
-          name: "callink",
+          name: "calbears",
           ok: true,
           count: 1,
           duration_ms: 100,
@@ -331,6 +333,6 @@ test("evaluateFeedHealth warns on thin source coverage", () => {
   assert.deepEqual(result.blocking, []);
   assert.match(
     result.warnings.join(" "),
-    /callink returned 1 events \(expected >= 5\)/,
+    /calbears returned 1 events \(expected >= 15\)/,
   );
 });

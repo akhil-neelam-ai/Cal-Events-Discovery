@@ -15,7 +15,6 @@ import {
   cleanSummary,
   parseGameFlags,
 } from "../../scripts/sources/calbears.ts";
-import { fetchCallink } from "../../scripts/sources/callink.ts";
 import {
   fetchCalPerformances,
   parseAddeventatcDate,
@@ -158,65 +157,6 @@ test("Cal Performances pagination stops after the first short page", async () =>
   } finally {
     globalThis.fetch = originalFetch;
   }
-});
-
-function callinkEvents(count) {
-  const start = new Date(Date.now() + 2 * 86_400_000);
-  return Array.from({ length: count }, (_, index) => ({
-    id: `evt-${index}`,
-    name: `Club Meeting ${index}`,
-    organizationName: "Robotics Club",
-    startsOn: start.toISOString(),
-    endsOn: new Date(start.getTime() + 3_600_000).toISOString(),
-    visibility: "Public",
-    status: "Approved",
-  }));
-}
-
-async function withCallinkStub(respond, run) {
-  const originalFetch = globalThis.fetch;
-  const fetchedUrls = [];
-  globalThis.fetch = async (url) => {
-    fetchedUrls.push(new URL(String(url)));
-    return {
-      ok: true,
-      status: 200,
-      json: async () => respond(fetchedUrls.at(-1)),
-    };
-  };
-  try {
-    return { result: await run(), fetchedUrls };
-  } finally {
-    globalThis.fetch = originalFetch;
-  }
-}
-
-test("CalLink pages with take and skip until the reported count", async () => {
-  // The platform serves at most 10 rows per request, whatever `take` says.
-  const all = callinkEvents(30);
-  const { result, fetchedUrls } = await withCallinkStub((url) => {
-    const skip = Number(url.searchParams.get("skip"));
-    return { "@odata.count": 30, value: all.slice(skip, skip + 10) };
-  }, fetchCallink);
-
-  assert.equal(result.events.length, 30);
-  assert.deepEqual(
-    fetchedUrls.map((url) => url.searchParams.get("skip")),
-    ["0", "10", "20"],
-  );
-  assert.ok(fetchedUrls.every((url) => url.searchParams.has("take")));
-  assert.ok(fetchedUrls.every((url) => !url.searchParams.has("$top")));
-});
-
-test("CalLink stops paging when the API ignores skip", async () => {
-  const firstPage = callinkEvents(10);
-  const { result, fetchedUrls } = await withCallinkStub(
-    () => ({ "@odata.count": 30, value: firstPage }),
-    fetchCallink,
-  );
-
-  assert.equal(result.events.length, 10);
-  assert.equal(fetchedUrls.length, 2);
 });
 
 test("Cal Performances fetches the remaining pages in parallel", async () => {
@@ -421,32 +361,10 @@ test("Cal Performances keeps a run listed after its first performance", async ()
   }
 });
 
-test("CalLink filters by Pacific event date instead of UTC date prefix", () => {
+test("isoDateInPT keys events by Pacific date instead of the UTC date prefix", () => {
   assert.equal(isoDateInPT("2026-04-28T06:30:00.000Z"), "2026-04-27");
   assert.equal(isoDateInPT("2026-04-28T11:30:00.000Z"), "2026-04-28");
   assert.equal(isoDateInPT("not-a-date"), "");
-});
-
-test("CalLink descriptions publish through the shared sanitizer", async () => {
-  // The shared sanitizer drops every < and >, so a comparison loses its
-  // operator. The feed keeps that rule for every source.
-  const [row] = callinkEvents(1);
-  const { result } = await withCallinkStub(
-    () => ({
-      "@odata.count": 1,
-      value: [
-        {
-          ...row,
-          description:
-            "<p>Welcome&nbsp;Bears<br>GPA &gt; 3.0</p><script>bad()</script><style>.x{color:red}</style>",
-        },
-      ],
-    }),
-    fetchCallink,
-  );
-
-  const legacy = projectToLegacy(result.events[0]);
-  assert.equal(legacy.description, "Welcome Bears GPA 3.0");
 });
 
 test("canonical URLs only allow HTTP(S) protocols", () => {
