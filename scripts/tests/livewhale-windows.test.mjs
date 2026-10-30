@@ -344,7 +344,7 @@ test("an empty JSON refill leaves the cut day reported", async () => {
   assert.deepEqual(result.failedWindows, [badDay]);
 });
 
-test("an empty week whose retry comes back cut is split, not dropped", async () => {
+test("an empty week whose retry comes back cut is fetched as its days", async () => {
   const week = { start: KEYS[6], end: KEYS[7] };
   const weekUrl = `${FEED}/start_date/${week.start}/end_date/${week.end}`;
   let weekFetches = 0;
@@ -356,13 +356,20 @@ test("an empty week whose retry comes back cut is split, not dropped", async () 
       : "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nSUMMARY:";
   };
 
-  const { result } = await withStubbedFetch(
+  const { result, requests } = await withStubbedFetch(
     windowServer(FILLERS, firstEmptyThenCut),
     () => fetchLiveWhale(),
   );
 
   assert.ok(result.events.some((event) => event.title === "week-6"));
   assert.deepEqual(result.failedWindows, []);
+  // The cut retry goes straight to one-day windows, never to halves.
+  const parts = requests
+    .map((r) => windowOf(r.url))
+    .filter((w) => w && w.start >= week.start && w.end <= week.end)
+    .filter((w) => w.start !== week.start || w.end !== week.end);
+  assert.equal(parts.length, 7);
+  assert.ok(parts.every((w) => addDaysToKey(w.start, 1) === w.end));
 });
 
 test("a week that stays empty is reported, not silently dropped", async () => {

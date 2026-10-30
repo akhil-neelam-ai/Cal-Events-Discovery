@@ -61,10 +61,14 @@ jobs:
   # instead of disappearing into a green run.
   notify-failure:
     needs: [source-contracts, livewhale-budget]
+    # A budget failure on a pull request is a code regression the PR's own
+    # check shows, so only scheduled and manual runs open an issue for it.
     if: |
       always() && (
-        failure() ||
-        needs.source-contracts.outputs.has_failures == 'true'
+        needs.source-contracts.result == 'failure' ||
+        needs.source-contracts.outputs.has_failures == 'true' ||
+        (needs.livewhale-budget.result == 'failure' &&
+          github.event_name != 'pull_request')
       )
     runs-on: ubuntu-latest
     permissions:
@@ -80,7 +84,7 @@ jobs:
           WORKFLOW_NAME: Source Contracts
           FAILURE_CONTEXT:
             "live Berkeley source contract checks (failed sources:
-            ${{ needs.source-contracts.outputs.failed_sources || 'none' }};
+            ${{ needs.source-contracts.outputs.failed_sources || (needs.source-contracts.result == 'success' && 'none' || format('unknown, job {0}', needs.source-contracts.result)) }};
             LiveWhale slow-upstream budget check:
             ${{ needs.livewhale-budget.result }})"
           ISSUE_LABEL: source-contracts

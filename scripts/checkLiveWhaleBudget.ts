@@ -10,7 +10,8 @@
  *
  * Two cut-off paths run too: the first forward week comes back cut, so it is
  * split, and one day stays cut at every size, so it is refilled from the JSON
- * feed. Every required week must be requested and return events.
+ * feed. Every required week must be requested, and every event in the two
+ * required forward weeks must be published.
  *
  * Usage: npm run check:livewhale-budget   (about 80 s)
  */
@@ -156,6 +157,18 @@ const budgetSeconds = LIVEWHALE_ADAPTER_TIMEOUT_MS / 1000;
 const requiredStart = addDaysToKey(today, -7);
 const requiredEnd = addDaysToKey(today, 14);
 const requiredWeeks = [requiredStart, today, addDaysToKey(today, 7)];
+const published = new Set(result.events.map((event) => event.title));
+// Every fixture event in the two required forward weeks that has not ended
+// yet (lookback events are past, so they are filtered out by design).
+const requiredEvents = events.filter(
+  (event) =>
+    event.date >= today &&
+    event.date < requiredEnd &&
+    Date.parse(`${event.date}T20:00:00Z`) > Date.now(),
+);
+const missingEvents = requiredEvents.filter(
+  (event) => !published.has(event.uid) && !published.has(`${event.uid}-json`),
+);
 const requiredMissing = [
   // A required window that failed outright or stayed cut.
   ...(result.failedWindows ?? []).filter(
@@ -163,19 +176,14 @@ const requiredMissing = [
   ),
   // A required week that was never requested.
   ...requiredWeeks.filter((week) => !requestedWindows.has(week)),
-  // A required forward week that published nothing (lookback events are
-  // past, so they are filtered out by design).
-  ...requiredWeeks.slice(1).filter(
-    (week) =>
-      !result.events.some((event) => {
-        const day = event.start_at.slice(0, 10);
-        return day >= week && day < addDaysToKey(week, 7);
-      }),
-  ),
+  // A day of a required forward week that lost events.
+  ...new Set(missingEvents.map((event) => event.date)),
 ];
-const cutDayRefilled = result.events.some((event) =>
-  event.title.endsWith("-json"),
-);
+// The cut day counts as refilled only when every one of its events came
+// from the JSON feed.
+const cutDayRefilled = requiredEvents
+  .filter((event) => event.date === CUT_DAY)
+  .every((event) => published.has(`${event.uid}-json`));
 
 console.log(
   JSON.stringify({

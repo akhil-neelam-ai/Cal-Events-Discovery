@@ -745,8 +745,8 @@ interface WindowResult {
 }
 
 /**
- * Fetch one window. A cut-off response, or one near the silent cap, is
- * refetched as two halves, down to single days.
+ * Fetch one window. A cut-off response is refetched as its single days in
+ * parallel; one near the silent cap is halved, down to single days.
  */
 async function fetchWindow(
   start: string,
@@ -855,12 +855,12 @@ async function fetchWindow(
       );
       count = veventCount(parsed);
     } catch (err) {
-      // A retry that comes back cut goes through the split path.
+      // A retry that comes back cut is fetched as its days, like any cut week.
       if (err instanceof IncompleteCalendarError) {
         console.warn(
-          `[livewhale] window ${start}..${end} was incomplete; splitting it`,
+          `[livewhale] window ${start}..${end} was incomplete; fetching its days`,
         );
-        return split();
+        return splitIntoDays();
       }
     }
     if (count === 0) {
