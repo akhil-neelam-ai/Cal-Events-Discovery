@@ -70,6 +70,13 @@ export const ALL_SOURCES = [
   "brsl",
   "cltc",
 ];
+// Sources no longer fetched. Their ids stay in ALL_SOURCES so old links still
+// parse. scripts/lib/schema.ts keeps its own copy, and a test holds them equal.
+export const RETIRED_SOURCES: readonly string[] = ["callink"];
+// Sources an agent or a filter control can offer.
+export const ACTIVE_SOURCES: readonly string[] = ALL_SOURCES.filter(
+  (source) => source !== "All" && !RETIRED_SOURCES.includes(source),
+);
 export const DateRanges = [
   { label: "Today", value: "today" },
   { label: "This Week", value: "week" },

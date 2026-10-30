@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { CalEvent, SearchFilters, LoadingState } from "./types";
 import { DEFAULT_FILTERS } from "./appConfig";
+import { publishViewState } from "./agent/viewState";
 import { AppFooter } from "./components/AppFooter";
 import { BackToTopButton } from "./components/BackToTopButton";
 import { AppHeaderShell } from "./components/AppHeaderShell";
@@ -26,6 +27,14 @@ import { usePrefersReducedMotion } from "./hooks/usePrefersReducedMotion";
 import { readAppUrlState, useUrlStateSync } from "./hooks/useUrlStateSync";
 import { initGA, trackPageView, trackEventClick } from "./utils/analytics";
 import { addRecentSearch } from "./utils/recentSearches";
+import type { AppUrlState } from "./utils/urlState";
+
+const LOADING_LABELS = {
+  [LoadingState.IDLE]: "idle",
+  [LoadingState.LOADING]: "loading",
+  [LoadingState.SUCCESS]: "success",
+  [LoadingState.ERROR]: "error",
+} as const;
 
 export default function App() {
   const initialUrlState = readAppUrlState();
@@ -50,6 +59,9 @@ export default function App() {
     useState<Set<string>>(new Set());
   const isMobile = useIsMobile();
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevSearchQueryRef = useRef<string>(
+    initialUrlState.filters.searchQuery,
+  );
   const [userSetDateRange, setUserSetDateRange] = useState(
     initialUrlState.hasExplicitDateRange,
   );
@@ -169,6 +181,7 @@ export default function App() {
   const {
     activeChips,
     searchFallbackMessage,
+    derivedDateRange,
     effectiveDateRange,
     filteredEvents,
     visibleSelectedEventId,
@@ -210,6 +223,14 @@ export default function App() {
     todayKey,
   });
 
+  // A URL that arrives through popstate (back, forward, or an agent's
+  // apply_ui_state) decides the view alone. Chips dismissed on the previous
+  // URL do not carry over.
+  const handlePopStateApplied = useCallback((state: AppUrlState) => {
+    setDismissedInterpretationKeys(new Set());
+    prevSearchQueryRef.current = state.filters.searchQuery;
+  }, []);
+
   const { onHistoryIntent } = useUrlStateSync({
     filters,
     allowedTopicSlugs,
@@ -217,6 +238,8 @@ export default function App() {
     setFilters,
     setSelectedEventId,
     setUserSetDateRange,
+    userSetDateRange,
+    onPopStateApplied: handlePopStateApplied,
   });
 
   const {
@@ -229,14 +252,64 @@ export default function App() {
     handleQuickPreset,
   } = useEventBrowserActions({
     filteredEventsCount: filteredEvents.length,
-    initialSearchQuery: initialUrlState.filters.searchQuery,
     setFilters,
     setSelectedEventId,
     setUserSetDateRange,
     setDismissedInterpretationKeys,
     onHistoryIntent,
     searchTimeoutRef,
+    prevSearchQueryRef,
   });
+
+  // Read-only snapshot of what the page shows, for the get_ui_state tool.
+  const notice = topicFilterNotice ?? fallbackBannerCopy;
+  useEffect(() => {
+    publishViewState({
+      todayKey,
+      loading: LOADING_LABELS[loading],
+      // Results can still change until the typed query reaches them and,
+      // for a real query, the search index has loaded or failed.
+      pending:
+        debouncedSearchQuery !== filters.searchQuery ||
+        (!searchIndexSettled && filters.searchQuery.trim().length >= 2),
+      searchQuery: debouncedSearchQuery,
+      requestedDateRange: derivedDateRange,
+      effectiveDateRange,
+      dateRangeWidened: effectiveDateRange !== derivedDateRange,
+      hasExplicitDateRange: userSetDateRange,
+      category: filters.category,
+      source: filters.source,
+      topic: filters.topic,
+      activeChips,
+      dismissedChipKeys: [...dismissedInterpretationKeys],
+      resultCount: filteredEvents.length,
+      visibleEventIds: visibleEvents.map((event) => event.id),
+      fallbackMessage: searchFallbackMessage ?? null,
+      notice,
+      selectedEventId: visibleSelectedEventId,
+    });
+  }, [
+    activeChips,
+    debouncedSearchQuery,
+    derivedDateRange,
+    dismissedInterpretationKeys,
+    effectiveDateRange,
+    filteredEvents.length,
+    filters.category,
+    filters.searchQuery,
+    filters.source,
+    filters.topic,
+    loading,
+    notice,
+    searchFallbackMessage,
+    searchIndexSettled,
+    todayKey,
+    userSetDateRange,
+    visibleEvents,
+    visibleSelectedEventId,
+  ]);
+  useEffect(() => () => publishViewState(null), []);
+
   const mainContentId = "main-content";
 
   return (
@@ -274,7 +347,7 @@ export default function App() {
 
         {loading === LoadingState.SUCCESS && (
           <EventsResultsSection
-            fallbackBannerCopy={topicFilterNotice ?? fallbackBannerCopy}
+            fallbackBannerCopy={notice}
             activeChips={activeChips}
             onDismissChip={handleDismissChip}
             category={filters.category}

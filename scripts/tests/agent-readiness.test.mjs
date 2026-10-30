@@ -117,7 +117,7 @@ test("agent discovery JSON files are valid and internally linked", () => {
     agentCard.version,
     "OpenAPI and agent-card versions must stay equal",
   );
-  assert.equal(openapi.info.version, "1.4.0");
+  assert.equal(openapi.info.version, "1.5.0");
 });
 
 test("agent docs describe the multi-day date fields", () => {
@@ -267,7 +267,9 @@ test("homepage and Vercel config expose discovery hooks", () => {
   assert.match(webMcpTools, /get_event_directions/);
   assert.match(webMcpTools, /AbortController/);
   assert.match(webMcpTools, /input = input \?\? \{\}/);
-  assert.match(webMcpTools, /searchEvents\(/);
+  // The search tool runs the UI's ranked engine through agent/searchPlan.ts.
+  assert.match(webMcpTools, /runAgentSearch\(/);
+  assert.match(readText("agent/searchPlan.ts"), /searchEvents\(/);
   assert.equal(
     securityHeadersRoute.headers["X-Content-Type-Options"],
     "nosniff",

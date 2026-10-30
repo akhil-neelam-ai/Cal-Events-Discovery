@@ -91,7 +91,7 @@ Loads `events.json` and `search-index.json` at startup. Search is entirely clien
 
 **Categorization** (`scripts/lib/normalize.ts` → `deriveFrontendTags()`): weighted scoring across 6 categories. Organizer identity map (100) > source tags (40) > title keywords (10) > organizer text (8) > description (3). Student Life is the catch-all.
 
-**`tags[0]` is the primary-category contract.** It is read as the category in `hooks/useEventBrowserState.ts`, twice in `agent/webmcpTools.ts`, in the search-events agent skill, and the whole `tags` array feeds the `g` index field at weight 45. Do not add non-category values to `tags`.
+**`tags[0]` is the primary-category contract.** It is read as the category in `hooks/useEventBrowserState.ts`, in `agent/webmcpTools.ts` and `agent/searchPlan.ts`, in the search-events agent skill, and the whole `tags` array feeds the `g` index field at weight 45. Do not add non-category values to `tags`.
 
 **URL state** (`utils/urlState.ts`): query, date range, category, source, and selected event ID round-trip through the URL, with allow-list validation for category and source.
 
@@ -101,13 +101,15 @@ Loads `events.json` and `search-index.json` at startup. Search is entirely clien
 
 The site exposes itself to agents, and the standing rule is parity: any action a user can take, an agent can take. When you change a user-facing filter or action, update these too.
 
-- `agent/webmcpTools.ts` and `agent/registerWebMcp.ts` carry WebMCP tools registered from the app bundle, reusing the same ranked search engine as the UI
+- `agent/webmcpTools.ts` and `agent/registerWebMcp.ts` carry WebMCP tools registered from the app bundle. `agent/filterInput.ts` holds the one set of filter checks the tools share. `agent/searchPlan.ts` runs search with the UI's ranked engine and the widening rule in `utils/dateWidening.ts`
 - `public/.well-known/mcp/server-card.json`, `public/.well-known/agent-card.json`
 - `public/.well-known/agent-skills/` holds skill files plus `index.json`, which carries SHA-256 content digests that must be regenerated when a skill file changes
 - `public/llms.txt`, `public/llms-full.txt`, `public/openapi.json`
 - `public/webmcp-tools.js` is a thin legacy shim; the real implementation lives in `agent/`
 
-`scripts/tests/agent-readiness.test.mjs` and `scripts/tests/webmcp-tools.test.mjs` enforce this.
+`list_filter_options` returns the categories, active sources, date presets, and topics every other tool accepts, so agents do not guess values. `agent/viewState.ts` holds a snapshot App publishes after each render, and `get_ui_state` returns it as `view`: the date range searched, chips, result count, and visible ids. When the page gains a new filter or result state, add it to both.
+
+`scripts/tests/agent-readiness.test.mjs` checks the discovery files and skill digests. `scripts/tests/webmcp-tools.test.mjs` covers the core tools. `scripts/tests/webmcp-search.test.mjs` covers search dates, widening, chips, and paging on a frozen clock. `scripts/tests/webmcp-vocabulary.test.mjs` covers `list_filter_options`, the shared input checks, the apply modes, and that every tool is named in the agent docs. `tests/webmcp-page.ui.test.tsx` drives the rendered page through the tools and checks the `view` snapshot.
 
 ## Conventions
 
@@ -141,7 +143,7 @@ Established in `docs/brainstorms/2026-08-17-publish-vs-quality-pipeline-requirem
 
 The topic filter layer from `docs/plans/2026-09-03-001-feat-topic-filter-layer-plan.md` is on `main` (PR 173). Do not re-implement U1 through U9.
 
-Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` merged in PR 174 on 2026-09-04. Successful empty assignments clear topics. Broad identity mappings are gone. The breadth cap stays 200. Public discovery versions are 1.4.0. The September audit's multi-day fields set 1.3.0, and the published `end_time` set 1.4.0.
+Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` merged in PR 174 on 2026-09-04. Successful empty assignments clear topics. Broad identity mappings are gone. The breadth cap stays 200. Public discovery versions are 1.5.0. The September audit's multi-day fields set 1.3.0, the published `end_time` set 1.4.0, and the October agent-native fixes set 1.5.0.
 
 The October 2 review of PR 174 is `docs/code-review-2026-10-02-topic-filter-fixes.md`. PRs 215, 217, 218, and 219 fixed all 15 findings on 2026-10-03. Since PR 217, BAMPFA's calendar labels and Cal Performances genres reach `assignTopics` as internal `event_types`. Lessons that apply beyond one bug are in `docs/solutions/`.
 

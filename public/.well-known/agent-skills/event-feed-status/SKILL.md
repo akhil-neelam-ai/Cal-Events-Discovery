@@ -30,7 +30,7 @@ Accept: application/json
 
 - Report topic assignment separately from source health. A topic assignment error does not make an event source degraded.
 - If `topics.outcome` is `error`, report `topics.carried_forward_count` and `topics.error`. Carried-forward topics can keep the snapshot usable.
-- If `data_quality_blocked` is true, tell the user the feed may be incomplete.
+- If `data_quality_blocked` is true, tell the user the feed may be incomplete and name the degraded or fallback sources.
 - If `fallback_used` is true but `data_quality_blocked` is not true, treat the feed as usable and avoid user-facing warnings.
 - If `stale_fallback_sources` includes `livewhale`, treat the feed as materially incomplete.
 - If `stale_fallback_sources` includes only supplementary sources, explain that those sources were dropped but the rest of the feed can still be used.

@@ -8,6 +8,7 @@ import {
   clearRecentSearches,
   getRecentSearches,
 } from "../utils/recentSearches";
+import { AgentHint } from "./AgentHint";
 import { SearchSuggestionsDropdown } from "./SearchSuggestionsDropdown";
 
 export function DesktopHero({
@@ -223,6 +224,8 @@ export function DesktopHero({
               )}
             </div>
           </div>
+
+          <AgentHint variant="desktop" />
 
           <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
             {DESKTOP_HERO_PRESETS.map((preset) => (

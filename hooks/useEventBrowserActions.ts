@@ -13,26 +13,29 @@ import type { HistoryMode } from "./useUrlStateSync";
 
 interface UseEventBrowserActionsParams {
   filteredEventsCount: number;
-  initialSearchQuery: string;
   setFilters: Dispatch<SetStateAction<SearchFilters>>;
   setSelectedEventId: Dispatch<SetStateAction<string | null>>;
   setUserSetDateRange: Dispatch<SetStateAction<boolean>>;
   setDismissedInterpretationKeys: Dispatch<SetStateAction<Set<string>>>;
   onHistoryIntent: (mode: HistoryMode) => void;
   searchTimeoutRef: MutableRefObject<ReturnType<typeof setTimeout> | null>;
+  /**
+   * The last query the actions saw. App owns it so a popstate can reset it
+   * to the query the URL brought.
+   */
+  prevSearchQueryRef: MutableRefObject<string>;
 }
 
 export function useEventBrowserActions({
   filteredEventsCount,
-  initialSearchQuery,
   setFilters,
   setSelectedEventId,
   setUserSetDateRange,
   setDismissedInterpretationKeys,
   onHistoryIntent,
   searchTimeoutRef,
+  prevSearchQueryRef,
 }: UseEventBrowserActionsParams) {
-  const prevSearchQueryRef = useRef<string>(initialSearchQuery);
   const latestFilteredEventsCountRef = useRef(filteredEventsCount);
 
   useEffect(() => {
@@ -82,6 +85,7 @@ export function useEventBrowserActions({
     },
     [
       onHistoryIntent,
+      prevSearchQueryRef,
       searchTimeoutRef,
       setDismissedInterpretationKeys,
       setFilters,

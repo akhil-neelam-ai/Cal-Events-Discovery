@@ -65,16 +65,24 @@
 
       <h2>Start here</h2>
       <ul>
-        <li><a href="/llms.txt">llms.txt</a> — short agent overview</li>
-        <li><a href="/llms-full.txt">llms-full.txt</a> — expanded context</li>
-        <li><a href="/openapi.json">openapi.json</a> — static data API</li>
+        <li><a href="/llms.txt">llms.txt</a>: short agent overview</li>
+        <li><a href="/llms-full.txt">llms-full.txt</a>: expanded context</li>
+        <li><a href="/openapi.json">openapi.json</a>: static data API</li>
+        <li>
+          <a href="/.well-known/api-catalog">API catalog</a>: linkset of every
+          discovery file
+        </li>
         <li>
           <a href="/.well-known/agent-skills/index.json">agent skills index</a>
         </li>
         <li>
-          <a href="/.well-known/mcp/server-card.json">MCP server card</a>
+          <a href="/.well-known/mcp/server-card.json">MCP server card</a>:
+          browser tools and prompts, no remote MCP endpoint
         </li>
-        <li><a href="/">Homepage</a> — WebMCP tools when supported</li>
+        <li>
+          <a href="/.well-known/agent-card.json">A2A agent card</a>
+        </li>
+        <li><a href="/">Homepage</a>: WebMCP tools when supported</li>
       </ul>
 
       <h2>Data</h2>
@@ -96,18 +104,61 @@
       <p>
         Browser WebMCP tools include <code>get_ui_state</code>,
         <code>apply_ui_state</code>, and <code>build_calevents_url</code>.
+        <code>apply_ui_state</code> replaces the whole view unless you pass
+        <code>mode: "merge"</code>. Pass <code>event: null</code> to close the
+        detail panel. Read <code>view</code> from <code>get_ui_state</code> to
+        see what the page shows, and read it again while
+        <code>view.pending</code> is true. A merge that races a visitor's
+        change returns <code>applied: false</code>, so read the state and
+        retry. Chip dismissal is search-only: pass <code>dismiss</code> to
+        <code>search_berkeley_events</code>. The page clears dismissed chips
+        whenever its URL changes. Search inputs such as
+        <code>startDate</code>, <code>endDate</code>, and
+        <code>limit</code> have no URL form.
       </p>
 
       <h2>WebMCP tools</h2>
+      <p>
+        These run only in a browser tab on the homepage, through
+        <code>navigator.modelContext</code>. An unknown category, source,
+        topic, or date preset is an error, and so is a date that is not
+        <code>YYYY-MM-DD</code>.
+      </p>
       <ul>
-        <li><code>search_berkeley_events</code> — ranked UI search path</li>
+        <li>
+          <code>search_berkeley_events</code>: ranked UI search path. It reads
+          date words in the query when you pass no date. It returns
+          <code>interpretations</code> (chips you can <code>dismiss</code>),
+          <code>effectiveDateRange</code>, <code>relaxed</code> and
+          <code>fallbackMessage</code> when a filter was dropped, and
+          <code>total</code> for paging with <code>offset</code>.
+        </li>
         <li><code>get_event_by_id</code></li>
         <li><code>generate_event_ics</code></li>
         <li><code>get_cal_events_feed_status</code></li>
         <li><code>get_ui_state</code> / <code>apply_ui_state</code></li>
         <li><code>build_calevents_url</code></li>
         <li><code>get_event_directions</code></li>
+        <li>
+          <code>list_filter_options</code>: valid categories, sources, date
+          presets, and topic slugs
+        </li>
       </ul>
+
+      <h2>Prompts</h2>
+      <p>The MCP server card names four prompts:</p>
+      <ul>
+        <li><code>whats-on-tonight</code>: events tonight in Pacific time</li>
+        <li><code>is-feed-healthy</code>: feed freshness and topic status</li>
+        <li><code>ics-for-event</code>: an .ics payload for one event id</li>
+        <li><code>share-this-event</code>: a shareable deep link</li>
+      </ul>
+
+      <h2>Privacy</h2>
+      <p>
+        Recent searches stay in the visitor's browser storage. No tool or file
+        exposes them to agents, and that is on purpose.
+      </p>
 
       <h2>CRUD limits</h2>
       <p>
