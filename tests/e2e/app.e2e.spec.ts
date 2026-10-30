@@ -264,9 +264,7 @@ test("desktop topic chips expand and filter across categories", async ({
   await expect(page).toHaveURL(/topic=ai-machine-learning/);
 });
 
-test("shows and dismisses data-quality blocked status banner", async ({
-  page,
-}) => {
+test("never shows pipeline health to visitors", async ({ page }) => {
   await page.route("**/status.json", async (route) => {
     const now = new Date().toISOString();
     await route.fulfill({
@@ -304,13 +302,11 @@ test("shows and dismisses data-quality blocked status banner", async ({
 
   await page.goto("/");
 
-  await expect(page.getByText("Showing mostly fresh data.")).toBeVisible();
-  await expect(
-    page.getByText(/reused cached events for BAMPFA/i),
-  ).toBeVisible();
-
-  await page.getByRole("button", { name: "Dismiss" }).click();
-  await expect(page.getByText("Showing mostly fresh data.")).toHaveCount(0);
+  await expect(page.getByText("AI Research Forum")).toBeVisible();
+  await expect(page.getByText(/mostly fresh data|partial data/i)).toHaveCount(
+    0,
+  );
+  await expect(page.getByText(/temporarily unavailable/i)).toHaveCount(0);
 });
 
 test("supports mobile advanced filters", async ({ page }) => {

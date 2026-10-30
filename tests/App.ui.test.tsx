@@ -28,10 +28,7 @@ const WEEK_END_KEY = "2026-04-28";
 type MockFeedState = {
   allEvents: CalEvent[];
   lastUpdated: number | null;
-  dataAgeHours: number;
-  degradedSources: string[];
   loading: LoadingState;
-  statusReport: null;
   searchIndex: SearchIndex | null;
   searchIndexSettled: boolean;
   topicVocabulary: typeof TOPIC_VOCABULARY | null;
@@ -138,10 +135,7 @@ function makeFeedState(
   return {
     allEvents: events,
     lastUpdated: Date.parse("2026-04-22T19:00:00Z"),
-    dataAgeHours: 0,
-    degradedSources: [],
     loading: LoadingState.SUCCESS,
-    statusReport: null,
     searchIndex: null,
     searchIndexSettled: true,
     topicVocabulary: TOPIC_VOCABULARY,

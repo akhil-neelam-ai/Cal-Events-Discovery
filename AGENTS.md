@@ -57,7 +57,7 @@ livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley
 
 - On error or below `minHealthyCount`: mark degraded, optionally restore last-good events from the previous `events.json` (filtered to today and later, PT)
 - Fallback age counts from each source's `last_healthy_at` in `status.json`, which carries forward while the source is degraded. A restore older than 48 hours expires
-- Quiet sources (`degradeOnFailure: false`: luma, begin, ai_risk, brsl, cltc) restore too, but stay out of `degraded_sources`, the top-level reason, and `data_age_hours`, so no banner appears
+- Quiet sources (`degradeOnFailure: false`: luma, begin, ai_risk, brsl, cltc) restore too, but stay out of `degraded_sources`, the top-level reason, and `data_age_hours`
 - Each source carries `consecutive_failures` in `status.json`. Three failed fetches in a row open or update a `source-contracts` issue from the daily workflow
 - If every source returns 0 events: refuse to overwrite the existing file and exit non-zero
 - `status.json` is always written with per-source details, degradation flags, and fallback counts
@@ -135,7 +135,7 @@ Established in `docs/brainstorms/2026-08-17-publish-vs-quality-pipeline-requirem
 - Live corpus search-quality failures never block the data pull request. They open or update a low-priority `data-quality` issue.
 - The `pipeline-failure` operator label is reserved for LiveWhale degraded without usable fallback, or a production feed older than the smoke threshold.
 - The daily cron holds exactly one secret, the automation pull-request token. Adding a network dependency to that path needs a strong reason.
-- **Degraded-source flags drive visitor-facing banners.** `shouldShowStaleDataBanner` fires whenever the degraded-source list is non-empty regardless of data age, and the partial-data banner keys off the top-level `degraded` flag. Never route a non-source quality problem through those fields.
+- **Visitors never see pipeline health.** The site shows no status or stale-data banners, and the page does not fetch `status.json`. Source failures reach the maintainer through the `pipeline-failure` and `source-contracts` issues. The `degraded` and `degraded_sources` fields still drive `checkFeedHealth` and those alerts. Never route a non-source quality problem through them.
 
 ## Recent and open work
 
@@ -182,7 +182,7 @@ The September full-repo audit is `docs/code-review-2026-09-25.md`. Every item ha
 
 **Shared-link previews**: chat apps read Open Graph tags without running JavaScript. A `vercel.json` route sends `/?event=<id>` to `api/event-preview.ts` only when the user agent matches a known link-preview crawler. People still get the static app. That page names `api/event-image.tsx` as its `og:image`, a 1200x630 card drawn with `@vercel/og`. Both functions read the committed `public/events.json` through `includeFiles`, so previews match the last deploy. An unknown or ended event gets the site-wide preview. `@vercel/og` is pinned to 1.0.1 because 1.0.2 and 1.0.3 crash under plain Node ESM. Relative imports under `api/` need a `.js` extension for the same reason.
 
-**LiveWhale group feeds**: the main feed misses events posted only to department calendars. Group feeds use path-based URLs, and group names are case-sensitive. The adapter fetches 40 groups with bounded concurrency and merges by UID, keeping every group that listed an event as topic evidence. A failed group feed, including a 200 response that is not iCal, lands in `failedGroups`. Its events keep only the prior topics that group can give. Group failures never mark LiveWhale degraded, so they raise no visitor banner. `status.json` lists them on the LiveWhale entry as `failed_groups`.
+**LiveWhale group feeds**: the main feed misses events posted only to department calendars. Group feeds use path-based URLs, and group names are case-sensitive. The adapter fetches 40 groups with bounded concurrency and merges by UID, keeping every group that listed an event as topic evidence. A failed group feed, including a 200 response that is not iCal, lands in `failedGroups`. Its events keep only the prior topics that group can give. Group failures never mark LiveWhale degraded. `status.json` lists them on the LiveWhale entry as `failed_groups`.
 
 **Tribe adapter reusability**: `scripts/sources/tribe.ts` exports `fetchHaas`, `fetchBerkeleyLaw`, `fetchBegin`, `fetchBrsl`, and `fetchCltc` from one config-driven implementation. A new WordPress site running The Events Calendar needs only a new export.
 
