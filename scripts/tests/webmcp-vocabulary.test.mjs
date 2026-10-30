@@ -53,13 +53,16 @@ const PAYLOAD = {
   },
 };
 
-function loadTools(locationSearch = "") {
+function loadTools(locationSearch = "", options = {}) {
   let currentSearch = locationSearch;
   const applied = [];
   const fetchedPaths = [];
   const toolList = createWebMcpTools({
     fetchJson: async (requestPath) => {
       fetchedPaths.push(requestPath);
+      options.onFetch?.(requestPath, (search) => {
+        currentSearch = search;
+      });
       if (requestPath === "/events.json") return PAYLOAD;
       if (requestPath === "/search-index.json") return null;
       if (requestPath === "/status.json") return {};
@@ -71,6 +74,7 @@ function loadTools(locationSearch = "") {
       currentSearch = search;
       applied.push(search);
     },
+    getViewState: options.getViewState,
   });
   const tools = new Map(toolList.map((tool) => [tool.name, tool]));
   return { tools, toolList, applied, fetchedPaths };
@@ -239,8 +243,8 @@ test("apply_ui_state merge mode keeps the current URL state", async () => {
     applied.at(-1),
     "?q=jazz&date=today&category=Arts&source=haas&event=known",
   );
-  // The kept event is already on the page, so the feed is not fetched.
-  assert.equal(fetchedPaths.includes("/events.json"), false);
+  // The kept event is checked against the feed too.
+  assert.equal(fetchedPaths.includes("/events.json"), true);
 
   const cleared = await apply.execute({
     mode: "merge",
@@ -253,6 +257,91 @@ test("apply_ui_state merge mode keeps the current URL state", async () => {
   const closed = await apply.execute({ mode: "merge", event: null });
   assert.equal(closed.selectedEventId, null);
   assert.equal(applied.at(-1), "?date=today&source=haas");
+});
+
+test("apply_ui_state merge refuses a stale event id already in the URL", async () => {
+  const { tools, applied } = loadTools("?q=jazz&event=gone");
+  const result = await tools
+    .get("apply_ui_state")
+    .execute({ mode: "merge", source: "haas" });
+  assert.equal(result.applied, false);
+  assert.match(result.error, /No event found for id gone/);
+  assert.match(result.error, /event null/);
+  assert.deepEqual(applied, []);
+
+  const closed = await tools
+    .get("apply_ui_state")
+    .execute({ mode: "merge", source: "haas", event: null });
+  assert.equal(closed.applied, true);
+  assert.deepEqual(applied, ["?q=jazz&source=haas"]);
+});
+
+test("apply_ui_state merge refuses when the URL changes during the call", async () => {
+  let moved = false;
+  const { tools, applied } = loadTools("?q=jazz&event=known", {
+    // The visitor changes the page while the feed loads.
+    onFetch: (requestPath, setSearch) => {
+      if (requestPath === "/events.json" && !moved) {
+        moved = true;
+        setSearch("?q=film");
+      }
+    },
+  });
+  const apply = tools.get("apply_ui_state");
+
+  const result = await apply.execute({ mode: "merge", category: "Arts" });
+  assert.equal(result.applied, false);
+  assert.match(result.error, /URL changed/);
+  assert.match(result.error, /retry/i);
+  assert.deepEqual(applied, []);
+
+  // A retry reads the new URL and applies on top of it.
+  const retry = await apply.execute({ mode: "merge", category: "Arts" });
+  assert.equal(retry.applied, true);
+  assert.deepEqual(applied, ["?q=film&category=Arts"]);
+});
+
+test("get_ui_state reports pending while the view lags the URL", async () => {
+  const view = {
+    todayKey: "2026-10-30",
+    loading: "success",
+    pending: false,
+    searchQuery: "jazz",
+    requestedDateRange: "week",
+    effectiveDateRange: "week",
+    dateRangeWidened: false,
+    hasExplicitDateRange: false,
+    category: "All",
+    source: "All",
+    topic: "",
+    activeChips: [],
+    dismissedChipKeys: [],
+    resultCount: 2,
+    visibleEventIds: ["known", "other"],
+    fallbackMessage: null,
+    notice: null,
+    selectedEventId: null,
+  };
+  const read = async (search) => {
+    const { tools } = loadTools(search, { getViewState: () => view });
+    return (await tools.get("get_ui_state").execute()).view;
+  };
+
+  assert.deepEqual(await read("?q=jazz"), view);
+  for (const search of [
+    "?q=film",
+    "?q=jazz&event=known",
+    "?q=jazz&category=Arts",
+    "?q=jazz&source=haas",
+    "?q=jazz&topic=law",
+    "?q=jazz&date=week",
+  ]) {
+    const lagging = await read(search);
+    assert.equal(lagging.pending, true, search);
+    // The rest of the snapshot is reported as it is.
+    assert.equal(lagging.resultCount, 2, search);
+    assert.deepEqual(lagging.visibleEventIds, ["known", "other"], search);
+  }
 });
 
 test("an agent-chosen date stays in the URL even when it is the default", async () => {

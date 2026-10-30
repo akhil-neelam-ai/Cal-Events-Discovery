@@ -35,7 +35,7 @@ import {
   checkSearchDates,
   runAgentSearch,
 } from "./searchPlan";
-import type { UiViewState } from "./viewState";
+import { type UiViewState, viewForUrl } from "./viewState";
 
 const EVENTS_CACHE_TTL_MS = 120_000;
 const FETCH_TIMEOUT_MS = 8_000;
@@ -478,9 +478,9 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         filters: urlState.filters,
         selectedEventId: urlState.selectedEventId,
         hasExplicitDateRange: urlState.hasExplicitDateRange,
-        url: absoluteUrl(deps.getLocationSearch() || ""),
+        url: absoluteUrl(locationSearch || ""),
         todayKey: getCurrentPacificDateKey(now()),
-        view: deps.getViewState?.() ?? null,
+        view: viewForUrl(deps.getViewState?.() ?? null, urlState),
       };
 
       if (input.includeFeedStatus === true) {
@@ -654,15 +654,27 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
       } else if (typeof input.event === "string") {
         eventId = input.event.trim() || null;
       }
-      if (eventId && eventId !== current.selectedEventId) {
+      // Check every id, including one merge keeps from the URL. The page
+      // closes the panel for an id the feed no longer has.
+      if (eventId) {
         const data = await fetchEventsPayload();
         const events = Array.isArray(data.events) ? data.events : [];
         if (!findEventById(events, eventId)) {
           return {
             applied: false,
-            error: `No event found for id ${eventId}. Find ids with search_berkeley_events.`,
+            error: `No event found for id ${eventId}. Find ids with search_berkeley_events, or pass event null to close the panel.`,
           };
         }
+      }
+
+      // Merge read the URL before the feed loaded. A visitor may have
+      // changed the page since, and applying the old state would undo it.
+      if (fromCurrent && deps.getLocationSearch() !== locationSearch) {
+        return {
+          applied: false,
+          error:
+            "The page URL changed while apply_ui_state ran. Call get_ui_state, then retry.",
+        };
       }
 
       // A date the agent chose, or one the user already pinned, stays in the

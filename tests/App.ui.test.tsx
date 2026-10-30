@@ -506,6 +506,40 @@ describe("App UI regressions", () => {
     });
   });
 
+  it("writes the This Week preset to the URL and Back restores the day", async () => {
+    const user = userEvent.setup();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "today-talk", title: "Today Talk", date: TODAY_KEY }),
+      makeEvent({
+        id: "later-talk",
+        title: "Later Talk",
+        date: "2026-04-25",
+      }),
+    ]);
+    window.history.replaceState({}, "", "/?date=today");
+
+    render(<App />);
+    expect(screen.getByText("Today Talk")).toBeInTheDocument();
+    expect(screen.queryByText("Later Talk")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "This Week" }));
+    await waitFor(() => {
+      expect(screen.getByText("Later Talk")).toBeInTheDocument();
+    });
+    expect(new URLSearchParams(window.location.search).get("date")).toBe(
+      "week",
+    );
+
+    act(() => {
+      window.history.back();
+    });
+    await waitFor(() => {
+      expect(window.location.search).toBe("?date=today");
+      expect(screen.queryByText("Later Talk")).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("Today Talk")).toBeInTheDocument();
+  });
+
   it("treats explicit URL date filters as user-selected", () => {
     mockFeedState = makeFeedState([
       makeEvent({

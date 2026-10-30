@@ -1,4 +1,5 @@
 import type { SearchFilters } from "../types";
+import type { AppUrlState } from "../utils/urlState";
 
 type DateRange = SearchFilters["dateRange"];
 
@@ -13,7 +14,11 @@ export interface UiViewState {
   /** Pacific date key the page used for its date buckets. */
   todayKey: string;
   loading: "idle" | "loading" | "success" | "error";
-  /** True while a typed query has not reached the results yet. */
+  /**
+   * True while the results can still change: a typed query has not reached
+   * them, or the search index has not settled for a query of 2+ characters.
+   * get_ui_state also sets it when the URL is ahead of this snapshot.
+   */
   pending: boolean;
   /** The query the results reflect (debounced). */
   searchQuery: string;
@@ -25,6 +30,10 @@ export interface UiViewState {
   dateRangeWidened: boolean;
   /** True when a user or agent chose the date range. */
   hasExplicitDateRange: boolean;
+  /** The category, source and topic filters the results reflect. */
+  category: string;
+  source: string;
+  topic: string;
   activeChips: ReadonlyArray<{ key: string; label: string }>;
   dismissedChipKeys: readonly string[];
   resultCount: number;
@@ -57,4 +66,30 @@ export function publishViewState(state: UiViewState | null): void {
 
 export function getViewState(): UiViewState | null {
   return currentViewState;
+}
+
+function matchesUrl(view: UiViewState, url: AppUrlState): boolean {
+  const { filters } = url;
+  return (
+    view.searchQuery.trim() === filters.searchQuery &&
+    view.selectedEventId === url.selectedEventId &&
+    view.category === filters.category &&
+    view.source === filters.source &&
+    view.topic === filters.topic &&
+    view.hasExplicitDateRange === url.hasExplicitDateRange &&
+    (!url.hasExplicitDateRange || view.requestedDateRange === filters.dateRange)
+  );
+}
+
+/**
+ * The snapshot as get_ui_state reports it. Right after a URL change, the
+ * page may not have rendered it yet. The snapshot then reads as pending, so
+ * an agent reads again instead of trusting the old view.
+ */
+export function viewForUrl(
+  view: UiViewState | null,
+  url: AppUrlState,
+): UiViewState | null {
+  if (!view || view.pending || matchesUrl(view, url)) return view;
+  return Object.freeze({ ...view, pending: true });
 }

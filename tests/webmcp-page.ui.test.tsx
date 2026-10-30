@@ -5,7 +5,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "../App";
 import { registerWebMcpTools } from "../agent/registerWebMcp";
-import type { UiViewState } from "../agent/viewState";
+import {
+  getViewState,
+  publishViewState,
+  type UiViewState,
+  VIEW_STATE_EVENT_ID_LIMIT,
+} from "../agent/viewState";
 import type { WebMcpTool } from "../agent/webmcpTools";
 import type { CalEvent } from "../types";
 import { LoadingState } from "../types";
@@ -39,6 +44,8 @@ const EVENTS: CalEvent[] = [
   makeEvent("jazz-brunch", "Jazz Brunch", "2026-04-25"),
 ];
 
+let mockIndexSettled = true;
+
 vi.mock("@vercel/analytics/react", () => ({ Analytics: () => null }));
 
 vi.mock("../utils/analytics", () => ({
@@ -58,7 +65,7 @@ vi.mock("../hooks/useEventFeed", () => ({
     lastUpdated: Date.parse("2026-04-22T19:00:00Z"),
     loading: LoadingState.SUCCESS,
     searchIndex: null,
-    searchIndexSettled: true,
+    searchIndexSettled: mockIndexSettled,
     topicVocabulary: TOPIC_VOCABULARY,
     sourceOptions: [
       { value: "All", label: "All", count: EVENTS.length },
@@ -108,6 +115,7 @@ describe("WebMCP agent to page", () => {
   beforeEach(() => {
     window.history.replaceState({}, "", "/");
     window.sessionStorage.clear();
+    mockIndexSettled = true;
     vi.stubGlobal(
       "fetch",
       vi.fn(async (path: string) => {
@@ -240,5 +248,96 @@ describe("WebMCP agent to page", () => {
       effectiveDateRange: "week",
       dateRangeWidened: true,
     });
+  });
+
+  it("compares typing after an agent apply against the applied query", async () => {
+    const user = userEvent.setup();
+    window.history.replaceState({}, "", "/?q=brunch");
+    render(<App />);
+
+    await callTool("apply_ui_state", { q: "jazz tomorrow" });
+    await user.click(
+      await screen.findByRole("button", { name: /remove tomorrow filter/i }),
+    );
+    await waitFor(() => {
+      expect(screen.getByText("Jazz Brunch")).toBeInTheDocument();
+    });
+
+    // Same first word as the applied query, so the dismissal stays. Compared
+    // against the page's first query, "brunch", it would reset.
+    await user.type(
+      screen.getByRole("combobox", { name: /search campus events/i }),
+      "!",
+    );
+    await waitFor(async () => {
+      expect((await readView()).searchQuery).toBe("jazz tomorrow!");
+    });
+    expect(
+      screen.queryByRole("button", { name: /remove tomorrow filter/i }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Jazz Brunch")).toBeInTheDocument();
+    expect((await readView()).dismissedChipKeys).toEqual([
+      "dateRange:tomorrow",
+    ]);
+  });
+});
+
+describe("view snapshot", () => {
+  beforeEach(() => {
+    window.history.replaceState({}, "", "/");
+    mockIndexSettled = true;
+  });
+
+  afterEach(() => {
+    publishViewState(null);
+  });
+
+  it("is pending while the search index has not settled for a query", () => {
+    mockIndexSettled = false;
+    window.history.replaceState({}, "", "/?q=jazz");
+    const { unmount } = render(<App />);
+    expect(getViewState()?.pending).toBe(true);
+    unmount();
+
+    // A query too short to search does not wait for the index.
+    window.history.replaceState({}, "", "/?q=j");
+    render(<App />);
+    expect(getViewState()?.pending).toBe(false);
+  });
+
+  it("clears when the page unmounts", () => {
+    const { unmount } = render(<App />);
+    expect(getViewState()).not.toBeNull();
+    unmount();
+    expect(getViewState()).toBeNull();
+  });
+
+  it("keeps only the first visible event ids", () => {
+    const ids = Array.from({ length: 25 }, (_, index) => `event-${index}`);
+    publishViewState({
+      todayKey: TODAY_KEY,
+      loading: "success",
+      pending: false,
+      searchQuery: "",
+      requestedDateRange: "week",
+      effectiveDateRange: "week",
+      dateRangeWidened: false,
+      hasExplicitDateRange: false,
+      category: "All",
+      source: "All",
+      topic: "",
+      activeChips: [],
+      dismissedChipKeys: [],
+      resultCount: ids.length,
+      visibleEventIds: ids,
+      fallbackMessage: null,
+      notice: null,
+      selectedEventId: null,
+    });
+    const view = getViewState();
+    expect(VIEW_STATE_EVENT_ID_LIMIT).toBe(20);
+    expect(view?.visibleEventIds).toEqual(ids.slice(0, 20));
+    expect(view?.resultCount).toBe(25);
+    expect(Object.isFrozen(view?.visibleEventIds)).toBe(true);
   });
 });
