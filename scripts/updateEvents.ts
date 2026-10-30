@@ -50,7 +50,10 @@ import {
   type PreviousSourceHealth,
   type RecoveryState,
 } from "./lib/lastGoodFallback.js";
-import { fetchLiveWhale } from "./sources/livewhale.js";
+import {
+  fetchLiveWhale,
+  LIVEWHALE_ADAPTER_TIMEOUT_MS,
+} from "./sources/livewhale.js";
 
 import { fetchCallink } from "./sources/callink.js";
 import { fetchCalPerformances } from "./sources/cal_performances.js";
@@ -146,6 +149,7 @@ async function runAdapter<
     invalid?: number;
     groupFeedsDegraded?: boolean;
     failedGroups?: string[];
+    failedWindows?: string[];
   },
 >(name: SourceStatus["name"], fn: () => Promise<T>): Promise<AdapterRun> {
   const started = Date.now();
@@ -161,6 +165,9 @@ async function runAdapter<
         fetched_at,
         ...(result.failedGroups?.length
           ? { failed_groups: result.failedGroups }
+          : {}),
+        ...(result.failedWindows?.length
+          ? { failed_windows: result.failedWindows }
           : {}),
       },
       events: result.events,
@@ -353,7 +360,11 @@ async function main(): Promise<void> {
     [
       {
         name: "livewhale",
-        promise: runAdapterWithTimeout("livewhale", fetchLiveWhale),
+        promise: runAdapterWithTimeout(
+          "livewhale",
+          fetchLiveWhale,
+          LIVEWHALE_ADAPTER_TIMEOUT_MS,
+        ),
       },
       {
         name: "callink",

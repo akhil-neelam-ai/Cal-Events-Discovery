@@ -32,19 +32,30 @@ function todayUtcIso() {
   return new Date().toISOString();
 }
 
+/** LiveWhale's one-day window for today (UTC date; end_date is exclusive). */
+function liveWhaleDayWindowUrl() {
+  const start = new Date();
+  const end = new Date(start.getTime() + 86_400_000);
+  const key = (date) => date.toISOString().slice(0, 10);
+  return `https://events.berkeley.edu/live/ical/events/start_date/${key(start)}/end_date/${key(end)}`;
+}
+
 const CALLINK_CONTRACT_TAKE = 25;
 
 /** @type {Array<{ name: string, url: string, validate: (response: Response, body: string) => void }>} */
 export const CONTRACTS = [
   {
+    // The adapter reads date windows (scripts/sources/livewhale.ts). A
+    // one-day window is the smallest one it falls back to, so a cut-off body
+    // here means the adapter would fail too.
     name: "livewhale",
-    url: "https://events.berkeley.edu/live/ical/events",
+    url: liveWhaleDayWindowUrl(),
     validate(_response, body) {
       if (!/BEGIN:VCALENDAR/.test(body)) {
         throw new Error("response is not iCalendar data");
       }
-      if (body.length < 10_000) {
-        throw new Error(`response too short (${body.length} bytes)`);
+      if (!body.trimEnd().endsWith("END:VCALENDAR")) {
+        throw new Error("response is a cut-off iCalendar (no END:VCALENDAR)");
       }
     },
   },

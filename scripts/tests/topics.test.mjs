@@ -172,6 +172,28 @@ test("LiveWhale department membership assigns a field without text keywords", ()
   );
 });
 
+test("groups added in the October 2026 sweep assign only clear fields", () => {
+  const colloquium = (group) =>
+    assignTopics(
+      baseEvent({
+        title: "Weekly Department Colloquium",
+        description: "A faculty presentation.",
+        organizer: "UC Berkeley",
+        livewhale_groups: [group],
+      }),
+    );
+
+  assert.deepEqual(colloquium("Molecular and Cell Biology"), [
+    "biology-life-sciences",
+  ]);
+  assert.deepEqual(colloquium("Electrical Engineering & Computer Sciences"), [
+    "computer-science-data",
+  ]);
+  // Broad groups carry events of every kind, so they give no topic.
+  assert.deepEqual(colloquium("Featured Events"), []);
+  assert.deepEqual(colloquium("College of Letters & Science"), []);
+});
+
 test("membership in two department feeds assigns both fields", () => {
   const topics = assignTopics(
     baseEvent({
@@ -286,12 +308,13 @@ test("a group feed that serves a non-calendar page counts as failed", async () =
   globalThis.fetch = async (url) => {
     const target = String(url);
     if (target.endsWith("/group/physics")) physicsFetches += 1;
-    const body =
-      target === "https://events.berkeley.edu/live/ical/events"
-        ? mainFeed
-        : target.endsWith("/group/physics")
-          ? "<html><body>Service unavailable</body></html>"
-          : emptyCalendar;
+    const body = target.startsWith(
+      "https://events.berkeley.edu/live/ical/events/start_date/",
+    )
+      ? mainFeed
+      : target.endsWith("/group/physics")
+        ? "<html><body>Service unavailable</body></html>"
+        : emptyCalendar;
     return { ok: true, status: 200, text: async () => body };
   };
   console.warn = (...args) => warnings.push(args.join(" "));

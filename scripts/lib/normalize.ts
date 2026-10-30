@@ -428,7 +428,7 @@ const OVERNIGHT_END_HOUR = 6;
 /** Most days one span publishes in `dates`. The daily run moves the window. */
 export const MAX_SPAN_DAYS = 120;
 
-function addDaysToKey(key: string, days: number): string {
+export function addDaysToKey(key: string, days: number): string {
   const [year, month, day] = key.split("-").map(Number);
   return new Date(Date.UTC(year, month - 1, day + days))
     .toISOString()
