@@ -243,6 +243,33 @@ jobs:
           ISSUE_LABEL_DESCRIPTION: Non-blocking corpus/search quality regression for triage
         run: node scripts/notifyPipelineFailure.mjs
 
+      # A failed or cut LiveWhale day or department feed never degrades the
+      # source, so this low-priority issue is the only signal that dates or
+      # group topics may be missing.
+      - name: Read LiveWhale partial coverage
+        id: livewhale_coverage
+        run: |
+          windows="$(jq -r '[.sources[] | select(.name == "livewhale") | (.failed_windows // [])[]] | join(", ")' public/status.json)"
+          groups="$(jq -r '[.sources[] | select(.name == "livewhale") | (.failed_groups // [])[]] | join(", ")' public/status.json)"
+          if [ -n "${windows}${groups}" ]; then
+            echo "partial=true" >> "$GITHUB_OUTPUT"
+            echo "context=LiveWhale published partial coverage. Windows starting: ${windows:-none}. Group feeds: ${groups:-none}." >> "$GITHUB_OUTPUT"
+            echo "::warning::LiveWhale partial coverage. Windows: ${windows:-none}. Groups: ${groups:-none}."
+          else
+            echo "partial=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open data-quality issue on LiveWhale partial coverage
+        if: ${{ steps.livewhale_coverage.outputs.partial == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_NAME: LiveWhale partial coverage
+          FAILURE_CONTEXT: ${{ steps.livewhale_coverage.outputs.context }}
+          ISSUE_LABEL: data-quality
+          ISSUE_LABEL_COLOR: FBCA04
+          ISSUE_LABEL_DESCRIPTION: Non-blocking corpus/search quality regression for triage
+        run: node scripts/notifyPipelineFailure.mjs
+
       - name: Create artifact update pull request
         id: create_pr
         # Pinned to a commit because this step receives the automation token.

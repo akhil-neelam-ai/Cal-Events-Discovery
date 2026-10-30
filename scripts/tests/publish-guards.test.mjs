@@ -707,6 +707,27 @@ test("orchestrator preserves last-good topics and group-feed provenance", () => 
   );
 });
 
+test("LiveWhale partial coverage opens only a data-quality issue", () => {
+  const start = updateEvents.indexOf("- name: Read LiveWhale partial coverage");
+  const end = updateEvents.indexOf(
+    "- name: Create artifact update pull request",
+  );
+  assert.ok(
+    start > 0 && end > start,
+    "partial-coverage steps sit before the PR step",
+  );
+  const coverage = updateEvents.slice(start, end);
+
+  assert.match(coverage, /\.failed_windows \/\/ \[\]/);
+  assert.match(coverage, /\.failed_groups \/\/ \[\]/);
+  assert.match(
+    coverage,
+    /steps\.livewhale_coverage\.outputs\.partial == 'true'/,
+  );
+  assert.match(coverage, /ISSUE_LABEL: data-quality/);
+  assert.doesNotMatch(coverage, /pipeline-failure/);
+});
+
 test("orchestrator reports failed LiveWhale windows without degrading", () => {
   const orchestrator = fs.readFileSync(
     path.join(rootDir, "scripts", "updateEvents.ts"),
