@@ -3,7 +3,11 @@ import type { Dispatch, SetStateAction } from "react";
 
 import { ALL_SOURCES, Categories, DEFAULT_FILTERS } from "../appConfig";
 import type { SearchFilters } from "../types";
-import { buildUrlStateSearch, parseUrlState } from "../utils/urlState";
+import {
+  type AppUrlState,
+  buildUrlStateSearch,
+  parseUrlState,
+} from "../utils/urlState";
 
 export type HistoryMode = "push" | "replace";
 
@@ -15,6 +19,13 @@ interface UseUrlStateSyncParams {
   setFilters: Dispatch<SetStateAction<SearchFilters>>;
   setSelectedEventId: Dispatch<SetStateAction<string | null>>;
   setUserSetDateRange: Dispatch<SetStateAction<boolean>>;
+  /** True when a user or agent chose the date range. Keeps date= in the URL. */
+  userSetDateRange?: boolean;
+  /**
+   * Runs after a popstate applied URL state. App clears page-only search
+   * state here, such as dismissed chips, so the URL alone decides the view.
+   */
+  onPopStateApplied?: (state: AppUrlState) => void;
 }
 
 export interface UseUrlStateSyncResult {
@@ -41,6 +52,8 @@ export function useUrlStateSync({
   setFilters,
   setSelectedEventId,
   setUserSetDateRange,
+  userSetDateRange = false,
+  onPopStateApplied,
 }: UseUrlStateSyncParams): UseUrlStateSyncResult {
   const historyModeRef = useRef<HistoryMode>("replace");
   const isApplyingHistoryRef = useRef(false);
@@ -72,6 +85,7 @@ export function useUrlStateSync({
 
     const nextSearch = buildUrlStateSearch(filters, selectedEventId, {
       defaultFilters: DEFAULT_FILTERS,
+      explicitDateRange: userSetDateRange,
     });
     const nextUrl = `${window.location.pathname}${nextSearch}${window.location.hash}`;
     const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
@@ -87,7 +101,13 @@ export function useUrlStateSync({
 
     historyModeRef.current = "replace";
     isApplyingHistoryRef.current = false;
-  }, [filters, historyModeRef, isApplyingHistoryRef, selectedEventId]);
+  }, [
+    filters,
+    historyModeRef,
+    isApplyingHistoryRef,
+    selectedEventId,
+    userSetDateRange,
+  ]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -106,6 +126,7 @@ export function useUrlStateSync({
       setFilters(nextState.filters);
       setSelectedEventId(nextState.selectedEventId);
       setUserSetDateRange(nextState.hasExplicitDateRange);
+      onPopStateApplied?.(nextState);
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -113,6 +134,7 @@ export function useUrlStateSync({
   }, [
     isApplyingHistoryRef,
     allowedTopicSlugs,
+    onPopStateApplied,
     setFilters,
     setSelectedEventId,
     setUserSetDateRange,

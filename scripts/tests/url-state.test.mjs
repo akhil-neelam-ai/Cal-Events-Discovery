@@ -123,3 +123,21 @@ test("buildUrlStateSearch keeps tomorrow in shareable state", () => {
 
   assert.equal(serialized, "?date=tomorrow");
 });
+
+test("buildUrlStateSearch keeps an explicit default date only when asked", () => {
+  const filters = { ...DEFAULT_FILTERS, searchQuery: "jazz tomorrow" };
+
+  assert.equal(
+    buildUrlStateSearch(filters, null, { defaultFilters: DEFAULT_FILTERS }),
+    "?q=jazz+tomorrow",
+  );
+  const explicit = buildUrlStateSearch(filters, null, {
+    defaultFilters: DEFAULT_FILTERS,
+    explicitDateRange: true,
+  });
+  assert.equal(explicit, "?q=jazz+tomorrow&date=today");
+
+  const parsed = parseUrlState(explicit, OPTIONS);
+  assert.equal(parsed.filters.dateRange, "today");
+  assert.equal(parsed.hasExplicitDateRange, true);
+});

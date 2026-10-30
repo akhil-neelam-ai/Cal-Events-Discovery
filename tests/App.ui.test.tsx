@@ -171,7 +171,7 @@ describe("App UI regressions", () => {
       > | null>(null);
       const actions = useEventBrowserActions({
         filteredEventsCount: 0,
-        initialSearchQuery: "",
+        prevSearchQueryRef: { current: "" },
         setFilters,
         setSelectedEventId,
         setUserSetDateRange,

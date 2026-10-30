@@ -18,6 +18,12 @@ interface ParseUrlStateOptions {
 
 interface BuildUrlStateOptions {
   defaultFilters: SearchFilters;
+  /**
+   * True when a user or agent chose the date range. The URL then keeps
+   * date= even when it equals the default, so a date implied by the query
+   * cannot override it on reload. Defaults to false.
+   */
+  explicitDateRange?: boolean;
 }
 
 const VALID_DATE_RANGES = new Set<DateRange>([
@@ -86,7 +92,7 @@ export function parseUrlState(
 export function buildUrlStateSearch(
   filters: SearchFilters,
   selectedEventId: string | null,
-  { defaultFilters }: BuildUrlStateOptions,
+  { defaultFilters, explicitDateRange = false }: BuildUrlStateOptions,
 ): string {
   const params = new URLSearchParams();
   const query = filters.searchQuery.trim();
@@ -95,7 +101,7 @@ export function buildUrlStateSearch(
     params.set("q", query);
   }
 
-  if (filters.dateRange !== defaultFilters.dateRange) {
+  if (explicitDateRange || filters.dateRange !== defaultFilters.dateRange) {
     params.set("date", filters.dateRange);
   }
 
