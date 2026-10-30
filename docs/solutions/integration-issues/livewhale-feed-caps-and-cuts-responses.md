@@ -57,7 +57,7 @@ Fixed in PR 267 (windowed fetch) and extended by PR 269 (JSON refill of cut days
 
 1. **Weekly windows.** `liveWhaleWindowKeys` builds PT date keys from a week back to eight weeks ahead in 7-day steps. Consecutive keys form one window each through `liveWhaleWindowUrl`.
 2. **A complete calendar or nothing.** `calendarProblem` rejects a body without `BEGIN:VCALENDAR`, and treats one that does not end with `END:VCALENDAR` as cut.
-3. **Split, then salvage.** `fetchWindow` refetches a cut window as its single days, in parallel and without retrying the cut URL, and splits a window at `WINDOW_SPLIT_THRESHOLD` (900) or more events in halves down to single days. Halving a cut window instead cost three sequential round trips, which at 14 s per request overran the 90 s budget (150 s in the budget check). A single day that stays cut keeps every complete event before the cut through `salvageCutCalendar`:
+3. **Split, then salvage.** `fetchWindow` refetches a cut window as its single days, in parallel and without retrying the cut URL, and splits a window at `WINDOW_SPLIT_THRESHOLD` (900) or more events in halves down to single days. Halving a cut window instead cost three sequential round trips, which at 14 s per request overran the 90 s budget (about 150 s when the budget check ran that code). A single day that stays cut keeps every complete event before the cut through `salvageCutCalendar`:
 
 ```ts
 const lastEnd = body.lastIndexOf("END:VEVENT");
