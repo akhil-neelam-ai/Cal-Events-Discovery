@@ -3,18 +3,15 @@ import {
   ALL_SOURCES,
   Categories,
   DEFAULT_FILTERS,
-  RETIRED_SOURCES,
   SOURCE_LABELS,
 } from "../appConfig";
-import type { CalEvent, SearchFilters, SearchResponse } from "../types";
+import type { CalEvent, SearchResponse } from "../types";
 import {
-  addDaysToDateKey,
   firstOccurrenceInRange,
   getCurrentPacificDateKey,
   getCurrentPacificMinutes,
   hasEventEnded,
   sortEventsChronologically,
-  weekEndKey,
 } from "../utils/eventDates";
 import { getDirectionsUrl } from "../utils/eventPresentation";
 import { buildEventIcs, buildGoogleCalendarUrl } from "../utils/icsExport";
@@ -27,6 +24,23 @@ import {
 import type { SearchTopicDefinition } from "../utils/searchIntent";
 import type { SearchIndex } from "../utils/textUtils";
 import { buildUrlStateSearch, parseUrlState } from "../utils/urlState";
+import {
+  buildFiltersFromInput,
+  checkCategory,
+  checkDateKey,
+  checkDatePreset,
+  checkDismiss,
+  checkSource,
+  checkTopic,
+  DATE_PRESET_VALUES,
+  DATE_PRESETS,
+  type DatePreset,
+  inputHasDate,
+  inputHasTopic,
+  resolveDatePreset,
+  SEARCH_CATEGORIES,
+  searchHasTopic,
+} from "./filterInput";
 import type { UiViewState } from "./viewState";
 
 const EVENTS_CACHE_TTL_MS = 120_000;
@@ -62,83 +76,15 @@ function parseLimit(value: unknown): number {
   return Math.min(Math.max(Math.trunc(parsed), 1), 50);
 }
 
-type DatePreset = SearchFilters["dateRange"];
-
 // With no date input and no date in the query, search runs from today with
 // no end. The UI opens on "week", but an agent asking about a lecture next
 // month should still find it.
 const DEFAULT_SEARCH_RANGE: DatePreset = "upcoming";
 
-const SEARCH_CATEGORIES = Categories.filter((category) => category !== "All");
-
-function isDatePreset(value: unknown): value is DatePreset {
-  return (
-    value === "today" ||
-    value === "tomorrow" ||
-    value === "week" ||
-    value === "upcoming"
-  );
-}
-
 function parseOffset(value: unknown): number {
   const parsed = Number(value ?? 0);
   if (!Number.isFinite(parsed)) return 0;
   return Math.max(Math.trunc(parsed), 0);
-}
-
-type Checked<T> = { value: T } | { error: string };
-
-function checkSearchCategory(value: unknown): Checked<string> {
-  if (typeof value !== "string" || !value.trim()) return { value: "" };
-  const wanted = value.trim().toLowerCase();
-  if (wanted === "all") return { value: "" };
-  const match = SEARCH_CATEGORIES.find(
-    (category) => category.toLowerCase() === wanted,
-  );
-  return match
-    ? { value: match }
-    : {
-        error: `Unknown category "${value.trim()}". Use one of: ${SEARCH_CATEGORIES.join(", ")}.`,
-      };
-}
-
-function checkSearchSource(value: unknown): Checked<string> {
-  if (typeof value !== "string" || !value.trim()) return { value: "" };
-  const source = value.trim();
-  if (source === "All") return { value: "" };
-  if (ACTIVE_SOURCES.includes(source)) return { value: source };
-  const reason = RETIRED_SOURCES.includes(source)
-    ? `Source "${source}" is retired.`
-    : `Unknown source "${source}".`;
-  return { error: `${reason} Use one of: ${ACTIVE_SOURCES.join(", ")}.` };
-}
-
-function checkDatePreset(value: unknown): Checked<DatePreset | null> {
-  if (typeof value !== "string" || !value.trim()) return { value: null };
-  if (isDatePreset(value.trim())) return { value: value.trim() as DatePreset };
-  const valid = DATE_PRESETS.map((preset) => preset.value).join(", ");
-  return { error: `Unknown date "${value.trim()}". Valid dates: ${valid}.` };
-}
-
-function checkDateKey(name: string, value: unknown): Checked<string | null> {
-  if (typeof value !== "string" || !value.trim()) return { value: null };
-  const key = value.trim();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(key)) return { value: key };
-  return { error: `${name} "${key}" is not a date. Use YYYY-MM-DD.` };
-}
-
-function checkDismiss(value: unknown): Checked<string[]> {
-  if (value === undefined || value === null) return { value: [] };
-  if (
-    !Array.isArray(value) ||
-    !value.every((key): key is string => typeof key === "string")
-  ) {
-    return {
-      error:
-        'dismiss must be an array of chip keys such as "topic:law" or "dateRange:today".',
-    };
-  }
-  return { value: value.map((key) => key.trim()).filter(Boolean) };
 }
 
 function findEventById(events: CalEvent[], id: string): CalEvent | null {
@@ -166,139 +112,6 @@ function summarizeEvent(event: CalEvent) {
     directionsUrl: getDirectionsUrl(event.location),
     googleCalendarUrl: buildGoogleCalendarUrl(event),
   };
-}
-
-function resolveDatePreset(
-  preset: unknown,
-): { startDate: string; endDate?: string } | null {
-  if (
-    preset !== "today" &&
-    preset !== "tomorrow" &&
-    preset !== "week" &&
-    preset !== "upcoming"
-  ) {
-    return null;
-  }
-
-  const todayKey = getCurrentPacificDateKey();
-  if (preset === "today") {
-    return { startDate: todayKey, endDate: todayKey };
-  }
-  if (preset === "tomorrow") {
-    const tomorrow = addDaysToDateKey(todayKey, 1);
-    return { startDate: tomorrow, endDate: tomorrow };
-  }
-  if (preset === "week") {
-    return { startDate: todayKey, endDate: weekEndKey(todayKey) };
-  }
-  return { startDate: todayKey };
-}
-
-const DATE_PRESETS: readonly { value: DatePreset; label: string }[] = [
-  { value: "today", label: "Today" },
-  { value: "tomorrow", label: "Tomorrow" },
-  { value: "week", label: "This Week" },
-  { value: "upcoming", label: "All Upcoming" },
-];
-
-// Retired sources (CalLink, October 2026) come from appConfig, which a test
-// keeps in step with scripts/lib/schema.ts.
-function inputHasDate(input: Record<string, unknown>): boolean {
-  return typeof input.date === "string" || typeof input.datePreset === "string";
-}
-
-export const RETIRED_SOURCE_IDS: readonly string[] = RETIRED_SOURCES;
-
-export function activeSourceIds(): string[] {
-  return [...ACTIVE_SOURCES];
-}
-
-function filterCategories(): string[] {
-  return Categories.filter((category) => category !== "All");
-}
-
-type FiltersResolution =
-  { ok: true; filters: SearchFilters } | { ok: false; error: string };
-
-function readQuery(input: Record<string, unknown>): string | undefined {
-  if (typeof input.q === "string") return input.q;
-  if (typeof input.query === "string") return input.query;
-  return undefined;
-}
-
-// Builds filters from tool input on top of `base`. A field the input leaves
-// out keeps its base value. An empty string or "All" clears a field. An
-// unknown value returns an error instead of falling back to "All".
-function buildFiltersFromInput(
-  input: Record<string, unknown>,
-  allowedTopics: readonly string[] = [],
-  base: SearchFilters = DEFAULT_FILTERS,
-): FiltersResolution {
-  const filters: SearchFilters = { ...base };
-
-  const query = readQuery(input);
-  if (query !== undefined) filters.searchQuery = query.trim();
-
-  const datePreset =
-    typeof input.date === "string" ? input.date : input.datePreset;
-  if (typeof datePreset === "string") {
-    const match = DATE_PRESETS.find((preset) => preset.value === datePreset);
-    if (!match) {
-      const valid = DATE_PRESETS.map((preset) => preset.value).join(", ");
-      return {
-        ok: false,
-        error: `Unknown date "${datePreset}". Valid dates: ${valid}.`,
-      };
-    }
-    filters.dateRange = match.value;
-  }
-
-  if (typeof input.category === "string") {
-    const category = input.category.trim();
-    const match = filterCategories().find(
-      (item) => item.toLowerCase() === category.toLowerCase(),
-    );
-    if (!category || category.toLowerCase() === "all") {
-      filters.category = DEFAULT_FILTERS.category;
-    } else if (match) {
-      filters.category = match;
-    } else {
-      return {
-        ok: false,
-        error: `Unknown category "${category}". Valid categories: ${filterCategories().join(", ")}, or All.`,
-      };
-    }
-  }
-
-  if (typeof input.source === "string") {
-    const source = input.source.trim();
-    if (!source || source.toLowerCase() === "all") {
-      filters.source = DEFAULT_FILTERS.source;
-    } else if (activeSourceIds().includes(source)) {
-      filters.source = source;
-    } else {
-      const reason = RETIRED_SOURCE_IDS.includes(source)
-        ? `Source "${source}" is retired and has no events.`
-        : `Unknown source "${source}".`;
-      return {
-        ok: false,
-        error: `${reason} Valid sources: ${activeSourceIds().join(", ")}, or All.`,
-      };
-    }
-  }
-
-  if (typeof input.topic === "string") {
-    try {
-      filters.topic = validateTopic(input, allowedTopics) ?? "";
-    } catch (error) {
-      return {
-        ok: false,
-        error: error instanceof Error ? error.message : "invalid topic",
-      };
-    }
-  }
-
-  return { ok: true, filters };
 }
 
 function getPublishedTopicSlugs(payload: EventsPayload): string[] {
@@ -332,32 +145,6 @@ function eventMatchesDateBounds(
   endDate?: string,
 ): boolean {
   return firstOccurrenceInRange(event, startDate, endDate) !== null;
-}
-
-function validateTopic(
-  input: Record<string, unknown>,
-  allowedTopics: readonly string[],
-): string | null {
-  if (typeof input.topic !== "string" || !input.topic.trim()) return null;
-  const topic = input.topic.trim();
-  if (!allowedTopics.includes(topic)) {
-    const valid = allowedTopics.length
-      ? `Valid slugs: ${allowedTopics.join(", ")}.`
-      : "No topic vocabulary is published.";
-    throw new Error(
-      `Unknown topic "${topic}". ${valid} Slugs come from events.json.topic_vocabulary.topics or list_filter_options.`,
-    );
-  }
-  return topic;
-}
-
-function searchHasTopic(search: string): boolean {
-  const query = search.startsWith("?") ? search.slice(1) : search;
-  return Boolean(new URLSearchParams(query).get("topic")?.trim());
-}
-
-function inputHasTopic(input: Record<string, unknown>): boolean {
-  return typeof input.topic === "string" && Boolean(input.topic.trim());
 }
 
 export function createDefaultFetchJson(
@@ -448,7 +235,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         },
         datePreset: {
           type: "string",
-          enum: ["today", "tomorrow", "week", "upcoming"],
+          enum: DATE_PRESET_VALUES,
           description:
             "Optional Pacific-time date bucket. Overrides a date in the query. Explicit startDate/endDate override the matching bound.",
         },
@@ -511,9 +298,9 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         events: [],
       });
 
-      const categoryCheck = checkSearchCategory(input.category);
+      const categoryCheck = checkCategory(input.category);
       if ("error" in categoryCheck) return invalid(categoryCheck.error);
-      const sourceCheck = checkSearchSource(input.source);
+      const sourceCheck = checkSource(input.source);
       if ("error" in sourceCheck) return invalid(sourceCheck.error);
       const dismissCheck = checkDismiss(input.dismiss);
       if ("error" in dismissCheck) return invalid(dismissCheck.error);
@@ -535,7 +322,9 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
       const nowMinutes = getCurrentPacificMinutes();
 
       if (explicitDate) {
-        const preset = resolveDatePreset(presetInput);
+        const preset = presetInput
+          ? resolveDatePreset(presetInput, todayKey)
+          : null;
         // With no lower bound, rows the feed still holds from yesterday
         // would sort first before each morning's publish. The UI never
         // shows them.
@@ -558,14 +347,9 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
       const publishedTopics = getPublishedTopics(data);
       const allowedTopics = publishedTopics.map((item) => item.slug);
       const planOptions = { topics: publishedTopics };
-      let topic: string | null;
-      try {
-        topic = validateTopic(input, allowedTopics);
-      } catch (error) {
-        return invalid(
-          error instanceof Error ? error.message : "invalid topic",
-        );
-      }
+      const topicCheck = checkTopic(input.topic, allowedTopics);
+      if ("error" in topicCheck) return invalid(topicCheck.error);
+      const topic = topicCheck.value;
       const query = typeof input.query === "string" ? input.query.trim() : "";
       const plan =
         query.length >= 2 ? buildSearchPlan(query, planOptions) : null;
@@ -625,28 +409,28 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         basis === "query" &&
         (requested === "today" || requested === "tomorrow")
       ) {
-        const weekBounds = resolveDatePreset("week");
-        const dayBounds = resolveDatePreset(requested);
-        if (weekBounds && dayBounds) {
-          const week = filterPool.filter(inBounds(weekBounds));
-          const weekOutput = searchEvents(
-            withTopic(week),
-            query,
-            index,
-            dismissedKeys,
-            planOptions,
-          );
-          const matches =
-            !weekOutput.fallbackUsed && weekOutput.results.length > 0
-              ? weekOutput.results
-              : week;
-          if (matches.length > 0 && !matches.some(inBounds(dayBounds))) {
-            effective = "week";
-          }
+        const weekBounds = resolveDatePreset("week", todayKey);
+        const dayBounds = resolveDatePreset(requested, todayKey);
+        const week = filterPool.filter(inBounds(weekBounds));
+        const weekOutput = searchEvents(
+          withTopic(week),
+          query,
+          index,
+          dismissedKeys,
+          planOptions,
+        );
+        const matches =
+          !weekOutput.fallbackUsed && weekOutput.results.length > 0
+            ? weekOutput.results
+            : week;
+        if (matches.length > 0 && !matches.some(inBounds(dayBounds))) {
+          effective = "week";
         }
       }
 
-      const effectivePreset = resolveDatePreset(effective);
+      const effectivePreset = effective
+        ? resolveDatePreset(effective, todayKey)
+        : null;
       const startDate = startInput ?? effectivePreset?.startDate ?? todayKey;
       const endDate = endInput ?? effectivePreset?.endDate;
       const pool = withTopic(filterPool).filter(
@@ -881,12 +665,12 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         },
         date: {
           type: "string",
-          enum: ["today", "tomorrow", "week", "upcoming"],
+          enum: DATE_PRESET_VALUES,
           description: "Date bucket (?date=).",
         },
         datePreset: {
           type: "string",
-          enum: ["today", "tomorrow", "week", "upcoming"],
+          enum: DATE_PRESET_VALUES,
           description: "Alias for date.",
         },
         category: {
@@ -913,8 +697,8 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
       input = input ?? {};
       const allowedTopics = await allowedTopicsIfNeeded(inputHasTopic(input));
       const resolved = buildFiltersFromInput(input, allowedTopics);
-      if (!resolved.ok) return { error: resolved.error };
-      const { filters } = resolved;
+      if ("error" in resolved) return { error: resolved.error };
+      const filters = resolved.value;
       const eventId =
         typeof input.event === "string" && input.event.trim()
           ? input.event.trim()
@@ -955,11 +739,11 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         query: { type: "string", description: "Alias for q." },
         date: {
           type: "string",
-          enum: DATE_PRESETS.map((preset) => preset.value),
+          enum: DATE_PRESET_VALUES,
         },
         datePreset: {
           type: "string",
-          enum: DATE_PRESETS.map((preset) => preset.value),
+          enum: DATE_PRESET_VALUES,
           description: "Alias for date.",
         },
         category: {
@@ -1016,8 +800,8 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         allowedTopics,
         current.filters,
       );
-      if (!resolved.ok) return { applied: false, error: resolved.error };
-      const { filters } = resolved;
+      if ("error" in resolved) return { applied: false, error: resolved.error };
+      const filters = resolved.value;
 
       let eventId: string | null = current.selectedEventId;
       if (input.event === null) {
@@ -1079,8 +863,8 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
 
       return {
         lastUpdated: data.lastUpdated,
-        categories: filterCategories(),
-        sources: activeSourceIds().map((id) => ({
+        categories: SEARCH_CATEGORIES,
+        sources: ACTIVE_SOURCES.map((id) => ({
           id,
           label: SOURCE_LABELS[id] ?? id,
         })),

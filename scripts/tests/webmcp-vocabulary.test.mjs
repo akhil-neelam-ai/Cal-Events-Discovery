@@ -4,13 +4,8 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import {
-  RETIRED_SOURCE_IDS,
-  activeSourceIds,
-  createWebMcpTools,
-} from "../../agent/webmcpTools.ts";
+import { createWebMcpTools } from "../../agent/webmcpTools.ts";
 import { SOURCE_LABELS } from "../../appConfig.ts";
-import { RETIRED_SOURCES } from "../../scripts/lib/schema.ts";
 import {
   addDaysToDateKey,
   getCurrentPacificDateKey,
@@ -114,13 +109,6 @@ test("list_filter_options returns the accepted filter values", async () => {
   ]);
 });
 
-test("the WebMCP retired-source list matches the pipeline schema", () => {
-  assert.deepEqual([...RETIRED_SOURCE_IDS].sort(), [...RETIRED_SOURCES].sort());
-  for (const retired of RETIRED_SOURCES) {
-    assert.ok(!activeSourceIds().includes(retired));
-  }
-});
-
 test("an unknown topic error lists the valid slugs", async () => {
   const { tools } = loadTools();
   for (const name of [
@@ -130,7 +118,7 @@ test("an unknown topic error lists the valid slugs", async () => {
   ]) {
     const result = await tools.get(name).execute({ topic: "nope" });
     assert.match(result.error, /Unknown topic "nope"/, name);
-    assert.match(result.error, /Valid slugs: law, film-media\./, name);
+    assert.match(result.error, /Use one of: law, film-media\./, name);
   }
 });
 
@@ -148,8 +136,8 @@ test("build_calevents_url rejects unknown category, source and date", async () =
   assert.match(source.error, /livewhale/);
 
   const retired = await build.execute({ source: "callink" });
-  assert.match(retired.error, /"callink" is retired/);
-  assert.doesNotMatch(retired.error, /Valid sources: [^.]*callink/);
+  assert.match(retired.error, /"callink" is retired and has no events/);
+  assert.doesNotMatch(retired.error, /Use one of: [^.]*callink/);
 
   const date = await build.execute({ date: "weekend" });
   assert.match(date.error, /Unknown date "weekend"/);
@@ -158,6 +146,49 @@ test("build_calevents_url rejects unknown category, source and date", async () =
   assert.equal(ok.error, undefined);
   assert.equal(ok.filters.category, "Arts");
   assert.equal(ok.search, "?category=Arts");
+});
+
+test("search and the URL tools share one case rule and error format", async () => {
+  const { tools } = loadTools();
+  const names = [
+    "search_berkeley_events",
+    "build_calevents_url",
+    "apply_ui_state",
+  ];
+  const messages = (results) => results.map((result) => result.error);
+
+  for (const name of names) {
+    const tool = tools.get(name);
+    const cleared = await tool.execute({ category: "all", source: "ALL" });
+    assert.equal(cleared.error, undefined, name);
+    const mixedCase = await tool.execute({
+      category: "science & tech",
+      source: "LiveWhale",
+    });
+    assert.equal(mixedCase.error, undefined, name);
+  }
+
+  const run = (input) =>
+    Promise.all(
+      names.map((name) =>
+        tools.get(name).execute({ ...input, datePreset: input.date }),
+      ),
+    );
+  for (const input of [
+    { category: "Music" },
+    { source: "eventbrite" },
+    { source: "callink" },
+    { date: "weekend" },
+  ]) {
+    const errors = messages(await run(input));
+    assert.equal(new Set(errors).size, 1, JSON.stringify(errors));
+    assert.match(errors[0], /Use one of: /);
+  }
+  const [retired] = messages(await run({ source: "callink" }));
+  assert.equal(
+    retired.split("Use one of:")[0],
+    'Source "callink" is retired and has no events. ',
+  );
 });
 
 test("apply_ui_state refuses unknown values without changing the page", async () => {
