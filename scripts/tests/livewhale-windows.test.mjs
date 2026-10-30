@@ -103,14 +103,21 @@ function ok(body) {
   return { ok: true, status: 200, text: async () => body };
 }
 
-/** Serve `events` through date windows; group feeds return an empty calendar. */
-function windowServer(events, override = () => null) {
+/**
+ * Serve `events` through date windows; group feeds return an empty calendar.
+ * Like LiveWhale, a window longer than one day silently stops at `cap` events.
+ */
+function windowServer(events, override = () => null, cap = Infinity) {
   return (url) => {
     const special = override(url);
     if (special !== null) return ok(special);
     const window = windowOf(url);
     if (!window) return ok(EMPTY);
-    return ok(calendar(eventsInWindow(events, window).map(vevent)));
+    let served = eventsInWindow(events, window);
+    if (window.end > addDaysToKey(window.start, 1)) {
+      served = served.slice(0, cap);
+    }
+    return ok(calendar(served.map(vevent)));
   };
 }
 
@@ -199,19 +206,52 @@ test("an incomplete window is split and both halves are published", async () => 
   );
 });
 
-test("a required day that stays incomplete makes LiveWhale fail", async () => {
+test("a required day that stays cut keeps its complete events and is reported", async () => {
   const badDay = addDaysToKey(TODAY, 2);
-  const truncatedWhenContainingBadDay = (url) => {
+  const events = [
+    ...FILLERS,
+    { uid: "before-cut", date: badDay },
+    { uid: "after-cut", date: badDay },
+  ];
+  // Any window holding the bad day is cut mid-event after its first event.
+  const cutWhenContainingBadDay = (url) => {
     const window = windowOf(url);
     if (!window || badDay < window.start || badDay >= window.end) return null;
-    return "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nSUMMARY:";
+    return calendar([vevent(events.at(-2))]).replace(
+      /END:VCALENDAR$/,
+      "BEGIN:VEVENT\r\nSUMMARY:",
+    );
   };
 
+  const { result } = await withStubbedFetch(
+    windowServer(events, cutWhenContainingBadDay),
+    () => fetchLiveWhale(),
+  );
+
+  const titles = new Set(result.events.map((event) => event.title));
+  assert.ok(titles.has("before-cut"));
+  assert.ok(titles.has("filler-0"));
+  assert.deepEqual(result.failedWindows, [badDay]);
+});
+
+test("a required window that fails outright makes LiveWhale fail", async () => {
+  const errorPage = (url) =>
+    windowOf(url)?.start === KEYS[1]
+      ? "<html><body>Service unavailable</body></html>"
+      : null;
+
   await assert.rejects(
-    withStubbedFetch(windowServer(FILLERS, truncatedWhenContainingBadDay), () =>
+    withStubbedFetch(windowServer(FILLERS, errorPage), () => fetchLiveWhale()),
+    new RegExp(`required window from ${KEYS[1]} failed`),
+  );
+});
+
+test("required windows below the health floor make LiveWhale fail", async () => {
+  await assert.rejects(
+    withStubbedFetch(windowServer(FILLERS.slice(0, 10)), () =>
       fetchLiveWhale(),
     ),
-    new RegExp(`required window from ${badDay} failed`),
+    /need ≥ 50/,
   );
 });
 
@@ -242,13 +282,14 @@ test("a failed later window is reported and the other weeks still publish", asyn
 
 test("a window near the feed cap is split and every event is published", async () => {
   const busy = { start: KEYS[4], end: KEYS[5] };
-  const busyEvents = Array.from({ length: 900 }, (_, index) => ({
+  const busyEvents = Array.from({ length: 1000 }, (_, index) => ({
     uid: `busy-${index}`,
     date: addDaysToKey(busy.start, index % 7),
   }));
 
+  // The whole week stops at 930 events; its halves hold under 600 each.
   const { result } = await withStubbedFetch(
-    windowServer([...FILLERS, ...busyEvents]),
+    windowServer([...FILLERS, ...busyEvents], () => null, 930),
     () => fetchLiveWhale(),
   );
 
@@ -257,7 +298,7 @@ test("a window near the feed cap is split and every event is published", async (
       .filter((event) => event.title.startsWith("busy-"))
       .map((event) => event.title),
   );
-  assert.equal(busyTitles.size, 900);
+  assert.equal(busyTitles.size, 1000);
 });
 
 test("a cut-off group feed counts as a failed group", async () => {

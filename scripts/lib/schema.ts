@@ -157,8 +157,8 @@ export interface FetchResult {
    */
   failedGroups?: string[];
   /**
-   * LiveWhale-only: start dates of main-feed windows after the first three
-   * that failed. Their dates may be missing events.
+   * LiveWhale-only: start dates of later main-feed windows that failed.
+   * Their dates may be missing events.
    */
   failedWindows?: string[];
 }
