@@ -9,12 +9,9 @@ import {
 } from "../appConfig";
 import { LoadingState, type SearchFilters } from "../types";
 import type { TopicVocabulary } from "../types";
-import type { StatusBannerData } from "../utils/statusUi";
 import { DesktopHero } from "./DesktopHero";
 import { DesktopFiltersBar, MobileFiltersBar } from "./FiltersBar";
 import { MobileHeader } from "./MobileHeader";
-import { StaleDataBanner } from "./StaleDataBanner";
-import { StatusBanner } from "./StatusBanner";
 
 export function AppHeaderShell({
   mainContentId,
@@ -33,13 +30,6 @@ export function AppHeaderShell({
   onTopicChange,
   onSourceChange,
   onPresetSelect,
-  statusBanner,
-  bannerDismissed,
-  onDismissBanner,
-  dataAgeHours,
-  degradedSources,
-  staleBannerDismissed,
-  onDismissStaleBanner,
 }: {
   mainContentId: string;
   isMobile: boolean;
@@ -57,13 +47,6 @@ export function AppHeaderShell({
   onTopicChange: (next: string) => void;
   onSourceChange: (next: string) => void;
   onPresetSelect: (preset: QuickFilterPreset) => void;
-  statusBanner: StatusBannerData | null;
-  bannerDismissed: boolean;
-  onDismissBanner: () => void;
-  dataAgeHours?: number;
-  degradedSources?: string[];
-  staleBannerDismissed: boolean;
-  onDismissStaleBanner: () => void;
 }) {
   const desktopSearchInputId = useId();
 
@@ -73,10 +56,6 @@ export function AppHeaderShell({
       : loading === LoadingState.SUCCESS
         ? FEED_CADENCE_COPY
         : "Loading latest batch";
-
-  const showStaleBanner =
-    (typeof dataAgeHours === "number" && dataAgeHours > 12) ||
-    (degradedSources?.length ?? 0) > 0;
 
   const desktopHeroSummaryCopy =
     loading === LoadingState.SUCCESS && allEventsCount > 0
@@ -136,18 +115,6 @@ export function AppHeaderShell({
             />
           </div>
         </>
-      )}
-
-      {statusBanner && !bannerDismissed && (
-        <StatusBanner banner={statusBanner} onDismiss={onDismissBanner} />
-      )}
-
-      {showStaleBanner && !staleBannerDismissed && (
-        <StaleDataBanner
-          dataAgeHours={dataAgeHours ?? 0}
-          degradedSources={degradedSources ?? []}
-          onDismiss={onDismissStaleBanner}
-        />
       )}
     </>
   );
