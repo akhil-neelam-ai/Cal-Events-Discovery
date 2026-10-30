@@ -134,6 +134,17 @@ const LIVEWHALE_GROUPS: string[] = [
   "Folklore",
   "Space Sciences Laboratory",
   "Tang Center for Silk Road Studies",
+  // Student-life calendars, added 2026-10-30 after CalLink went behind a
+  // CampusLabs login. "Student Events: The Big "C"alendar:" is LiveWhale's
+  // campus-wide student events calendar.
+  'Student Events: The Big "C"alendar:',
+  "ASUC Student Union",
+  "Student Environmental Resource Center",
+  "Native American Student Development",
+  "Asian Pacific American Student Development Office",
+  "Basic Needs Center",
+  "Student Learning Center",
+  "Ethnic Studies",
 ];
 
 /**
@@ -605,11 +616,14 @@ interface LiveWhaleJsonEvent {
 }
 
 function decodeHtmlEntities(text: string): string {
+  // An out-of-range code point would make fromCodePoint throw; keep it as is.
+  const fromCode = (match: string, code: number) =>
+    code <= 0x10ffff ? String.fromCodePoint(code) : match;
   return text
-    .replace(/&#x([0-9a-f]+);/gi, (_, hex: string) =>
-      String.fromCodePoint(parseInt(hex, 16)),
+    .replace(/&#x([0-9a-f]+);/gi, (match, hex: string) =>
+      fromCode(match, parseInt(hex, 16)),
     )
-    .replace(/&#(\d+);/g, (_, dec: string) => String.fromCodePoint(Number(dec)))
+    .replace(/&#(\d+);/g, (match, dec: string) => fromCode(match, Number(dec)))
     .replace(/&quot;/g, '"')
     .replace(/&#39;|&apos;/g, "'")
     .replace(/&lt;/g, "<")
@@ -666,16 +680,18 @@ function veventFromJson(
 }
 
 /**
- * Fetch one day from LiveWhale's JSON feed, which has rendered every event on
- * days the iCal feed cuts off. Returns null when the JSON feed fails too.
+ * Fetch one calendar from LiveWhale's JSON feed, which has rendered every
+ * event on days and groups the iCal feed cuts off. `path` is the part after
+ * `/live/json/events/`. Returns null when the JSON feed fails too.
  */
-async function fetchDayFromJson(
-  day: string,
+async function fetchJsonCalendar(
+  path: string,
   limit: Limiter,
   options: FetchOptions,
+  urgent: boolean,
 ): Promise<Record<string, unknown> | null> {
   let url: string | null =
-    `${JSON_BASE}/start_date/${day}/end_date/${addDaysToKey(day, 1)}/response_fields/location,description,event_types`;
+    `${JSON_BASE}/${path}/response_fields/location,description,event_types`;
   const calendar: Record<string, unknown> = {};
   try {
     // The feed pages at 100 rows; a busy day has two pages.
@@ -693,7 +709,7 @@ async function fetchDayFromJson(
           },
         );
         return (await res.json()) as unknown;
-      }, true)) as { data?: unknown; links?: { next?: unknown } } | null;
+      }, urgent)) as { data?: unknown; links?: { next?: unknown } } | null;
       if (!body || !Array.isArray(body.data)) return null;
       for (const row of body.data as LiveWhaleJsonEvent[]) {
         try {
@@ -709,7 +725,7 @@ async function fetchDayFromJson(
     return url ? null : calendar;
   } catch (err) {
     console.warn(
-      `[livewhale] JSON refill for ${day} failed: ${err instanceof Error ? err.message : err}`,
+      `[livewhale] JSON refill for ${path} failed: ${err instanceof Error ? err.message : err}`,
     );
     return null;
   }
@@ -769,7 +785,12 @@ async function fetchWindow(
         return split();
       }
       const salvaged = salvageCutCalendar(err.body);
-      const refill = await fetchDayFromJson(start, limit, options);
+      const refill = await fetchJsonCalendar(
+        `start_date/${start}/end_date/${end}`,
+        limit,
+        options,
+        true,
+      );
       // A refill counts only when it holds at least what the cut body did.
       if (
         refill &&
@@ -955,6 +976,30 @@ async function fetchGroupFeed(
       ok: true,
     };
   } catch (err) {
+    // A cut group feed is refilled from the JSON feed, like a cut day.
+    if (err instanceof IncompleteCalendarError) {
+      const salvaged = salvageCutCalendar(err.body);
+      const refill = await fetchJsonCalendar(
+        `group/${encodeURIComponent(group)}`,
+        limit,
+        options,
+        false,
+      );
+      if (
+        refill &&
+        veventCount(refill) > 0 &&
+        veventCount(refill) >= veventCount(salvaged)
+      ) {
+        console.warn(
+          `[livewhale] group feed "${group}" was cut off; filled it from the JSON feed`,
+        );
+        return {
+          group,
+          parsed: mergeCalendarsByUid([salvaged, refill]),
+          ok: true,
+        };
+      }
+    }
     console.warn(
       `[livewhale] group feed "${group}" failed: ${err instanceof Error ? err.message : err}`,
     );

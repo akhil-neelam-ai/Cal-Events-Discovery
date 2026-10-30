@@ -489,6 +489,9 @@ const GROUP_TOPICS: Readonly<Record<string, readonly TopicSlug[]>> = {
   folklore: ["history-humanities"],
   "tang center for silk road studies": ["history-humanities"],
   "space sciences laboratory": ["physics-math-quantum"],
+  "asuc student union": ["social-clubs"],
+  "student environmental resource center": ["climate-energy"],
+  "ethnic studies": ["history-humanities", "social-sciences"],
 };
 
 const CONFIDENCE_FLOOR = 20;
