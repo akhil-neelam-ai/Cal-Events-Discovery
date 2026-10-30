@@ -104,6 +104,31 @@ const LIVEWHALE_GROUPS: string[] = [
   "School of Information",
   "Helen Wills Neuroscience Institute",
   "College of Environmental Design",
+  // Added via a sweep of all 287 LiveWhale groups on 2026-10-30. The feed
+  // URL takes the group's full name exactly: "and" for "&" returns a valid
+  // empty calendar, so a typo fails silently.
+  "Featured Events",
+  "Haas School of Business",
+  "Townsend Center for the Humanities",
+  "Molecular and Cell Biology",
+  "Theater, Dance, and Performance Studies",
+  "College of Letters & Science",
+  "Berkeley Public Health",
+  "Industrial Engineering and Operations Research",
+  "Berkeley Initiative of Behavioral Science (BIBS)",
+  "QB3",
+  "Berkeley Institute for Data Science",
+  "College of Computing, Data Science, and Society",
+  "Global, International and Area Studies",
+  "Rausser College of Natural Resources",
+  "Civil and Environmental Engineering",
+  "Electrical Engineering & Computer Sciences",
+  "Fung Institute for Engineering Leadership",
+  "Comparative Literature",
+  "Materials Science and Engineering",
+  "Folklore",
+  "Space Sciences Laboratory",
+  "Tang Center for Silk Road Studies",
 ];
 
 /**

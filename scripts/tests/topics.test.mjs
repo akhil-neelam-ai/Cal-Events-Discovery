@@ -172,6 +172,28 @@ test("LiveWhale department membership assigns a field without text keywords", ()
   );
 });
 
+test("groups added in the October 2026 sweep assign only clear fields", () => {
+  const colloquium = (group) =>
+    assignTopics(
+      baseEvent({
+        title: "Weekly Department Colloquium",
+        description: "A faculty presentation.",
+        organizer: "UC Berkeley",
+        livewhale_groups: [group],
+      }),
+    );
+
+  assert.deepEqual(colloquium("Molecular and Cell Biology"), [
+    "biology-life-sciences",
+  ]);
+  assert.deepEqual(colloquium("Electrical Engineering & Computer Sciences"), [
+    "computer-science-data",
+  ]);
+  // Broad groups carry events of every kind, so they give no topic.
+  assert.deepEqual(colloquium("Featured Events"), []);
+  assert.deepEqual(colloquium("College of Letters & Science"), []);
+});
+
 test("membership in two department feeds assigns both fields", () => {
   const topics = assignTopics(
     baseEvent({

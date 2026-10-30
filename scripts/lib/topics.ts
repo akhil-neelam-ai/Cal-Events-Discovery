@@ -476,6 +476,19 @@ const GROUP_TOPICS: Readonly<Record<string, readonly TopicSlug[]>> = {
     "biology-life-sciences",
   ],
   "college of environmental design": ["climate-energy"],
+  "molecular and cell biology": ["biology-life-sciences"],
+  qb3: ["biology-life-sciences"],
+  "berkeley public health": ["health-medicine"],
+  "berkeley initiative of behavioral science (bibs)": ["social-sciences"],
+  "berkeley institute for data science": ["computer-science-data"],
+  "college of computing, data science, and society": ["computer-science-data"],
+  "electrical engineering & computer sciences": ["computer-science-data"],
+  "theater, dance, and performance studies": ["theater-dance"],
+  "townsend center for the humanities": ["history-humanities"],
+  "comparative literature": ["history-humanities"],
+  folklore: ["history-humanities"],
+  "tang center for silk road studies": ["history-humanities"],
+  "space sciences laboratory": ["physics-math-quantum"],
 };
 
 const CONFIDENCE_FLOOR = 20;
