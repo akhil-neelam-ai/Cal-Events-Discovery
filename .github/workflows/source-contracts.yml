@@ -9,6 +9,7 @@ on:
       - "scripts/lib/fetchWithRetry.ts"
       - "scripts/lib/sourceContracts.mjs"
       - "scripts/runSourceContracts.mjs"
+      - "scripts/checkLiveWhaleBudget.ts"
   workflow_dispatch:
 
 # Only the notify job writes issues, and it grants that itself.
@@ -30,6 +31,28 @@ jobs:
       - name: Run live source contract checks
         id: contracts
         run: node scripts/runSourceContracts.mjs
+
+  # LiveWhale fetches nine windows plus 70 group feeds inside a 90 s budget.
+  # This simulates a uniformly slow events.berkeley.edu (14 s per request) and
+  # fails if the adapter overruns or loses a required window.
+  livewhale-budget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check the LiveWhale time budget under a slow upstream
+        run: npm run check:livewhale-budget
 
   # Runs when the check fails outright (critical source down) AND when it passes
   # with supplementary failures, so a dead secondary source still raises an issue
