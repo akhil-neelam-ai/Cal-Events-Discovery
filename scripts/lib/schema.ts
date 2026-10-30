@@ -156,6 +156,11 @@ export interface FetchResult {
    * topic only those groups can give.
    */
   failedGroups?: string[];
+  /**
+   * LiveWhale-only: start dates of main-feed windows after the first three
+   * that failed. Their dates may be missing events.
+   */
+  failedWindows?: string[];
 }
 
 const TOPIC_SLUG_TUPLE = TOPIC_SLUGS as readonly [TopicSlug, ...TopicSlug[]];
@@ -272,6 +277,12 @@ export interface SourceStatus {
    * raises no visitor banner. Omitted when every group feed loaded.
    */
   failed_groups?: string[];
+  /**
+   * LiveWhale only: start dates (PT) of best-effort main-feed windows that
+   * failed this run, so those dates may be missing events. Never marks the
+   * source degraded. Omitted when every window loaded.
+   */
+  failed_windows?: string[];
 }
 
 export interface TopicAssignmentStatus {

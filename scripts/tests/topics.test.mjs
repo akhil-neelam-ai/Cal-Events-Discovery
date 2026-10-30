@@ -286,12 +286,13 @@ test("a group feed that serves a non-calendar page counts as failed", async () =
   globalThis.fetch = async (url) => {
     const target = String(url);
     if (target.endsWith("/group/physics")) physicsFetches += 1;
-    const body =
-      target === "https://events.berkeley.edu/live/ical/events"
-        ? mainFeed
-        : target.endsWith("/group/physics")
-          ? "<html><body>Service unavailable</body></html>"
-          : emptyCalendar;
+    const body = target.startsWith(
+      "https://events.berkeley.edu/live/ical/events/start_date/",
+    )
+      ? mainFeed
+      : target.endsWith("/group/physics")
+        ? "<html><body>Service unavailable</body></html>"
+        : emptyCalendar;
     return { ok: true, status: 200, text: async () => body };
   };
   console.warn = (...args) => warnings.push(args.join(" "));

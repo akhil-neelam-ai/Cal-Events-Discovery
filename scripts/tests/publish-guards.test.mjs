@@ -706,3 +706,23 @@ test("orchestrator preserves last-good topics and group-feed provenance", () => 
     "group-feed failures must not mark a source degraded",
   );
 });
+
+test("orchestrator reports failed LiveWhale windows without degrading", () => {
+  const orchestrator = fs.readFileSync(
+    path.join(rootDir, "scripts", "updateEvents.ts"),
+    "utf8",
+  );
+
+  assert.match(orchestrator, /failed_windows: result\.failedWindows/);
+  assert.doesNotMatch(
+    orchestrator,
+    /degradedSources\.add\([^)]*failedWindows/,
+    "a failed later window must not mark LiveWhale degraded",
+  );
+  // LiveWhale fetches nine windows plus the group feeds, so it gets its own
+  // time budget instead of the 60 s default.
+  assert.match(
+    orchestrator,
+    /"livewhale",\s*fetchLiveWhale,\s*LIVEWHALE_ADAPTER_TIMEOUT_MS/,
+  );
+});

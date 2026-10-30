@@ -2,10 +2,15 @@
  * LiveWhale iCal adapter — primary event source.
  *
  * events.berkeley.edu runs on LiveWhale. The /live/ical/events endpoint
- * publishes the full official campus calendar (~1,500 events) as RFC 5545
- * iCalendar. Each VEVENT carries a stable LiveWhale ID, organizer slug
- * embedded in the URL, location, optional categories, and timezone-aware
- * start/end timestamps.
+ * publishes the official campus calendar as RFC 5545 iCalendar. Each VEVENT
+ * carries a stable LiveWhale ID, organizer slug embedded in the URL,
+ * location, optional categories, and timezone-aware start/end timestamps.
+ *
+ * The bare endpoint silently stops at roughly 930-970 events (about two
+ * weeks ahead), and some responses are cut off mid-event with no
+ * END:VCALENDAR. So the main feed is fetched as consecutive weekly date
+ * windows, every response must be a complete calendar, and an incomplete
+ * window is split into smaller windows, which have rendered completely.
  */
 
 import ical, { type VEvent } from "node-ical";
@@ -18,6 +23,7 @@ import { fetchWithRetry } from "../lib/fetchWithRetry.js";
 import type { CanonicalEvent, FetchResult } from "../lib/schema.js";
 import { CanonicalEventSchema } from "../lib/schema.js";
 import {
+  addDaysToKey,
   deriveFrontendTags,
   endedBeforePT,
   todayPT,
@@ -25,12 +31,29 @@ import {
 
 const FEED_URL = "https://events.berkeley.edu/live/ical/events";
 const GROUP_BASE = "https://events.berkeley.edu/live/ical/events/group";
-const FETCH_TIMEOUT_MS = 30_000;
-const MAX_FETCH_ATTEMPTS = 3;
-const EMPTY_FEED_RETRY_DELAY_MS = 1_500;
-// LiveWhale occasionally returns an empty calendar payload despite a 200 response.
-// Anything below this threshold is treated as a flake and retried.
+const FETCH_TIMEOUT_MS = 15_000;
+const WINDOW_FETCH_ATTEMPTS = 2;
+const RETRY_DELAY_MS = 1_500;
+// The required windows together must hold at least this many events. A
+// smaller total means LiveWhale served a near-empty calendar.
 const MIN_HEALTHY_EVENT_COUNT = 50;
+// Windows start a week back so events that began earlier and are still
+// running are included, then step a week at a time eight weeks ahead.
+const WINDOW_LOOKBACK_DAYS = 7;
+const WINDOW_DAYS = 7;
+const WINDOW_AHEAD_WEEKS = 8;
+// The lookback window and the next two weeks match what the bare feed used
+// to cover. Losing one of them degrades LiveWhale; later weeks are recorded
+// in failed_windows instead.
+const REQUIRED_WINDOW_COUNT = 3;
+// The bare feed's silent cap returned 926 to 968 events in probes. A window
+// near it may be missing events, so it is split.
+const WINDOW_SPLIT_THRESHOLD = 900;
+// Windows and group feeds share one pool, so the host never sees more
+// parallel connections than the group pool alone used to open.
+const LIVEWHALE_CONCURRENCY = 8;
+/** The orchestrator's time budget for this adapter (windows, groups, redirects). */
+export const LIVEWHALE_ADAPTER_TIMEOUT_MS = 90_000;
 
 /**
  * Department-specific LiveWhale group feeds.
@@ -195,9 +218,17 @@ const HOST_EVENTS_BERKELEY = "events.berkeley.edu";
 /** Cache: /live/events/<slug> URL → resolved unit slug (after 302 redirect). */
 const redirectSlugCache = new Map<string, string>();
 
-/** Write to redirectSlugCache, evicting the oldest entry when it exceeds 500 entries. */
+// Eight weeks of windows hold several hundred unique /live/events/ URLs. The
+// cap stays well above that, so prewarmed entries are never evicted before
+// the mapping loop reads them.
+const REDIRECT_CACHE_MAX = 5_000;
+
+/** Write to redirectSlugCache, evicting the oldest entry when it is full. */
 function cacheSet(key: string, value: string): void {
-  if (!redirectSlugCache.has(key) && redirectSlugCache.size >= 500) {
+  if (
+    !redirectSlugCache.has(key) &&
+    redirectSlugCache.size >= REDIRECT_CACHE_MAX
+  ) {
     const oldestKey = redirectSlugCache.keys().next().value;
     if (oldestKey) {
       redirectSlugCache.delete(oldestKey);
@@ -336,6 +367,24 @@ function isoDateUTC(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
+function eventTimes(
+  ve: VEvent,
+): { start_at: string; end_at: string | undefined; all_day: boolean } | null {
+  const startDate = ve.start as Date | undefined;
+  const endDate = ve.end as Date | undefined;
+  if (!startDate) return null;
+  const allDay = isAllDay(ve);
+  return {
+    start_at: allDay ? isoDateUTC(startDate) : startDate.toISOString(),
+    end_at: endDate
+      ? allDay
+        ? isoDateUTC(endDate)
+        : endDate.toISOString()
+      : undefined,
+    all_day: allDay,
+  };
+}
+
 function decodeIcalText(text: string): string {
   return text
     .replace(/\\n/g, " ")
@@ -349,17 +398,39 @@ function decodeIcalText(text: string): string {
     .trim();
 }
 
-async function fetchFeed(
-  url: string = FEED_URL,
-  minEvents = MIN_HEALTHY_EVENT_COUNT,
-  options: FetchOptions = {},
+/** A calendar that was cut off mid-response. Smaller windows can recover it. */
+class IncompleteCalendarError extends Error {}
+
+const NOT_A_CALENDAR = "response is not an iCal calendar";
+const INCOMPLETE_CALENDAR =
+  "response is an incomplete iCal calendar (no END:VCALENDAR)";
+
+/**
+ * A real calendar starts with BEGIN:VCALENDAR and ends with END:VCALENDAR.
+ * LiveWhale sometimes cuts a response off mid-event, and node-ical parses
+ * that as a calendar with no events, so the ending is checked too.
+ */
+function calendarProblem(ics: string): string | null {
+  if (!ics.includes("BEGIN:VCALENDAR")) return NOT_A_CALENDAR;
+  if (!ics.trimEnd().endsWith("END:VCALENDAR")) return INCOMPLETE_CALENDAR;
+  return null;
+}
+
+/**
+ * Fetch and parse one LiveWhale calendar. Every attempt must return a
+ * complete calendar. The last failure is thrown, as an
+ * IncompleteCalendarError when the body was a cut-off calendar.
+ */
+async function fetchCalendar(
+  url: string,
+  label: string,
+  maxAttempts: number,
+  options: FetchOptions,
 ): Promise<Record<string, unknown>> {
   let lastErr = "";
-  let attempts = 0;
-  const label = minEvents === 0 ? "livewhale-group" : "livewhale";
+  let incomplete = false;
 
-  for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt++) {
-    attempts = attempt;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       const res = await fetchWithRetry(
         url,
@@ -374,40 +445,220 @@ async function fetchFeed(
         },
       );
       const ics = await res.text();
-      if (!ics.includes("BEGIN:VCALENDAR")) {
-        // An HTML error page served with status 200 parses as an empty
-        // calendar. Even an empty real feed starts with BEGIN:VCALENDAR.
-        lastErr = "response is not an iCal calendar";
-        console.warn(`[${label}] ${lastErr}`);
-        // A group feed gives up at once, so one broken group cannot spend
-        // the adapter's time budget on retries.
-        if (minEvents === 0) break;
-      } else {
-        const parsed = ical.sync.parseICS(ics);
-        const veventCount = Object.values(parsed).filter(
-          (c) => (c as { type?: string }).type === "VEVENT",
-        ).length;
-        if (veventCount >= minEvents) {
-          return parsed;
-        }
-
-        lastErr = `empty/short feed (${veventCount} VEVENTs, need ≥ ${minEvents})`;
-        console.warn(`[${label}] ${lastErr}`);
-        if (minEvents === 0) return parsed;
-      }
+      const problem = calendarProblem(ics);
+      if (!problem) return ical.sync.parseICS(ics);
+      lastErr = problem;
+      incomplete = problem === INCOMPLETE_CALENDAR;
+      console.warn(`[${label}] ${lastErr}`);
     } catch (err) {
       lastErr = err instanceof Error ? err.message : String(err);
+      incomplete = false;
       console.warn(`[${label}] fetch error: ${lastErr}`);
     }
 
-    if (attempt < MAX_FETCH_ATTEMPTS) {
-      await abortableDelay(EMPTY_FEED_RETRY_DELAY_MS * attempt, options.signal);
+    if (attempt < maxAttempts) {
+      await abortableDelay(RETRY_DELAY_MS * attempt, options.signal);
     }
   }
 
-  throw new Error(
-    `LiveWhale fetch failed after ${attempts} ${attempts === 1 ? "attempt" : "attempts"}: ${lastErr}`,
+  const message = `LiveWhale fetch failed after ${maxAttempts} ${maxAttempts === 1 ? "attempt" : "attempts"}: ${lastErr}`;
+  throw incomplete ? new IncompleteCalendarError(message) : new Error(message);
+}
+
+function veventCount(parsed: Record<string, unknown>): number {
+  return Object.values(parsed).filter(
+    (c) => (c as { type?: string }).type === "VEVENT",
+  ).length;
+}
+
+/** Runs tasks with at most `limit` in flight. */
+type Limiter = <T>(task: () => Promise<T>) => Promise<T>;
+
+function createLimiter(limit: number): Limiter {
+  let active = 0;
+  const waiting: (() => void)[] = [];
+  return async (task) => {
+    if (active >= limit) {
+      await new Promise<void>((resolve) => waiting.push(resolve));
+    }
+    active++;
+    try {
+      return await task();
+    } finally {
+      active--;
+      waiting.shift()?.();
+    }
+  };
+}
+
+/**
+ * Date keys for the main-feed windows, from a PT date key: a week back, then
+ * weekly to eight weeks ahead. Consecutive keys form one window each.
+ */
+export function liveWhaleWindowKeys(todayKey: string): string[] {
+  const keys: string[] = [];
+  for (
+    let offset = -WINDOW_LOOKBACK_DAYS;
+    offset <= WINDOW_AHEAD_WEEKS * WINDOW_DAYS;
+    offset += WINDOW_DAYS
+  ) {
+    keys.push(addDaysToKey(todayKey, offset));
+  }
+  return keys;
+}
+
+/**
+ * LiveWhale's end_date is exclusive for timed events, so a window from
+ * `start` to `end` holds start..end-1 and the next window starts at `end`.
+ */
+function liveWhaleWindowUrl(start: string, end: string): string {
+  return `${FEED_URL}/start_date/${start}/end_date/${end}`;
+}
+
+function daysBetween(start: string, end: string): number {
+  return Math.round(
+    (Date.parse(`${end}T00:00:00Z`) - Date.parse(`${start}T00:00:00Z`)) /
+      86_400_000,
   );
+}
+
+interface WindowResult {
+  parts: Record<string, unknown>[];
+  /** Start keys of windows that failed even at their smallest size. */
+  failedStarts: string[];
+  errors: string[];
+}
+
+/**
+ * Fetch one window. A cut-off response, or one near the silent cap, is
+ * refetched as two halves, down to single days.
+ */
+async function fetchWindow(
+  start: string,
+  end: string,
+  limit: Limiter,
+  options: FetchOptions,
+): Promise<WindowResult> {
+  const days = daysBetween(start, end);
+  const split = async (): Promise<WindowResult> => {
+    const mid = addDaysToKey(start, Math.floor(days / 2));
+    const halves = await Promise.all([
+      fetchWindow(start, mid, limit, options),
+      fetchWindow(mid, end, limit, options),
+    ]);
+    return {
+      parts: halves.flatMap((half) => half.parts),
+      failedStarts: halves.flatMap((half) => half.failedStarts),
+      errors: halves.flatMap((half) => half.errors),
+    };
+  };
+
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = await limit(() =>
+      fetchCalendar(
+        liveWhaleWindowUrl(start, end),
+        "livewhale",
+        WINDOW_FETCH_ATTEMPTS,
+        options,
+      ),
+    );
+  } catch (err) {
+    if (err instanceof IncompleteCalendarError && days > 1) {
+      console.warn(
+        `[livewhale] window ${start}..${end} was incomplete; splitting it`,
+      );
+      return split();
+    }
+    return {
+      parts: [],
+      failedStarts: [start],
+      errors: [err instanceof Error ? err.message : String(err)],
+    };
+  }
+
+  const count = veventCount(parsed);
+  if (count >= WINDOW_SPLIT_THRESHOLD) {
+    if (days > 1) {
+      console.warn(
+        `[livewhale] window ${start}..${end} returned ${count} events, near the feed cap; splitting it`,
+      );
+      return split();
+    }
+    console.warn(
+      `[livewhale] one-day window ${start} returned ${count} events, near the feed cap; some may be missing`,
+    );
+  }
+  return { parts: [parsed], failedStarts: [], errors: [] };
+}
+
+/** Merge calendars by VEVENT UID, keeping the first copy of each. */
+function mergeCalendarsByUid(
+  calendars: readonly Record<string, unknown>[],
+): Record<string, unknown> {
+  const merged: Record<string, unknown> = {};
+  const seenUids = new Set<string>();
+  for (const calendar of calendars) {
+    for (const [key, value] of Object.entries(calendar)) {
+      const uid = eventUid(key, value);
+      if (uid) {
+        if (seenUids.has(uid)) continue;
+        seenUids.add(uid);
+      }
+      if (!(key in merged)) merged[key] = value;
+    }
+  }
+  return merged;
+}
+
+export interface LiveWhaleMainFeed {
+  parsed: Record<string, unknown>;
+  failedWindows: string[];
+}
+
+/**
+ * Fetch the main feed as weekly windows. A failed required window throws, as
+ * the single-URL fetch used to. A failed later window is reported instead.
+ */
+async function fetchMainWindows(
+  limit: Limiter,
+  options: FetchOptions,
+): Promise<LiveWhaleMainFeed> {
+  const keys = liveWhaleWindowKeys(todayPT());
+  const windows = await Promise.all(
+    keys
+      .slice(0, -1)
+      .map((start, index) =>
+        fetchWindow(start, keys[index + 1], limit, options),
+      ),
+  );
+
+  const required = windows.slice(0, REQUIRED_WINDOW_COUNT);
+  const requiredFailure = required.find((w) => w.failedStarts.length > 0);
+  if (requiredFailure) {
+    throw new Error(
+      `LiveWhale required window from ${requiredFailure.failedStarts[0]} failed: ${requiredFailure.errors[0]}`,
+    );
+  }
+  const requiredCount = veventCount(
+    mergeCalendarsByUid(required.flatMap((w) => w.parts)),
+  );
+  if (requiredCount < MIN_HEALTHY_EVENT_COUNT) {
+    throw new Error(
+      `LiveWhale required windows returned ${requiredCount} VEVENTs, need ≥ ${MIN_HEALTHY_EVENT_COUNT}`,
+    );
+  }
+
+  const failedWindows = windows.flatMap((w) => w.failedStarts);
+  if (failedWindows.length > 0) {
+    console.warn(
+      `[livewhale] ${failedWindows.length} later window(s) failed; their dates may be missing events: ${failedWindows.join(", ")}`,
+    );
+  }
+  return {
+    parsed: mergeCalendarsByUid(windows.flatMap((w) => w.parts)),
+    failedWindows,
+  };
 }
 
 export interface LiveWhaleGroupFeedResult {
@@ -422,16 +673,23 @@ export function groupFeedsAreDegraded(
   return results.length > 0 && results.every((result) => !result.ok);
 }
 
-/** Fetch a single group feed. Failures are recorded; they are not visitor degradation. */
+/**
+ * Fetch a single group feed. A group gives up after one attempt, so one
+ * broken group cannot spend the adapter's time budget on retries. Failures
+ * are recorded; they are not visitor degradation.
+ */
 async function fetchGroupFeed(
   group: string,
+  limit: Limiter,
   options: FetchOptions,
 ): Promise<LiveWhaleGroupFeedResult> {
   const url = `${GROUP_BASE}/${encodeURIComponent(group)}`;
   try {
     return {
       group,
-      parsed: await fetchFeed(url, 0, options),
+      parsed: await limit(() =>
+        fetchCalendar(url, "livewhale-group", 1, options),
+      ),
       ok: true,
     };
   } catch (err) {
@@ -479,37 +737,21 @@ async function prewarmRedirectCache(
   await Promise.all(Array.from({ length: CONCURRENCY }, worker));
 }
 
-const GROUP_FEED_CONCURRENCY = 8;
-
 /**
- * Fan out group-feed fetches through a bounded worker pool instead of opening
- * 40+ simultaneous TCP connections to events.berkeley.edu. A wide
- * `Promise.all` over LIVEWHALE_GROUPS is the most likely way to *cause*
- * upstream rate-limiting, after which every fetchGroupFeed catches its own
- * 429 and silently returns {} — so the published count looks normal while
- * department-specific events that only post to group feeds quietly vanish.
+ * Fetch every group feed through the shared pool instead of opening 60+
+ * simultaneous TCP connections to events.berkeley.edu. A wide fan-out is the
+ * most likely way to *cause* upstream rate-limiting, after which every
+ * fetchGroupFeed catches its own 429 and silently returns {} — so the
+ * published count looks normal while department-specific events that only
+ * post to group feeds quietly vanish.
  */
-async function fetchAllGroupFeeds(
+function fetchAllGroupFeeds(
+  limit: Limiter,
   options: FetchOptions,
 ): Promise<LiveWhaleGroupFeedResult[]> {
-  const results: LiveWhaleGroupFeedResult[] = new Array(
-    LIVEWHALE_GROUPS.length,
+  return Promise.all(
+    LIVEWHALE_GROUPS.map((group) => fetchGroupFeed(group, limit, options)),
   );
-  let nextIdx = 0;
-  const worker = async (): Promise<void> => {
-    while (nextIdx < LIVEWHALE_GROUPS.length) {
-      const myIdx = nextIdx++;
-      const group = LIVEWHALE_GROUPS[myIdx];
-      results[myIdx] = await fetchGroupFeed(group, options);
-    }
-  };
-  await Promise.all(
-    Array.from(
-      { length: Math.min(GROUP_FEED_CONCURRENCY, LIVEWHALE_GROUPS.length) },
-      worker,
-    ),
-  );
-  return results;
 }
 
 export interface LiveWhaleGroupFeed {
@@ -574,12 +816,13 @@ export function mergeLiveWhaleFeeds(
 export async function fetchLiveWhale(
   options: FetchOptions = {},
 ): Promise<FetchResult> {
-  // The main feed runs in parallel with the bounded group-feed pool; the main
-  // feed is a single request so it doesn't contribute to the 41-way fan-out.
-  const [mainParsed, groupResults] = await Promise.all([
-    fetchFeed(FEED_URL, MIN_HEALTHY_EVENT_COUNT, options),
-    fetchAllGroupFeeds(options),
+  // Main-feed windows and group feeds share one bounded request pool.
+  const limit = createLimiter(LIVEWHALE_CONCURRENCY);
+  const [main, groupResults] = await Promise.all([
+    fetchMainWindows(limit, options),
+    fetchAllGroupFeeds(limit, options),
   ]);
+  const { failedWindows } = main;
   const groupFeedsDegraded = groupFeedsAreDegraded(groupResults);
   const failedGroups = groupResults
     .filter((result) => !result.ok)
@@ -596,7 +839,10 @@ export async function fetchLiveWhale(
 
   // Merge all iCal records by UID. The main record remains authoritative, but
   // every department feed that contained it is retained as assignment input.
-  const { parsed, groupsByUid } = mergeLiveWhaleFeeds(mainParsed, groupResults);
+  const { parsed, groupsByUid } = mergeLiveWhaleFeeds(
+    main.parsed,
+    groupResults,
+  );
 
   const todayIso = todayPT();
   const fetched_at = new Date().toISOString();
@@ -605,12 +851,15 @@ export async function fetchLiveWhale(
   let filteredPast = 0;
   let invalid = 0;
 
-  // First pass: collect URLs that need redirect resolution, warm the cache in parallel.
+  // First pass: collect URLs that need redirect resolution, warm the cache in
+  // parallel. Ended events are dropped below, so they are not resolved.
   const urlsToPrewarm: string[] = [];
   for (const key of Object.keys(parsed)) {
     const component = parsed[key] as { type?: string };
     if (!component || component.type !== "VEVENT") continue;
     const ve = component as unknown as ExtendedVEvent;
+    const times = eventTimes(ve);
+    if (!times || endedBeforePT(times, todayIso)) continue;
     const url =
       asString(ve.url) || `https://events.berkeley.edu/live/events/${ve.uid}`;
     urlsToPrewarm.push(url);
@@ -624,24 +873,16 @@ export async function fetchLiveWhale(
     rawCount++;
 
     try {
-      const startDate = ve.start as Date;
-      const endDate = ve.end as Date | undefined;
-      if (!startDate) {
+      const times = eventTimes(ve);
+      if (!times) {
         invalid++;
         continue;
       }
-
-      const allDay = isAllDay(ve);
-      const start_at = allDay ? isoDateUTC(startDate) : startDate.toISOString();
-      const end_at = endDate
-        ? allDay
-          ? isoDateUTC(endDate)
-          : endDate.toISOString()
-        : undefined;
+      const { start_at, end_at, all_day: allDay } = times;
 
       // Drop events that ended before today (PT). A multi-day event that
       // started earlier but is still running is kept.
-      if (endedBeforePT({ start_at, end_at, all_day: allDay }, todayIso)) {
+      if (endedBeforePT(times, todayIso)) {
         filteredPast++;
         continue;
       }
@@ -743,5 +984,6 @@ export async function fetchLiveWhale(
     invalid,
     groupFeedsDegraded,
     failedGroups,
+    failedWindows,
   };
 }

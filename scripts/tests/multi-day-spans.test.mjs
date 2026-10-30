@@ -301,7 +301,9 @@ test("LiveWhale keeps multi-day events that are still running", async () => {
       ok: true,
       status: 200,
       text: async () =>
-        url === "https://events.berkeley.edu/live/ical/events"
+        url.startsWith(
+          "https://events.berkeley.edu/live/ical/events/start_date/",
+        )
           ? ics
           : emptyCalendar,
     }),
