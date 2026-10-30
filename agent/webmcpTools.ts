@@ -113,6 +113,20 @@ function checkSearchSource(value: unknown): Checked<string> {
   return { error: `${reason} Use one of: ${ACTIVE_SOURCES.join(", ")}.` };
 }
 
+function checkDatePreset(value: unknown): Checked<DatePreset | null> {
+  if (typeof value !== "string" || !value.trim()) return { value: null };
+  if (isDatePreset(value.trim())) return { value: value.trim() as DatePreset };
+  const valid = DATE_PRESETS.map((preset) => preset.value).join(", ");
+  return { error: `Unknown date "${value.trim()}". Valid dates: ${valid}.` };
+}
+
+function checkDateKey(name: string, value: unknown): Checked<string | null> {
+  if (typeof value !== "string" || !value.trim()) return { value: null };
+  const key = value.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(key)) return { value: key };
+  return { error: `${name} "${key}" is not a date. Use YYYY-MM-DD.` };
+}
+
 function checkDismiss(value: unknown): Checked<string[]> {
   if (value === undefined || value === null) return { value: [] };
   if (
@@ -506,12 +520,15 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
       const category = categoryCheck.value;
       const source = sourceCheck.value;
 
-      const presetInput = isDatePreset(input.datePreset)
-        ? input.datePreset
-        : null;
-      const startInput =
-        typeof input.startDate === "string" ? input.startDate : null;
-      const endInput = typeof input.endDate === "string" ? input.endDate : null;
+      const presetCheck = checkDatePreset(input.datePreset);
+      if ("error" in presetCheck) return invalid(presetCheck.error);
+      const startCheck = checkDateKey("startDate", input.startDate);
+      if ("error" in startCheck) return invalid(startCheck.error);
+      const endCheck = checkDateKey("endDate", input.endDate);
+      if ("error" in endCheck) return invalid(endCheck.error);
+      const presetInput = presetCheck.value;
+      const startInput = startCheck.value;
+      const endInput = endCheck.value;
       const explicitDate = Boolean(presetInput || startInput || endInput);
 
       const todayKey = getCurrentPacificDateKey();

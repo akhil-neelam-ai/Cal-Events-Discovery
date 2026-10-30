@@ -287,3 +287,24 @@ test("appConfig and the pipeline schema agree on retired sources", () => {
     [...SCHEMA_RETIRED_SOURCES].sort(),
   );
 });
+
+test("search rejects an unknown datePreset and a malformed date", async () => {
+  const search = loadSearch([event({ id: "a", date: inDays(1) })]);
+
+  const preset = await search.execute({ datePreset: "next week" });
+  assert.match(preset.error, /Unknown date "next week"/);
+  assert.match(preset.error, /today, tomorrow, week, upcoming/);
+  assert.equal(preset.count, 0);
+  assert.deepEqual(preset.events, []);
+
+  for (const field of ["startDate", "endDate"]) {
+    const bad = await search.execute({ [field]: "tomorrow" });
+    assert.match(bad.error, new RegExp(`${field} "tomorrow"`), field);
+    assert.match(bad.error, /YYYY-MM-DD/, field);
+    assert.equal(bad.count, 0, field);
+  }
+
+  const ok = await search.execute({ startDate: inDays(0), endDate: inDays(2) });
+  assert.equal(ok.error, undefined);
+  assert.deepEqual(ids(ok), ["a"]);
+});
