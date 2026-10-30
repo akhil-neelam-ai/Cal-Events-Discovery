@@ -71,6 +71,12 @@ function eventsInWindow(events, { start, end }) {
   );
 }
 
+/** One event in every window, since LiveWhale never serves an empty week. */
+const WEEKLY = KEYS.slice(0, -1).map((key, index) => ({
+  uid: `week-${index}`,
+  date: addDaysToKey(key, 3),
+}));
+
 /** 60 events tomorrow, so the required windows clear the health floor. */
 const FILLERS = Array.from({ length: 60 }, (_, index) => ({
   uid: `filler-${index}`,
@@ -113,7 +119,7 @@ function windowServer(events, override = () => null, cap = Infinity) {
     if (special !== null) return ok(special);
     const window = windowOf(url);
     if (!window) return ok(EMPTY);
-    let served = eventsInWindow(events, window);
+    let served = eventsInWindow([...events, ...WEEKLY], window);
     if (window.end > addDaysToKey(window.start, 1)) {
       served = served.slice(0, cap);
     }
@@ -232,6 +238,99 @@ test("a required day that stays cut keeps its complete events and is reported", 
   assert.ok(titles.has("before-cut"));
   assert.ok(titles.has("filler-0"));
   assert.deepEqual(result.failedWindows, [badDay]);
+});
+
+test("a cut day is filled back in from the JSON feed", async () => {
+  const badDay = addDaysToKey(TODAY, 2);
+  const events = [
+    ...FILLERS,
+    { uid: "before-cut", date: badDay },
+    { uid: "after-cut", date: badDay },
+  ];
+  const cut = (url) => {
+    const window = windowOf(url);
+    if (!window || badDay < window.start || badDay >= window.end) return null;
+    return calendar([vevent(events.at(-2))]).replace(
+      /END:VCALENDAR$/,
+      "BEGIN:VEVENT\r\nSUMMARY:",
+    );
+  };
+  const serveWindows = windowServer(events, cut);
+  const json = [
+    {
+      id: "4242",
+      title: "&#127944; after-cut",
+      url: "https://events.berkeley.edu/CAA/event/4242-after-cut",
+      date_utc: `${badDay} 20:00:00`,
+      date_iso: `${badDay}T12:00:00-08:00`,
+      date2_iso: `${badDay}T15:30:00-08:00`,
+      is_all_day: null,
+      location: "Memorial Stadium",
+      description: "<p>Watch party</p>",
+      event_types: null,
+    },
+  ];
+  const respond = (url) =>
+    url.startsWith(
+      `https://events.berkeley.edu/live/json/events/start_date/${badDay}/`,
+    )
+      ? { ok: true, status: 200, json: async () => json }
+      : serveWindows(url);
+
+  const { result } = await withStubbedFetch(respond, () => fetchLiveWhale());
+
+  const refilled = result.events.find(
+    (event) => event.title === "🏈 after-cut",
+  );
+  assert.ok(refilled);
+  assert.equal(refilled.venue, "Memorial Stadium");
+  assert.ok(result.events.some((event) => event.title === "before-cut"));
+  assert.deepEqual(result.failedWindows, []);
+});
+
+test("a week that stays empty is reported, not silently dropped", async () => {
+  const emptyStart = KEYS[6];
+  const emptyWeek = (url) =>
+    windowOf(url)?.start === emptyStart ? EMPTY : null;
+
+  const { result, requests } = await withStubbedFetch(
+    windowServer(FILLERS, emptyWeek),
+    () => fetchLiveWhale(),
+  );
+
+  assert.deepEqual(result.failedWindows, [emptyStart]);
+  // The empty week was fetched once more before it was reported.
+  assert.equal(
+    requests.filter((r) => windowOf(r.url)?.start === emptyStart).length,
+    2,
+  );
+});
+
+test("a split required window starts before queued group feeds", async () => {
+  const week = { start: KEYS[1], end: KEYS[2] };
+  const weekUrl = `${FEED}/start_date/${week.start}/end_date/${week.end}`;
+  const serveWindows = windowServer(FILLERS, (url) =>
+    url === weekUrl ? "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nSUMMARY:" : null,
+  );
+  // Slow group feeds keep the pool queue full while the cut week is split.
+  const respond = (url) =>
+    url.includes("/group/")
+      ? new Promise((resolve) => setTimeout(() => resolve(ok(EMPTY)), 300))
+      : serveWindows(url);
+
+  const { requests } = await withStubbedFetch(respond, () => fetchLiveWhale());
+
+  const firstHalf = requests.findIndex(
+    (r) =>
+      r.url ===
+      `${FEED}/start_date/${week.start}/end_date/${addDaysToKey(week.start, 3)}`,
+  );
+  const lastGroup = requests.findLastIndex((r) => r.url.includes("/group/"));
+  assert.ok(firstHalf > 0, "the cut week was split");
+  assert.ok(
+    firstHalf < lastGroup,
+    `split half at ${firstHalf} waited behind every group feed (last at ${lastGroup})`,
+  );
 });
 
 test("a required window that fails outright makes LiveWhale fail", async () => {
