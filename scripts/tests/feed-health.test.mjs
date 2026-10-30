@@ -220,6 +220,23 @@ test("contract runner's critical set matches the shared policy", () => {
   );
 });
 
+test("LiveWhale contract rejects a cut-off calendar", () => {
+  const livewhale = CONTRACTS.find((contract) => contract.name === "livewhale");
+  assert.match(livewhale.url, /\/start_date\/\d{4}-\d{2}-\d{2}\/end_date\//);
+
+  const complete =
+    "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nSUMMARY:Talk\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+  assert.doesNotThrow(() => livewhale.validate(undefined, complete));
+  assert.throws(
+    () =>
+      livewhale.validate(
+        undefined,
+        "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nSUMMARY:",
+      ),
+    /cut-off/,
+  );
+});
+
 test("every contract source is a real, non-retired source", () => {
   // A contract for a source the pipeline no longer fetches is pure false alarm:
   // it can only ever fail the workflow for a feed nobody consumes.
