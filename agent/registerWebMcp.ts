@@ -1,3 +1,4 @@
+import { getViewState } from "./viewState";
 import {
   createDefaultFetchJson,
   createWebMcpTools,
@@ -15,12 +16,12 @@ declare global {
 function applyUrlSearch(search: string): void {
   const nextUrl = `${window.location.pathname}${search}${window.location.hash}`;
   const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-  if (nextUrl === currentUrl) {
-    return;
+  if (nextUrl !== currentUrl) {
+    window.history.pushState(null, "", nextUrl);
   }
-
-  window.history.pushState(null, "", nextUrl);
   // useUrlStateSync listens for popstate; pushState alone does not fire it.
+  // Fire it for an unchanged URL too, so the page drops chips the user
+  // dismissed and shows exactly what the URL says.
   window.dispatchEvent(new PopStateEvent("popstate"));
 }
 
@@ -40,6 +41,7 @@ export function registerWebMcpTools(): void {
       getLocationSearch: () => window.location.search,
       getOrigin: () => window.location.origin,
       applyUrlSearch,
+      getViewState,
     });
 
     for (const tool of tools) {

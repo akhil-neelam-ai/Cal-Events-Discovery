@@ -45,6 +45,8 @@ interface UseEventBrowserStateParams {
 interface UseEventBrowserStateResult {
   activeChips: InterpretedChip[];
   searchFallbackMessage?: string;
+  /** Range from the date filter or the query, before any widening. */
+  derivedDateRange: SearchFilters["dateRange"];
   effectiveDateRange: SearchFilters["dateRange"];
   filteredEvents: CalEvent[];
   topicCounts: ReadonlyMap<string, number>;
@@ -584,6 +586,7 @@ export function useEventBrowserState({
   return {
     activeChips,
     searchFallbackMessage: searchOutput.fallbackMessage,
+    derivedDateRange,
     effectiveDateRange,
     filteredEvents,
     topicCounts,

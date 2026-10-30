@@ -24,6 +24,7 @@ import {
 import type { SearchTopicDefinition } from "../utils/searchIntent";
 import type { SearchIndex } from "../utils/textUtils";
 import { buildUrlStateSearch, parseUrlState } from "../utils/urlState";
+import type { UiViewState } from "./viewState";
 
 const EVENTS_CACHE_TTL_MS = 120_000;
 const FETCH_TIMEOUT_MS = 8_000;
@@ -41,6 +42,8 @@ export interface WebMcpDeps {
   getLocationSearch: () => string;
   getOrigin: () => string;
   applyUrlSearch: (search: string) => void;
+  /** What the open page shows. Absent or null outside a rendered page. */
+  getViewState?: () => UiViewState | null;
 }
 
 type EventsPayload = SearchResponse & { lastUpdated?: number };
@@ -629,7 +632,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
   const getUiState: WebMcpTool = {
     name: "get_ui_state",
     description:
-      "Read the current CalEvents UI workspace from the browser URL: filters (q/date/category/topic/source), selected event id, and optional feed freshness from status.json. Topic slugs come from events.json.topic_vocabulary.topics.",
+      "Read the current CalEvents UI workspace. Returns the URL state (filters q/date/category/topic/source, selected event id), todayKey (Pacific), and `view`: what the page shows after the search engine ran. `view` holds requestedDateRange, effectiveDateRange, dateRangeWidened, activeChips, dismissedChipKeys, resultCount, the first visibleEventIds, fallbackMessage, notice, loading, and pending. It is null when no page has rendered. Read it again if pending is true or loading is not success. Topic slugs come from events.json.topic_vocabulary.topics. Optional feed freshness from status.json.",
     inputSchema: {
       type: "object",
       properties: {
@@ -658,6 +661,8 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         selectedEventId: urlState.selectedEventId,
         hasExplicitDateRange: urlState.hasExplicitDateRange,
         url: absoluteUrl(deps.getLocationSearch() || ""),
+        todayKey: getCurrentPacificDateKey(),
+        view: deps.getViewState?.() ?? null,
       };
 
       if (input.includeFeedStatus === true) {
