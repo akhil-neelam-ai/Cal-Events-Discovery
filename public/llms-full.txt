@@ -91,8 +91,51 @@ Returns a compact generated index for local search. Agents can use this for fast
 4. Filter by `tags[0]` for the primary displayed category.
 5. Filter by `topics` for a published topic slug. Read valid slugs from `topic_vocabulary.topics`.
 6. Present concise results with the official event `url`.
-7. Share UI state via `?q=&date=&category=&topic=&source=&event=` (`build_calevents_url` / `apply_ui_state`).
+7. Share UI state via `?q=&date=&category=&topic=&source=&event=` (`build_calevents_url` / `apply_ui_state`). Read `get_ui_state` to share what the page shows now.
 8. If needed, fetch `https://cal-events.com/status.json` to explain freshness, source coverage, or topic assignment.
+
+## WebMCP Tools
+
+The homepage registers these tools from the app bundle when `navigator.modelContext` exists. They run only in a browser tab. There is no remote MCP endpoint; the files above are static.
+
+- `search_berkeley_events`: ranked search, the same engine as the UI.
+- `list_filter_options`: valid categories, active sources with labels, date presets, the default preset, and topics (slug, label, group).
+- `get_event_by_id`, `generate_event_ics`, `get_event_directions`: one event, its `.ics` payload, and a maps link.
+- `get_cal_events_feed_status`: the contents of `status.json`.
+- `get_ui_state`, `apply_ui_state`, `build_calevents_url`: read, change, or link the page's URL state.
+
+An unknown category, source, or topic is an error for every tool. Retired sources such as `callink` are not accepted.
+
+### `search_berkeley_events`
+
+Inputs: `query`, `datePreset`, `startDate`, `endDate`, `category`, `topic`, `source`, `dismiss`, `limit` (1 to 50, default 10), `offset`.
+
+Date rules follow the UI:
+
+- With no date input, date words in the query set the range. "concerts tomorrow" searches tomorrow only.
+- With no date input and no date words, the search covers every upcoming day.
+- A query's today or tomorrow widens to the week when that day has no match but later days do.
+- `datePreset`, `startDate`, and `endDate` are hard bounds. They never widen.
+- A window that starts today leaves out events whose `end_time` has passed.
+
+Outputs besides `events`:
+
+- `interpretations`: chips the query set, as `{ key, label }`. Pass a key in `dismiss` to drop that chip. The words behind a source, category, or topic chip become search text again.
+- `effectiveDateRange`: `{ preset, startDate, endDate, basis, requested, widened }`. `basis` is `input`, `query`, or `default`.
+- `relaxed`: `{ filter, value }` when nothing matched and the engine dropped the weekend, category, or topic filter. `fallbackMessage` says the same in words. Tell the user which filter was dropped.
+- `total`, `offset`, `limit`, `count`: page with `offset += limit` while `offset < total`.
+
+### Page state
+
+`apply_ui_state` defaults to `mode: "replace"`: fields you leave out return to their defaults. `mode: "merge"` keeps the current URL and changes only what you pass. `reset: true` starts from the default view. `event: null` closes the detail panel. An unknown value or event id returns `applied: false` with an error. A `date` you pass stays in the URL even when it equals the default.
+
+The URL carries `q`, `date`, `category`, `topic`, `source`, and `event` only. `startDate`, `endDate`, `limit`, `offset`, and `dismiss` have no URL form, so the page can differ from a search that used them.
+
+`get_ui_state` returns the URL filters, `selectedEventId`, `todayKey` (Pacific), and `view`. `view` is what the page shows after search ran: `requestedDateRange`, `effectiveDateRange`, `dateRangeWidened`, `activeChips`, `dismissedChipKeys`, `resultCount`, the first 20 `visibleEventIds`, `fallbackMessage`, `loading`, and `pending`. Read it again while `pending` is true or `loading` is not `success`. The page clears dismissed chips whenever its URL changes through history navigation or `apply_ui_state`.
+
+## Privacy
+
+Recent searches stay in the visitor's browser storage. No tool or file exposes them to agents, and that is on purpose.
 
 ## URL Workspace
 

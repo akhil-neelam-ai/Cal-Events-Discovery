@@ -1,13 +1,19 @@
 {
   "serverInfo": {
     "name": "CalEvents",
-    "version": "1.4.0",
-    "description": "Public UC Berkeley campus event discovery resources for agents."
+    "version": "1.5.0",
+    "description": "Public UC Berkeley campus event discovery for agents. Tools run in the browser through WebMCP. Everything else is a static file."
   },
   "transports": [
     {
-      "type": "https",
-      "endpoint": "https://cal-events.com/.well-known/api-catalog"
+      "type": "webmcp",
+      "endpoint": "https://cal-events.com/",
+      "description": "Browser only. The homepage registers its tools on navigator.modelContext. There is no remote MCP endpoint to connect to."
+    },
+    {
+      "type": "static-https",
+      "endpoint": "https://cal-events.com/.well-known/api-catalog",
+      "description": "RFC 9264 linkset of the static JSON and text resources. It is a catalog, not an MCP endpoint."
     }
   ],
   "capabilities": {
@@ -21,7 +27,7 @@
     },
     "tools": {
       "discovery": "https://cal-events.com/.well-known/agent-skills/index.json",
-      "browser": "WebMCP tools register on the homepage from the app bundle when navigator.modelContext is available: search_berkeley_events (optional topic slug validated against events.json.topic_vocabulary), get_event_by_id, generate_event_ics, get_cal_events_feed_status, get_ui_state, apply_ui_state, build_calevents_url, get_event_directions, list_filter_options."
+      "browser": "WebMCP tools register on the homepage from the app bundle when navigator.modelContext is available. They run only in that browser tab: search_berkeley_events (ranked search; reports interpretations, effectiveDateRange, relaxed, fallbackMessage, and total for paging with offset), list_filter_options (valid categories, active sources, date presets, topics), get_event_by_id, generate_event_ics, get_cal_events_feed_status, get_ui_state (URL state plus a view snapshot of what the page shows), apply_ui_state (replace or merge), build_calevents_url, get_event_directions."
     },
     "prompts": {
       "whats-on-tonight": {
@@ -29,7 +35,7 @@
         "messages": [
           {
             "role": "user",
-            "content": "Search CalEvents for events tonight. Use search_berkeley_events with datePreset today and a query, topic slug from events.json.topic_vocabulary, or filter for evening if needed. Summarize the top matches with time, location, and official url. Optionally apply_ui_state so the open page matches."
+            "content": "Search CalEvents for events tonight. Call search_berkeley_events with datePreset today, plus a query or a topic slug from list_filter_options. If relaxed is set, tell the user which filter was dropped, using fallbackMessage. Summarize the top matches with time, location, and official url. Optionally call apply_ui_state with date today and the same q so the open page matches."
           }
         ]
       },
@@ -38,7 +44,7 @@
         "messages": [
           {
             "role": "user",
-            "content": "Call get_cal_events_feed_status. Report generated_at, total_events, fallback_used, data_quality_blocked, and degraded sources as source health. Report topics.outcome and topics.carried_forward_count separately, plus topics.error when present. A topic assignment error does not make an event source degraded."
+            "content": "Call get_cal_events_feed_status. Report generated_at and total_events. Mention degraded or fallback sources to the user only when data_quality_blocked is true. Otherwise treat the feed as usable and avoid user-facing source warnings. Report topics.outcome and topics.carried_forward_count separately from source health, plus topics.error when present. A topic assignment error does not make an event source degraded."
           }
         ]
       },
@@ -47,7 +53,7 @@
         "messages": [
           {
             "role": "user",
-            "content": "Given an event id, call generate_event_ics. Return the filename and ics text, and mention googleCalendarUrl when present."
+            "content": "Given an event id, call generate_event_ics. Return the filename and ics text, and mention googleCalendarUrl when present. Without an id, find one with search_berkeley_events first."
           }
         ]
       },
@@ -56,7 +62,7 @@
         "messages": [
           {
             "role": "user",
-            "content": "Use build_calevents_url with event and/or q/date/category/topic/source. Validate topic against events.json.topic_vocabulary. Prefer the permalink for sharing; use the official event url for tickets."
+            "content": "Use build_calevents_url with event and/or q/date/category/topic/source. Take valid values from list_filter_options. To share what the open page shows, read get_ui_state and pass its filters and selectedEventId. Prefer the permalink for sharing; use the official event url for tickets."
           }
         ]
       }

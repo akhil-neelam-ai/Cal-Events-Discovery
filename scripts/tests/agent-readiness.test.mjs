@@ -117,7 +117,7 @@ test("agent discovery JSON files are valid and internally linked", () => {
     agentCard.version,
     "OpenAPI and agent-card versions must stay equal",
   );
-  assert.equal(openapi.info.version, "1.4.0");
+  assert.equal(openapi.info.version, "1.5.0");
 });
 
 test("agent docs describe the multi-day date fields", () => {

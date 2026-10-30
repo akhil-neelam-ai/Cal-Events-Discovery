@@ -19,6 +19,11 @@
           "href": "https://cal-events.com/llms-full.txt",
           "type": "text/markdown",
           "title": "CalEvents full agent context"
+        },
+        {
+          "href": "https://cal-events.com/for-agents.html",
+          "type": "text/html",
+          "title": "CalEvents for agents"
         }
       ],
       "status": [
@@ -26,6 +31,23 @@
           "href": "https://cal-events.com/status.json",
           "type": "application/json",
           "title": "CalEvents ingestion status"
+        }
+      ],
+      "describedby": [
+        {
+          "href": "https://cal-events.com/.well-known/agent-card.json",
+          "type": "application/json",
+          "title": "CalEvents A2A agent card"
+        },
+        {
+          "href": "https://cal-events.com/.well-known/mcp/server-card.json",
+          "type": "application/json",
+          "title": "CalEvents MCP server card (browser WebMCP tools and prompts)"
+        },
+        {
+          "href": "https://cal-events.com/.well-known/agent-skills/index.json",
+          "type": "application/json",
+          "title": "CalEvents agent skills index"
         }
       ]
     }

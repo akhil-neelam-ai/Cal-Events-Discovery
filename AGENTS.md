@@ -107,6 +107,8 @@ The site exposes itself to agents, and the standing rule is parity: any action a
 - `public/llms.txt`, `public/llms-full.txt`, `public/openapi.json`
 - `public/webmcp-tools.js` is a thin legacy shim; the real implementation lives in `agent/`
 
+`list_filter_options` returns the categories, active sources, date presets, and topics every other tool accepts, so agents do not guess values. `agent/viewState.ts` holds a snapshot App publishes after each render, and `get_ui_state` returns it as `view`: the date range searched, chips, result count, and visible ids. When the page gains a new filter or result state, add it to both.
+
 `scripts/tests/agent-readiness.test.mjs` and `scripts/tests/webmcp-tools.test.mjs` enforce this.
 
 ## Conventions
@@ -141,7 +143,7 @@ Established in `docs/brainstorms/2026-08-17-publish-vs-quality-pipeline-requirem
 
 The topic filter layer from `docs/plans/2026-09-03-001-feat-topic-filter-layer-plan.md` is on `main` (PR 173). Do not re-implement U1 through U9.
 
-Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` merged in PR 174 on 2026-09-04. Successful empty assignments clear topics. Broad identity mappings are gone. The breadth cap stays 200. Public discovery versions are 1.4.0. The September audit's multi-day fields set 1.3.0, and the published `end_time` set 1.4.0.
+Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` merged in PR 174 on 2026-09-04. Successful empty assignments clear topics. Broad identity mappings are gone. The breadth cap stays 200. Public discovery versions are 1.5.0. The September audit's multi-day fields set 1.3.0, the published `end_time` set 1.4.0, and the October agent-native fixes set 1.5.0.
 
 The October 2 review of PR 174 is `docs/code-review-2026-10-02-topic-filter-fixes.md`. PRs 215, 217, 218, and 219 fixed all 15 findings on 2026-10-03. Since PR 217, BAMPFA's calendar labels and Cal Performances genres reach `assignTopics` as internal `event_types`. Lessons that apply beyond one bug are in `docs/solutions/`.
 

@@ -10,7 +10,8 @@ deep link, directions, or the official page for one event id.
 2. Prefer fields from the tool/feed: `title`, `date`, `time`, `location`,
    `organizer`, `description`, `url`, `tags`, `source`.
 3. When present, also return:
-   - `directionsUrl` (Google Maps search for physical locations)
+   - `directionsUrl` (Google Maps search for physical locations). WebMCP
+     `get_event_directions` returns it for an id, or for raw location text.
    - `googleCalendarUrl` (Google Calendar template; may be null for multi-day gaps)
    - `permalink` (`https://cal-events.com/?event=<id>`)
    - `end_date` and `dates` for a multi-day event, so the user sees every day
@@ -21,3 +22,6 @@ deep link, directions, or the official page for one event id.
 
 - Do not invent times or venues. If the id is missing, say so.
 - Online-only locations may have a null `directionsUrl`.
+- To open the event on the page, call `apply_ui_state` with `mode: "merge"` and
+  `event=<id>`. An unknown id returns `applied: false`. Pass `event: null` to
+  close the panel.

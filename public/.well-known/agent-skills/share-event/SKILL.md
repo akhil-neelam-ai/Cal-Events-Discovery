@@ -25,11 +25,17 @@ Defaults omit params (default date bucket is This Week).
 2. To mirror a search the user can open, pass `q` / `date` / `category` /
    `topic` / `source` into `build_calevents_url`. Read valid topic slugs from
    `events.json.topic_vocabulary.topics`.
-3. On an open CalEvents tab with WebMCP, call `apply_ui_state` so the UI updates
-   to that workspace.
-4. Prefer the official event `url` when handing off to tickets or RSVP.
+3. To share what the user sees now, call `get_ui_state`. Pass its `filters`
+   and `selectedEventId` to `build_calevents_url`. Its `view` shows what the
+   page displays, such as `effectiveDateRange` and `visibleEventIds`.
+4. On an open CalEvents tab with WebMCP, call `apply_ui_state` so the UI updates
+   to that workspace. It replaces the whole view unless you pass
+   `mode: "merge"`. A `date` you pass stays in the URL.
+5. Prefer the official event `url` when handing off to tickets or RSVP.
 
 ## Notes
 
 - Copy-link in the UI uses the same `?event=` permalink pattern.
 - There is no private share graph; links are public.
+- Valid categories, sources, and topics come from `list_filter_options`. An
+  unknown value returns an error instead of a link.

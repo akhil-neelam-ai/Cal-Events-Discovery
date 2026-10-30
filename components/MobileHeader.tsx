@@ -7,6 +7,7 @@ import {
   clearRecentSearches,
   getRecentSearches,
 } from "../utils/recentSearches";
+import { AgentHint } from "./AgentHint";
 import { SearchSuggestionsDropdown } from "./SearchSuggestionsDropdown";
 
 export function MobileHeader({
@@ -198,6 +199,8 @@ export function MobileHeader({
             />
           )}
         </div>
+
+        <AgentHint variant="mobile" />
       </div>
     </header>
   );

@@ -2,14 +2,14 @@
   "name": "CalEvents",
   "description": "Agent-readable UC Berkeley campus events discovery site. Public read-only feeds; no create/update/delete for events or status.",
   "url": "https://cal-events.com/",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "supportedInterfaces": [
     {
       "url": "https://cal-events.com/",
       "transport": "webmcp",
       "protocolBinding": "https://webmachinelearning.github.io/webmcp/",
       "protocolVersion": "0.1",
-      "description": "Browser-based WebMCP tools exposed on the CalEvents homepage (ranked search, URL workspace, ICS, directions)."
+      "description": "Browser-only WebMCP tools on the CalEvents homepage: ranked search, filter options, URL workspace with a view snapshot, ICS, and directions. No remote endpoint."
     },
     {
       "url": "https://cal-events.com/openapi.json",
@@ -24,13 +24,19 @@
     "pushNotifications": false,
     "readOnly": true
   },
-  "defaultInputModes": ["text/plain", "application/json"],
-  "defaultOutputModes": ["text/plain", "application/json"],
+  "defaultInputModes": [
+    "text/plain",
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "text/plain",
+    "application/json"
+  ],
   "skills": [
     {
       "id": "search-events",
       "name": "Search Berkeley events",
-      "description": "Find upcoming UC Berkeley events by keyword, date, category, topic, source, organizer, or location. Topic slugs come from events.json.topic_vocabulary.topics."
+      "description": "Find upcoming UC Berkeley events by keyword, date, category, topic, source, organizer, or location. Topic slugs come from events.json.topic_vocabulary.topics or list_filter_options. Results report dropped filters and support paging."
     },
     {
       "id": "event-feed-status",
@@ -40,7 +46,7 @@
     {
       "id": "event-detail",
       "name": "Event detail",
-      "description": "Look up one event by id with directions and calendar links."
+      "description": "Look up one event by id with directions (get_event_directions) and calendar links."
     },
     {
       "id": "calendar-export",
@@ -50,11 +56,14 @@
     {
       "id": "share-event",
       "name": "Share event",
-      "description": "Build shareable CalEvents deep links from URL workspace params."
+      "description": "Build shareable CalEvents deep links from URL workspace params or the open page (get_ui_state)."
     }
   ],
   "documentation": {
     "llms": "https://cal-events.com/llms.txt",
-    "forAgents": "https://cal-events.com/for-agents.html"
+    "forAgents": "https://cal-events.com/for-agents.html",
+    "apiCatalog": "https://cal-events.com/.well-known/api-catalog",
+    "mcpServerCard": "https://cal-events.com/.well-known/mcp/server-card.json",
+    "agentSkills": "https://cal-events.com/.well-known/agent-skills/index.json"
   }
 }

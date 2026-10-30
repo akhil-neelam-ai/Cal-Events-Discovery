@@ -4,7 +4,8 @@ Use this skill when a user wants to add a Berkeley event to a calendar.
 
 ## Procedure
 
-1. Resolve the event with WebMCP `get_event_by_id` or `events.json`.
+1. Resolve the event with WebMCP `get_event_by_id` or `events.json`. Without
+   an id, find one with `search_berkeley_events`.
 2. Prefer WebMCP `generate_event_ics` for a portable `.ics` payload
    (`America/Los_Angeles` times).
 3. If `googleCalendarUrl` is present on the event or ICS tool result, offer that
