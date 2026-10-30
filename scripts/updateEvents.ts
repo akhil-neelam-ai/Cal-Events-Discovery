@@ -56,10 +56,10 @@ import { fetchCallink } from "./sources/callink.js";
 import { fetchCalPerformances } from "./sources/cal_performances.js";
 import { fetchCalBears } from "./sources/calbears.js";
 import { fetchBampfa } from "./sources/bampfa.js";
+import { fetchBegin } from "./sources/begin.js";
 import {
   fetchHaas,
   fetchBerkeleyLaw,
-  fetchBegin,
   fetchBrsl,
   fetchCltc,
 } from "./sources/tribe.js";

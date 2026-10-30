@@ -73,9 +73,10 @@ livewhale (4) > callink / cal_performances / calbears / bampfa / haas / berkeley
 | `cal_performances.ts` | WordPress REST API | Arts presenter |
 | `calbears.ts` | iCal | Athletics schedule |
 | `bampfa.ts` | HTML scraper (cheerio) | Film and art museum |
-| `tribe.ts` | Tribe/WP REST API | Haas, Berkeley Law, BEGIN, BRSL, CLTC. Generic adapter, reusable for any site running The Events Calendar plugin |
+| `tribe.ts` | Tribe/WP REST API | Haas, Berkeley Law, BRSL, CLTC. Generic adapter, reusable for any site running The Events Calendar plugin |
 | `simons.ts` | JSON API | CS theory research institute (`simons.berkeley.edu/api/events`) |
 | `luma.ts` | Luma JSON API | Berkeley-affiliated Luma calendars; IDs in `BERKELEY_LUMA_CALENDARS` |
+| `begin.ts` | iCal (node-ical) | Berkeley Gateway to Innovation (`begin.berkeley.edu/api/public/events.ics`). The site left WordPress in October 2026 |
 | `ai_risk.ts` | JSON feed | Berkeley AI Risk speaker series (`ai-risk.berkeley.edu/events.json`), which the site builds for its own calendar sync |
 
 ### 3. Frontend (`App.tsx` + `utils/`)
@@ -184,7 +185,7 @@ The September full-repo audit is `docs/code-review-2026-09-25.md`. Every item ha
 
 **LiveWhale group feeds**: the main feed misses events posted only to department calendars. Group feeds use path-based URLs, and group names are case-sensitive. The adapter fetches 40 groups with bounded concurrency and merges by UID, keeping every group that listed an event as topic evidence. A failed group feed, including a 200 response that is not iCal, lands in `failedGroups`. Its events keep only the prior topics that group can give. Group failures never mark LiveWhale degraded, so they raise no visitor banner. `status.json` lists them on the LiveWhale entry as `failed_groups`.
 
-**Tribe adapter reusability**: `scripts/sources/tribe.ts` exports `fetchHaas`, `fetchBerkeleyLaw`, `fetchBegin`, `fetchBrsl`, and `fetchCltc` from one config-driven implementation. A new WordPress site running The Events Calendar needs only a new export.
+**Tribe adapter reusability**: `scripts/sources/tribe.ts` exports `fetchHaas`, `fetchBerkeleyLaw`, `fetchBrsl`, and `fetchCltc` from one config-driven implementation. A new WordPress site running The Events Calendar needs only a new export.
 
 **Stemming must stay consistent**: `buildIndex.ts` and `searchEngine.ts` both call `stem()` from `utils/textUtils.ts`. Change the stemmer, the tokenizer, or the venue aliases and run `npm run rebuild-index`. A stability test fails until the committed index matches.
 
