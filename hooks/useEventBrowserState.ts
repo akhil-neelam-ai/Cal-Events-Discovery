@@ -8,10 +8,15 @@ import {
   getFallbackBannerCopy,
 } from "../utils/emptyState";
 import {
+  canWidenToWeek,
+  type DateBuckets,
+  partitionDateBuckets,
+  weekSearchMatches,
+  widenDateRange,
+} from "../utils/dateWidening";
+import {
   dateRangeStartKey,
-  firstOccurrenceInRange,
   getPacificDateKey,
-  hasEventEnded,
   sortEventsChronologically,
 } from "../utils/eventDates";
 import {
@@ -57,42 +62,8 @@ interface UseEventBrowserStateResult {
   emptyState: EmptyStateConfig;
 }
 
-function partitionDateBuckets(
-  events: readonly CalEvent[],
-  todayKey: string,
-  tomorrowKey: string,
-  weekEndKey: string,
-  nowMinutes: number,
-) {
-  const today: CalEvent[] = [];
-  const tomorrow: CalEvent[] = [];
-  const week: CalEvent[] = [];
-  const upcoming: CalEvent[] = [];
-
-  // Bucket by occurrence, not by `date`. A multi-day event runs on every day
-  // in `dates`, and its `date` is already past from midnight until the next
-  // publish. An event that already ended today is no longer upcoming.
-  for (const event of events) {
-    if (hasEventEnded(event, todayKey, nowMinutes)) {
-      continue;
-    }
-    const next = firstOccurrenceInRange(event, todayKey);
-    if (!next) {
-      continue;
-    }
-    upcoming.push(event);
-    if (next === todayKey) today.push(event);
-    if (firstOccurrenceInRange(event, tomorrowKey, tomorrowKey)) {
-      tomorrow.push(event);
-    }
-    if (next <= weekEndKey) week.push(event);
-  }
-
-  return { today, tomorrow, week, upcoming };
-}
-
 function bucketForRange(
-  buckets: ReturnType<typeof partitionDateBuckets>,
+  buckets: DateBuckets,
   range: SearchFilters["dateRange"],
 ): CalEvent[] {
   if (range === "today") return buckets.today;
@@ -273,14 +244,11 @@ export function useEventBrowserState({
 
   // A search for today or tomorrow widens to the week when the query matches
   // nothing that day but does match later in the week. The raw pool can't
-  // tell: it has events today even when none of them match. Matches found
-  // only by dropping a filter are not real matches, so they leave the range.
+  // tell: it has events today even when none of them match. The rule lives
+  // in utils/dateWidening.ts, shared with the agent search tool.
   const weekMatchBuckets = useMemo(() => {
     const query = filters.searchQuery.trim();
-    if (
-      query.length < 2 ||
-      (derivedDateRange !== "today" && derivedDateRange !== "tomorrow")
-    ) {
+    if (query.length < 2 || !canWidenToWeek(derivedDateRange)) {
       return null;
     }
 
@@ -296,16 +264,16 @@ export function useEventBrowserState({
       searchDismissedKeys,
       planOptions,
     );
-    if (output.fallbackUsed || output.results.length === 0) {
-      return null;
-    }
-    return partitionDateBuckets(
-      output.results,
-      todayKey,
-      tomorrowKey,
-      weekEndKey,
-      nowMinutes,
-    );
+    const matches = weekSearchMatches(output);
+    return matches
+      ? partitionDateBuckets(
+          matches,
+          todayKey,
+          tomorrowKey,
+          weekEndKey,
+          nowMinutes,
+        )
+      : null;
   }, [
     derivedDateRange,
     filters.searchQuery,
@@ -320,26 +288,11 @@ export function useEventBrowserState({
     weekEndKey,
   ]);
 
-  const effectiveDateRange = useMemo<SearchFilters["dateRange"]>(() => {
-    const buckets = weekMatchBuckets ?? rawDateBuckets;
-    if (
-      derivedDateRange === "today" &&
-      buckets.today.length === 0 &&
-      buckets.week.length > 0
-    ) {
-      return "week";
-    }
-
-    if (
-      derivedDateRange === "tomorrow" &&
-      buckets.tomorrow.length === 0 &&
-      buckets.week.length > 0
-    ) {
-      return "week";
-    }
-
-    return derivedDateRange;
-  }, [derivedDateRange, rawDateBuckets, weekMatchBuckets]);
+  const effectiveDateRange = useMemo<SearchFilters["dateRange"]>(
+    () =>
+      widenDateRange(derivedDateRange, weekMatchBuckets, rawDateBuckets).range,
+    [derivedDateRange, rawDateBuckets, weekMatchBuckets],
+  );
 
   const datePool = useMemo(
     () => bucketForRange(rawDateBuckets, effectiveDateRange),
