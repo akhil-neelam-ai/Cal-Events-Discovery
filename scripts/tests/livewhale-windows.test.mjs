@@ -256,25 +256,54 @@ test("a cut day is filled back in from the JSON feed", async () => {
     );
   };
   const serveWindows = windowServer(events, cut);
-  const json = [
+  // The live shape: {meta, links, data}, 100 rows a page, array event_types.
+  const jsonBase = `https://events.berkeley.edu/live/json/events/start_date/${badDay}/`;
+  const pages = [
     {
-      id: "4242",
-      title: "&#127944; after-cut",
-      url: "https://events.berkeley.edu/CAA/event/4242-after-cut",
-      date_utc: `${badDay} 20:00:00`,
-      date_iso: `${badDay}T12:00:00-08:00`,
-      date2_iso: `${badDay}T15:30:00-08:00`,
-      is_all_day: null,
-      location: "Memorial Stadium",
-      description: "<p>Watch party</p>",
-      event_types: null,
+      meta: { total_pages: 2 },
+      links: { next: `${jsonBase}end_date/next?page=2` },
+      data: [
+        {
+          id: 4241,
+          title: "before-cut",
+          url: "https://events.berkeley.edu/econ/event/before-cut",
+          date_utc: `${badDay} 19:00:00`,
+          date_iso: `${badDay}T11:00:00-08:00`,
+          date2_iso: null,
+          is_all_day: null,
+          location: null,
+          description: null,
+          event_types: ["Exhibits", 7],
+        },
+      ],
+    },
+    {
+      meta: { total_pages: 2 },
+      links: { next: null },
+      data: [
+        {
+          id: 4242,
+          title: "&#127944; after-cut",
+          url: "https://events.berkeley.edu/CAA/event/4242-after-cut",
+          date_utc: `${badDay} 20:00:00`,
+          date_iso: `${badDay}T12:00:00-08:00`,
+          date2_iso: `${badDay}T15:30:00-08:00`,
+          is_all_day: null,
+          location: "Memorial Stadium",
+          description: "<p>Watch party</p>",
+          event_types: ["Athletics"],
+        },
+        { id: 4243, title: null },
+      ],
     },
   ];
   const respond = (url) =>
-    url.startsWith(
-      `https://events.berkeley.edu/live/json/events/start_date/${badDay}/`,
-    )
-      ? { ok: true, status: 200, json: async () => json }
+    url.startsWith(jsonBase)
+      ? {
+          ok: true,
+          status: 200,
+          json: async () => (url.endsWith("?page=2") ? pages[1] : pages[0]),
+        }
       : serveWindows(url);
 
   const { result } = await withStubbedFetch(respond, () => fetchLiveWhale());
@@ -285,6 +314,54 @@ test("a cut day is filled back in from the JSON feed", async () => {
   assert.ok(refilled);
   assert.equal(refilled.venue, "Memorial Stadium");
   assert.ok(result.events.some((event) => event.title === "before-cut"));
+  assert.deepEqual(result.failedWindows, []);
+});
+
+test("an empty JSON refill leaves the cut day reported", async () => {
+  const badDay = addDaysToKey(TODAY, 2);
+  const events = [...FILLERS, { uid: "before-cut", date: badDay }];
+  const cut = (url) => {
+    const window = windowOf(url);
+    if (!window || badDay < window.start || badDay >= window.end) return null;
+    return calendar([vevent(events.at(-1))]).replace(
+      /END:VCALENDAR$/,
+      "BEGIN:VEVENT\r\nSUMMARY:",
+    );
+  };
+  const serveWindows = windowServer(events, cut);
+  const respond = (url) =>
+    url.includes("/live/json/events/")
+      ? {
+          ok: true,
+          status: 200,
+          json: async () => ({ meta: {}, links: { next: null }, data: [] }),
+        }
+      : serveWindows(url);
+
+  const { result } = await withStubbedFetch(respond, () => fetchLiveWhale());
+
+  assert.ok(result.events.some((event) => event.title === "before-cut"));
+  assert.deepEqual(result.failedWindows, [badDay]);
+});
+
+test("an empty week whose retry comes back cut is split, not dropped", async () => {
+  const week = { start: KEYS[6], end: KEYS[7] };
+  const weekUrl = `${FEED}/start_date/${week.start}/end_date/${week.end}`;
+  let weekFetches = 0;
+  const firstEmptyThenCut = (url) => {
+    if (url !== weekUrl) return null;
+    weekFetches += 1;
+    return weekFetches === 1
+      ? EMPTY
+      : "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nSUMMARY:";
+  };
+
+  const { result } = await withStubbedFetch(
+    windowServer(FILLERS, firstEmptyThenCut),
+    () => fetchLiveWhale(),
+  );
+
+  assert.ok(result.events.some((event) => event.title === "week-6"));
   assert.deepEqual(result.failedWindows, []);
 });
 

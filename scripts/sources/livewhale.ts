@@ -32,6 +32,7 @@ import {
 const FEED_URL = "https://events.berkeley.edu/live/ical/events";
 const GROUP_BASE = "https://events.berkeley.edu/live/ical/events/group";
 const JSON_BASE = "https://events.berkeley.edu/live/json/events";
+const JSON_MAX_PAGES = 5;
 const FETCH_TIMEOUT_MS = 15_000;
 const WINDOW_FETCH_ATTEMPTS = 2;
 const RETRY_DELAY_MS = 1_500;
@@ -54,9 +55,9 @@ const WINDOW_SPLIT_THRESHOLD = 900;
 const LIVEWHALE_CONCURRENCY = 8;
 /** The orchestrator's time budget for this adapter (windows, groups, redirects). */
 export const LIVEWHALE_ADAPTER_TIMEOUT_MS = 90_000;
-// Group feeds and redirect lookups stop here, so a slow upstream fails them
-// (recorded, topics carried forward) instead of timing out the whole adapter
-// and discarding the required windows with it.
+// Group feeds stop here, so a slow upstream fails them (recorded, topics
+// carried forward) instead of timing out the whole adapter and discarding
+// the required windows with it.
 const OPTIONAL_WORK_DEADLINE_MS = 60_000;
 
 /**
@@ -600,7 +601,7 @@ interface LiveWhaleJsonEvent {
   is_canceled?: string | number | boolean | null;
   location?: string | null;
   description?: string | null;
-  event_types?: string | null;
+  event_types?: string[] | string | null;
 }
 
 function decodeHtmlEntities(text: string): string {
@@ -655,9 +656,11 @@ function veventFromJson(
     description: decodeHtmlEntities(event.description ?? ""),
     location: decodeHtmlEntities(event.location ?? ""),
     url: event.url ?? undefined,
-    categories: event.event_types
-      ? event.event_types.split(/,\s*/).filter(Boolean)
-      : [],
+    categories: Array.isArray(event.event_types)
+      ? event.event_types.filter((type) => typeof type === "string")
+      : typeof event.event_types === "string"
+        ? event.event_types.split(/,\s*/).filter(Boolean)
+        : [],
     status: isTruthyFlag(event.is_canceled) ? "CANCELLED" : undefined,
   };
 }
@@ -671,31 +674,39 @@ async function fetchDayFromJson(
   limit: Limiter,
   options: FetchOptions,
 ): Promise<Record<string, unknown> | null> {
-  const url = `${JSON_BASE}/start_date/${day}/end_date/${addDaysToKey(day, 1)}/response_fields/location,description,event_types`;
+  let url: string | null =
+    `${JSON_BASE}/start_date/${day}/end_date/${addDaysToKey(day, 1)}/response_fields/location,description,event_types`;
+  const calendar: Record<string, unknown> = {};
   try {
-    const body = await limit(async () => {
-      const res = await fetchWithRetry(
-        url,
-        { headers: { "User-Agent": "Cal-Events-Discovery-Bot" } },
-        {
-          signal: options.signal,
-          timeoutMs: FETCH_TIMEOUT_MS,
-          label: "livewhale-json",
-          maxAttempts: 1,
-        },
-      );
-      return (await res.json()) as unknown;
-    }, true);
-    const rows = Array.isArray(body)
-      ? body
-      : ((body as { data?: unknown }).data ?? null);
-    if (!Array.isArray(rows)) return null;
-    const calendar: Record<string, unknown> = {};
-    for (const row of rows as LiveWhaleJsonEvent[]) {
-      const vevent = veventFromJson(row);
-      if (vevent) calendar[String(vevent.uid)] = vevent;
+    // The feed pages at 100 rows; a busy day has two pages.
+    for (let page = 0; url && page < JSON_MAX_PAGES; page++) {
+      const pageUrl: string = url;
+      const body = (await limit(async () => {
+        const res = await fetchWithRetry(
+          pageUrl,
+          { headers: { "User-Agent": "Cal-Events-Discovery-Bot" } },
+          {
+            signal: options.signal,
+            timeoutMs: FETCH_TIMEOUT_MS,
+            label: "livewhale-json",
+            maxAttempts: 1,
+          },
+        );
+        return (await res.json()) as unknown;
+      }, true)) as { data?: unknown; links?: { next?: unknown } } | null;
+      if (!body || !Array.isArray(body.data)) return null;
+      for (const row of body.data as LiveWhaleJsonEvent[]) {
+        try {
+          const vevent = veventFromJson(row);
+          if (vevent) calendar[String(vevent.uid)] = vevent;
+        } catch {
+          // One malformed row must not discard the rest of the day.
+        }
+      }
+      url = typeof body.links?.next === "string" ? body.links.next : null;
     }
-    return calendar;
+    // A day longer than the page cap is only partly refilled; report it.
+    return url ? null : calendar;
   } catch (err) {
     console.warn(
       `[livewhale] JSON refill for ${day} failed: ${err instanceof Error ? err.message : err}`,
@@ -759,7 +770,12 @@ async function fetchWindow(
       }
       const salvaged = salvageCutCalendar(err.body);
       const refill = await fetchDayFromJson(start, limit, options);
-      if (refill) {
+      // A refill counts only when it holds at least what the cut body did.
+      if (
+        refill &&
+        veventCount(refill) > 0 &&
+        veventCount(refill) >= veventCount(salvaged)
+      ) {
         console.warn(
           `[livewhale] day ${start} stays cut off; filled it from the JSON feed`,
         );
@@ -800,8 +816,14 @@ async function fetchWindow(
         true,
       );
       count = veventCount(parsed);
-    } catch {
-      // Keep the empty result; it is reported below.
+    } catch (err) {
+      // A retry that comes back cut goes through the split path.
+      if (err instanceof IncompleteCalendarError) {
+        console.warn(
+          `[livewhale] window ${start}..${end} was incomplete; splitting it`,
+        );
+        return split();
+      }
     }
     if (count === 0) {
       console.warn(`[livewhale] window ${start}..${end} returned no events`);
@@ -1055,6 +1077,7 @@ export async function fetchLiveWhale(
 ): Promise<FetchResult> {
   // Main-feed windows and group feeds share one bounded request pool.
   const limit = createLimiter(LIVEWHALE_CONCURRENCY);
+  const adapterStart = Date.now();
   const optional: FetchOptions = {
     signal: signalWithTimeout(options.signal, OPTIONAL_WORK_DEADLINE_MS),
   };
@@ -1104,7 +1127,18 @@ export async function fetchLiveWhale(
       asString(ve.url) || `https://events.berkeley.edu/live/events/${ve.uid}`;
     urlsToPrewarm.push(url);
   }
-  await prewarmRedirectCache(urlsToPrewarm, optional);
+  // Redirect lookups get what is left of the budget, less a margin, so a
+  // slow window phase does not leave them no time at all.
+  const lookups: FetchOptions = {
+    signal: signalWithTimeout(
+      options.signal,
+      Math.max(
+        5_000,
+        LIVEWHALE_ADAPTER_TIMEOUT_MS - 10_000 - (Date.now() - adapterStart),
+      ),
+    ),
+  };
+  await prewarmRedirectCache(urlsToPrewarm, lookups);
 
   for (const key of Object.keys(parsed)) {
     const component = parsed[key] as { type?: string };
@@ -1142,7 +1176,7 @@ export async function fetchLiveWhale(
 
       const url =
         asString(ve.url) || `https://events.berkeley.edu/live/events/${ve.uid}`;
-      const { slug, unit } = await unitFromUrl(url, optional);
+      const { slug, unit } = await unitFromUrl(url, lookups);
 
       const description = decodeIcalText(asString(ve.description));
       const location = decodeIcalText(asString(ve.location));
