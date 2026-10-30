@@ -12,13 +12,15 @@ import {
   RETIRED_SOURCES as SCHEMA_RETIRED_SOURCES,
   SourceNameSchema,
 } from "../../scripts/lib/schema.ts";
-import {
-  addDaysToDateKey,
-  getCurrentPacificDateKey,
-} from "../../utils/eventDates.ts";
+import { addDaysToDateKey } from "../../utils/eventDates.ts";
+
+// A frozen Pacific clock: Wednesday 2026-04-22 at noon. A run that crosses
+// midnight cannot move a fixture to another day.
+const TODAY_KEY = "2026-04-22";
+const NOW = new Date("2026-04-22T19:00:00Z");
 
 function inDays(days) {
-  return addDaysToDateKey(getCurrentPacificDateKey(), days);
+  return addDaysToDateKey(TODAY_KEY, days);
 }
 
 function event(overrides = {}) {
@@ -27,7 +29,6 @@ function event(overrides = {}) {
     title: overrides.title ?? "AI Event",
     organizer: "UC Berkeley",
     date: overrides.date ?? inDays(1),
-    // Late enough that a today event has not ended while the suite runs.
     time: overrides.time ?? "All day",
     location: "Sather Gate",
     description: overrides.description ?? "",
@@ -49,6 +50,7 @@ function loadSearch(events, extra = {}) {
     getLocationSearch: () => "",
     getOrigin: () => "https://cal-events.com",
     applyUrlSearch: () => {},
+    now: () => NOW,
   });
   return tools.find((tool) => tool.name === "search_berkeley_events");
 }
@@ -307,4 +309,77 @@ test("search rejects an unknown datePreset and a malformed date", async () => {
   const ok = await search.execute({ startDate: inDays(0), endDate: inDays(2) });
   assert.equal(ok.error, undefined);
   assert.deepEqual(ids(ok), ["a"]);
+});
+
+test("a query's tomorrow widens to the week through the unsearched pool", async () => {
+  // "arts" locks the Arts category, which has nothing this week. The search
+  // finds the Academic lecture only by dropping that lock, so the widening
+  // rule falls back to the whole week's pool, which has nothing tomorrow.
+  const search = loadSearch([
+    event({
+      id: "lecture",
+      title: "History Lecture",
+      date: inDays(3),
+      tags: ["Academic"],
+    }),
+    event({
+      id: "lecture-far",
+      title: "Physics Lecture",
+      date: inDays(12),
+      tags: ["Academic"],
+    }),
+  ]);
+
+  const output = await search.execute({ query: "arts lecture tomorrow" });
+  assert.deepEqual(output.effectiveDateRange, {
+    preset: "week",
+    startDate: TODAY_KEY,
+    endDate: inDays(6),
+    basis: "query",
+    requested: "tomorrow",
+    widened: true,
+  });
+  assert.deepEqual(ids(output), ["lecture"]);
+  assert.deepEqual(output.relaxed, { filter: "category", value: "Arts" });
+
+  // The fallback pool is every event that week, matched or not. Anything
+  // tomorrow keeps the range on tomorrow, as in the UI.
+  const busy = loadSearch([
+    event({
+      id: "lecture",
+      title: "History Lecture",
+      date: inDays(3),
+      tags: ["Academic"],
+    }),
+    event({ id: "pottery", title: "Pottery Night", date: inDays(1) }),
+  ]);
+  const kept = await busy.execute({ query: "arts lecture tomorrow" });
+  assert.equal(kept.effectiveDateRange.preset, "tomorrow");
+  assert.equal(kept.effectiveDateRange.widened, false);
+});
+
+test("a query's tomorrow stays tomorrow when tomorrow has a match", async () => {
+  const search = loadSearch([
+    event({ id: "jazz-tomorrow", title: "Jazz Night", date: inDays(1) }),
+    event({ id: "jazz-later", title: "Jazz Concert", date: inDays(3) }),
+  ]);
+
+  const output = await search.execute({ query: "jazz tomorrow" });
+  assert.deepEqual(ids(output), ["jazz-tomorrow"]);
+  assert.equal(output.effectiveDateRange.preset, "tomorrow");
+  assert.equal(output.effectiveDateRange.widened, false);
+});
+
+test("a weekend query with no weekend match reports the weekend relaxed", async () => {
+  // Thursday of the frozen week. No fixture falls on a weekend.
+  const search = loadSearch([
+    event({ id: "jazz-thursday", title: "Jazz Night", date: inDays(1) }),
+  ]);
+
+  const output = await search.execute({ query: "jazz this weekend" });
+  assert.deepEqual(ids(output), ["jazz-thursday"]);
+  assert.equal(output.fallbackUsed, true);
+  assert.deepEqual(output.relaxed, { filter: "weekend", value: "true" });
+  assert.match(output.fallbackMessage, /this weekend/);
+  assert.equal(output.effectiveDateRange.preset, "week");
 });

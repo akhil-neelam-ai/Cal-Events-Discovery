@@ -61,6 +61,8 @@ export interface WebMcpDeps {
   applyUrlSearch: (search: string) => void;
   /** What the open page shows. Absent or null outside a rendered page. */
   getViewState?: () => UiViewState | null;
+  /** The clock for Pacific date keys. Tests pin it. Defaults to now. */
+  now?: () => Date;
 }
 
 type EventsPayload = SearchResponse & { lastUpdated?: number };
@@ -170,6 +172,7 @@ export function createDefaultFetchJson(
 }
 
 export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
+  const now = deps.now ?? (() => new Date());
   let eventsCache: CacheEntry | null = null;
   let searchIndexCache: {
     fetchedAt: number;
@@ -318,8 +321,9 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
       const endInput = endCheck.value;
       const explicitDate = Boolean(presetInput || startInput || endInput);
 
-      const todayKey = getCurrentPacificDateKey();
-      const nowMinutes = getCurrentPacificMinutes();
+      const clock = now();
+      const todayKey = getCurrentPacificDateKey(clock);
+      const nowMinutes = getCurrentPacificMinutes(clock);
 
       if (explicitDate) {
         const preset = presetInput
@@ -634,7 +638,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
         selectedEventId: urlState.selectedEventId,
         hasExplicitDateRange: urlState.hasExplicitDateRange,
         url: absoluteUrl(deps.getLocationSearch() || ""),
-        todayKey: getCurrentPacificDateKey(),
+        todayKey: getCurrentPacificDateKey(now()),
         view: deps.getViewState?.() ?? null,
       };
 
