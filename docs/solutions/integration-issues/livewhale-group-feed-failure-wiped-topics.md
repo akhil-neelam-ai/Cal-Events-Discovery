@@ -32,7 +32,7 @@ tags:
 
 ## Problem
 
-When one of the 40 LiveWhale department feeds failed, its events lost that group's topics while the topic stage reported `ok`. When all 40 failed, new events from healthy sources published with no topics. PR 219 fixed both on 2026-10-03.
+When one of the 40 LiveWhale department feeds then fetched (70 as of 2026-10-30) failed, its events lost that group's topics while the topic stage reported `ok`. When all 40 failed, new events from healthy sources published with no topics. PR 219 fixed both on 2026-10-03.
 
 ## Symptoms
 
@@ -45,7 +45,7 @@ The October 2 review found these in the code, and PR 219's tests reproduce them.
 
 ## What Didn't Work
 
-- **One health bit for 40 feeds.** `groupFeedsAreDegraded` in `scripts/sources/livewhale.ts` is true only when every feed fails. The comment above `fetchAllGroupFeeds` names 429 rate limiting as the likely failure, which usually hits some feeds, not all.
+- **One health bit for the 40 feeds of the time.** `groupFeedsAreDegraded` in `scripts/sources/livewhale.ts` is true only when every feed fails. The comment above `fetchAllGroupFeeds` names 429 rate limiting as the likely failure, which usually hits some feeds, not all.
 - **An unscoped rule that empty is final.** PR 174 let a successful empty assignment clear topics. That was right for stale tags. Next to the health bit above, a missing group's evidence read as "this event has no topic".
 - **Freezing everything when all groups fail.** `forceError` skipped assignment and copied yesterday's topics onto every event from all 13 sources. Events new today had no yesterday, so they got none.
 - **Trusting status 200.** Group feeds call `fetchFeed` with `minEvents` of 0, which returned whatever parsed. An HTML page parses to an empty calendar.
@@ -86,7 +86,7 @@ Five new or updated tests failed on `main` and passed after. A full live `npm ru
 
 ## Why This Works
 
-- One health bit covered 40 feeds, but topic loss happens per group.
+- One health bit covered all 40 feeds of the time, but topic loss happens per group.
 - A failed group can only remove the topics in its own `GROUP_TOPICS` entry. Only those carry over, and only on LiveWhale events. Everything else comes from fresh evidence, so stale topics still clear.
 - With the physics feed down, a colloquium keeps yesterday's `physics-math-quantum` next to a fresh `law`. A reception's stale `history-humanities` stays gone.
 - Assignment always runs now, so a new Berkeley Law event gets Law even when every group fails.

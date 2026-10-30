@@ -180,17 +180,17 @@ npm run test:search-quality                 # live corpus golden queries
 
 ## Sources
 
-| Source                                    | Adapter               | Method                                          |
-| ----------------------------------------- | --------------------- | ----------------------------------------------- |
-| LiveWhale (campus calendar)               | `livewhale.ts`        | iCal weekly windows + 62 department group feeds |
-| CalLink (student orgs)                    | `callink.ts`          | CampusGroups JSON API (~16 event cap)           |
-| Cal Performances                          | `cal_performances.ts` | WordPress REST                                  |
-| Cal Bears athletics                       | `calbears.ts`         | iCal                                            |
-| BAMPFA                                    | `bampfa.ts`           | HTML scraper                                    |
-| Berkeley Haas / Law / BEGIN / BRSL / CLTC | `tribe.ts`            | Tribe Events Calendar REST                      |
-| Simons Institute                          | `simons.ts`           | JSON API                                        |
-| Luma (Berkeley calendars)                 | `luma.ts`             | Luma JSON API                                   |
-| Berkeley AI Risk                          | `ai_risk.ts`          | JSON feed (`events.json`)                       |
+| Source                                    | Adapter               | Method                                                           |
+| ----------------------------------------- | --------------------- | ---------------------------------------------------------------- |
+| LiveWhale (campus calendar)               | `livewhale.ts`        | iCal weekly windows + 70 department and student-life group feeds |
+| CalLink (student orgs)                    | `callink.ts`          | CampusGroups JSON API (~16 event cap)                            |
+| Cal Performances                          | `cal_performances.ts` | WordPress REST                                                   |
+| Cal Bears athletics                       | `calbears.ts`         | iCal                                                             |
+| BAMPFA                                    | `bampfa.ts`           | HTML scraper                                                     |
+| Berkeley Haas / Law / BEGIN / BRSL / CLTC | `tribe.ts`            | Tribe Events Calendar REST                                       |
+| Simons Institute                          | `simons.ts`           | JSON API                                                         |
+| Luma (Berkeley calendars)                 | `luma.ts`             | Luma JSON API                                                    |
+| Berkeley AI Risk                          | `ai_risk.ts`          | JSON feed (`events.json`)                                        |
 
 ## Deploy
 

@@ -12,7 +12,7 @@ The official UC Berkeley campus calendar and the backbone source: most published
 
 A LiveWhale calendar for one department or center, fetched alongside the main campus feed to catch events posted only there; an event's group memberships are topic evidence.
 
-Groups are addressed by their exact full name. A near-miss name returns a valid empty calendar rather than an error, so a wrong name fails silently.
+Groups are addressed by their exact full name. A near-miss name returns a valid empty calendar rather than an error, so a wrong name fails silently. Student-life groups replaced the student organization feed (CalLink) once it required a login.
 
 ### Date window
 

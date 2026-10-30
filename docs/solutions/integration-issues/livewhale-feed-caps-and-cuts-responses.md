@@ -53,11 +53,11 @@ The LiveWhale adapter read one URL, `https://events.berkeley.edu/live/ical/event
 
 ## Solution
 
-The fix landed on branch `fix/livewhale-windowed-feed` (PR pending as of this writing). See `scripts/sources/livewhale.ts`:
+Fixed in PR 267 (windowed fetch) and extended by PR 269 (JSON refill of cut days, the `failed_windows` alert) and the student-life follow-up (JSON refill of cut group feeds). See `scripts/sources/livewhale.ts`:
 
-1. **Weekly windows.** `liveWhaleWindowKeys` (`livewhale.ts:553`) builds PT date keys from a week back to eight weeks ahead in 7-day steps. Consecutive keys form one window each through `liveWhaleWindowUrl` (`livewhale.ts:569`).
-2. **A complete calendar or nothing.** `calendarProblem` (`livewhale.ts:454`) rejects a body without `BEGIN:VCALENDAR`, and treats one that does not end with `END:VCALENDAR` as cut.
-3. **Split, then salvage.** `fetchWindow` (`livewhale.ts:593`) refetches a cut window, or one at `WINDOW_SPLIT_THRESHOLD` (900, `livewhale.ts:50`) or more events, as two halves down to single days. A single day that stays cut keeps every complete event before the cut through `salvageCutCalendar` (`livewhale.ts:441`):
+1. **Weekly windows.** `liveWhaleWindowKeys` builds PT date keys from a week back to eight weeks ahead in 7-day steps. Consecutive keys form one window each through `liveWhaleWindowUrl`.
+2. **A complete calendar or nothing.** `calendarProblem` rejects a body without `BEGIN:VCALENDAR`, and treats one that does not end with `END:VCALENDAR` as cut.
+3. **Split, then salvage.** `fetchWindow` refetches a cut window, or one at `WINDOW_SPLIT_THRESHOLD` (900) or more events, as two halves down to single days. A single day that stays cut keeps every complete event before the cut through `salvageCutCalendar`:
 
 ```ts
 const lastEnd = body.lastIndexOf("END:VEVENT");
@@ -67,15 +67,17 @@ return ical.sync.parseICS(
 );
 ```
 
-4. **Required versus best-effort.** `fetchMainWindows` (`livewhale.ts:695`) throws only when one of the first `REQUIRED_WINDOW_COUNT` (3) windows fails outright with an error page or a network failure, or when those windows hold fewer than 50 events. A cut day, or any later window that fails, is listed in `failed_windows` on the LiveWhale entry in `status.json` and never degrades the source.
-5. **Group feeds** take the same completeness check with one attempt, so a cut group feed lands in `failed_groups` and its topics carry forward.
-6. **Source contract.** The `livewhale` entry in `scripts/lib/sourceContracts.mjs` now probes today's one-day window (built at `sourceContracts.mjs:36`) and requires `END:VCALENDAR`.
+4. **Required versus best-effort.** `fetchMainWindows` throws only when one of the first `REQUIRED_WINDOW_COUNT` (3) windows fails outright with an error page or a network failure, or when those windows hold fewer than 50 events. A cut day, or any later window that fails, is listed in `failed_windows` on the LiveWhale entry in `status.json` and never degrades the source.
+5. **Group feeds** take the same completeness check with one attempt. A cut group feed is refilled from the JSON group feed (`/live/json/events/group/<Name>`), which returned all 34 Student Environmental Resource Center events while the iCal group feed was cut. Only a group the JSON feed cannot fill lands in `failed_groups`, where its topics carry forward.
+6. **Source contract.** The `livewhale` entry in `scripts/lib/sourceContracts.mjs` now probes today's one-day window (built by `liveWhaleDayWindowUrl`) and requires `END:VCALENDAR`.
 
 ## Why This Works
 
 The upstream fault is in how LiveWhale renders some responses. Every observed cut stopped at `SUMMARY:` just before an event whose title holds a 4-byte emoji ("🏈 Chapters Watch Party"). The same event renders fine in other windows, so size or position matters too, and the exact trigger is unknown. Checking for `END:VCALENDAR` turns a silent empty calendar into a visible failure. Smaller windows change the response, which usually avoids the cut, and salvage bounds the loss when it does not. Weekly windows also stay far below the silent ~950-event cap. The busiest week seen held 526 events.
 
 LiveWhale's `end_date` is exclusive for timed events but includes the all-day events of the end day. Windows therefore share keys (`[a,b)`, then `[b,c)`), and the all-day rows that appear in both merge by UID. Building each window as `start..start+6` would drop every timed event on every seventh day, with no error anywhere.
+
+A simulated uniformly slow upstream (every request, redirect lookups included, answering after 10 s, then 14 s, just under the 15 s per-request timeout) finished in 80 s of the 90 s budget both times. The required windows all returned, group feeds past their 60 s deadline were recorded as failed, and redirect lookups that ran out of time fell back to the generic organizer. Window requests take an urgent lane in the shared pool, which is what keeps them from queueing behind the group feeds.
 
 ## Prevention
 
