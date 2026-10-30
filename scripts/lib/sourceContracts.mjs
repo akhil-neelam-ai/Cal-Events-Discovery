@@ -57,6 +57,11 @@ export const CONTRACTS = [
       if (!body.trimEnd().endsWith("END:VCALENDAR")) {
         throw new Error("response is a cut-off iCalendar (no END:VCALENDAR)");
       }
+      // Every campus day has events, so an empty calendar means the window
+      // URL shape stopped matching.
+      if (!body.includes("BEGIN:VEVENT")) {
+        throw new Error("response is an iCalendar with no events");
+      }
     },
   },
   {

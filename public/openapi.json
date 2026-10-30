@@ -259,6 +259,11 @@
             "type": "array",
             "items": { "type": "string" },
             "description": "LiveWhale only: department group feeds that failed this run. Never marks the source degraded."
+          },
+          "failed_windows": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "LiveWhale only: start dates (Pacific) of date windows that failed, came back cut off without a JSON refill, or held no events this run. Those dates may be missing events. Never marks the source degraded."
           }
         }
       }

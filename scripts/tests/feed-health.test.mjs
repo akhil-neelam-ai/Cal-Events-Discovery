@@ -235,6 +235,14 @@ test("LiveWhale contract rejects a cut-off calendar", () => {
       ),
     /cut-off/,
   );
+  assert.throws(
+    () =>
+      livewhale.validate(
+        undefined,
+        "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nEND:VCALENDAR\r\n",
+      ),
+    /no events/,
+  );
 });
 
 test("every contract source is a real, non-retired source", () => {
