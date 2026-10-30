@@ -148,18 +148,13 @@ export const CONTRACTS = [
     },
   },
   {
-    // BEGIN (Berkeley Gateway to Innovation) — Tribe/WP REST endpoint per
-    // scripts/sources/tribe.ts fetchBegin config (baseUrl: begin.berkeley.edu).
+    // BEGIN (Berkeley Gateway to Innovation) — public iCal feed read by
+    // scripts/sources/begin.ts. The old Tribe REST endpoint returns 410.
     name: "begin",
-    url: "https://begin.berkeley.edu/wp-json/tribe/events/v1/events?per_page=1",
+    url: "https://begin.berkeley.edu/api/public/events.ics",
     validate(_response, body) {
-      const parsed = JSON.parse(body);
-      if (
-        !parsed ||
-        typeof parsed !== "object" ||
-        !Array.isArray(parsed.events)
-      ) {
-        throw new Error("BEGIN Tribe response missing expected `events` array");
+      if (!/BEGIN:VCALENDAR/.test(body)) {
+        throw new Error("BEGIN response is not iCalendar data");
       }
     },
   },

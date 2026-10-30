@@ -10,6 +10,7 @@ import {
   parseGCalLink,
   targetMonths,
 } from "../../scripts/sources/bampfa.ts";
+import { parseBeginIcs } from "../../scripts/sources/begin.ts";
 import {
   cleanSummary,
   parseGameFlags,
@@ -479,6 +480,62 @@ test("Cal Bears parser strips game status flags", () => {
     isHome: false,
     isPast: true,
   });
+});
+
+test("BEGIN iCal parser reads Pacific times and drops ended events", () => {
+  const ics = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//UC Berkeley//BEGIN//EN",
+    "BEGIN:VEVENT",
+    "UID:collider-cup-xix@begin.berkeley.edu",
+    "DTSTAMP:20261027T225243Z",
+    "DTSTART;TZID=America/Los_Angeles:20261211T130000",
+    "DTEND;TZID=America/Los_Angeles:20261211T170000",
+    "SUMMARY:Collider Cup XIX",
+    "DESCRIPTION:Student teams pitch\\, then network.",
+    "LOCATION:Jarvis Auditorium\\, Grimes Engineering Center",
+    "URL:https://begin.berkeley.edu/events/collider-cup-xix",
+    "END:VEVENT",
+    "BEGIN:VEVENT",
+    "UID:newton-live-eric-ries@begin.berkeley.edu",
+    "DTSTAMP:20261027T225243Z",
+    "DTSTART;TZID=America/Los_Angeles:20261210T173000",
+    "DTEND;TZID=America/Los_Angeles:20261210T183000",
+    "SUMMARY:NEWTON LIVE: Eric Ries",
+    "LOCATION:Livestream",
+    "URL:https://begin.berkeley.edu/events/newton-live-eric-ries",
+    "END:VEVENT",
+    "BEGIN:VEVENT",
+    "UID:past-event@begin.berkeley.edu",
+    "DTSTAMP:20261027T225243Z",
+    "DTSTART;TZID=America/Los_Angeles:20261001T120000",
+    "DTEND;TZID=America/Los_Angeles:20261001T130000",
+    "SUMMARY:Already over",
+    "URL:https://begin.berkeley.edu/events/past-event",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+
+  const result = parseBeginIcs(ics, "2026-10-29T12:00:00.000Z", "2026-10-29");
+
+  assert.equal(result.rawCount, 3);
+  assert.equal(result.filteredPast, 1);
+  assert.equal(result.invalid, 0);
+  const cup = result.events.find((e) => e.title === "Collider Cup XIX");
+  assert.ok(cup);
+  assert.equal(cup.start_at, "2026-12-11T21:00:00.000Z");
+  assert.equal(cup.venue, "Jarvis Auditorium, Grimes Engineering Center");
+  assert.equal(cup.description, "Student teams pitch, then network.");
+  assert.equal(cup.source_id, "collider-cup-xix@begin.berkeley.edu");
+  assert.equal(
+    cup.canonical_url,
+    "https://begin.berkeley.edu/events/collider-cup-xix",
+  );
+  assert.equal(cup.modality, "in_person");
+  const live = result.events.find((e) => e.title.startsWith("NEWTON"));
+  assert.equal(live?.modality, "virtual");
+  assert.equal(live?.description, live?.title);
 });
 
 test("LiveWhale unit labels map known slugs", () => {
