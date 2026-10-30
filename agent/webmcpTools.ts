@@ -206,7 +206,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
   const searchBerkeleyEvents: WebMcpTool = {
     name: "search_berkeley_events",
     description:
-      'Search upcoming UC Berkeley campus events using the same ranked relevance engine as the CalEvents UI (search-index tokens, synonym expansion, intent chips, fuzzy fallback). Optional category/topic/source/date filters match the UI. Topic slugs come from events.json.topic_vocabulary.topics. With no date input, a date in the query ("tomorrow", "this weekend") sets the range, as in the UI; otherwise search runs from today with no end. Results report interpretations (the chips the query set), effectiveDateRange, fallbackMessage, relaxed, and total for paging with offset. Prefer this for discovery; use get_event_by_id for a single known id.',
+      'Search upcoming UC Berkeley campus events using the same ranked relevance engine as the CalEvents UI (search-index tokens, synonym expansion, intent chips, fuzzy fallback). Optional category/topic/source/date filters match the UI. Topic slugs come from events.json.topic_vocabulary.topics. With no date input, a date in the query ("tomorrow", "this weekend") sets the range, as in the UI; otherwise search runs from today with no end. Results report interpretations (the chips the query set), effectiveDateRange, fallbackMessage, relaxed, and total for paging with offset. An unknown or retired value, or a startDate/endDate that is not YYYY-MM-DD, returns an error. "All" in any case clears category or source. Pass dismiss to drop a chip; this is the only way an agent dismisses one. Prefer this for discovery; use get_event_by_id for a single known id.',
     inputSchema: {
       type: "object",
       properties: {
@@ -450,7 +450,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
   const getUiState: WebMcpTool = {
     name: "get_ui_state",
     description:
-      "Read the current CalEvents UI workspace. Returns the URL state (filters q/date/category/topic/source, selected event id), todayKey (Pacific), and `view`: what the page shows after the search engine ran. `view` holds requestedDateRange, effectiveDateRange, dateRangeWidened, activeChips, dismissedChipKeys, resultCount, the first visibleEventIds, fallbackMessage, notice, loading, and pending. It is null when no page has rendered. Read it again if pending is true or loading is not success. Topic slugs come from events.json.topic_vocabulary.topics. Optional feed freshness from status.json.",
+      "Read the current CalEvents UI workspace. Returns the URL state (filters q/date/category/topic/source, selected event id), todayKey (Pacific), and `view`: what the page shows after the search engine ran. `view` holds requestedDateRange, effectiveDateRange, dateRangeWidened, category, source, topic, activeChips, dismissedChipKeys, resultCount, the first 20 visibleEventIds, fallbackMessage, notice, loading, and pending. It is null when no page has rendered. pending is true while results can still change: a typed query has not reached them, the search index is still loading for a query of 2+ characters, or the URL is ahead of the view, as right after apply_ui_state. Read it again while pending is true or loading is not success. Topic slugs come from events.json.topic_vocabulary.topics. Optional feed freshness from status.json.",
     inputSchema: {
       type: "object",
       properties: {
@@ -564,7 +564,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
   const applyUiState: WebMcpTool = {
     name: "apply_ui_state",
     description:
-      "Update the open CalEvents page to match shared URL workspace state (q/date/category/topic/source/event). The default mode is replace: every field you leave out returns to its default, and the detail panel closes unless you pass event. Use mode merge to change only the fields you pass and keep the rest of the current URL. Pass reset true to return to the default view. Pass event null to close the detail panel. Valid categories, sources, dates and topic slugs come from list_filter_options. An unknown value or event id returns applied false with an error. The React UI syncs via history + popstate.",
+      "Update the open CalEvents page to match shared URL workspace state (q/date/category/topic/source/event). The default mode is replace: every field you leave out returns to its default, and the detail panel closes unless you pass event. Use mode merge to change only the fields you pass and keep the rest of the current URL. Pass reset true to return to the default view. Pass event null to close the detail panel. Valid categories, sources, dates and topic slugs come from list_filter_options. An unknown value or event id returns applied false with an error, including a stale event id that merge keeps from the URL. If the page URL changes while a merge runs, it returns applied false with a conflict error: call get_ui_state, then retry. Chip dismissal is search-only: pass dismiss to search_berkeley_events. The page clears dismissed chips whenever its URL changes. The React UI syncs via history + popstate. Then read get_ui_state until view.pending is false.",
     inputSchema: {
       type: "object",
       properties: {

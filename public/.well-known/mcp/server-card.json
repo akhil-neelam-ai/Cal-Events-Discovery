@@ -27,7 +27,7 @@
     },
     "tools": {
       "discovery": "https://cal-events.com/.well-known/agent-skills/index.json",
-      "browser": "WebMCP tools register on the homepage from the app bundle when navigator.modelContext is available. They run only in that browser tab: search_berkeley_events (ranked search; reports interpretations, effectiveDateRange, relaxed, fallbackMessage, and total for paging with offset), list_filter_options (valid categories, active sources, date presets, topics), get_event_by_id, generate_event_ics, get_cal_events_feed_status, get_ui_state (URL state plus a view snapshot of what the page shows), apply_ui_state (replace or merge), build_calevents_url, get_event_directions."
+      "browser": "WebMCP tools register on the homepage from the app bundle when navigator.modelContext is available. They run only in that browser tab: search_berkeley_events (ranked search; reports interpretations, effectiveDateRange, relaxed, fallbackMessage, and total for paging with offset), list_filter_options (valid categories, active sources, date presets, topics), get_event_by_id, generate_event_ics, get_cal_events_feed_status, get_ui_state (URL state plus a view snapshot of what the page shows; read again while view.pending is true), apply_ui_state (replace or merge; chip dismissal is search-only, through search_berkeley_events dismiss), build_calevents_url, get_event_directions. An unknown or retired value, or a date that is not YYYY-MM-DD, is an error."
     },
     "prompts": {
       "whats-on-tonight": {

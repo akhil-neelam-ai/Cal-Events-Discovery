@@ -107,7 +107,12 @@
         <code>apply_ui_state</code> replaces the whole view unless you pass
         <code>mode: "merge"</code>. Pass <code>event: null</code> to close the
         detail panel. Read <code>view</code> from <code>get_ui_state</code> to
-        see what the page shows. Search inputs such as
+        see what the page shows, and read it again while
+        <code>view.pending</code> is true. A merge that races a visitor's
+        change returns <code>applied: false</code>, so read the state and
+        retry. Chip dismissal is search-only: pass <code>dismiss</code> to
+        <code>search_berkeley_events</code>. The page clears dismissed chips
+        whenever its URL changes. Search inputs such as
         <code>startDate</code>, <code>endDate</code>, and
         <code>limit</code> have no URL form.
       </p>
@@ -115,8 +120,9 @@
       <h2>WebMCP tools</h2>
       <p>
         These run only in a browser tab on the homepage, through
-        <code>navigator.modelContext</code>. An unknown category, source, or
-        topic is an error.
+        <code>navigator.modelContext</code>. An unknown category, source,
+        topic, or date preset is an error, and so is a date that is not
+        <code>YYYY-MM-DD</code>.
       </p>
       <ul>
         <li>

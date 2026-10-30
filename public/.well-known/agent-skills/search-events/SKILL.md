@@ -12,7 +12,9 @@ Optional inputs: `query`, `datePreset` (`today` | `tomorrow` | `week` |
 `upcoming`), `category`, `topic`, `source`, `startDate`, `endDate`, `dismiss`,
 `limit` (1 to 50), `offset`.
 Call `list_filter_options` first for valid categories, active sources, date
-presets, and topics. An unknown or retired value is an error. For `topic`, use
+presets, and topics. An unknown or retired value is an error, and so is a
+`startDate` or `endDate` that is not `YYYY-MM-DD`. Matching ignores case, and
+`"All"` clears a category or source. For `topic`, use
 a slug from the published `topic_vocabulary.topics` block in `events.json`;
 the vocabulary is the source of truth and may change.
 
@@ -30,6 +32,8 @@ Read these outputs on every call:
   was dropped. Do not present the results as exact matches.
 - `interpretations`: chips the query set, each with a `key` and `label`. To
   undo one, call again with its key in `dismiss`, like the chip's "x" in the UI.
+  Dismissal is search-only. `apply_ui_state` has no dismiss field, and the
+  page clears dismissed chips whenever its URL changes.
 - `total`, `offset`, `limit`: page with `offset += limit` while
   `offset < total`.
 
@@ -38,7 +42,9 @@ To show a similar view in the UI, call `apply_ui_state` with matching
 `startDate`, `endDate`, `limit`, `offset`, or `dismiss`, so the page can show a
 different set. Call `get_ui_state` afterward and compare its `view`
 (`effectiveDateRange`, `activeChips`, `resultCount`, `visibleEventIds`) with
-your result before telling the user the page matches.
+your result before telling the user the page matches. Read it again while
+`view.pending` is true. Right after `apply_ui_state`, the page may not have
+rendered the new URL yet.
 
 ## Data Source (HTTP)
 

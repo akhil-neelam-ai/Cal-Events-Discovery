@@ -24,4 +24,5 @@ deep link, directions, or the official page for one event id.
 - Online-only locations may have a null `directionsUrl`.
 - To open the event on the page, call `apply_ui_state` with `mode: "merge"` and
   `event=<id>`. An unknown id returns `applied: false`. Pass `event: null` to
-  close the panel.
+  close the panel. A conflict error means the visitor changed the page during
+  the call. Call `get_ui_state`, then retry.

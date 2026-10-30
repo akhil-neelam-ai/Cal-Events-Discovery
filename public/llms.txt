@@ -57,13 +57,15 @@ Humans and agents share the same homepage query string:
 
 WebMCP helpers: `build_calevents_url`, `get_ui_state`, `apply_ui_state`.
 
-`apply_ui_state` replaces the whole view by default. Pass `mode: "merge"` to change only some fields, `reset: true` for the default view, or `event: null` to close the detail panel. An unknown value returns `applied: false`. A `date` you pass stays in the URL, so a date word in `q` cannot override it. Then call `get_ui_state` and read `view` for what the page shows: the effective date range, chips, result count, and visible event ids.
+`apply_ui_state` replaces the whole view by default. Pass `mode: "merge"` to change only some fields, `reset: true` for the default view, or `event: null` to close the detail panel. An unknown value or event id returns `applied: false`. In merge mode that includes a stale event id already in the URL, and a URL the visitor changed during the call. Call `get_ui_state`, then retry. A `date` you pass stays in the URL, so a date word in `q` cannot override it. Then call `get_ui_state` and read `view` for what the page shows: the effective date range, chips, result count, and visible event ids. Read it again while `view.pending` is true.
+
+Chip dismissal is search-only. Pass `dismiss` to `search_berkeley_events`. `apply_ui_state` has no dismiss field, and the page clears dismissed chips whenever its URL changes.
 
 ## WebMCP Tools (homepage)
 
 Primitives (capability, not multi-step workflows): `search_berkeley_events` (ranked UI path), `get_event_by_id`, `generate_event_ics`, `get_cal_events_feed_status`, `get_ui_state`, `apply_ui_state`, `build_calevents_url`, `get_event_directions`, `list_filter_options` (valid categories, sources, date presets, topic slugs). Named outcomes live in MCP prompts and agent skills.
 
-These tools run only in a browser tab on the homepage. An unknown category, source, or topic is an error, and a retired source such as `callink` is not accepted.
+These tools run only in a browser tab on the homepage. An unknown category, source, topic, or date preset is an error, and so is a `startDate` or `endDate` that is not `YYYY-MM-DD`. A retired source such as `callink` is not accepted. `"All"` in any case clears a category or source.
 
 `search_berkeley_events` reads date words in the query ("tomorrow", "this weekend") when you pass no date input. With no date at all it searches every upcoming day. A query's today or tomorrow widens to the week when that day has no match, as in the UI. A `datePreset` you pass never widens. Each result reports:
 

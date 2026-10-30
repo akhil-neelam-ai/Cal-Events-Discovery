@@ -30,7 +30,10 @@ Defaults omit params (default date bucket is This Week).
    page displays, such as `effectiveDateRange` and `visibleEventIds`.
 4. On an open CalEvents tab with WebMCP, call `apply_ui_state` so the UI updates
    to that workspace. It replaces the whole view unless you pass
-   `mode: "merge"`. A `date` you pass stays in the URL.
+   `mode: "merge"`. A `date` you pass stays in the URL. If a merge returns a
+   conflict error, the visitor changed the page during the call. Call
+   `get_ui_state`, then retry. Afterward, read `get_ui_state` again while
+   `view.pending` is true.
 5. Prefer the official event `url` when handing off to tickets or RSVP.
 
 ## Notes

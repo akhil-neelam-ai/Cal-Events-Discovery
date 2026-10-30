@@ -6,7 +6,7 @@
       "type": "skill-md",
       "description": "Search upcoming UC Berkeley campus events using the public CalEvents event feed.",
       "url": "/.well-known/agent-skills/search-events/SKILL.md",
-      "digest": "sha256:102be0d6c9f10625646127be46666481f38da58b9e10010980231cea54cacc8a"
+      "digest": "sha256:6b474a6a745ff12f66ae8ba3027628b4bbdc2f03c0ea76c6d60e869f38fc5e61"
     },
     {
       "name": "event-feed-status",
@@ -20,7 +20,7 @@
       "type": "skill-md",
       "description": "Look up a single CalEvents event by id with directions and calendar links.",
       "url": "/.well-known/agent-skills/event-detail/SKILL.md",
-      "digest": "sha256:2f252caadbfdc1b5171515d0298301e60e167d82d37cca2ec3cd9d49b3a90f84"
+      "digest": "sha256:6ebd8c44977237dbb99b81099c4c8bef8b759473ebade5464844ade391ce537f"
     },
     {
       "name": "calendar-export",
@@ -34,7 +34,7 @@
       "type": "skill-md",
       "description": "Build shareable CalEvents deep links from shared URL workspace params.",
       "url": "/.well-known/agent-skills/share-event/SKILL.md",
-      "digest": "sha256:fbccb3a5e25787f1e84ca56ea9b71f23014e7651beb960bcc83401a34ebecea6"
+      "digest": "sha256:9a089c19200bda61f60cd9c25e45e2734a223be780130031b951e628ccd50537"
     }
   ]
 }
