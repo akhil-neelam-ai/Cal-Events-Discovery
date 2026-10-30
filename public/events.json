@@ -1803,7 +1803,7 @@
       "date": "2026-10-31",
       "time": "9:00 AM",
       "location": "Berkeley, CA",
-      "description": "Cal at NC StateDate: Saturday, October 31Kickoff: 9:00 am PT / 12:00 pm ETLocation: Carter-Finley Stadium. Raleigh, N.C.Cal Alumni Club of Chicago (https://www.caachicago.org/)Location: The Bad Apple Lincoln Park, 658 W. Belden Ave., Chicago, IL Cal Alumni Club of Washington D.C. (https://www.facebook.com/CalAlumniDC)Location: Town Tavern, 2323 Columbia Road NW, Washington, DC 20009 Cal Alumni of Los Angeles (https://www.instagram.com/calalumnila/)Locations: Busby's West, 3110 Santa Monica Blvd., Santa Monica, CA Drugstore Cowboy, 4330 Sunset Blvd., Los Angeles, CA Orange County Cal Alumni Club (https://www.facebook.com/groups/occalalum/)PDX Cal Alumni Club (https://www.facebook.com/pdxcalbears/)Location: Broadway Grill & Brewery San Diego Cal Alumni (https://www.facebook.com/sdcalalumni/)Location: Chief's Burgers, Beer, and Spirits 124 Lomas Santa Fe Drive, Suite 108, Solana Beach, CA San Gabriel Valley Cal Alumni Club (https://www.facebook.com/groups/SGVCalAlumni/)",
+      "description": "Cal at NC StateDate: Saturday, October 31Kickoff: 9:00 am PT / 12:00 pm ETLocation: Carter-Finley Stadium. Raleigh, N.C.Cal Alumni Club of Chicago (https://www.caachicago.org/)Location: The Bad Apple Lincoln Park, 658 W. Belden Ave., Chicago, IL Cal Alumni Club of Washington D.C. (https://www.facebook.com/CalAlumniDC)Location: Town Tavern, 2323 Columbia Road NW, Washington, DC 20009 Cal Alumni of Los Angeles (https://www.instagram.com/calalumnila/)Locations: Busby's West, 3110 Santa Monica Blvd., Santa Monica, CA Drugstore Cowboy, 4330 Sunset Blvd., Los Angeles, CA Orange County Cal Alumni Club (https://www.facebook.com/groups/occalalum/)PDX Cal Alumni Club (https://www.facebook.com/pdxcalbears/)Location: Broadway Grill & Brewery San Diego Cal Alumni (https://www.facebook.com/sdcalalumni/)Location: Chief's Burgers, Beer, and Spirits 124 Lomas Santa Fe Drive, Suite 108, Solana Beach, CA San Gabriel Valley Cal Alumni Club (https://www.facebook.com/groups/SGVCalAlumni/)Cal Alumni of Silicon Valley (https://www.facebook.com/people/Cal-Alumni-of-Silicon-Valley/61582872271699)Location: Molly O's, San Carlos, CARSVP (https://www.eventbrite.com/e/cal-alumni-of-silicon-valley-cal-vs-nc-state-watch-party-tickets-2004023496224?aff=oddtdtcreator)Cal Alumni Club of Philadelphia (Cal Philly)Location: Cavanaugh's Headhouse, 421 S 2nd St, Philadelphia, PA 19147",
       "tags": [
         "Student Life"
       ],
@@ -1934,7 +1934,7 @@
       "date": "2026-10-31",
       "time": "1:00 PM",
       "location": ", Spieker Aquatics Complex",
-      "description": "California Men's Water Polo vs UCLA",
+      "description": "California Men's Water Polo vs UCLAStreaming Video: https://www.overnght.com/event/89b23358-51b3-4a5f-8bd7-93d2726cd910?src=card (https://www.overnght.com/event/89b23358-51b3-4a5f-8bd7-93d2726cd910?src=card)",
       "tags": [
         "Sports"
       ],
@@ -1944,22 +1944,20 @@
       "end_time": "2:30 PM"
     },
     {
-      "id": "bampfa_steffani-jemison-and-leslie-cuyjet::2026-10-31",
+      "id": "livewhale_20261031T200000Z-336514@events.berkeley.edu",
       "title": "Performance / Entanglement: Steffani Jemison and Leslie Cuyjet on Maren Hassinger and Senga Nengudi",
       "organizer": "BAMPFA",
       "date": "2026-10-31",
       "time": "1:00 PM",
-      "location": "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
-      "description": "Artist Steffani Jemison and choreographer Leslie Cuyjet perform a collaborative piece that reflects on the dynamic artistic relationship between Maren Hassinger and Senga Nengudi, the intense intimacy and attunement involved in longstanding artistic collaborations, and the powerful intergenerational legacy of the artists' collective works.",
+      "location": "BAMPFA",
+      "description": "Artist Steffani Jemison and choreographer Leslie Cuyjet perform a collaborative piece that reflects on the dynamic artistic relationship between Maren Hassinger and Senga Nengudi. Performing alongside projections of archival images depicting Hassinger and Nengudi's collaborations, Jemison and Cuyjet improvise together with text, dance, and thread. The performance meditates on the intense intimacy and attunement involved in longstanding artistic collaborations like Hassinger and Nengudi's, paying homage to the powerful intergenerational legacy of their collective works.",
       "tags": [
         "Arts"
       ],
-      "topics": [
-        "music-performance",
-        "visual-arts-exhibitions"
-      ],
-      "url": "https://bampfa.org/event/steffani-jemison-and-leslie-cuyjet",
-      "source": "bampfa"
+      "topics": [],
+      "url": "https://events.berkeley.edu/BAMPFA/event/336514-performance-entanglement-steffani-jemison-and",
+      "source": "livewhale",
+      "end_time": "2:00 PM"
     },
     {
       "id": "livewhale_20261031T210000Z-334740@events.berkeley.edu",
@@ -1978,22 +1976,6 @@
       "end_time": "8:00 PM"
     },
     {
-      "id": "livewhale_20261031T223000Z-334742@events.berkeley.edu",
-      "title": "Lap Swim",
-      "organizer": "Recreational Sports",
-      "date": "2026-10-31",
-      "time": "3:30 PM",
-      "location": "Spieker Pool",
-      "description": "Lap Swim",
-      "tags": [
-        "Sports"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/recsports/event/334742-lap-swim",
-      "source": "livewhale",
-      "end_time": "5:30 PM"
-    },
-    {
       "id": "livewhale_20261031T230000Z-328135@events.berkeley.edu",
       "title": "Film Screening: Vivre sa vie",
       "organizer": "BAMPFA",
@@ -2010,6 +1992,22 @@
       "url": "https://events.berkeley.edu/BAMPFA/event/328135-film-screening-vivre-sa-vie",
       "source": "livewhale",
       "end_time": "5:00 PM"
+    },
+    {
+      "id": "livewhale_20261031T230000Z-334742@events.berkeley.edu",
+      "title": "Lap Swim",
+      "organizer": "Recreational Sports",
+      "date": "2026-10-31",
+      "time": "4:00 PM",
+      "location": "Spieker Pool",
+      "description": "Lap Swim",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/334742-lap-swim",
+      "source": "livewhale",
+      "end_time": "5:30 PM"
     },
     {
       "id": "bampfa_vivre-sa-vie::2026-10-31",
@@ -2367,18 +2365,18 @@
       "end_time": "2:00 PM"
     },
     {
-      "id": "livewhale_20261101T180000Z-334845@events.berkeley.edu",
+      "id": "livewhale_20261101T180000Z-336542@events.berkeley.edu",
       "title": "Lap Swim",
       "organizer": "Recreational Sports",
       "date": "2026-11-01",
       "time": "10:00 AM",
-      "location": "Spieker Pool",
+      "location": "Legends Aquatics Center",
       "description": "Lap Swim",
       "tags": [
         "Sports"
       ],
       "topics": [],
-      "url": "https://events.berkeley.edu/recsports/event/334845-lap-swim",
+      "url": "https://events.berkeley.edu/recsports/event/336542-lap-swim",
       "source": "livewhale",
       "end_time": "2:00 PM"
     },
@@ -2485,7 +2483,7 @@
       "date": "2026-11-01",
       "time": "1:00 PM",
       "location": ", Spieker Aquatics Complex",
-      "description": "California Men's Water Polo vs USC",
+      "description": "California Men's Water Polo vs USCStreaming Video: https://www.overnght.com/event/24c62e64-5195-43a3-a029-7a47ac67e223?src=card (https://www.overnght.com/event/24c62e64-5195-43a3-a029-7a47ac67e223?src=card)",
       "tags": [
         "Sports"
       ],
@@ -3904,7 +3902,7 @@
       "date": "2026-11-02",
       "time": "5:00 PM",
       "location": "Grimes Engineering Center, Jarvis Auditorium",
-      "description": "An Art, Technology, & Culture Colloquium lecture, presented as part of BCNM's Indigenous Technologies program, curated by Indigenous Technologies Coordinator Talia Dixon, co-sponsored by the Arts Practice Department, the Department of Theater, Dance, and Performance Studies, and the Graduate Students of Theater, Dance, and Performance Studies with Tanya Lukin Linklater Artist-Choreographer and Faculty Mentor, Institute of American Indian Arts - Monday, November 2, 2026 5:00 — 6:30 PM Eugene Jarvis Auditorium,Grimes Engineering Center (http://engineering.berkeley.edu/about/facilities/grimes-engineering-center/) RSVP here (https://docs.google.com/forms/d/e/1FAIpQLScK01nSupvyyNJV1xSGzG8Gol7h0iXJEiqUM9ucuwBhNkMCuA/viewform?usp=publish-editor)! Save the event to your bCal here (https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=N3FoYm1uYWs0b25vb2FnazZyaDcybWhxNzYgZDV1NWVrN2o4aXBvZDBvOGlxNDE1ZTFhdnNAZw&tmsrc=d5u5ek7j8ipod0o8iq415e1avs%40group.calendar.google.com)! - Compelled by lineages of Sugpiaq cultural work and their continuance despite imperial and colonial disruptions of their lifeways, Tanya Lukin Linklater will discuss her ongoing practice of visiting ancestral belongings — Sugpiaq technologies — in museum collections, including UC Berkeley's Hearst Museum of Anthropology. The talk will then bring into focus her speculative responses to photographic documentation of Sugpiaq belongings in the Kunstkamera in St. Petersburg, Russia. Coupled with her meditations on estuaries, grasses, and customary practices of the Kodiak archipelago, these threads organize Crested, her solo exhibition at Portikus, Frankfurt, and Tendon thread, a performance commission for the Center for Human Rights and the Arts and Fisher Center at Bard College, premiering in winter 2026. Workshop Opportunity Tanya Lukin Linklater will also host an inclusive workshop for UC Berkeley students and community members that involves creative writing, embodied inquiry, and meditations on Sugpiaq grasses, the following afternoon, Tuesday, November 3, from 4:30 to 6:30 pm, at Bancroft Dance Studio (https://tdps.berkeley.edu/about/directions/bancroft). Participation is limited to 25 people, and registration requires completion of this brief questionnaire (https://docs.google.com/forms/d/e/1FAIpQLSf2zl8_3bpc7HPinRsBotpgW9yoCmahdgrUtbY6FTxiMKFRMg/viewform?usp=publish-editor). Participants will be reminded of workshop approximately one week prior. About Tanya Lukin Linklater Tanya Lukin Linklater makes dances in museums, videos, sculptures, and works on paper. She thinks with weather, embodiment, beingness, and ancestral belongings in her practice. She is compelled by scores, orality, poetics, embodied inquiry, Indigenous knowledge transmission, and ephemerality. Her recent and forthcoming exhibitions and performances include Camden Art Centre, London, UK; Dia Art Foundation, New York; National Gallery of Canada, Ottawa; Portikus, Frankfurt; Rudolfinum, Prague; SITE SANTA FE; and Fisher Center at Bard, Annandale-on-Hudson, New York. Her artworks have entered the collections of Agnes Etherington Art Centre, Art Gallery of Ontario, Crystal Bridges Museum of American Art, Remai Modern, San Francisco Museum of Modern Art, Tate Americas Foundation, Vancouver Art Gallery, Walker Art Center, and elsewhere. Her book, Slow Scrape (2nd edition, Talonbooks, Vancouver 2022), draws on documentary poetics, concrete-based installations, event scores, and can be read alongside her choreographic practice. Her recent publications include contributions to The Routledge Companion to Indigenous Art Histories in the United States and Canada, Jeffrey Gibson: the space in which to place me, Mark: Sonya Kelliher-Combs, and Native Visual Sovereignty: A Reader on Art and Performance. In 2024 she was awarded a post-doctoral fellowship in Decolonial and Transformational Indigenous Art Practices with Dr. Heather Igloliorte, Canada Excellence Research Chair, at University of Victoria. A dedicated educator, Tanya was a faculty mentor in the Institute of American Indian Arts' MFA in Studio Arts 2021-2026. About Indigenous Technologies Indigenous Technologies is a program of BCNM that engages questions of technology and new media in relation to global structures of indigeneity, settler colonialism, and genocide in the 21st century. Our Indigenous Tech events and ongoing conversations with Indigenous scholars and communities aim to critically envision and reimagine what a more just and sustainable technological future can look like. We highlight Indigenous engagements with robotics, computer science, telecommunications, artificial intelligence, virtual reality, social media, online activism, video games, and more.",
+      "description": "An Art, Technology, & Culture Colloquium lecture, presented as part of BCNM's Indigenous Technologies program, curated by Indigenous Technologies Coordinator Talia Dixon, co-sponsored by the Arts Practice Department, the Department of Theater, Dance, and Performance Studies, and the Graduate Students of Theater, Dance, and Performance Studies with Tanya Lukin Linklater Artist-Choreographer and Faculty Mentor, Institute of American Indian Arts - Monday, November 2, 2026 5:00 — 6:30 PM Eugene Jarvis Auditorium,Grimes Engineering Center (http://engineering.berkeley.edu/about/facilities/grimes-engineering-center/) RSVP here (https://docs.google.com/forms/d/e/1FAIpQLScK01nSupvyyNJV1xSGzG8Gol7h0iXJEiqUM9ucuwBhNkMCuA/viewform?usp=publish-editor)! Save the event to your bCal here (https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=N3FoYm1uYWs0b25vb2FnazZyaDcybWhxNzYgZDV1NWVrN2o4aXBvZDBvOGlxNDE1ZTFhdnNAZw&tmsrc=d5u5ek7j8ipod0o8iq415e1avs%40group.calendar.google.com)! - Compelled by lineages of Sugpiaq cultural work and our continuance despite imperial and colonial disruptions of our lifeways, Tanya Lukin Linklater will discuss her ongoing practice of visiting ancestral belongings, Sugpiaq technologies, in museum collections. The talk will then bring into focus her speculative responses to photographic documentation of Sugpiaq belongings in the Kunstkamera in St. Petersburg, Russia. Coupled with her meditations on estuaries, grasses, and customary practices of the Kodiak archipelago, these threads organize Crested, her solo exhibition at Portikus, Frankfurt, and Tendon thread, a performance commission for the Center for Human Rights and the Arts and Fisher Center at Bard College, premiering in winter 2026. Workshop Opportunity Tanya Lukin Linklater will also host a hands-on workshop for UC Berkeley students and community members, expanding on the content of her talk, the following afternoon, Tuesday, November 3, from 4:30 to 6:30 pm, at Bancroft Dance Studio (https://tdps.berkeley.edu/about/directions/bancroft). Participation is limited to 25 people, and requires completion of this brief application (https://docs.google.com/forms/d/e/1FAIpQLSf2zl8_3bpc7HPinRsBotpgW9yoCmahdgrUtbY6FTxiMKFRMg/viewform?usp=publish-editor). Selected participants will be notified approximately one week prior to the workshop. About Tanya Lukin Linklater Tanya Lukin Linklater makes dances in museums, videos, sculptures, and works on paper. She thinks with weather, embodiment, beingness, and ancestral belongings in her practice. She is compelled by scores, orality, poetics, embodied inquiry, Indigenous knowledge transmission, and ephemerality. Her recent and forthcoming exhibitions and performances include Camden Art Centre, London, UK; Dia Art Foundation, New York; National Gallery of Canada, Ottawa; Portikus, Frankfurt; Rudolfinum, Prague; SITE SANTA FE; and Fisher Center at Bard, Annandale-on-Hudson, New York. Her artworks have entered the collections of Agnes Etherington Art Centre, Art Gallery of Ontario, Crystal Bridges Museum of American Art, Remai Modern, San Francisco Museum of Modern Art, Tate Americas Foundation, Vancouver Art Gallery, Walker Art Center, and elsewhere. Her book, Slow Scrape (2nd edition, Talonbooks, Vancouver 2022), draws on documentary poetics, concrete-based installations, event scores, and can be read alongside her choreographic practice. Her recent publications include contributions to The Routledge Companion to Indigenous Art Histories in the United States and Canada, Jeffrey Gibson: the space in which to place me, Mark: Sonya Kelliher-Combs, and Native Visual Sovereignty: A Reader on Art and Performance. In 2024 she was awarded a post-doctoral fellowship in Decolonial and Transformational Indigenous Art Practices with Dr. Heather Igloliorte, Canada Excellence Research Chair, at University of Victoria. A dedicated educator, Tanya was a faculty mentor in the Institute of American Indian Arts' MFA in Studio Arts 2021-2026. About Indigenous Technologies Indigenous Technologies is a program of BCNM that engages questions of technology and new media in relation to global structures of indigeneity, settler colonialism, and genocide in the 21st century. Our Indigenous Tech events and ongoing conversations with Indigenous scholars and communities aim to critically envision and reimagine what a more just and sustainable technological future can look like. We highlight Indigenous engagements with robotics, computer science, telecommunications, artificial intelligence, virtual reality, social media, online activism, video games, and more.",
       "tags": [
         "Academic",
         "Arts",
@@ -4267,66 +4265,6 @@
       "url": "https://events.berkeley.edu/mcb/event/323097-cedric-feschotte-division-of-immunology-and",
       "source": "livewhale",
       "end_time": "12:00 PM"
-    },
-    {
-      "id": "livewhale_20261103T190000Z-334197@events.berkeley.edu",
-      "title": "Exhibit | An Archive of Archives: Roman Vishniac's Exhibition History | New York, 1971-72",
-      "organizer": "Magnes Collection of Jewish Art & Life",
-      "date": "2026-11-03",
-      "time": "11:00 AM",
-      "location": "2121 Allston Way, Berkeley, CA 94720",
-      "description": "An Archive of Archives: Roman Vishniac's Exhibition History | New York, 1971-72 shares some of Vishniac's iconic images documenting Jewish life in Central and Eastern Europe between 1930 and 1940. The Magnes acquired the Roman Vishniac Archive (https://magnes.berkeley.edu/collections/museum/jewish-art/vishniac/) in 2018, thanks to an unprecedented gift by the late Mara Vishniac Kohn (1926-2018). The collection is comprised of thousands of original prints, negatives, and archival materials documenting the long international career of Roman Vishniac (1897-1990), a Russian-born modernist photographer most notable for documenting Eastern-European Jewish life in the years immediately preceding the Holocaust. Vishniac's work has been celebrated in exhibitions and publications since the 1940s. The gift represents one of the most important acquisitions made by The Magnes since its founding in 1962, and one of inestimable value to UC Berkeley for insight and research into 20th-century East European Jewry, and beyond. As this important collection is being painstakingly processed and documented, the Magnes is beginning to share new findings with the public. An archive of this magnitude is bound to reveal many discoveries, opening up new perspectives on the life and work of a globally recognized photographer, and allowing us to revisit some of the salient moments in his career. A veritable \"archive of archives,\" the collection also contains among its treasures substantial documentation of some of Vishniac's early exhibitions. With this installation, the Magnes is sharing with the public a group of images from an exhibition originally presented at the Jewish Museum in New York (October 19, 1971, until January 23, 1972). The show later traveled to universities, libraries, art galleries, and Jewish museums in New York State, New Jersey, Washington, DC, Illinois, and California. It showcased a selection from a broader project, titled The Concerns of Roman Vishniac: Man, Nature, and Science. The original project, now lost in its entirety, had been created under the direction of Cornell Capa (1918-2008) as part of a series entitled The Concerned Photographer, under the auspices of the International Fund for Concerned Photography. The exhibition included microscopic photography, and a multimedia installation about the photographer's scientific images, along with many of Vishniac's most iconic images from Eastern Europe, which are presented here. The exhibition closes Dec 17, 2026. Major support for the Magnes comes from the Helzel Family Foundation, the Magnes Museum Foundation, the Magnes Leadership Circle, and the the Office of the Chancellor at the University of California, Berkeley. The Magnes is committed to providing exhibitions and programs that are accessible, welcoming, and inclusive of our community.If you have any questions about accessibility or require accommodations, please contact us at magnes@berkeley.edu (mailto:magnes@berkeley.edu) or 510.643.2526.",
-      "tags": [
-        "Arts",
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "visual-arts-exhibitions",
-        "history-humanities",
-        "career-jobs"
-      ],
-      "url": "https://events.berkeley.edu/live/events/330956-exhibit-an-archive-of-archives-roman-vishniacs",
-      "source": "livewhale",
-      "end_time": "4:00 PM"
-    },
-    {
-      "id": "livewhale_20261103T190000Z-334300@events.berkeley.edu",
-      "title": "Exhibit | Nancy Lee Katz: A Private Pantheon | Part 1",
-      "organizer": "Magnes Collection of Jewish Art & Life",
-      "date": "2026-11-03",
-      "time": "11:00 AM",
-      "location": "2121 Allston Way, Berkeley, CA 94720",
-      "description": "Nancy Lee Katz: A Private Pantheon (https://magnes.berkeley.edu/exhibitions/nancy-lee-katz-a-private-pantheon/) explores the artist's decades-long effort to photograph artists, writers, musicians, and thinkers she admired, including Justice Ruth Bader Ginsburg, Stephen Sondheim, Maya Lin, Roy Lichtenstein, and Seiji Ozawa. Created in the intimate environments of personal studios and workplaces, these 133 portraits look behind public accolades to reveal a quiet, private presence. Unfolding in two parts (fall and spring), the exhibition presents, for the first time, the entirety of Katz's Pantheon. Part 1 | Sep 2 - Dec 17, 2026 Part 2 | Jan 19 - May 13, 2027Nancy Lee Katz (1947–2018) was a prolific photographer who spent her life documenting people and places. Katz was born to a Jewish family in Los Angeles and traveled extensively in her youth, exploring Europe and Morocco before beginning work as an assistant film editor and still photographer. From 1986 to 2010, she created a remarkable pantheon of portraits, focusing on artists, musicians, writers, and thinkers whose work she respected, though she never sold nor published her prints. She also pursued music, art, and travel, documenting traditional cultures worldwide. Katz's independence and passion left a lasting mark on those who knew her. Exhibition Team:Lauren Graves, Guest CuratorAlissa Schapiro and Hannah Weisman, Coordinating CuratorsAndrea Calderon, RegistrarDavid Sullivan, Head PreparatorCarole Jeung, Designer Special thanks to Michael S. Sachs, who has made this exhibition possible through his generous gift of Nancy Lee Katz's Pantheon (2024.1), loan of additional prints, and gracious consultations. The Magnes is committed to providing exhibitions and programs that are accessible, welcoming, and inclusive of our community.If you have any questions about accessibility or require accommodations, please contact us at magnes@berkeley.edu (mailto:magnes@berkeley.edu) or 510.643.2526.",
-      "tags": [
-        "Arts"
-      ],
-      "topics": [
-        "visual-arts-exhibitions"
-      ],
-      "url": "https://events.berkeley.edu/live/events/330830-nancy-lee-katz-a-private-pantheon-part-1",
-      "source": "livewhale",
-      "end_time": "4:00 PM"
-    },
-    {
-      "id": "livewhale_20261103T190000Z-334254@events.berkeley.edu",
-      "title": "Exhibit | Time Capsules: Exploring the Permanent Collection",
-      "organizer": "Magnes Collection of Jewish Art & Life",
-      "date": "2026-11-03",
-      "time": "11:00 AM",
-      "location": "2121 Allston Way, Berkeley, CA 94720",
-      "description": "In celebrating 15 years at UC Berkeley, Time Capsules revisits ten out of the over thirty exhibitions presented since the Magnes opened the doors of its new academic home to the public. These exhibitions relied on its extensive, and ever-growing, holdings of art, books, manuscripts, and material culture, as well as different modalities in which these materials can be studied and displayed: from curatorial and scholarly forays into the collection to research projects created in collaboration with UC Berkeley Graduate and Undergraduate students, to real-life experiments with ideas borne out of courses and seminars. Each exhibition featured in Time Capsules is unique in exploring the cultures of the Jews in a global perspective, in bringing museum objects \"back to life,\" and in offering ever-changing ways to understand the past in order to inform the future.Exhibition Team:Francesco Spagnolo and Shir Gal Kochavi, CuratorsZoe Foster, Undergraduate Curatorial ApprenticeJulie Franklin, RegistrarErnest Jolly, Head PreparatorCarole Jeung, Designer Located in downtown Berkeley, just steps from campus, the museum and research center is home to one of the world's preeminent collections of Jewish art and life. The Magnes generates new knowledge and understanding of Jewish cultures with and for its academic and public audiences through its collections-based exhibitions and programs. The Magnes is committed to providing exhibitions and programs that are accessible, welcoming, and inclusive of our community.If you have any questions about accessibility or require accommodations, please contact us at magnes@berkeley.edu (mailto:magnes@berkeley.edu) or 510.643.2526.",
-      "tags": [
-        "Arts",
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "visual-arts-exhibitions"
-      ],
-      "url": "https://events.berkeley.edu/live/events/330894-exhibit-time-capsules-exploring-the-permanent",
-      "source": "livewhale",
-      "end_time": "4:00 PM"
     },
     {
       "id": "livewhale_20261103T190000Z-335166@events.berkeley.edu",
@@ -5004,21 +4942,6 @@
       "end_time": "8:30 PM"
     },
     {
-      "id": "livewhale_20261104T080000Z-326193@events.berkeley.edu",
-      "title": "Exhibit Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-11-04",
-      "time": "All day",
-      "location": "2155 Center Street Berkeley, CA",
-      "description": "Graduate students from the Departments of African American and African Diaspora Studies and History of Art offer exhibition tours on selected Wednesdays at 12:15 PM, Sundays at 2 PM, and Free First Thursdays at 1:15 PM.",
-      "tags": [
-        "Arts"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/BAMPFA/event/326193-exhibit-tour-maren-hassinger-living-moving-growing",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261104T080000Z-334581@events.berkeley.edu",
       "title": "No Bioengineering Seminar Today",
       "organizer": "Bioengineering",
@@ -5308,66 +5231,6 @@
       "end_time": "12:00 PM"
     },
     {
-      "id": "livewhale_20261104T190000Z-334198@events.berkeley.edu",
-      "title": "Exhibit | An Archive of Archives: Roman Vishniac's Exhibition History | New York, 1971-72",
-      "organizer": "Magnes Collection of Jewish Art & Life",
-      "date": "2026-11-04",
-      "time": "11:00 AM",
-      "location": "2121 Allston Way, Berkeley, CA 94720",
-      "description": "An Archive of Archives: Roman Vishniac's Exhibition History | New York, 1971-72 shares some of Vishniac's iconic images documenting Jewish life in Central and Eastern Europe between 1930 and 1940. The Magnes acquired the Roman Vishniac Archive (https://magnes.berkeley.edu/collections/museum/jewish-art/vishniac/) in 2018, thanks to an unprecedented gift by the late Mara Vishniac Kohn (1926-2018). The collection is comprised of thousands of original prints, negatives, and archival materials documenting the long international career of Roman Vishniac (1897-1990), a Russian-born modernist photographer most notable for documenting Eastern-European Jewish life in the years immediately preceding the Holocaust. Vishniac's work has been celebrated in exhibitions and publications since the 1940s. The gift represents one of the most important acquisitions made by The Magnes since its founding in 1962, and one of inestimable value to UC Berkeley for insight and research into 20th-century East European Jewry, and beyond. As this important collection is being painstakingly processed and documented, the Magnes is beginning to share new findings with the public. An archive of this magnitude is bound to reveal many discoveries, opening up new perspectives on the life and work of a globally recognized photographer, and allowing us to revisit some of the salient moments in his career. A veritable \"archive of archives,\" the collection also contains among its treasures substantial documentation of some of Vishniac's early exhibitions. With this installation, the Magnes is sharing with the public a group of images from an exhibition originally presented at the Jewish Museum in New York (October 19, 1971, until January 23, 1972). The show later traveled to universities, libraries, art galleries, and Jewish museums in New York State, New Jersey, Washington, DC, Illinois, and California. It showcased a selection from a broader project, titled The Concerns of Roman Vishniac: Man, Nature, and Science. The original project, now lost in its entirety, had been created under the direction of Cornell Capa (1918-2008) as part of a series entitled The Concerned Photographer, under the auspices of the International Fund for Concerned Photography. The exhibition included microscopic photography, and a multimedia installation about the photographer's scientific images, along with many of Vishniac's most iconic images from Eastern Europe, which are presented here. The exhibition closes Dec 17, 2026. Major support for the Magnes comes from the Helzel Family Foundation, the Magnes Museum Foundation, the Magnes Leadership Circle, and the the Office of the Chancellor at the University of California, Berkeley. The Magnes is committed to providing exhibitions and programs that are accessible, welcoming, and inclusive of our community.If you have any questions about accessibility or require accommodations, please contact us at magnes@berkeley.edu (mailto:magnes@berkeley.edu) or 510.643.2526.",
-      "tags": [
-        "Arts",
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "visual-arts-exhibitions",
-        "history-humanities",
-        "career-jobs"
-      ],
-      "url": "https://events.berkeley.edu/live/events/330957-exhibit-an-archive-of-archives-roman-vishniacs",
-      "source": "livewhale",
-      "end_time": "4:00 PM"
-    },
-    {
-      "id": "livewhale_20261104T190000Z-334301@events.berkeley.edu",
-      "title": "Exhibit | Nancy Lee Katz: A Private Pantheon | Part 1",
-      "organizer": "Magnes Collection of Jewish Art & Life",
-      "date": "2026-11-04",
-      "time": "11:00 AM",
-      "location": "2121 Allston Way, Berkeley, CA 94720",
-      "description": "Nancy Lee Katz: A Private Pantheon (https://magnes.berkeley.edu/exhibitions/nancy-lee-katz-a-private-pantheon/) explores the artist's decades-long effort to photograph artists, writers, musicians, and thinkers she admired, including Justice Ruth Bader Ginsburg, Stephen Sondheim, Maya Lin, Roy Lichtenstein, and Seiji Ozawa. Created in the intimate environments of personal studios and workplaces, these 133 portraits look behind public accolades to reveal a quiet, private presence. Unfolding in two parts (fall and spring), the exhibition presents, for the first time, the entirety of Katz's Pantheon. Part 1 | Sep 2 - Dec 17, 2026 Part 2 | Jan 19 - May 13, 2027Nancy Lee Katz (1947–2018) was a prolific photographer who spent her life documenting people and places. Katz was born to a Jewish family in Los Angeles and traveled extensively in her youth, exploring Europe and Morocco before beginning work as an assistant film editor and still photographer. From 1986 to 2010, she created a remarkable pantheon of portraits, focusing on artists, musicians, writers, and thinkers whose work she respected, though she never sold nor published her prints. She also pursued music, art, and travel, documenting traditional cultures worldwide. Katz's independence and passion left a lasting mark on those who knew her. Exhibition Team:Lauren Graves, Guest CuratorAlissa Schapiro and Hannah Weisman, Coordinating CuratorsAndrea Calderon, RegistrarDavid Sullivan, Head PreparatorCarole Jeung, Designer Special thanks to Michael S. Sachs, who has made this exhibition possible through his generous gift of Nancy Lee Katz's Pantheon (2024.1), loan of additional prints, and gracious consultations. The Magnes is committed to providing exhibitions and programs that are accessible, welcoming, and inclusive of our community.If you have any questions about accessibility or require accommodations, please contact us at magnes@berkeley.edu (mailto:magnes@berkeley.edu) or 510.643.2526.",
-      "tags": [
-        "Arts"
-      ],
-      "topics": [
-        "visual-arts-exhibitions"
-      ],
-      "url": "https://events.berkeley.edu/live/events/330831-nancy-lee-katz-a-private-pantheon-part-1",
-      "source": "livewhale",
-      "end_time": "4:00 PM"
-    },
-    {
-      "id": "livewhale_20261104T190000Z-334255@events.berkeley.edu",
-      "title": "Exhibit | Time Capsules: Exploring the Permanent Collection",
-      "organizer": "Magnes Collection of Jewish Art & Life",
-      "date": "2026-11-04",
-      "time": "11:00 AM",
-      "location": "2121 Allston Way, Berkeley, CA 94720",
-      "description": "In celebrating 15 years at UC Berkeley, Time Capsules revisits ten out of the over thirty exhibitions presented since the Magnes opened the doors of its new academic home to the public. These exhibitions relied on its extensive, and ever-growing, holdings of art, books, manuscripts, and material culture, as well as different modalities in which these materials can be studied and displayed: from curatorial and scholarly forays into the collection to research projects created in collaboration with UC Berkeley Graduate and Undergraduate students, to real-life experiments with ideas borne out of courses and seminars. Each exhibition featured in Time Capsules is unique in exploring the cultures of the Jews in a global perspective, in bringing museum objects \"back to life,\" and in offering ever-changing ways to understand the past in order to inform the future.Exhibition Team:Francesco Spagnolo and Shir Gal Kochavi, CuratorsZoe Foster, Undergraduate Curatorial ApprenticeJulie Franklin, RegistrarErnest Jolly, Head PreparatorCarole Jeung, Designer Located in downtown Berkeley, just steps from campus, the museum and research center is home to one of the world's preeminent collections of Jewish art and life. The Magnes generates new knowledge and understanding of Jewish cultures with and for its academic and public audiences through its collections-based exhibitions and programs. The Magnes is committed to providing exhibitions and programs that are accessible, welcoming, and inclusive of our community.If you have any questions about accessibility or require accommodations, please contact us at magnes@berkeley.edu (mailto:magnes@berkeley.edu) or 510.643.2526.",
-      "tags": [
-        "Arts",
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "visual-arts-exhibitions"
-      ],
-      "url": "https://events.berkeley.edu/live/events/330895-exhibit-time-capsules-exploring-the-permanent",
-      "source": "livewhale",
-      "end_time": "4:00 PM"
-    },
-    {
       "id": "livewhale_20261104T190000Z-332582@events.berkeley.edu",
       "title": "MTM at UC Riverside Graduate, Professional, and Law School Fair",
       "organizer": "MTM",
@@ -5465,12 +5328,15 @@
       "date": "2026-11-04",
       "time": "12:00 PM",
       "location": "2121 Berkeley Way, Rm 5401",
-      "description": "CTML GSR Joy Nakato (https://ctml.berkeley.edu/people/joy-zora-nakato) will be presenting during CTML's Fall Seminar Series on Wednesday, November 4th from 12pm-1pm in Berkeley Way West, 5th Floor, Room 5401.",
+      "description": "Don't miss the next session of the CTML Seminar Series on Wednesday, November 4th, where CTML GSR Joy Nakato (https://ctml.berkeley.edu/people/joy-zora-nakato) will discuss \"Leveraging Historical Data to Improve Efficiency in Longitudinal Clinical Trials.\" This talk will take place from 12:00PM-1:00PM at Berkeley Way West, 5th Floor, Room 5401. Abstract: Covariate adjustment is a well-established way to increase the precision of treatment effect estimates in randomized trials and has been endorsed by regulators. Recent methods extend this idea by using historical data to build prognostic scores that summarize a patient's expected outcome. In this talk, I will give an overview of how these approaches extend to longitudinal continuous outcomes, discuss the statistical challenges that arise in these settings, and share practical considerations and recommendations. Bio: Joy Zora Nakato is a PhD student in Biostatistics at the University of California, Berkeley mentored by Laura Balzer and Mark van Der Laan. Her research interests include using targeted machine learning and causal inference to address challenges that arise during design and analysis of clinical trials and observational studies. She is currently working on efficient estimation of causal effects in Cluster Randomized trials addressing differential measurement and mediation with an application to uptake of HIV biomedical prevention among high risk populations in rural Uganda and Kenya.",
       "tags": [
-        "Academic"
+        "Academic",
+        "Science & Tech"
       ],
       "topics": [
-        "health-medicine"
+        "health-medicine",
+        "ai-machine-learning",
+        "history-humanities"
       ],
       "url": "https://events.berkeley.edu/bph/event/328458-ctml-seminar-series-joy-nakato-ctml-gsr",
       "source": "livewhale",
@@ -5575,7 +5441,7 @@
       "end_time": "1:00 PM"
     },
     {
-      "id": "livewhale_20261104T200000Z-332274@events.berkeley.edu",
+      "id": "livewhale_20261104T200000Z-332278@events.berkeley.edu",
       "title": "REI Colloquium: Sanctuary Making: Immigrant Families Reshaping Geographies of Deportability",
       "organizer": "Institute of Governmental Studies",
       "date": "2026-11-04",
@@ -5587,11 +5453,11 @@
         "Student Life"
       ],
       "topics": [
+        "social-sciences",
         "economics-policy",
-        "law",
-        "social-sciences"
+        "law"
       ],
-      "url": "https://events.berkeley.edu/igs/event/332274-rei-colloquium-sanctuary-making-immigrant-families-re",
+      "url": "https://events.berkeley.edu/live/events/332274-rei-colloquium-sanctuary-making-immigrant-families-re",
       "source": "livewhale",
       "end_time": "1:30 PM"
     },
@@ -5735,7 +5601,8 @@
         "Student Life"
       ],
       "topics": [
-        "physics-math-quantum"
+        "physics-math-quantum",
+        "computer-science-data"
       ],
       "url": "https://events.berkeley.edu/stat/event/334883-berkeley-statistics-annual-research-symposium",
       "source": "livewhale",
@@ -6142,7 +6009,7 @@
       "end_time": "5:30 PM"
     },
     {
-      "id": "livewhale_20261105T000000Z-333713@events.berkeley.edu",
+      "id": "livewhale_20261105T000000Z-335067@events.berkeley.edu",
       "title": "From Evening Fog to Light and Dark: What Sōseki took from \"The Tale of Genji\"",
       "organizer": "Center for Japanese Studies",
       "date": "2026-11-04",
@@ -6155,7 +6022,7 @@
       "topics": [
         "history-humanities"
       ],
-      "url": "https://events.berkeley.edu/cjs/event/333713-from-evening-fog-to-light-and-dark-what-sseki-took",
+      "url": "https://events.berkeley.edu/live/events/333713-from-evening-fog-to-light-and-dark-what-sseki-took",
       "source": "livewhale",
       "end_time": "5:00 PM"
     },
@@ -6459,21 +6326,6 @@
         "2026-11-06",
         "2026-11-07"
       ]
-    },
-    {
-      "id": "livewhale_20261105T080000Z-326194@events.berkeley.edu",
-      "title": "Exhibit Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-11-05",
-      "time": "All day",
-      "location": "2155 Center Street Berkeley, CA",
-      "description": "Graduate students from the Departments of African American and African Diaspora Studies and History of Art offer exhibition tours on selected Wednesdays at 12:15 PM, Sundays at 2 PM, and Free First Thursdays at 1:15 PM.",
-      "tags": [
-        "Arts"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/BAMPFA/event/326194-exhibit-tour-maren-hassinger-living-moving-growing",
-      "source": "livewhale"
     },
     {
       "id": "bampfa_free-first-thursdays",
@@ -7239,7 +7091,7 @@
       "date": "2026-11-05",
       "time": "12:30 PM",
       "location": "Cheit 220",
-      "description": "Speakers:David Gravanita:Sarah Danner: \"Repression and Protest Participation\"",
+      "description": "Speakers:David Gravanita: \"Do Primaries Pick the Best Candidates?\"Sarah Danner: \"Repression and Protest Participation\"",
       "tags": [
         "Entrepreneurship"
       ],
@@ -7506,7 +7358,7 @@
     },
     {
       "id": "livewhale_20261105T221000Z-327336@events.berkeley.edu",
-      "title": "Title forthcoming | Dalia Ghanem- ARE UC Davis",
+      "title": "To what extent can long-differencing capture climate adaptation? | Dalia Ghanem- ARE UC Davis",
       "organizer": "Agricultural & Resource Economics",
       "date": "2026-11-05",
       "time": "2:10 PM",
@@ -7516,9 +7368,10 @@
         "Academic"
       ],
       "topics": [
-        "economics-policy"
+        "economics-policy",
+        "climate-energy"
       ],
-      "url": "https://events.berkeley.edu/are/event/327336-title-forthcoming-dalia-ghanem-are-uc-davis",
+      "url": "https://events.berkeley.edu/are/event/327336-to-what-extent-can-long-differencing-capture-climate-",
       "source": "livewhale",
       "end_time": "3:30 PM"
     },
@@ -7620,7 +7473,7 @@
       "date": "2026-11-05",
       "time": "3:30 PM",
       "location": "240 Mulford Hall",
-      "description": "A talk by Amogh Dhar Sharma (https://www.qeh.ox.ac.uk/people/amogh-sharma), a Leverhulme Early Career Fellow at the University of Oxford, on his new book, The Backstage of Democracy: India's Election Campaigns and the People Who Manage Them (https://www.cambridge.org/core/books/backstage-of-democracy/C063953713758327233B0ACBFF9F37FC), that examines the growing influence of political consultants and data-driven campaigning in Indian elections, revealing how these shifts reflect broader transformations in political expertise, power within parties, and citizen participation. Event moderated by Anahitha Sagar (https://www.linkedin.com/in/anahitha-sagar/) (MPP Candidate' 27) and Arushi Choudhary (https://www.linkedin.com/in/arushi-choudhary-b008ab88/) (MDP Candidate' 27), UC Berkeley. ————–DATE: Thu, November 5, 2026 TIME: 3:30-5 pm PST VENUE: 240 Mulford Hall —————- ABOUT THE BOOKOver the last decade, election campaigns in India have undergone a dramatic shift. Political parties increasingly rely on political consultants, spin-doctors, pollsters, and data-driven insights to mobilize voters. But what is driving these changes? Drawing upon my recently published monograph, this talk explores the hidden arena of strategizing and deliberations that takes place between politicians and a new cabal of political professionals as they organize election campaigns in India. I argue that the changes in electioneering are not reducible to a story of technological innovations alone. Rather, they are indicative of a new landscape where ideas of political expertise, the distribution of power within parties, and citizens' attitudes towards political participation have undergone a profound change. ABOUT THE SPEAKERAmogh Dhar Sharma (https://www.qeh.ox.ac.uk/people/amogh-sharma) is a Leverhulme Early Career Fellow in the Oxford Department of International Development, University of Oxford. He holds a PhD from the University of Oxford, where he has previously taught South Asian politics. His first book, The Backstage of Democracy: India's Election Campaigns and the People Who Manage Them, was published by Cambridge University Press in 2024. Currently, he is working on a project on the history of opinion polls and psephology in post-independence India. EVENT POSTER TBD —————— Event is FREE and OPEN to the public. Like us on FACEBOOK (https://www.facebook.com/ISASatUCBerkeley) Follow us on INSTAGRAM (https://www.instagram.com/isasatucberkeley/) Support us by donating online HERE (https://give.berkeley.edu/fund/FU0742000)PARKING INFORMATION (http://southasia.berkeley.edu/parking-around-campus)Please note that parking in not always easily available in Berkeley. Take public transportation if possible or arrive early to secure your spot.DIRECTIONS (https://southasia.berkeley.edu/contactsdirections) We are located at 10 Stephens Hall on UC Berkeley's campus. Please click this Google Maps Link (https://www.google.com/maps/dir//Institute+for+South+Asia+Studies,+Berkeley,+CA/@37.8712099,-122.3278764,12z/data=!4m9!4m8!1m0!1m5!1m1!1s0x80857c25babcc33d:0xe2ff7d5c1483db5a!2m2!1d-122.2576645!2d37.8710952!3e0) and enter your point of departure.",
+      "description": "A talk by Amogh Dhar Sharma (https://www.qeh.ox.ac.uk/people/amogh-sharma), a Leverhulme Early Career Fellow at the University of Oxford, on his new book, The Backstage of Democracy: India's Election Campaigns and the People Who Manage Them (https://www.cambridge.org/core/books/backstage-of-democracy/C063953713758327233B0ACBFF9F37FC), that examines the growing influence of political consultants and data-driven campaigning in Indian elections, revealing how these shifts reflect broader transformations in political expertise, power within parties, and citizen participation. Event moderated by Anahitha Sagar (https://www.linkedin.com/in/anahitha-sagar/) (MPP Candidate' 27) and Arushi Choudhary (https://www.linkedin.com/in/arushi-choudhary-b008ab88/) (MDP Candidate' 27), UC Berkeley. ————–DATE: Thu, November 5, 2026 TIME: 3:30-5 pm PST VENUE: 240 Mulford Hall RSVP: HERE (https://docs.google.com/forms/d/e/1FAIpQLSdhOD-LHyw2Ctn17BCTs4uLyhuq2JkD_gkFCwrq4gu66amKzw/viewform) —————- ABOUT THE BOOKOver the last decade, election campaigns in India have undergone a dramatic shift. Political parties increasingly rely on political consultants, spin-doctors, pollsters, and data-driven insights to mobilize voters. But what is driving these changes? Drawing upon my recently published monograph, this talk explores the hidden arena of strategizing and deliberations that takes place between politicians and a new cabal of political professionals as they organize election campaigns in India. I argue that the changes in electioneering are not reducible to a story of technological innovations alone. Rather, they are indicative of a new landscape where ideas of political expertise, the distribution of power within parties, and citizens' attitudes towards political participation have undergone a profound change. ABOUT THE SPEAKERAmogh Dhar Sharma (https://www.qeh.ox.ac.uk/people/amogh-sharma) is a Leverhulme Early Career Fellow in the Oxford Department of International Development, University of Oxford. He holds a PhD from the University of Oxford, where he has previously taught South Asian politics. His first book, The Backstage of Democracy: India's Election Campaigns and the People Who Manage Them, was published by Cambridge University Press in 2024. Currently, he is working on a project on the history of opinion polls and psephology in post-independence India. EVENT POSTER —————— Event is FREE and OPEN to the public. Like us on FACEBOOK (https://www.facebook.com/ISASatUCBerkeley) Follow us on INSTAGRAM (https://www.instagram.com/isasatucberkeley/) Support us by donating online HERE (https://give.berkeley.edu/fund/FU0742000)PARKING INFORMATION (http://southasia.berkeley.edu/parking-around-campus)Please note that parking in not always easily available in Berkeley. Take public transportation if possible or arrive early to secure your spot.DIRECTIONS (https://southasia.berkeley.edu/contactsdirections) We are located at 10 Stephens Hall on UC Berkeley's campus. Please click this Google Maps Link (https://www.google.com/maps/dir//Institute+for+South+Asia+Studies,+Berkeley,+CA/@37.8712099,-122.3278764,12z/data=!4m9!4m8!1m0!1m5!1m1!1s0x80857c25babcc33d:0xe2ff7d5c1483db5a!2m2!1d-122.2576645!2d37.8710952!3e0) and enter your point of departure.",
       "tags": [
         "Academic"
       ],
@@ -7630,6 +7483,24 @@
       "url": "https://events.berkeley.edu/csas/event/336253-amogh-dhar-sharma-the-backstage-of-democracy-indias-e",
       "source": "livewhale",
       "end_time": "5:00 PM"
+    },
+    {
+      "id": "livewhale_20261105T233000Z-336604@events.berkeley.edu",
+      "title": "Astronomy Colloquium - David Charbonneau (Harvard)",
+      "organizer": "Astro",
+      "date": "2026-11-05",
+      "time": "3:30 PM",
+      "location": "131 Campbell Hall",
+      "description": "Title: Do Rocky Exoplanets Retain Their Atmospheres?Abstract: The presence or absence of a planetary atmosphere is the outcome of a multi-billion-year-long struggle between the planet's surface gravity, its outgassing rate, its magnetic field, and the stellar XUV and particle flux incident upon the world. The orbs found to transit nearby M-stars are more observationally accessible owing to the diminutive sizes and low luminosities of the central stars. However, recent work has demonstrated that these stars sustain high XUV fluxes for billions of years, much longer than the epoch of atmospheric production. With powerful infrared observatories in orbit and on the ground, we are now mapping the cosmic shoreline that separates airlines worlds from those with atmospheres, possibly even ones containing biosignature gases. Unlike their smaller cousins, Sun-like stars will reveal their planets and any life upon them only through imaging, and this demanding task will fall squarely on the shoulders of the Habitable Worlds Observatory.Host: Courtney Dressing",
+      "tags": [
+        "Academic"
+      ],
+      "topics": [
+        "physics-math-quantum"
+      ],
+      "url": "https://events.berkeley.edu/astro/event/336604-astronomy-colloquium-david-charbonneau-harvard",
+      "source": "livewhale",
+      "end_time": "4:30 PM"
     },
     {
       "id": "livewhale_20261105T233000Z-329871@events.berkeley.edu",
@@ -7734,7 +7605,7 @@
       "end_time": "8:00 PM"
     },
     {
-      "id": "livewhale_20261106T000000Z-332400@events.berkeley.edu",
+      "id": "livewhale_20261106T000000Z-332345@events.berkeley.edu",
       "title": "Matrix on Point: Propaganda Machines",
       "organizer": "Social Science Matrix",
       "date": "2026-11-05",
@@ -7748,11 +7619,11 @@
         "Entrepreneurship"
       ],
       "topics": [
-        "health-medicine",
         "social-sciences",
-        "computer-science-data"
+        "health-medicine",
+        "ai-machine-learning"
       ],
-      "url": "https://events.berkeley.edu/live/events/332345-matrix-on-point-propaganda-machines",
+      "url": "https://events.berkeley.edu/ssm/event/332345-matrix-on-point-propaganda-machines",
       "source": "livewhale",
       "end_time": "5:00 PM"
     },
@@ -7806,7 +7677,7 @@
       "end_time": "4:45 PM"
     },
     {
-      "id": "livewhale_20261106T000000Z-334428@events.berkeley.edu",
+      "id": "livewhale_20261106T000000Z-334432@events.berkeley.edu",
       "title": "Racist by Design - Two Centuries of U.S. Immigration Control",
       "organizer": "Gradiv",
       "date": "2026-11-05",
@@ -7817,9 +7688,10 @@
         "Academic"
       ],
       "topics": [
-        "history-humanities"
+        "history-humanities",
+        "social-sciences"
       ],
-      "url": "https://events.berkeley.edu/gradiv/event/334428-racist-by-design-two-centuries-of-us-immigration",
+      "url": "https://events.berkeley.edu/live/events/334428-racist-by-design-two-centuries-of-us-immigration",
       "source": "livewhale",
       "end_time": "5:00 PM"
     },
@@ -11396,7 +11268,9 @@
         "Academic"
       ],
       "topics": [
-        "film"
+        "film",
+        "law",
+        "social-sciences"
       ],
       "url": "https://events.berkeley.edu/hrc/event/331649-postponed-new-date-tbd-one-in-a-million-film-screenin",
       "source": "livewhale",
@@ -14208,29 +14082,6 @@
       "url": "https://events.berkeley.edu/live/events/328594-under-pressure-attitudes-towards-china-among",
       "source": "livewhale",
       "end_time": "5:30 PM"
-    },
-    {
-      "id": "livewhale_328896@events.berkeley.edu",
-      "title": "Mathematics Department Colloquium: TBA",
-      "organizer": "Department of Mathematics",
-      "date": "2026-11-12",
-      "time": "4:10 PM",
-      "location": "129 Undergraduate Academic Building",
-      "description": "Speaker: Katya Krupchyk, UC Irvine",
-      "tags": [
-        "Science & Tech",
-        "Academic"
-      ],
-      "topics": [
-        "physics-math-quantum"
-      ],
-      "url": "https://events.berkeley.edu/math/event/328896-mathematics-department-colloquium-tba",
-      "source": "livewhale",
-      "end_date": "2026-12-10",
-      "dates": [
-        "2026-11-12",
-        "2026-12-10"
-      ]
     },
     {
       "id": "livewhale_20261113T001000Z-326807@events.berkeley.edu",
@@ -19665,6 +19516,38 @@
       "end_time": "12:00 PM"
     },
     {
+      "id": "livewhale_20261119T150000Z-336691@events.berkeley.edu",
+      "title": "Open Rec Volleyball",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "7:00 AM",
+      "location": "RSF Gold Gym Court B",
+      "description": "Open Rec Volleyball",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336691-open-rec-volleyball",
+      "source": "livewhale",
+      "end_time": "12:00 PM"
+    },
+    {
+      "id": "livewhale_20261119T160000Z-336687@events.berkeley.edu",
+      "title": "Open Rec Field Use",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "8:00 AM",
+      "location": "UVA Fielding Field East",
+      "description": "Open Rec Field Use",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336687-open-rec-field-use",
+      "source": "livewhale",
+      "end_time": "4:00 PM"
+    },
+    {
       "id": "livewhale_20261119T160000Z-290572@events.berkeley.edu",
       "title": "The Fourthteenth Annual Eastman Distinguished Lecturers in Catalysis",
       "organizer": "Department of Chemistry",
@@ -19678,6 +19561,22 @@
       ],
       "topics": [],
       "url": "https://events.berkeley.edu/chem/event/290572-the-fourthteenth-annual-eastman-distinguished-lecture",
+      "source": "livewhale",
+      "end_time": "11:00 AM"
+    },
+    {
+      "id": "livewhale_20261119T161500Z-336686@events.berkeley.edu",
+      "title": "IA MWP Practice",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "8:15 AM",
+      "location": "Spieker Pool",
+      "description": "IA MWP Practice",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336686-ia-mwp-practice",
       "source": "livewhale",
       "end_time": "11:00 AM"
     },
@@ -19718,6 +19617,38 @@
       "end_time": "11:30 AM"
     },
     {
+      "id": "livewhale_20261119T180000Z-336683@events.berkeley.edu",
+      "title": "Building Hours - CMS",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "10:00 AM",
+      "location": "CMS Fitness Center Building Hours",
+      "description": "Building Hours - CMS",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336683-building-hours-cms",
+      "source": "livewhale",
+      "end_time": "8:00 PM"
+    },
+    {
+      "id": "livewhale_20261119T180000Z-336684@events.berkeley.edu",
+      "title": "Building Hours - SCRA",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "10:00 AM",
+      "location": "Strawberry Canyon Rec Area Building Hours",
+      "description": "Building Hours - SCRA",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336684-building-hours-scra",
+      "source": "livewhale",
+      "end_time": "2:00 PM"
+    },
+    {
       "id": "livewhale_20261119T180000Z-334998@events.berkeley.edu",
       "title": "MEng Application Writing Workshop",
       "organizer": "FUNG",
@@ -19736,6 +19667,22 @@
       "url": "https://events.berkeley.edu/fung/event/334998-meng-application-writing-workshop",
       "source": "livewhale",
       "end_time": "11:00 AM"
+    },
+    {
+      "id": "livewhale_20261119T180000Z-336685@events.berkeley.edu",
+      "title": "PHYSED 3 037 26536 2268",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "10:00 AM",
+      "location": "Recreational Sports Facility, Fieldhouse",
+      "description": "PHYSED 3 037 26536 2268",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336685-physed-3-037-26536-2268",
+      "source": "livewhale",
+      "end_time": "11:59 AM"
     },
     {
       "id": "livewhale_20261119T190000Z-334166@events.berkeley.edu",
@@ -19798,6 +19745,38 @@
       "end_time": "7:00 PM"
     },
     {
+      "id": "livewhale_20261119T190000Z-336679@events.berkeley.edu",
+      "title": "IA WWP Practice",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "11:00 AM",
+      "location": "Legends Aquatics Center",
+      "description": "IA WWP Practice",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336679-ia-wwp-practice",
+      "source": "livewhale",
+      "end_time": "2:00 PM"
+    },
+    {
+      "id": "livewhale_20261119T190000Z-336681@events.berkeley.edu",
+      "title": "Lap Swim",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "11:00 AM",
+      "location": "Spieker Pool",
+      "description": "Lap Swim",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336681-lap-swim",
+      "source": "livewhale",
+      "end_time": "1:15 PM"
+    },
+    {
       "id": "livewhale_20261119T190000Z-332626@events.berkeley.edu",
       "title": "Research Librarian Office Hours: Resources and Strategies for Latin America and the Caribbean",
       "organizer": "Center for Latin American and Caribbean Studies",
@@ -19846,6 +19825,54 @@
       "url": "https://events.berkeley.edu/Library/event/326618-bancroft-library-roundtable",
       "source": "livewhale",
       "end_time": "1:00 PM"
+    },
+    {
+      "id": "livewhale_20261119T200000Z-336676@events.berkeley.edu",
+      "title": "IA BB Practice",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "12:00 PM",
+      "location": "RSF Blue Gym",
+      "description": "IA BB Practice",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336676-ia-bb-practice",
+      "source": "livewhale",
+      "end_time": "4:00 PM"
+    },
+    {
+      "id": "livewhale_20261119T200000Z-336677@events.berkeley.edu",
+      "title": "Lap Swim",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "12:00 PM",
+      "location": "Golden Bear Pool",
+      "description": "Lap Swim",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336677-lap-swim",
+      "source": "livewhale",
+      "end_time": "3:00 PM"
+    },
+    {
+      "id": "livewhale_20261119T200000Z-336678@events.berkeley.edu",
+      "title": "PHYSED 4 012 25886 2268",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "12:00 PM",
+      "location": "Recreational Sports Facility, Fieldhouse",
+      "description": "PHYSED 4 012 25886 2268",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336678-physed-4-012-25886-2268",
+      "source": "livewhale",
+      "end_time": "1:59 PM"
     },
     {
       "id": "livewhale_20261119T200000Z-324805@events.berkeley.edu",
@@ -19919,6 +19946,22 @@
       "end_time": "2:00 PM"
     },
     {
+      "id": "livewhale_20261119T210000Z-336675@events.berkeley.edu",
+      "title": "Goalball",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "1:00 PM",
+      "location": "RSF Gold Gym",
+      "description": "Goalball",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336675-goalball",
+      "source": "livewhale",
+      "end_time": "3:00 PM"
+    },
+    {
       "id": "livewhale_20261119T220000Z-328469@events.berkeley.edu",
       "title": "CCB Seminar: Charles Whittaker, Assistant Professor, Infectious Diseases & Vaccinology, School of Public Health",
       "organizer": "CCB",
@@ -19937,6 +19980,22 @@
       "url": "https://events.berkeley.edu/CCB/event/328469-ccb-seminar-charles-whittaker-assistant-professor-inf",
       "source": "livewhale",
       "end_time": "3:00 PM"
+    },
+    {
+      "id": "livewhale_20261119T220000Z-336674@events.berkeley.edu",
+      "title": "Open Rec Basketball",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "2:00 PM",
+      "location": "RSF Fieldhouse Court A, RSF Fieldhouse Court B",
+      "description": "Open Rec Basketball",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336674-open-rec-basketball",
+      "source": "livewhale",
+      "end_time": "6:45 PM"
     },
     {
       "id": "livewhale_20261119T220000Z-336473@events.berkeley.edu",
@@ -19972,6 +20031,22 @@
       "url": "https://events.berkeley.edu/academic-senate/event/321660-academic-senate-fall-division-meeting",
       "source": "livewhale",
       "end_time": "5:00 PM"
+    },
+    {
+      "id": "livewhale_20261119T230000Z-336673@events.berkeley.edu",
+      "title": "Open Rec Badminton",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "3:00 PM",
+      "location": "RSF Fieldhouse Court C",
+      "description": "Open Rec Badminton",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336673-open-rec-badminton",
+      "source": "livewhale",
+      "end_time": "6:00 PM"
     },
     {
       "id": "livewhale_20261119T230000Z-327532@events.berkeley.edu",
@@ -20051,6 +20126,22 @@
       "end_time": "4:45 PM"
     },
     {
+      "id": "livewhale_20261120T000000Z-336669@events.berkeley.edu",
+      "title": "Building Hours - RFS",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "4:00 PM",
+      "location": "Recwell Fitness Studio Building Hours",
+      "description": "Building Hours - RFS",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336669-building-hours-rfs",
+      "source": "livewhale",
+      "end_time": "10:00 PM"
+    },
+    {
       "id": "livewhale_20261120T000000Z-336503@events.berkeley.edu",
       "title": "Comparative Ethnic Studies: Decolonial Love, Knowledge, and Revolution",
       "organizer": "Institute for the Study of Societal Issues",
@@ -20069,6 +20160,22 @@
       "url": "https://events.berkeley.edu/issi/event/336503-comparative-ethnic-studies-decolonial-love",
       "source": "livewhale",
       "end_time": "5:30 PM"
+    },
+    {
+      "id": "livewhale_20261120T000000Z-336670@events.berkeley.edu",
+      "title": "Lap Swim",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "4:00 PM",
+      "location": "Spieker Pool",
+      "description": "Lap Swim",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336670-lap-swim",
+      "source": "livewhale",
+      "end_time": "8:00 PM"
     },
     {
       "id": "haas_3504164",
@@ -20128,6 +20235,38 @@
       "url": "https://events.berkeley.edu/mse/event/324413-mse-seminar-prof-michael-rubinstein-duke",
       "source": "livewhale",
       "end_time": "5:00 PM"
+    },
+    {
+      "id": "livewhale_20261120T000000Z-336671@events.berkeley.edu",
+      "title": "Open Rec Basketball",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "4:00 PM",
+      "location": "RSF Gold Gym Court A",
+      "description": "Open Rec Basketball",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336671-open-rec-basketball",
+      "source": "livewhale",
+      "end_time": "11:00 PM"
+    },
+    {
+      "id": "livewhale_20261120T000000Z-336672@events.berkeley.edu",
+      "title": "Open Rec Volleyball",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "4:00 PM",
+      "location": "RSF Gold Gym Court B",
+      "description": "Open Rec Volleyball",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336672-open-rec-volleyball",
+      "source": "livewhale",
+      "end_time": "4:45 PM"
     },
     {
       "id": "livewhale_20261120T000000Z-327751@events.berkeley.edu",
@@ -20197,13 +20336,13 @@
       "end_time": "5:30 PM"
     },
     {
-      "id": "livewhale_20261120T001000Z-332915@events.berkeley.edu",
+      "id": "livewhale_20261120T001000Z-328895@events.berkeley.edu",
       "title": "Mathematics Department Colloquium: TBA",
       "organizer": "Department of Mathematics",
       "date": "2026-11-19",
       "time": "4:10 PM",
       "location": "129 Undergraduate Academic Building",
-      "description": "Speaker: Jesse Peterson, University of Waterloo",
+      "description": "Speaker: Jesse Peterson, WaterlooTBA",
       "tags": [
         "Science & Tech",
         "Academic"
@@ -20211,7 +20350,7 @@
       "topics": [
         "physics-math-quantum"
       ],
-      "url": "https://events.berkeley.edu/math/event/332915-mathematics-department-colloquium-tba",
+      "url": "https://events.berkeley.edu/math/event/328895-mathematics-department-colloquium-tba",
       "source": "livewhale",
       "end_time": "5:00 PM"
     },
@@ -20329,6 +20468,38 @@
       "url": "https://events.berkeley.edu/laborcenter/event/336525-workers-in-governance-impacts-for-bipoc-workers",
       "source": "livewhale",
       "end_time": "7:30 PM"
+    },
+    {
+      "id": "livewhale_20261120T020000Z-336668@events.berkeley.edu",
+      "title": "Open Rec Field Use",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "6:00 PM",
+      "location": "UVA Fielding Field East",
+      "description": "Open Rec Field Use",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336668-open-rec-field-use",
+      "source": "livewhale",
+      "end_time": "8:00 PM"
+    },
+    {
+      "id": "livewhale_20261120T030000Z-336667@events.berkeley.edu",
+      "title": "Building Hours - Esports",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-19",
+      "time": "7:00 PM",
+      "location": "Esport Center Building Hours",
+      "description": "Building Hours - Esports",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336667-building-hours-esports",
+      "source": "livewhale",
+      "end_time": "11:00 PM"
     },
     {
       "id": "livewhale_20261120T030000Z-329694@events.berkeley.edu",
@@ -20452,6 +20623,38 @@
       "topics": [],
       "url": "https://events.berkeley.edu/Equity-and-Inclusion/event/336015-call-for-artists-chancellors-award-for-advancing",
       "source": "livewhale"
+    },
+    {
+      "id": "livewhale_20261120T140000Z-336666@events.berkeley.edu",
+      "title": "Building Hours - Anchor House",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-20",
+      "time": "6:00 AM",
+      "location": "Anchor House Fitness Center Building Hours",
+      "description": "Building Hours - Anchor House",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336666-building-hours-anchor-house",
+      "source": "livewhale",
+      "end_time": "10:00 PM"
+    },
+    {
+      "id": "livewhale_20261120T150000Z-336665@events.berkeley.edu",
+      "title": "Building Hours - RSF",
+      "organizer": "Recreational Sports",
+      "date": "2026-11-20",
+      "time": "7:00 AM",
+      "location": "Recreational Sports Facility Building Hours",
+      "description": "Building Hours - RSF",
+      "tags": [
+        "Sports"
+      ],
+      "topics": [],
+      "url": "https://events.berkeley.edu/recsports/event/336665-building-hours-rsf",
+      "source": "livewhale",
+      "end_time": "11:00 PM"
     },
     {
       "id": "livewhale_20261120T190000Z-327744@events.berkeley.edu",
@@ -21397,7 +21600,7 @@
       "end_time": "9:00 PM"
     },
     {
-      "id": "livewhale_20261124T080000Z-329046@events.berkeley.edu",
+      "id": "livewhale_20261124T080000Z-328949@events.berkeley.edu",
       "title": "Authors Meet Critics: \"Until the Last Ton: Fossil Fuels in India from Empire to the Climate Crisis\"",
       "organizer": "Social Science Matrix",
       "date": "2026-11-24",
@@ -21411,71 +21614,11 @@
       ],
       "topics": [
         "climate-energy",
-        "economics-policy",
-        "history-humanities"
+        "social-sciences",
+        "economics-policy"
       ],
-      "url": "https://events.berkeley.edu/live/events/328949-authors-meet-critics-until-the-last-ton-fossil",
+      "url": "https://events.berkeley.edu/ssm/event/328949-authors-meet-critics-until-the-last-ton-fossil",
       "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20261124T190000Z-334206@events.berkeley.edu",
-      "title": "Exhibit | An Archive of Archives: Roman Vishniac's Exhibition History | New York, 1971-72",
-      "organizer": "Magnes Collection of Jewish Art & Life",
-      "date": "2026-11-24",
-      "time": "11:00 AM",
-      "location": "2121 Allston Way, Berkeley, CA 94720",
-      "description": "An Archive of Archives: Roman Vishniac's Exhibition History | New York, 1971-72 shares some of Vishniac's iconic images documenting Jewish life in Central and Eastern Europe between 1930 and 1940. The Magnes acquired the Roman Vishniac Archive (https://magnes.berkeley.edu/collections/museum/jewish-art/vishniac/) in 2018, thanks to an unprecedented gift by the late Mara Vishniac Kohn (1926-2018). The collection is comprised of thousands of original prints, negatives, and archival materials documenting the long international career of Roman Vishniac (1897-1990), a Russian-born modernist photographer most notable for documenting Eastern-European Jewish life in the years immediately preceding the Holocaust. Vishniac's work has been celebrated in exhibitions and publications since the 1940s. The gift represents one of the most important acquisitions made by The Magnes since its founding in 1962, and one of inestimable value to UC Berkeley for insight and research into 20th-century East European Jewry, and beyond. As this important collection is being painstakingly processed and documented, the Magnes is beginning to share new findings with the public. An archive of this magnitude is bound to reveal many discoveries, opening up new perspectives on the life and work of a globally recognized photographer, and allowing us to revisit some of the salient moments in his career. A veritable \"archive of archives,\" the collection also contains among its treasures substantial documentation of some of Vishniac's early exhibitions. With this installation, the Magnes is sharing with the public a group of images from an exhibition originally presented at the Jewish Museum in New York (October 19, 1971, until January 23, 1972). The show later traveled to universities, libraries, art galleries, and Jewish museums in New York State, New Jersey, Washington, DC, Illinois, and California. It showcased a selection from a broader project, titled The Concerns of Roman Vishniac: Man, Nature, and Science. The original project, now lost in its entirety, had been created under the direction of Cornell Capa (1918-2008) as part of a series entitled The Concerned Photographer, under the auspices of the International Fund for Concerned Photography. The exhibition included microscopic photography, and a multimedia installation about the photographer's scientific images, along with many of Vishniac's most iconic images from Eastern Europe, which are presented here. The exhibition closes Dec 17, 2026. Major support for the Magnes comes from the Helzel Family Foundation, the Magnes Museum Foundation, the Magnes Leadership Circle, and the the Office of the Chancellor at the University of California, Berkeley. The Magnes is committed to providing exhibitions and programs that are accessible, welcoming, and inclusive of our community.If you have any questions about accessibility or require accommodations, please contact us at magnes@berkeley.edu (mailto:magnes@berkeley.edu) or 510.643.2526.",
-      "tags": [
-        "Arts",
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "visual-arts-exhibitions",
-        "history-humanities",
-        "career-jobs"
-      ],
-      "url": "https://events.berkeley.edu/live/events/330965-exhibit-an-archive-of-archives-roman-vishniacs",
-      "source": "livewhale",
-      "end_time": "4:00 PM"
-    },
-    {
-      "id": "livewhale_20261124T190000Z-334311@events.berkeley.edu",
-      "title": "Exhibit | Nancy Lee Katz: A Private Pantheon | Part 1",
-      "organizer": "Magnes Collection of Jewish Art & Life",
-      "date": "2026-11-24",
-      "time": "11:00 AM",
-      "location": "2121 Allston Way, Berkeley, CA 94720",
-      "description": "Nancy Lee Katz: A Private Pantheon (https://magnes.berkeley.edu/exhibitions/nancy-lee-katz-a-private-pantheon/) explores the artist's decades-long effort to photograph artists, writers, musicians, and thinkers she admired, including Justice Ruth Bader Ginsburg, Stephen Sondheim, Maya Lin, Roy Lichtenstein, and Seiji Ozawa. Created in the intimate environments of personal studios and workplaces, these 133 portraits look behind public accolades to reveal a quiet, private presence. Unfolding in two parts (fall and spring), the exhibition presents, for the first time, the entirety of Katz's Pantheon. Part 1 | Sep 2 - Dec 17, 2026 Part 2 | Jan 19 - May 13, 2027Nancy Lee Katz (1947–2018) was a prolific photographer who spent her life documenting people and places. Katz was born to a Jewish family in Los Angeles and traveled extensively in her youth, exploring Europe and Morocco before beginning work as an assistant film editor and still photographer. From 1986 to 2010, she created a remarkable pantheon of portraits, focusing on artists, musicians, writers, and thinkers whose work she respected, though she never sold nor published her prints. She also pursued music, art, and travel, documenting traditional cultures worldwide. Katz's independence and passion left a lasting mark on those who knew her. Exhibition Team:Lauren Graves, Guest CuratorAlissa Schapiro and Hannah Weisman, Coordinating CuratorsAndrea Calderon, RegistrarDavid Sullivan, Head PreparatorCarole Jeung, Designer Special thanks to Michael S. Sachs, who has made this exhibition possible through his generous gift of Nancy Lee Katz's Pantheon (2024.1), loan of additional prints, and gracious consultations. The Magnes is committed to providing exhibitions and programs that are accessible, welcoming, and inclusive of our community.If you have any questions about accessibility or require accommodations, please contact us at magnes@berkeley.edu (mailto:magnes@berkeley.edu) or 510.643.2526.",
-      "tags": [
-        "Arts"
-      ],
-      "topics": [
-        "visual-arts-exhibitions"
-      ],
-      "url": "https://events.berkeley.edu/live/events/330839-exhibit-nancy-lee-katz-a-private-pantheon-part-1",
-      "source": "livewhale",
-      "end_time": "4:00 PM"
-    },
-    {
-      "id": "livewhale_20261124T190000Z-334263@events.berkeley.edu",
-      "title": "Exhibit | Time Capsules: Exploring the Permanent Collection",
-      "organizer": "Magnes Collection of Jewish Art & Life",
-      "date": "2026-11-24",
-      "time": "11:00 AM",
-      "location": "2121 Allston Way, Berkeley, CA 94720",
-      "description": "In celebrating 15 years at UC Berkeley, Time Capsules revisits ten out of the over thirty exhibitions presented since the Magnes opened the doors of its new academic home to the public. These exhibitions relied on its extensive, and ever-growing, holdings of art, books, manuscripts, and material culture, as well as different modalities in which these materials can be studied and displayed: from curatorial and scholarly forays into the collection to research projects created in collaboration with UC Berkeley Graduate and Undergraduate students, to real-life experiments with ideas borne out of courses and seminars. Each exhibition featured in Time Capsules is unique in exploring the cultures of the Jews in a global perspective, in bringing museum objects \"back to life,\" and in offering ever-changing ways to understand the past in order to inform the future.Exhibition Team:Francesco Spagnolo and Shir Gal Kochavi, CuratorsZoe Foster, Undergraduate Curatorial ApprenticeJulie Franklin, RegistrarErnest Jolly, Head PreparatorCarole Jeung, Designer Located in downtown Berkeley, just steps from campus, the museum and research center is home to one of the world's preeminent collections of Jewish art and life. The Magnes generates new knowledge and understanding of Jewish cultures with and for its academic and public audiences through its collections-based exhibitions and programs. The Magnes is committed to providing exhibitions and programs that are accessible, welcoming, and inclusive of our community.If you have any questions about accessibility or require accommodations, please contact us at magnes@berkeley.edu (mailto:magnes@berkeley.edu) or 510.643.2526.",
-      "tags": [
-        "Arts",
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "visual-arts-exhibitions"
-      ],
-      "url": "https://events.berkeley.edu/live/events/330903-exhibit-time-capsules-exploring-the-permanent",
-      "source": "livewhale",
-      "end_time": "4:00 PM"
     },
     {
       "id": "livewhale_20261124T190000Z-317293@events.berkeley.edu",
@@ -21548,21 +21691,6 @@
       "end_time": "5:00 PM"
     },
     {
-      "id": "livewhale_20261125T080000Z-326202@events.berkeley.edu",
-      "title": "Exhibit Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-11-25",
-      "time": "All day",
-      "location": "2155 Center Street Berkeley, CA",
-      "description": "Graduate students from the Departments of African American and African Diaspora Studies and History of Art offer exhibition tours on selected Wednesdays at 12:15 PM, Sundays at 2 PM, and Free First Thursdays at 1:15 PM.",
-      "tags": [
-        "Arts"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/BAMPFA/event/326202-exhibit-tour-maren-hassinger-living-moving-growing",
-      "source": "livewhale"
-    },
-    {
       "id": "livewhale_20261125T080000Z-334584@events.berkeley.edu",
       "title": "No Bioengineering Seminar Today",
       "organizer": "Bioengineering",
@@ -21594,66 +21722,6 @@
       "topics": [],
       "url": "https://events.berkeley.edu/calparents/event/322285-non-instructional-day",
       "source": "livewhale"
-    },
-    {
-      "id": "livewhale_20261125T190000Z-334207@events.berkeley.edu",
-      "title": "Exhibit | An Archive of Archives: Roman Vishniac's Exhibition History | New York, 1971-72",
-      "organizer": "Magnes Collection of Jewish Art & Life",
-      "date": "2026-11-25",
-      "time": "11:00 AM",
-      "location": "2121 Allston Way, Berkeley, CA 94720",
-      "description": "An Archive of Archives: Roman Vishniac's Exhibition History | New York, 1971-72 shares some of Vishniac's iconic images documenting Jewish life in Central and Eastern Europe between 1930 and 1940. The Magnes acquired the Roman Vishniac Archive (https://magnes.berkeley.edu/collections/museum/jewish-art/vishniac/) in 2018, thanks to an unprecedented gift by the late Mara Vishniac Kohn (1926-2018). The collection is comprised of thousands of original prints, negatives, and archival materials documenting the long international career of Roman Vishniac (1897-1990), a Russian-born modernist photographer most notable for documenting Eastern-European Jewish life in the years immediately preceding the Holocaust. Vishniac's work has been celebrated in exhibitions and publications since the 1940s. The gift represents one of the most important acquisitions made by The Magnes since its founding in 1962, and one of inestimable value to UC Berkeley for insight and research into 20th-century East European Jewry, and beyond. As this important collection is being painstakingly processed and documented, the Magnes is beginning to share new findings with the public. An archive of this magnitude is bound to reveal many discoveries, opening up new perspectives on the life and work of a globally recognized photographer, and allowing us to revisit some of the salient moments in his career. A veritable \"archive of archives,\" the collection also contains among its treasures substantial documentation of some of Vishniac's early exhibitions. With this installation, the Magnes is sharing with the public a group of images from an exhibition originally presented at the Jewish Museum in New York (October 19, 1971, until January 23, 1972). The show later traveled to universities, libraries, art galleries, and Jewish museums in New York State, New Jersey, Washington, DC, Illinois, and California. It showcased a selection from a broader project, titled The Concerns of Roman Vishniac: Man, Nature, and Science. The original project, now lost in its entirety, had been created under the direction of Cornell Capa (1918-2008) as part of a series entitled The Concerned Photographer, under the auspices of the International Fund for Concerned Photography. The exhibition included microscopic photography, and a multimedia installation about the photographer's scientific images, along with many of Vishniac's most iconic images from Eastern Europe, which are presented here. The exhibition closes Dec 17, 2026. Major support for the Magnes comes from the Helzel Family Foundation, the Magnes Museum Foundation, the Magnes Leadership Circle, and the the Office of the Chancellor at the University of California, Berkeley. The Magnes is committed to providing exhibitions and programs that are accessible, welcoming, and inclusive of our community.If you have any questions about accessibility or require accommodations, please contact us at magnes@berkeley.edu (mailto:magnes@berkeley.edu) or 510.643.2526.",
-      "tags": [
-        "Arts",
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "visual-arts-exhibitions",
-        "history-humanities",
-        "career-jobs"
-      ],
-      "url": "https://events.berkeley.edu/live/events/330966-exhibit-an-archive-of-archives-roman-vishniacs",
-      "source": "livewhale",
-      "end_time": "4:00 PM"
-    },
-    {
-      "id": "livewhale_20261125T190000Z-334312@events.berkeley.edu",
-      "title": "Exhibit | Nancy Lee Katz: A Private Pantheon | Part 1",
-      "organizer": "Magnes Collection of Jewish Art & Life",
-      "date": "2026-11-25",
-      "time": "11:00 AM",
-      "location": "2121 Allston Way, Berkeley, CA 94720",
-      "description": "Nancy Lee Katz: A Private Pantheon (https://magnes.berkeley.edu/exhibitions/nancy-lee-katz-a-private-pantheon/) explores the artist's decades-long effort to photograph artists, writers, musicians, and thinkers she admired, including Justice Ruth Bader Ginsburg, Stephen Sondheim, Maya Lin, Roy Lichtenstein, and Seiji Ozawa. Created in the intimate environments of personal studios and workplaces, these 133 portraits look behind public accolades to reveal a quiet, private presence. Unfolding in two parts (fall and spring), the exhibition presents, for the first time, the entirety of Katz's Pantheon. Part 1 | Sep 2 - Dec 17, 2026 Part 2 | Jan 19 - May 13, 2027Nancy Lee Katz (1947–2018) was a prolific photographer who spent her life documenting people and places. Katz was born to a Jewish family in Los Angeles and traveled extensively in her youth, exploring Europe and Morocco before beginning work as an assistant film editor and still photographer. From 1986 to 2010, she created a remarkable pantheon of portraits, focusing on artists, musicians, writers, and thinkers whose work she respected, though she never sold nor published her prints. She also pursued music, art, and travel, documenting traditional cultures worldwide. Katz's independence and passion left a lasting mark on those who knew her. Exhibition Team:Lauren Graves, Guest CuratorAlissa Schapiro and Hannah Weisman, Coordinating CuratorsAndrea Calderon, RegistrarDavid Sullivan, Head PreparatorCarole Jeung, Designer Special thanks to Michael S. Sachs, who has made this exhibition possible through his generous gift of Nancy Lee Katz's Pantheon (2024.1), loan of additional prints, and gracious consultations. The Magnes is committed to providing exhibitions and programs that are accessible, welcoming, and inclusive of our community.If you have any questions about accessibility or require accommodations, please contact us at magnes@berkeley.edu (mailto:magnes@berkeley.edu) or 510.643.2526.",
-      "tags": [
-        "Arts"
-      ],
-      "topics": [
-        "visual-arts-exhibitions"
-      ],
-      "url": "https://events.berkeley.edu/live/events/330840-nancy-lee-katz-a-private-pantheon-part-1",
-      "source": "livewhale",
-      "end_time": "4:00 PM"
-    },
-    {
-      "id": "livewhale_20261125T190000Z-334264@events.berkeley.edu",
-      "title": "Exhibit | Time Capsules: Exploring the Permanent Collection",
-      "organizer": "Magnes Collection of Jewish Art & Life",
-      "date": "2026-11-25",
-      "time": "11:00 AM",
-      "location": "2121 Allston Way, Berkeley, CA 94720",
-      "description": "In celebrating 15 years at UC Berkeley, Time Capsules revisits ten out of the over thirty exhibitions presented since the Magnes opened the doors of its new academic home to the public. These exhibitions relied on its extensive, and ever-growing, holdings of art, books, manuscripts, and material culture, as well as different modalities in which these materials can be studied and displayed: from curatorial and scholarly forays into the collection to research projects created in collaboration with UC Berkeley Graduate and Undergraduate students, to real-life experiments with ideas borne out of courses and seminars. Each exhibition featured in Time Capsules is unique in exploring the cultures of the Jews in a global perspective, in bringing museum objects \"back to life,\" and in offering ever-changing ways to understand the past in order to inform the future.Exhibition Team:Francesco Spagnolo and Shir Gal Kochavi, CuratorsZoe Foster, Undergraduate Curatorial ApprenticeJulie Franklin, RegistrarErnest Jolly, Head PreparatorCarole Jeung, Designer Located in downtown Berkeley, just steps from campus, the museum and research center is home to one of the world's preeminent collections of Jewish art and life. The Magnes generates new knowledge and understanding of Jewish cultures with and for its academic and public audiences through its collections-based exhibitions and programs. The Magnes is committed to providing exhibitions and programs that are accessible, welcoming, and inclusive of our community.If you have any questions about accessibility or require accommodations, please contact us at magnes@berkeley.edu (mailto:magnes@berkeley.edu) or 510.643.2526.",
-      "tags": [
-        "Arts",
-        "Academic",
-        "Science & Tech"
-      ],
-      "topics": [
-        "visual-arts-exhibitions"
-      ],
-      "url": "https://events.berkeley.edu/live/events/330904-exhibit-time-capsules-exploring-the-permanent",
-      "source": "livewhale",
-      "end_time": "4:00 PM"
     },
     {
       "id": "livewhale_20261125T210000Z-324091@events.berkeley.edu",
@@ -21706,21 +21774,6 @@
         "2026-11-26",
         "2026-11-27"
       ]
-    },
-    {
-      "id": "livewhale_20261126T080000Z-326203@events.berkeley.edu",
-      "title": "Exhibit Tour: Maren Hassinger: Living Moving Growing",
-      "organizer": "BAMPFA",
-      "date": "2026-11-26",
-      "time": "All day",
-      "location": "2155 Center Street Berkeley, CA",
-      "description": "Graduate students from the Departments of African American and African Diaspora Studies and History of Art offer exhibition tours on selected Wednesdays at 12:15 PM, Sundays at 2 PM, and Free First Thursdays at 1:15 PM.",
-      "tags": [
-        "Arts"
-      ],
-      "topics": [],
-      "url": "https://events.berkeley.edu/BAMPFA/event/326203-exhibit-tour-maren-hassinger-living-moving-growing",
-      "source": "livewhale"
     },
     {
       "id": "livewhale_20261126T190000Z-334167@events.berkeley.edu",
@@ -25298,9 +25351,7 @@
       "tags": [
         "Student Life"
       ],
-      "topics": [
-        "computer-science-data"
-      ],
+      "topics": [],
       "url": "https://www.ischool.berkeley.edu/events/bellwether-lectures/2026/who-gets-author-place-co-designing-augmented-reality-tour-ohlone",
       "source": "livewhale",
       "end_time": "1:30 PM"
@@ -25706,6 +25757,25 @@
       "end_time": "6:00 PM"
     },
     {
+      "id": "livewhale_20261211T001000Z-328896@events.berkeley.edu",
+      "title": "Mathematics Department Colloquium: TBA",
+      "organizer": "Department of Mathematics",
+      "date": "2026-12-10",
+      "time": "4:10 PM",
+      "location": "129 Undergraduate Academic Building",
+      "description": "Speaker: Katya Krupchyk, UC Irvine",
+      "tags": [
+        "Science & Tech",
+        "Academic"
+      ],
+      "topics": [
+        "physics-math-quantum"
+      ],
+      "url": "https://events.berkeley.edu/math/event/328896-mathematics-department-colloquium-tba",
+      "source": "livewhale",
+      "end_time": "5:00 PM"
+    },
+    {
       "id": "bampfa_let-summer-never-come-again::2026-12-10",
       "title": "Let the Summer Never Come Again",
       "organizer": "BAMPFA",
@@ -25811,7 +25881,7 @@
       "end_time": "2:00 PM"
     },
     {
-      "id": "livewhale_20261211T230000Z-327734@events.berkeley.edu",
+      "id": "livewhale_20261211T230000Z-327725@events.berkeley.edu",
       "title": "Kanafani-thon",
       "organizer": "Institute of Transportation Studies",
       "date": "2026-12-11",
@@ -33059,7 +33129,7 @@
       "uri": "https://cltc.berkeley.edu/events/"
     }
   ],
-  "lastUpdated": 1793360545678,
+  "lastUpdated": 1793361474914,
   "data_age_hours": 0,
   "degraded_sources": [],
   "topic_vocabulary": {
