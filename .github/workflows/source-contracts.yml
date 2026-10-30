@@ -10,6 +10,8 @@ on:
       - "scripts/lib/sourceContracts.mjs"
       - "scripts/runSourceContracts.mjs"
       - "scripts/checkLiveWhaleBudget.ts"
+      - "scripts/lib/abort.ts"
+      - "scripts/lib/normalize.ts"
   workflow_dispatch:
 
 # Only the notify job writes issues, and it grants that itself.
@@ -58,7 +60,7 @@ jobs:
   # with supplementary failures, so a dead secondary source still raises an issue
   # instead of disappearing into a green run.
   notify-failure:
-    needs: source-contracts
+    needs: [source-contracts, livewhale-budget]
     if: |
       always() && (
         failure() ||
@@ -78,7 +80,9 @@ jobs:
           WORKFLOW_NAME: Source Contracts
           FAILURE_CONTEXT:
             "live Berkeley source contract checks (failed sources:
-            ${{ needs.source-contracts.outputs.failed_sources || 'unknown' }})"
+            ${{ needs.source-contracts.outputs.failed_sources || 'none' }};
+            LiveWhale slow-upstream budget check:
+            ${{ needs.livewhale-budget.result }})"
           ISSUE_LABEL: source-contracts
           ISSUE_LABEL_COLOR: 0E8A16
           ISSUE_LABEL_DESCRIPTION: Non-urgent live source contract drift for triage

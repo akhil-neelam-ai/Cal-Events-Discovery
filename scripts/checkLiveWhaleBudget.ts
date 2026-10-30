@@ -8,6 +8,10 @@
  * its required windows. Group feeds past their deadline are allowed to fail;
  * that is the designed degradation.
  *
+ * Two cut-off paths run too: the first forward week comes back cut, so it is
+ * split, and one day stays cut at every size, so it is refilled from the JSON
+ * feed. Every required week must be requested and return events.
+ *
  * Usage: npm run check:livewhale-budget   (about 80 s)
  */
 
@@ -31,6 +35,34 @@ const events = Array.from({ length: 400 }, (_, index) => ({
       ? `https://events.berkeley.edu/live/events/slow-${index}`
       : `https://events.berkeley.edu/econ/event/slow-${index}`,
 }));
+
+// The first forward week is cut whole; CUT_DAY stays cut even as one day.
+const CUT_WEEK_START = today;
+const CUT_DAY = addDaysToKey(today, 10);
+const requestedWindows = new Set<string>();
+
+function cutCalendar(body: string): string {
+  const half = body.indexOf("BEGIN:VEVENT", Math.floor(body.length / 2));
+  return `${half > 0 ? body.slice(0, half) : body.slice(0, 40)}BEGIN:VEVENT\r\nSUMMARY:`;
+}
+
+function jsonDay(day: string): string {
+  const data = events
+    .filter((event) => event.date === day)
+    .map((event, index) => ({
+      id: 900_000 + index,
+      title: `${event.uid}-json`,
+      url: event.url,
+      date_utc: `${day} 19:00:00`,
+      date_iso: `${day}T11:00:00-08:00`,
+      date2_iso: `${day}T12:00:00-08:00`,
+      is_all_day: null,
+      location: null,
+      description: null,
+      event_types: [],
+    }));
+  return JSON.stringify({ meta: {}, links: { next: null }, data });
+}
 
 function calendar(rows: typeof events): string {
   return [
@@ -69,16 +101,33 @@ globalThis.fetch = ((input: RequestInfo | URL, init: RequestInit = {}) =>
         );
         return;
       }
+      const json =
+        /\/live\/json\/events\/start_date\/(\d{4}-\d{2}-\d{2})\//.exec(url);
+      if (json) {
+        resolve(new Response(jsonDay(json[1]), { status: 200 }));
+        return;
+      }
       const window =
         /start_date\/(\d{4}-\d{2}-\d{2})\/end_date\/(\d{4}-\d{2}-\d{2})$/.exec(
           url,
         );
-      const rows = window
-        ? events.filter(
-            (event) => event.date >= window[1] && event.date < window[2],
-          )
-        : [];
-      resolve(new Response(calendar(rows), { status: 200 }));
+      if (!window) {
+        resolve(new Response(calendar([]), { status: 200 }));
+        return;
+      }
+      const [, start, end] = window;
+      requestedWindows.add(start);
+      const body = calendar(
+        events.filter((event) => event.date >= start && event.date < end),
+      );
+      const isCutWeek =
+        start === CUT_WEEK_START && end === addDaysToKey(start, 7);
+      const holdsCutDay = start <= CUT_DAY && CUT_DAY < end;
+      resolve(
+        new Response(isCutWeek || holdsCutDay ? cutCalendar(body) : body, {
+          status: 200,
+        }),
+      );
     }, LATENCY_MS);
     signal?.addEventListener(
       "abort",
@@ -106,8 +155,26 @@ const seconds = (Date.now() - started) / 1000;
 const budgetSeconds = LIVEWHALE_ADAPTER_TIMEOUT_MS / 1000;
 const requiredStart = addDaysToKey(today, -7);
 const requiredEnd = addDaysToKey(today, 14);
-const requiredMissing = (result.failedWindows ?? []).filter(
-  (start) => start >= requiredStart && start < requiredEnd,
+const requiredWeeks = [requiredStart, today, addDaysToKey(today, 7)];
+const requiredMissing = [
+  // A required window that failed outright or stayed cut.
+  ...(result.failedWindows ?? []).filter(
+    (start) => start >= requiredStart && start < requiredEnd,
+  ),
+  // A required week that was never requested.
+  ...requiredWeeks.filter((week) => !requestedWindows.has(week)),
+  // A required forward week that published nothing (lookback events are
+  // past, so they are filtered out by design).
+  ...requiredWeeks.slice(1).filter(
+    (week) =>
+      !result.events.some((event) => {
+        const day = event.start_at.slice(0, 10);
+        return day >= week && day < addDaysToKey(week, 7);
+      }),
+  ),
+];
+const cutDayRefilled = result.events.some((event) =>
+  event.title.endsWith("-json"),
 );
 
 console.log(
@@ -118,12 +185,13 @@ console.log(
     events: result.events.length,
     failedWindows: result.failedWindows,
     failedGroups: result.failedGroups?.length ?? 0,
+    cutDayRefilled,
   }),
 );
 
-if (seconds >= budgetSeconds || requiredMissing.length > 0) {
+if (seconds >= budgetSeconds || requiredMissing.length > 0 || !cutDayRefilled) {
   console.error(
-    `LiveWhale budget check failed: ${seconds}s of ${budgetSeconds}s, required windows missing: ${requiredMissing.join(", ") || "none"}`,
+    `LiveWhale budget check failed: ${seconds}s of ${budgetSeconds}s, required windows missing: ${requiredMissing.join(", ") || "none"}, cut day refilled: ${cutDayRefilled}`,
   );
   process.exit(1);
 }

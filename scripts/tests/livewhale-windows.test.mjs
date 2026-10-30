@@ -200,14 +200,14 @@ test("an incomplete window is split and both halves are published", async () => 
   assert.ok(titles.has("early-week"));
   assert.ok(titles.has("late-week"));
   assert.deepEqual(result.failedWindows, []);
-  // The whole week was tried twice, then its halves were fetched.
+  // The cut week was not retried; its days were fetched instead.
   const weekUrl = `${FEED}/start_date/${week.start}/end_date/${week.end}`;
-  assert.equal(requests.filter((r) => r.url === weekUrl).length, 2);
+  assert.equal(requests.filter((r) => r.url === weekUrl).length, 1);
   assert.ok(
     requests.some(
       (r) =>
         r.url ===
-        `${FEED}/start_date/${week.start}/end_date/${addDaysToKey(week.start, 3)}`,
+        `${FEED}/start_date/${week.start}/end_date/${addDaysToKey(week.start, 1)}`,
     ),
   );
 });
@@ -400,7 +400,7 @@ test("a split required window starts before queued group feeds", async () => {
   const firstHalf = requests.findIndex(
     (r) =>
       r.url ===
-      `${FEED}/start_date/${week.start}/end_date/${addDaysToKey(week.start, 3)}`,
+      `${FEED}/start_date/${week.start}/end_date/${addDaysToKey(week.start, 1)}`,
   );
   const lastGroup = requests.findLastIndex((r) => r.url.includes("/group/"));
   assert.ok(firstHalf > 0, "the cut week was split");
