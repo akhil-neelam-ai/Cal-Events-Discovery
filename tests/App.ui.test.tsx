@@ -11,13 +11,16 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "../App";
+import { getViewState } from "../agent/viewState";
 import { DEFAULT_FILTERS } from "../appConfig";
+import { ENDED_EVENT_NOTICE } from "../components/EndedEventNotice";
 import { useEventBrowserActions } from "../hooks/useEventBrowserActions";
 import { useUrlStateSync } from "../hooks/useUrlStateSync";
 import type { CalEvent } from "../types";
 import { LoadingState } from "../types";
 import { buildSearchIndex } from "../scripts/lib/buildIndex";
 import { TOPIC_VOCABULARY } from "../scripts/lib/topics";
+import { trackEndedEventLink } from "../utils/analytics";
 import { addRecentSearch } from "../utils/recentSearches";
 import type { SearchIndex } from "../utils/textUtils";
 
@@ -50,6 +53,7 @@ vi.mock("../utils/analytics", () => ({
   trackSearch: vi.fn(),
   trackCategoryFilter: vi.fn(),
   trackDateFilter: vi.fn(),
+  trackEndedEventLink: vi.fn(),
   trackEventClick: vi.fn(),
   trackFilter: vi.fn(),
   trackExternalLink: vi.fn(),
@@ -296,6 +300,7 @@ describe("App UI regressions", () => {
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getAllByText("AI Policy Forum")).toHaveLength(2);
+    expect(screen.queryByText(ENDED_EVENT_NOTICE)).not.toBeInTheDocument();
     expect(screen.queryByText("Law Policy Forum")).not.toBeInTheDocument();
     expect(screen.queryByText("AI Film Forum")).not.toBeInTheDocument();
     expect(screen.queryByText("AI Student Forum")).not.toBeInTheDocument();
@@ -303,6 +308,33 @@ describe("App UI regressions", () => {
       expect(window.location.search).toContain("topic=ai-machine-learning");
       expect(window.location.search).toContain("event=target-event");
     });
+  });
+
+  it("says an event has ended when the URL names one the feed dropped", async () => {
+    const user = userEvent.setup();
+    vi.mocked(trackEndedEventLink).mockClear();
+    mockFeedState = makeFeedState([], { loading: LoadingState.LOADING });
+    window.history.replaceState({}, "", "/?event=ended-event");
+
+    const { rerender } = render(<App />);
+
+    expect(screen.queryByText(ENDED_EVENT_NOTICE)).not.toBeInTheDocument();
+    expect(trackEndedEventLink).not.toHaveBeenCalled();
+
+    mockFeedState = makeFeedState([makeEvent({ id: "live-event" })]);
+    rerender(<App />);
+
+    expect(screen.getByText(ENDED_EVENT_NOTICE)).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getAllByText("AI Seminar")).not.toHaveLength(0);
+    expect(trackEndedEventLink).toHaveBeenCalledExactlyOnceWith("ended-event");
+    expect(getViewState()?.notice).toBe(ENDED_EVENT_NOTICE);
+    expect(window.location.search).not.toContain("event=");
+
+    await user.click(screen.getByRole("button", { name: "Dismiss" }));
+
+    expect(screen.queryByText(ENDED_EVENT_NOTICE)).not.toBeInTheDocument();
+    expect(getViewState()?.notice).toBeNull();
   });
 
   it("rejects a URL topic outside the published vocabulary", async () => {

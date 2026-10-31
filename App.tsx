@@ -11,6 +11,10 @@ import { publishViewState } from "./agent/viewState";
 import { AppFooter } from "./components/AppFooter";
 import { BackToTopButton } from "./components/BackToTopButton";
 import { AppHeaderShell } from "./components/AppHeaderShell";
+import {
+  ENDED_EVENT_NOTICE,
+  EndedEventNotice,
+} from "./components/EndedEventNotice";
 import { EventDetailOverlay } from "./components/EventDetailOverlay";
 import { ErrorStateView } from "./components/ErrorStateView";
 import { EventsResultsSection } from "./components/EventsResultsSection";
@@ -25,7 +29,12 @@ import { useIsMobile } from "./hooks/useIsMobile";
 import { usePacificDateKeys } from "./hooks/usePacificDateKeys";
 import { usePrefersReducedMotion } from "./hooks/usePrefersReducedMotion";
 import { readAppUrlState, useUrlStateSync } from "./hooks/useUrlStateSync";
-import { initGA, trackPageView, trackEventClick } from "./utils/analytics";
+import {
+  initGA,
+  trackPageView,
+  trackEventClick,
+  trackEndedEventLink,
+} from "./utils/analytics";
 import { addRecentSearch } from "./utils/recentSearches";
 import type { AppUrlState } from "./utils/urlState";
 
@@ -209,6 +218,14 @@ export default function App() {
     emptyStateActions,
   });
 
+  // A shared link can name an event the feed no longer lists. The URL sync
+  // already drops it, so say why the page opened without it.
+  const endedEventId =
+    feedLoaded && selectedEventId && !selectedEvent ? selectedEventId : null;
+  useEffect(() => {
+    if (endedEventId) trackEndedEventLink(endedEventId);
+  }, [endedEventId]);
+
   const {
     shouldAnimateCards,
     visibleEvents,
@@ -285,7 +302,7 @@ export default function App() {
       resultCount: filteredEvents.length,
       visibleEventIds: visibleEvents.map((event) => event.id),
       fallbackMessage: searchFallbackMessage ?? null,
-      notice,
+      notice: endedEventId ? ENDED_EVENT_NOTICE : notice,
       selectedEventId: visibleSelectedEventId,
     });
   }, [
@@ -294,6 +311,7 @@ export default function App() {
     derivedDateRange,
     dismissedInterpretationKeys,
     effectiveDateRange,
+    endedEventId,
     filteredEvents.length,
     filters.category,
     filters.searchQuery,
@@ -344,6 +362,9 @@ export default function App() {
         {loading === LoadingState.ERROR && (
           <ErrorStateView onRetry={loadEvents} />
         )}
+
+        {/* Dismissing clears the stale selection that drives the notice. */}
+        {endedEventId && <EndedEventNotice onDismiss={handleCloseDetail} />}
 
         {loading === LoadingState.SUCCESS && (
           <EventsResultsSection
