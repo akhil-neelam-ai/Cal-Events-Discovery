@@ -12,6 +12,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "../App";
 import { DEFAULT_FILTERS } from "../appConfig";
+import { EventDetailOverlay } from "../components/EventDetailOverlay";
 import { useEventBrowserActions } from "../hooks/useEventBrowserActions";
 import { useUrlStateSync } from "../hooks/useUrlStateSync";
 import type { CalEvent } from "../types";
@@ -303,6 +304,30 @@ describe("App UI regressions", () => {
       expect(window.location.search).toContain("topic=ai-machine-learning");
       expect(window.location.search).toContain("event=target-event");
     });
+  });
+
+  it("puts event actions above a long description on phone and desktop", () => {
+    const event = makeEvent({ description: "Long details. ".repeat(200) });
+
+    for (const isMobile of [true, false]) {
+      const { unmount } = render(
+        <EventDetailOverlay
+          event={event}
+          isMobile={isMobile}
+          onClose={() => {}}
+        />,
+      );
+      const officialPage = screen.getByRole("link", {
+        name: /View Official Page/,
+      });
+      const about = screen.getByRole("heading", { name: "About this event" });
+
+      expect(
+        officialPage.compareDocumentPosition(about) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+      unmount();
+    }
   });
 
   it("rejects a URL topic outside the published vocabulary", async () => {
