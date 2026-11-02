@@ -54,6 +54,7 @@ vi.mock("../utils/analytics", () => ({
   trackSearch: vi.fn(),
   trackCategoryFilter: vi.fn(),
   trackDateFilter: vi.fn(),
+  trackEndedEventLink: vi.fn(),
   trackEventClick: vi.fn(),
   trackFilter: vi.fn(),
   trackExternalLink: vi.fn(),
