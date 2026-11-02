@@ -18,6 +18,7 @@ import { CanonicalEventSchema } from "../lib/schema.js";
 import {
   deriveFrontendTags,
   endedBeforePT,
+  sanitizeDescription,
   todayPT,
 } from "../lib/normalize.js";
 
@@ -85,7 +86,8 @@ export function parseBeginIcs(
         continue;
       }
 
-      const description = cleanText(asString(ve.description)) || title;
+      const description =
+        sanitizeDescription(asString(ve.description)) || title;
       const venue = cleanText(asString(ve.location));
       const uid = asString(ve.uid) || key;
       const url =

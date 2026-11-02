@@ -93,7 +93,7 @@ Loads `events.json` and `search-index.json` at startup. Search is entirely clien
 
 **`tags[0]` is the primary-category contract.** It is read as the category in `hooks/useEventBrowserState.ts`, in `agent/webmcpTools.ts` and `agent/searchPlan.ts`, in the search-events agent skill, and the whole `tags` array feeds the `g` index field at weight 45. Do not add non-category values to `tags`.
 
-**URL state** (`utils/urlState.ts`): query, date range, category, source, and selected event ID round-trip through the URL, with allow-list validation for category and source.
+**URL state** (`utils/urlState.ts`): query, date range, category, source, and selected event ID round-trip through the URL, with allow-list validation for category and source. Opening an event from the list pushes a history entry, so the phone Back gesture closes it. Closing steps back over that entry. An event opened from a shared link has no entry and closes in place.
 
 **Date handling**: all comparisons use `America/Los_Angeles` via `Intl.DateTimeFormat`. Date keys refresh every 60 s so the UI stays correct across midnight.
 
@@ -181,6 +181,8 @@ The September full-repo audit is `docs/code-review-2026-09-25.md`. Every item ha
 **All-day events**: iCal VEVENTs with `VALUE=DATE` become `all_day: true` with a bare `YYYY-MM-DD` start. `displayTime()` returns "All day".
 
 **Running spans**: adapters drop an event only after its last day (`endedBeforePT`). A bare all-day end is exclusive. `withSpanOccurrences` then gives a multi-day span one `dates` entry per remaining day, capped at 120, and publishes today as its `date`.
+
+**Descriptions keep their line breaks**: `sanitizeDescription` in `scripts/lib/normalize.ts` turns block tags into line breaks and drops `**` markers and U+FFFD. LiveWhale's iCal text glues paragraphs ("arrive early.DIRECTIONS"), so `restoreParagraphBreaks` splits each join and skips URLs. When a source gives no description, `projectToLegacy` falls back to the title. The detail panel hides a description that only repeats the title, and links URLs and emails through `utils/linkify.ts`.
 
 **Shared-link previews**: chat apps read Open Graph tags without running JavaScript. A `vercel.json` route sends `/?event=<id>` to `api/event-preview.ts` only when the user agent matches a known link-preview crawler. People still get the static app. That page names `api/event-image.tsx` as its `og:image`, a 1200x630 card drawn with `@vercel/og`. Both functions read the committed `public/events.json` through `includeFiles`, so previews match the last deploy. An unknown or ended event gets the site-wide preview. In the app, such a link opens the normal listing with a dismissible "This event has ended" notice, also published as the `get_ui_state` notice. `@vercel/og` is pinned to 1.0.1 because 1.0.2 and 1.0.3 crash under plain Node ESM. Relative imports under `api/` need a `.js` extension for the same reason.
 

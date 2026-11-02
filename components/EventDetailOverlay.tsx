@@ -7,11 +7,39 @@ import {
   isContiguousRun,
 } from "../utils/eventDates";
 import { addEventToCalendar } from "../utils/icsExport";
-import { getCategoryStyle, getDirectionsUrl } from "../utils/eventPresentation";
+import {
+  getCategoryStyle,
+  getDirectionsUrl,
+  hasDistinctDescription,
+} from "../utils/eventPresentation";
+import { linkifySegments } from "../utils/linkify";
 import { useDialogAccessibility } from "../hooks/useDialogAccessibility";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 import { CalEvent } from "../types";
 import { SourceBadge } from "./SourceBadge";
+
+/** Plain feed text with its URLs and email addresses made tappable. */
+function LinkifiedText({ text }: { text: string }) {
+  return (
+    <>
+      {linkifySegments(text).map((segment, index) =>
+        segment.kind === "link" ? (
+          <a
+            key={index}
+            href={segment.href}
+            target={segment.href.startsWith("mailto:") ? undefined : "_blank"}
+            rel="noopener noreferrer"
+            className="text-berkeley-medblue underline underline-offset-2"
+          >
+            {segment.text}
+          </a>
+        ) : (
+          <React.Fragment key={index}>{segment.text}</React.Fragment>
+        ),
+      )}
+    </>
+  );
+}
 
 /** Bold date line for the detail panel: a span for multi-day events, else the date. */
 function detailWhenPrimary(event: CalEvent): string {
@@ -403,7 +431,7 @@ function BottomSheet({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className={`absolute bottom-0 left-0 right-0 max-h-[85vh] overflow-hidden rounded-t-3xl bg-white shadow-2xl overscroll-contain ${prefersReducedMotion || isClosing ? "" : "animate-slide-up"}`}
+        className={`absolute bottom-0 left-0 right-0 flex max-h-[85vh] flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl overscroll-contain ${prefersReducedMotion || isClosing ? "" : "animate-slide-up"}`}
         style={{
           transform: isClosing ? "translateY(100%)" : `translateY(${dragY}px)`,
           transition:
@@ -413,7 +441,7 @@ function BottomSheet({
         }}
       >
         <div
-          className="flex cursor-grab justify-center pb-2 pt-3 active:cursor-grabbing"
+          className="flex shrink-0 cursor-grab justify-center pb-2 pt-3 active:cursor-grabbing"
           onTouchStart={(eventTouch) => {
             setIsDragging(true);
             setTouchStartY(eventTouch.touches[0].clientY);
@@ -434,39 +462,40 @@ function BottomSheet({
           <div className="h-1 w-10 rounded-full bg-slate-300" />
         </div>
 
-        <div className="max-h-[calc(85vh-40px)] overflow-y-auto overscroll-contain px-5 pb-[max(2rem,env(safe-area-inset-bottom))]">
-          <div className="mb-3 flex items-center justify-between">
-            <span
-              className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${categoryStyle.badge}`}
+        {/* Pinned above the scroll area, so close stays in reach on long pages. */}
+        <div className="flex shrink-0 items-center justify-between px-5 pb-3">
+          <span
+            className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${categoryStyle.badge}`}
+          >
+            {categoryStyle.label}
+          </span>
+          <div className="flex items-center gap-3">
+            <SourceBadge source={event.source} />
+            <button
+              ref={closeButtonRef}
+              type="button"
+              onClick={handleClose}
+              aria-label="Close event details"
+              className="rounded-full border border-slate-200 p-3.5 text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
             >
-              {categoryStyle.label}
-            </span>
-            <div className="flex items-center gap-3">
-              <SourceBadge source={event.source} />
-              <button
-                ref={closeButtonRef}
-                type="button"
-                onClick={handleClose}
-                aria-label="Close event details"
-                className="rounded-full border border-slate-200 p-3.5 text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
           </div>
+        </div>
 
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[max(2rem,env(safe-area-inset-bottom))]">
           <h2
             id={titleId}
             className="mb-4 text-xl font-semibold text-berkeley-blue md:font-serif"
@@ -517,7 +546,9 @@ function BottomSheet({
                   />
                 </svg>
               </div>
-              <div className="font-medium">{event.location}</div>
+              <div className="min-w-0 font-medium wrap-break-word">
+                <LinkifiedText text={event.location} />
+              </div>
             </div>
 
             <div className="flex items-center gap-3">
@@ -550,12 +581,14 @@ function BottomSheet({
             />
           </div>
 
-          <div>
-            <h3 className="mb-2 font-bold text-gray-800">About this event</h3>
-            <p className="whitespace-pre-wrap leading-relaxed text-gray-600">
-              {event.description}
-            </p>
-          </div>
+          {hasDistinctDescription(event) && (
+            <div>
+              <h3 className="mb-2 font-bold text-gray-800">About this event</h3>
+              <p className="whitespace-pre-wrap leading-relaxed text-gray-600 wrap-break-word">
+                <LinkifiedText text={event.description} />
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -713,7 +746,9 @@ function SlideOutPanel({
                   />
                 </svg>
               </div>
-              <div className="text-base font-medium">{event.location}</div>
+              <div className="min-w-0 text-base font-medium wrap-break-word">
+                <LinkifiedText text={event.location} />
+              </div>
             </div>
 
             <div className="flex items-start gap-4 rounded-lg bg-gray-50 p-3">
@@ -744,14 +779,16 @@ function SlideOutPanel({
             />
           </div>
 
-          <div>
-            <h3 className="mb-3 text-lg font-bold text-gray-800">
-              About this event
-            </h3>
-            <p className="whitespace-pre-wrap leading-relaxed text-gray-600">
-              {event.description}
-            </p>
-          </div>
+          {hasDistinctDescription(event) && (
+            <div>
+              <h3 className="mb-3 text-lg font-bold text-gray-800">
+                About this event
+              </h3>
+              <p className="whitespace-pre-wrap leading-relaxed text-gray-600 wrap-break-word">
+                <LinkifiedText text={event.description} />
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

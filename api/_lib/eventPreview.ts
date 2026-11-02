@@ -11,12 +11,10 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { CalEvent } from "../../types";
-import {
-  formatMultiDayWhen,
-  getPacificDateKey,
-} from "../../utils/eventDates.js";
+import { formatEventDate, formatMultiDayWhen } from "../../utils/eventDates.js";
 import {
   getCategoryStyle,
+  hasDistinctDescription,
   shortenVenue,
 } from "../../utils/eventPresentation.js";
 
@@ -98,16 +96,7 @@ export function describeWhen(event: CalEvent, now = new Date()): string {
     return allDay ? span : `${span} · ${timeLabel}`;
   }
 
-  const dateKey = getPacificDateKey(event.date) || event.date.slice(0, 10);
-  const [year, month, day] = dateKey.split("-").map(Number);
-  if (!year || !month || !day) {
-    return timeLabel;
-  }
-  const dateLabel = new Date(Date.UTC(year, month - 1, day)).toLocaleDateString(
-    "en-US",
-    { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" },
-  );
-  return `${dateLabel} · ${timeLabel}`;
+  return `${formatEventDate(event.date, now)} · ${timeLabel}`;
 }
 
 export function buildEventCard(event: CalEvent, now = new Date()): EventCard {
@@ -135,7 +124,10 @@ export function buildEventPreview(
   const logistics = card.location
     ? `${card.when} · ${truncate(card.location, 60)}`
     : card.when;
-  const summary = truncate(plainText(event.description), 160);
+  // Many feeds repeat the title as the description; that adds nothing here.
+  const summary = hasDistinctDescription(event)
+    ? truncate(plainText(event.description), 160)
+    : "";
   // A shortened location already ends in "…", so it takes no period.
   const lead = logistics.endsWith("…") ? logistics : `${logistics}.`;
   const description = truncate(summary ? `${lead} ${summary}` : logistics, 300);

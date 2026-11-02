@@ -53,6 +53,10 @@ test("describeWhen covers single-day, all-day, and running spans", () => {
     "Thu, Oct 29 · 5:00 PM",
   );
   assert.equal(
+    describeWhen(makeEvent({ date: "2027-01-02", end_time: undefined }), NOW),
+    "Sat, Jan 2, 2027 · 5:00 PM",
+  );
+  assert.equal(
     describeWhen(makeEvent({ time: "All day", end_time: undefined }), NOW),
     "Thu, Oct 29 · All day",
   );
@@ -100,6 +104,19 @@ test("a shortened location is not followed by a stray period", () => {
   assert.equal(
     preview.description,
     "Thu, Oct 29 · 5:00 PM – 8:00 PM · 9Zero Climate Innovation Hub, 350 California St 4th floor… Rescheduled. Designers and alumni meet.",
+  );
+});
+
+test("a description that only repeats the title is left out", () => {
+  const preview = buildEventPreview(
+    makeEvent({ description: "  climate alumni   NIGHT " }),
+    ORIGIN,
+    NOW,
+  );
+
+  assert.equal(
+    preview.description,
+    "Thu, Oct 29 · 5:00 PM – 8:00 PM · 9Zero Climate Innovation Hub, San Francisco",
   );
 });
 

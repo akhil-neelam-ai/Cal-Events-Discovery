@@ -68,6 +68,8 @@ export default function App() {
     useState<Set<string>>(new Set());
   const isMobile = useIsMobile();
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // True while the open event has its own history entry, added on open.
+  const eventEntryPushedRef = useRef(false);
   const prevSearchQueryRef = useRef<string>(
     initialUrlState.filters.searchQuery,
   );
@@ -89,26 +91,6 @@ export default function App() {
     () => (feedLoaded ? (topicVocabulary?.topics ?? []) : null),
     [feedLoaded, topicVocabulary],
   );
-
-  const handleEventClick = useCallback(
-    (event: CalEvent) => {
-      setSelectedEventId(event.id);
-      // Persist the search term that led to this click. This runs here, not
-      // in a state updater, which StrictMode calls twice.
-      if (filters.searchQuery.trim()) addRecentSearch(filters.searchQuery);
-      trackEventClick({
-        event_id: event.id,
-        event_title: event.title,
-        event_category: event.tags?.[0] || "Unknown",
-        event_date: event.date,
-      });
-    },
-    [filters.searchQuery],
-  );
-
-  const handleCloseDetail = useCallback(() => {
-    setSelectedEventId(null);
-  }, []);
 
   useEffect(() => {
     // Initialize GA4 and track page view
@@ -246,6 +228,7 @@ export default function App() {
   const handlePopStateApplied = useCallback((state: AppUrlState) => {
     setDismissedInterpretationKeys(new Set());
     prevSearchQueryRef.current = state.filters.searchQuery;
+    eventEntryPushedRef.current = false;
   }, []);
 
   const { onHistoryIntent } = useUrlStateSync({
@@ -258,6 +241,39 @@ export default function App() {
     userSetDateRange,
     onPopStateApplied: handlePopStateApplied,
   });
+
+  // Opening an event from the list adds a history entry, so the phone Back
+  // gesture closes the sheet instead of leaving the site.
+  const handleEventClick = useCallback(
+    (event: CalEvent) => {
+      if (!visibleSelectedEventId) {
+        onHistoryIntent("push");
+        eventEntryPushedRef.current = true;
+      }
+      setSelectedEventId(event.id);
+      // Persist the search term that led to this click. This runs here, not
+      // in a state updater, which StrictMode calls twice.
+      if (filters.searchQuery.trim()) addRecentSearch(filters.searchQuery);
+      trackEventClick({
+        event_id: event.id,
+        event_title: event.title,
+        event_category: event.tags?.[0] || "Unknown",
+        event_date: event.date,
+      });
+    },
+    [filters.searchQuery, onHistoryIntent, visibleSelectedEventId],
+  );
+
+  // Closing steps back over the entry the open added, so Back never lands on
+  // the same event again. An event opened from a shared link has no entry.
+  const handleCloseDetail = useCallback(() => {
+    if (eventEntryPushedRef.current) {
+      eventEntryPushedRef.current = false;
+      window.history.back();
+      return;
+    }
+    setSelectedEventId(null);
+  }, []);
 
   const {
     handleSearchChange,
@@ -364,7 +380,9 @@ export default function App() {
         )}
 
         {/* Dismissing clears the stale selection that drives the notice. */}
-        {endedEventId && <EndedEventNotice onDismiss={handleCloseDetail} />}
+        {endedEventId && (
+          <EndedEventNotice onDismiss={() => setSelectedEventId(null)} />
+        )}
 
         {loading === LoadingState.SUCCESS && (
           <EventsResultsSection

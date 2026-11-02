@@ -362,6 +362,103 @@ describe("App UI regressions", () => {
     }
   });
 
+  it("hides a description that repeats the title and links URLs in others", () => {
+    const repeated = makeEvent({
+      title: "Tennis Invitational",
+      description: " tennis   invitational ",
+    });
+    const withLinks = makeEvent({
+      description: "RSVP at https://example.edu/rsvp or rsvp@example.edu.",
+    });
+
+    for (const isMobile of [true, false]) {
+      const first = render(
+        <EventDetailOverlay
+          event={repeated}
+          isMobile={isMobile}
+          onClose={() => {}}
+        />,
+      );
+      expect(
+        screen.queryByRole("heading", { name: "About this event" }),
+      ).not.toBeInTheDocument();
+      first.unmount();
+
+      const second = render(
+        <EventDetailOverlay
+          event={withLinks}
+          isMobile={isMobile}
+          onClose={() => {}}
+        />,
+      );
+      expect(
+        screen.getByRole("link", { name: "https://example.edu/rsvp" }),
+      ).toHaveAttribute("href", "https://example.edu/rsvp");
+      expect(
+        screen.getByRole("link", { name: "rsvp@example.edu" }),
+      ).toHaveAttribute("href", "mailto:rsvp@example.edu");
+      second.unmount();
+    }
+  });
+
+  it("closes an event opened from the list with Back, and × steps back too", async () => {
+    const user = userEvent.setup();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "list-event", title: "List Event" }),
+    ]);
+    const startLength = window.history.length;
+
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: /list event/i }));
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(window.location.search).toContain("event=list-event");
+    });
+    expect(window.history.length).toBe(startLength + 1);
+
+    act(() => window.history.back());
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+    expect(window.location.search).not.toContain("event=");
+
+    await user.click(screen.getByRole("button", { name: /list event/i }));
+    const back = vi.spyOn(window.history, "back");
+    await user.click(
+      screen.getByRole("button", { name: "Close event details" }),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+    expect(back).toHaveBeenCalledTimes(1);
+    expect(window.location.search).not.toContain("event=");
+    back.mockRestore();
+  });
+
+  it("closes a shared-link event in place instead of going back", async () => {
+    const user = userEvent.setup();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "shared-event", title: "Shared Event" }),
+    ]);
+    window.history.replaceState({}, "", "/?event=shared-event");
+    const back = vi.spyOn(window.history, "back");
+
+    render(<App />);
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: "Close event details" }),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+    expect(back).not.toHaveBeenCalled();
+    expect(window.location.search).not.toContain("event=");
+    back.mockRestore();
+  });
+
   it("rejects a URL topic outside the published vocabulary", async () => {
     mockFeedState = makeFeedState([
       makeEvent({ id: "ai", topics: ["ai-machine-learning"] }),

@@ -329,32 +329,35 @@ export function MobileFiltersBar({
 
   return (
     <div className="border-b border-slate-200/80 bg-white/95 shadow-xs backdrop-blur-md">
-      <div className="container mx-auto flex items-center gap-2 overflow-x-auto whitespace-nowrap px-4 py-2.5 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-300">
-        {DateRanges.map((range) => {
-          const active = activeDateRange === range.value;
-          return (
-            <button
-              key={range.value}
-              type="button"
-              title={DATE_RANGE_DESCRIPTIONS[range.value]}
-              onClick={() =>
-                handleDateSelect(range.value as SearchFilters["dateRange"])
-              }
-              className={`select-none rounded-full px-4 py-2 text-sm font-semibold tap-highlight ${
-                active
-                  ? "bg-berkeley-blue text-white shadow-[0_2px_10px_rgba(0,50,98,0.25)]"
-                  : "bg-slate-100 text-slate-600 active:bg-slate-200"
-              }`}
-            >
-              {range.label}
-            </button>
-          );
-        })}
+      <div className="container mx-auto flex items-center gap-2 px-4 py-2.5">
+        {/* Only the date pills scroll, so Filters stays visible on narrow phones. */}
+        <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-300">
+          {DateRanges.map((range) => {
+            const active = activeDateRange === range.value;
+            return (
+              <button
+                key={range.value}
+                type="button"
+                title={DATE_RANGE_DESCRIPTIONS[range.value]}
+                onClick={() =>
+                  handleDateSelect(range.value as SearchFilters["dateRange"])
+                }
+                className={`select-none rounded-full px-4 py-2 text-sm font-semibold tap-highlight ${
+                  active
+                    ? "bg-berkeley-blue text-white shadow-[0_2px_10px_rgba(0,50,98,0.25)]"
+                    : "bg-slate-100 text-slate-600 active:bg-slate-200"
+                }`}
+              >
+                {range.label}
+              </button>
+            );
+          })}
+        </div>
 
         <button
           type="button"
           onClick={() => setAdvancedOpen((open) => !open)}
-          className={`ml-auto inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold tap-highlight select-none ${
+          className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold tap-highlight select-none ${
             advancedOpen || activeFilterCount > 0
               ? "border-berkeley-blue bg-berkeley-blue text-white shadow-[0_2px_10px_rgba(0,50,98,0.25)]"
               : "border-slate-200 bg-white text-slate-700 active:bg-slate-50"

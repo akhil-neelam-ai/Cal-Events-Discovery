@@ -59,10 +59,14 @@ function formatDateKeyInTimeZone(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-function formatShortDateKey(dateKey: string): string {
+/** "Nov 15", plus the year when it differs from `todayKey`'s year. */
+function formatShortDateKey(dateKey: string, todayKey?: string): string {
   const [year, month, day] = dateKey.split("-").map(Number);
   if (!year || !month || !day) return dateKey;
-  return `${MONTHS[month - 1]} ${day}`;
+  const label = `${MONTHS[month - 1]} ${day}`;
+  return todayKey && year !== Number(todayKey.slice(0, 4))
+    ? `${label}, ${year}`
+    : label;
 }
 
 export function getPacificDateKey(dateString: string): string {
@@ -293,12 +297,7 @@ export function formatRelativeEventDate(
     return `${weekdayLabel(dateKey)}, ${timeLabel}`;
   }
 
-  const [, month, day] = dateKey.split("-").map(Number);
-  if (!month || !day) {
-    return `${formatEventDate(event.date)}, ${timeLabel}`;
-  }
-
-  return `${MONTHS[month - 1]} ${day}, ${timeLabel}`;
+  return `${formatShortDateKey(dateKey, todayKey)}, ${timeLabel}`;
 }
 
 export function dateGroupLabel(
@@ -314,35 +313,25 @@ export function dateGroupLabel(
     weekday: "long",
     timeZone: "UTC",
   });
-  const shortDate = formatShortDateKey(dateKey);
+  const shortDate = formatShortDateKey(dateKey, todayKey);
   if (dateKey === todayKey) return `Today · ${shortDate}`;
   if (dateKey === tomorrowKey) return `Tomorrow · ${shortDate}`;
   return `${dayName} · ${shortDate}`;
 }
 
-export function formatEventDate(dateString: string): string {
+/** "Wed, Nov 5", plus the year when it is not the current Pacific year. */
+export function formatEventDate(dateString: string, now = new Date()): string {
   const key = getPacificDateKey(dateString) || dateString.slice(0, 10);
-  const [, month, day] = key.split("-").map(Number);
-
-  if (!month || !day) {
+  const [year, month, day] = key.split("-").map(Number);
+  if (!year || !month || !day) {
     return dateString;
   }
 
-  const ordinal = (value: number) => {
-    if (value > 3 && value < 21) return "th";
-    switch (value % 10) {
-      case 1:
-        return "st";
-      case 2:
-        return "nd";
-      case 3:
-        return "rd";
-      default:
-        return "th";
-    }
-  };
-
-  return `${day}${ordinal(day)} ${MONTHS[month - 1]}`;
+  const weekday = new Date(Date.UTC(year, month - 1, day)).toLocaleDateString(
+    "en-US",
+    { weekday: "short", timeZone: "UTC" },
+  );
+  return `${weekday}, ${formatShortDateKey(key, getCurrentPacificDateKey(now))}`;
 }
 
 /**
