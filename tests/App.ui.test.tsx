@@ -368,7 +368,8 @@ describe("App UI regressions", () => {
       description: " tennis   invitational ",
     });
     const withLinks = makeEvent({
-      description: "RSVP at https://example.edu/rsvp or rsvp@example.edu.",
+      description:
+        "RSVP at https://example.edu/rsvp or rsvp@example.edu. Design Field Notes (https://example.edu/dfn) is a series.",
     });
 
     for (const isMobile of [true, false]) {
@@ -397,6 +398,10 @@ describe("App UI regressions", () => {
       expect(
         screen.getByRole("link", { name: "rsvp@example.edu" }),
       ).toHaveAttribute("href", "mailto:rsvp@example.edu");
+      expect(
+        screen.getByRole("link", { name: "Design Field Notes" }),
+      ).toHaveAttribute("href", "https://example.edu/dfn");
+      expect(screen.queryByText(/example\.edu\/dfn/)).not.toBeInTheDocument();
       second.unmount();
     }
   });

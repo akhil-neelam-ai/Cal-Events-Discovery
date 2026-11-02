@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { linkifySegments } from "../../utils/linkify.ts";
+import { displaySegments, linkifySegments } from "../../utils/linkify.ts";
 
 const links = (text) =>
   linkifySegments(text)
@@ -60,4 +60,73 @@ test("never builds a script or other non-web href", () => {
   ]) {
     assert.deepEqual(links(text), []);
   }
+});
+
+const shown = (text) =>
+  displaySegments(text)
+    .map((segment) =>
+      segment.kind === "link"
+        ? `[${segment.text}](${segment.href})`
+        : segment.text,
+    )
+    .join("");
+
+test("display links the anchor words and drops the printed URL", () => {
+  assert.equal(
+    shown(
+      "\u200BDesign Field Notes (https://x.edu/dfn?utm_source=luma) is a lecture series.",
+    ),
+    "\u200B[Design Field Notes](https://x.edu/dfn?utm_source=luma) is a lecture series.",
+  );
+  assert.equal(
+    shown("Please click this Google Maps Link (https://maps.example/x) and go"),
+    "Please click this [Google Maps Link](https://maps.example/x) and go",
+  );
+  assert.equal(
+    shown("Visit the Center for Latin American Studies (https://x.edu)."),
+    "Visit the [Center for Latin American Studies](https://x.edu).",
+  );
+  assert.equal(
+    shown(
+      "To watch visit music.berkeley.edu/watch (https://music.berkeley.edu/watch)",
+    ),
+    "To watch visit [music.berkeley.edu/watch](https://music.berkeley.edu/watch)",
+  );
+  assert.equal(
+    shown("To attend, register here (https://x.edu/r) today"),
+    "To attend, register [here](https://x.edu/r) today",
+  );
+});
+
+test("display keeps a break where the source glued the next paragraph on", () => {
+  assert.equal(
+    shown(
+      "donating online HERE (https://give.edu/f)PARKING INFORMATION (http://x.edu/p)Please note",
+    ),
+    "donating online [HERE](https://give.edu/f)\n[PARKING INFORMATION](http://x.edu/p)\nPlease note",
+  );
+});
+
+test("display drops a printed mailto that repeats the linked address", () => {
+  assert.equal(
+    shown(
+      "contact staff atjacobsinstitute@berkeley.edu (mailto:jacobsinstitute@berkeley.edu)with notice",
+    ),
+    "contact staff at [jacobsinstitute@berkeley.edu](mailto:jacobsinstitute@berkeley.edu) with notice",
+  );
+  assert.equal(
+    shown("contact pkala@berkeley.edu (mailto:pkala@berkeley.edu) with notice"),
+    "contact [pkala@berkeley.edu](mailto:pkala@berkeley.edu) with notice",
+  );
+});
+
+test("display leaves bare URLs and anchorless parentheses as URL links", () => {
+  assert.equal(
+    shown("Details at https://x.edu/a today"),
+    "Details at [https://x.edu/a](https://x.edu/a) today",
+  );
+  assert.equal(
+    shown("See the notes. (https://x.edu/n)"),
+    "See the notes. ([https://x.edu/n](https://x.edu/n))",
+  );
 });

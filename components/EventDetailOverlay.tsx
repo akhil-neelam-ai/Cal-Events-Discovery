@@ -12,21 +12,25 @@ import {
   getDirectionsUrl,
   hasDistinctDescription,
 } from "../utils/eventPresentation";
-import { linkifySegments } from "../utils/linkify";
+import { displaySegments } from "../utils/linkify";
 import { useDialogAccessibility } from "../hooks/useDialogAccessibility";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 import { CalEvent } from "../types";
 import { SourceBadge } from "./SourceBadge";
 
-/** Plain feed text with its URLs and email addresses made tappable. */
+/**
+ * Plain feed text with tappable links. A printed "anchor (url)" shows as the
+ * linked anchor words, the way the source page shows it.
+ */
 function LinkifiedText({ text }: { text: string }) {
   return (
     <>
-      {linkifySegments(text).map((segment, index) =>
+      {displaySegments(text).map((segment, index) =>
         segment.kind === "link" ? (
           <a
             key={index}
             href={segment.href}
+            title={segment.text === segment.href ? undefined : segment.href}
             target={segment.href.startsWith("mailto:") ? undefined : "_blank"}
             rel="noopener noreferrer"
             className="text-berkeley-medblue underline underline-offset-2"
