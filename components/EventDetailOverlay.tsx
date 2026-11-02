@@ -540,19 +540,22 @@ function BottomSheet({
             </div>
           </div>
 
+          {/* Actions sit above the description, which can run very long. */}
           <div className="mb-6">
+            <DetailActions
+              event={event}
+              directionsUrl={directionsUrl}
+              preferGoogleCalendar={false}
+              compact
+            />
+          </div>
+
+          <div>
             <h3 className="mb-2 font-bold text-gray-800">About this event</h3>
             <p className="whitespace-pre-wrap leading-relaxed text-gray-600">
               {event.description}
             </p>
           </div>
-
-          <DetailActions
-            event={event}
-            directionsUrl={directionsUrl}
-            preferGoogleCalendar={false}
-            compact
-          />
         </div>
       </div>
     </div>
@@ -734,6 +737,14 @@ function SlideOutPanel({
           </div>
 
           <div className="mb-8">
+            <DetailActions
+              event={event}
+              directionsUrl={directionsUrl}
+              preferGoogleCalendar
+            />
+          </div>
+
+          <div>
             <h3 className="mb-3 text-lg font-bold text-gray-800">
               About this event
             </h3>
@@ -741,12 +752,6 @@ function SlideOutPanel({
               {event.description}
             </p>
           </div>
-
-          <DetailActions
-            event={event}
-            directionsUrl={directionsUrl}
-            preferGoogleCalendar
-          />
         </div>
       </div>
     </div>
