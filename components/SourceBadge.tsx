@@ -37,7 +37,9 @@ export function SourceBadge({
         target="_blank"
         rel="noopener noreferrer"
         onClick={(event) => event.stopPropagation()}
-        className="inline-flex rounded-sm px-2 py-1 -mx-2 -my-1 transition-colors hover:text-gray-600"
+        // Padding with matching negative margins gives a 44px+ tap target
+        // without moving the 10px label.
+        className="inline-flex rounded-sm px-2 py-4 -mx-2 -my-4 transition-colors hover:text-gray-600"
       >
         {inner}
       </a>

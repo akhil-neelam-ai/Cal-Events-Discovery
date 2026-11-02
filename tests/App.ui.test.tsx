@@ -11,13 +11,17 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "../App";
+import { getViewState } from "../agent/viewState";
 import { DEFAULT_FILTERS } from "../appConfig";
+import { ENDED_EVENT_NOTICE } from "../components/EndedEventNotice";
+import { EventDetailOverlay } from "../components/EventDetailOverlay";
 import { useEventBrowserActions } from "../hooks/useEventBrowserActions";
 import { useUrlStateSync } from "../hooks/useUrlStateSync";
 import type { CalEvent } from "../types";
 import { LoadingState } from "../types";
 import { buildSearchIndex } from "../scripts/lib/buildIndex";
 import { TOPIC_VOCABULARY } from "../scripts/lib/topics";
+import { trackEndedEventLink } from "../utils/analytics";
 import { addRecentSearch } from "../utils/recentSearches";
 import type { SearchIndex } from "../utils/textUtils";
 
@@ -50,6 +54,7 @@ vi.mock("../utils/analytics", () => ({
   trackSearch: vi.fn(),
   trackCategoryFilter: vi.fn(),
   trackDateFilter: vi.fn(),
+  trackEndedEventLink: vi.fn(),
   trackEventClick: vi.fn(),
   trackFilter: vi.fn(),
   trackExternalLink: vi.fn(),
@@ -296,6 +301,7 @@ describe("App UI regressions", () => {
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getAllByText("AI Policy Forum")).toHaveLength(2);
+    expect(screen.queryByText(ENDED_EVENT_NOTICE)).not.toBeInTheDocument();
     expect(screen.queryByText("Law Policy Forum")).not.toBeInTheDocument();
     expect(screen.queryByText("AI Film Forum")).not.toBeInTheDocument();
     expect(screen.queryByText("AI Student Forum")).not.toBeInTheDocument();
@@ -303,6 +309,154 @@ describe("App UI regressions", () => {
       expect(window.location.search).toContain("topic=ai-machine-learning");
       expect(window.location.search).toContain("event=target-event");
     });
+  });
+
+  it("says an event has ended when the URL names one the feed dropped", async () => {
+    const user = userEvent.setup();
+    vi.mocked(trackEndedEventLink).mockClear();
+    mockFeedState = makeFeedState([], { loading: LoadingState.LOADING });
+    window.history.replaceState({}, "", "/?event=ended-event");
+
+    const { rerender } = render(<App />);
+
+    expect(screen.queryByText(ENDED_EVENT_NOTICE)).not.toBeInTheDocument();
+    expect(trackEndedEventLink).not.toHaveBeenCalled();
+
+    mockFeedState = makeFeedState([makeEvent({ id: "live-event" })]);
+    rerender(<App />);
+
+    expect(screen.getByText(ENDED_EVENT_NOTICE)).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getAllByText("AI Seminar")).not.toHaveLength(0);
+    expect(trackEndedEventLink).toHaveBeenCalledExactlyOnceWith("ended-event");
+    expect(getViewState()?.notice).toBe(ENDED_EVENT_NOTICE);
+    expect(window.location.search).not.toContain("event=");
+
+    await user.click(screen.getByRole("button", { name: "Dismiss" }));
+
+    expect(screen.queryByText(ENDED_EVENT_NOTICE)).not.toBeInTheDocument();
+    expect(getViewState()?.notice).toBeNull();
+  });
+
+  it("puts event actions above a long description on phone and desktop", () => {
+    const event = makeEvent({ description: "Long details. ".repeat(200) });
+
+    for (const isMobile of [true, false]) {
+      const { unmount } = render(
+        <EventDetailOverlay
+          event={event}
+          isMobile={isMobile}
+          onClose={() => {}}
+        />,
+      );
+      const officialPage = screen.getByRole("link", {
+        name: /View Official Page/,
+      });
+      const about = screen.getByRole("heading", { name: "About this event" });
+
+      expect(
+        officialPage.compareDocumentPosition(about) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+      unmount();
+    }
+  });
+
+  it("hides a description that repeats the title and links URLs in others", () => {
+    const repeated = makeEvent({
+      title: "Tennis Invitational",
+      description: " tennis   invitational ",
+    });
+    const withLinks = makeEvent({
+      description: "RSVP at https://example.edu/rsvp or rsvp@example.edu.",
+    });
+
+    for (const isMobile of [true, false]) {
+      const first = render(
+        <EventDetailOverlay
+          event={repeated}
+          isMobile={isMobile}
+          onClose={() => {}}
+        />,
+      );
+      expect(
+        screen.queryByRole("heading", { name: "About this event" }),
+      ).not.toBeInTheDocument();
+      first.unmount();
+
+      const second = render(
+        <EventDetailOverlay
+          event={withLinks}
+          isMobile={isMobile}
+          onClose={() => {}}
+        />,
+      );
+      expect(
+        screen.getByRole("link", { name: "https://example.edu/rsvp" }),
+      ).toHaveAttribute("href", "https://example.edu/rsvp");
+      expect(
+        screen.getByRole("link", { name: "rsvp@example.edu" }),
+      ).toHaveAttribute("href", "mailto:rsvp@example.edu");
+      second.unmount();
+    }
+  });
+
+  it("closes an event opened from the list with Back, and × steps back too", async () => {
+    const user = userEvent.setup();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "list-event", title: "List Event" }),
+    ]);
+    const startLength = window.history.length;
+
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: /list event/i }));
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(window.location.search).toContain("event=list-event");
+    });
+    expect(window.history.length).toBe(startLength + 1);
+
+    act(() => window.history.back());
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+    expect(window.location.search).not.toContain("event=");
+
+    await user.click(screen.getByRole("button", { name: /list event/i }));
+    const back = vi.spyOn(window.history, "back");
+    await user.click(
+      screen.getByRole("button", { name: "Close event details" }),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+    expect(back).toHaveBeenCalledTimes(1);
+    expect(window.location.search).not.toContain("event=");
+    back.mockRestore();
+  });
+
+  it("closes a shared-link event in place instead of going back", async () => {
+    const user = userEvent.setup();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "shared-event", title: "Shared Event" }),
+    ]);
+    window.history.replaceState({}, "", "/?event=shared-event");
+    const back = vi.spyOn(window.history, "back");
+
+    render(<App />);
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: "Close event details" }),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+    expect(back).not.toHaveBeenCalled();
+    expect(window.location.search).not.toContain("event=");
+    back.mockRestore();
   });
 
   it("rejects a URL topic outside the published vocabulary", async () => {

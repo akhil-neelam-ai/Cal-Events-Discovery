@@ -24,6 +24,7 @@ import { CanonicalEventSchema } from "../lib/schema.js";
 import {
   deriveFrontendTags,
   endedBeforePT,
+  sanitizeDescription,
   todayPT,
 } from "../lib/normalize.js";
 import type { FetchOptions } from "../lib/abort.js";
@@ -218,7 +219,8 @@ export async function fetchTribe(
         }
 
         const title = stripHtml(raw.title);
-        const description = stripHtml(
+        // Unlike the short fields, a description keeps its paragraph breaks.
+        const description = sanitizeDescription(
           raw.description || raw.excerpt || raw.title,
         );
 

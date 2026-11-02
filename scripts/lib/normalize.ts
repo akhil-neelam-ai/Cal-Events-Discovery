@@ -8,6 +8,7 @@
 import he from "he";
 
 import type { CanonicalEvent, LegacyCalEvent } from "./schema.js";
+import { linkifySegments } from "../../utils/linkify.js";
 
 export const FRONTEND_CATEGORIES = [
   "Academic",
@@ -383,7 +384,49 @@ export function sanitizePlainText(raw: string): string {
     .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, " ")
     .replace(/<[^>]+>/g, " ");
   const decoded = he.decode(withoutTags);
-  return decoded.replace(/[<>]/g, "").replace(/\s+/g, " ").trim();
+  // U+FFFD marks a character the source could not encode, such as a cut emoji.
+  return decoded.replace(/[<>�]/g, "").replace(/\s+/g, " ").trim();
+}
+
+/**
+ * Plain text for a description, keeping its paragraph breaks. Block tags
+ * become line breaks. Other tags, "**" emphasis markers, and U+FFFD (a
+ * character the source could not encode) are dropped.
+ */
+export function sanitizeDescription(raw: string): string {
+  const withBreaks = raw
+    .replace(/\r\n?/g, "\n")
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, " ")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|li|h[1-6]|tr|blockquote)\s*>/gi, "\n")
+    .replace(/<[^>]+>/g, " ");
+  return he
+    .decode(withBreaks)
+    .replace(/[<>\uFFFD]/g, "")
+    .replace(/\*\*/g, "")
+    .split("\n")
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+// A sentence end or ")" directly before a capitalized word.
+const GLUED_PARAGRAPH_RE = /([a-z0-9][.!?]|\))(?=[A-Z][a-zA-Z])/g;
+
+/**
+ * LiveWhale's plain-text descriptions drop the break between paragraphs, as
+ * in "arrive early.DIRECTIONS (url)". This puts a line break back at each
+ * such join. URLs and email addresses are left alone.
+ */
+export function restoreParagraphBreaks(text: string): string {
+  return linkifySegments(text)
+    .map((segment) =>
+      segment.kind === "text"
+        ? segment.text.replace(GLUED_PARAGRAPH_RE, "$1\n")
+        : segment.text,
+    )
+    .join("");
 }
 
 const TZ = "America/Los_Angeles";
@@ -527,9 +570,32 @@ function displayEndTime(event: CanonicalEvent): string | undefined {
   return displayTime(event.end_at, false);
 }
 
+const PT_CLOCK_FORMAT = new Intl.DateTimeFormat("en-US", {
+  timeZone: TZ,
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+/** A timed event from 12:00 AM to 11:59 PM on one PT day runs all day. */
+function coversWholeDayPT(event: CanonicalEvent): boolean {
+  if (event.all_day || !event.end_at || DATE_KEY_RE.test(event.start_at)) {
+    return false;
+  }
+  const start = new Date(event.start_at);
+  const end = new Date(event.end_at);
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) return false;
+  return (
+    PT_CLOCK_FORMAT.format(start) === "00:00" &&
+    PT_CLOCK_FORMAT.format(end) === "23:59" &&
+    isoDateInPT(event.start_at) === isoDateInPT(event.end_at)
+  );
+}
+
 export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
   const date = firstOccurrencePT(event);
-  const time = displayTime(event.start_at, event.all_day);
+  const allDay = event.all_day || coversWholeDayPT(event);
+  const time = displayTime(event.start_at, allDay);
   // Venue and organizer text arrives with entities and line breaks too, and
   // React would show a literal "&nbsp;".
   const location =
@@ -554,7 +620,7 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
     date,
     time,
     location,
-    description: sanitizePlainText(event.description || event.title),
+    description: sanitizeDescription(event.description || event.title),
     tags: tags.length > 0 ? tags : [inferCategory(event)],
     url: event.canonical_url || event.source_url,
     source: event.source_name,
@@ -572,7 +638,7 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
   } else if (!event.occurrence_dates) {
     // A span on its last day keeps one occurrence and its first day's
     // `time`, so it gets no end time.
-    const endTime = displayEndTime(event);
+    const endTime = allDay ? undefined : displayEndTime(event);
     if (endTime) legacy.end_time = endTime;
   }
 

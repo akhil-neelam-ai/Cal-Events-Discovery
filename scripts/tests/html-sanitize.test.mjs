@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { projectToLegacy, sanitizePlainText } from "../lib/normalize.ts";
+import {
+  cleanTitle,
+  projectToLegacy,
+  restoreParagraphBreaks,
+  sanitizeDescription,
+  sanitizePlainText,
+} from "../lib/normalize.ts";
 
 test("sanitizePlainText decodes HTML entities and strips tags", () => {
   assert.equal(
@@ -88,4 +94,65 @@ test("projectToLegacy falls back when every venue part is blank", () => {
   );
 
   assert.equal(legacy.location, "Berkeley, CA");
+});
+
+test("sanitizeDescription keeps paragraph and line breaks", () => {
+  assert.equal(
+    sanitizeDescription(
+      "<p>First   paragraph.</p><p>Second<br>line &amp; more</p>\r\n\r\n\r\nEnd",
+    ),
+    "First paragraph.\nSecond\nline & more\n\nEnd",
+  );
+});
+
+test("sanitizeDescription drops emphasis markers and unencodable characters", () => {
+  assert.equal(
+    sanitizeDescription("**Rescheduled.** Join us \uFFFD today"),
+    "Rescheduled. Join us today",
+  );
+  assert.equal(cleanTitle("Election Day \uFFFD"), "Election Day");
+});
+
+test("restoreParagraphBreaks splits glued paragraphs but not URLs or initials", () => {
+  assert.equal(
+    restoreParagraphBreaks(
+      "arrive early.DIRECTIONS (https://x.edu/Contact.Us)PARKING is limited.",
+    ),
+    "arrive early.\nDIRECTIONS (https://x.edu/Contact.Us)\nPARKING is limited.",
+  );
+  for (const text of [
+    "Made in the U.S.A today",
+    "A Ph.D. Student",
+    "Write pkala@Berkeley.Edu now",
+  ]) {
+    assert.equal(restoreParagraphBreaks(text), text);
+  }
+});
+
+test("projectToLegacy keeps description paragraphs", () => {
+  const legacy = projectToLegacy(
+    canonicalEvent({ description: "<p>One.</p><p>Two &nbsp; words.</p>" }),
+  );
+
+  assert.equal(legacy.description, "One.\nTwo words.");
+});
+
+test("projectToLegacy treats 12:00 AM to 11:59 PM as all day", () => {
+  const legacy = projectToLegacy(
+    canonicalEvent({
+      start_at: "2026-10-31T00:00:00-07:00",
+      end_at: "2026-10-31T23:59:00-07:00",
+    }),
+  );
+
+  assert.equal(legacy.time, "All day");
+  assert.equal(legacy.end_time, undefined);
+
+  const late = projectToLegacy(
+    canonicalEvent({
+      start_at: "2026-10-31T00:00:00-07:00",
+      end_at: "2026-10-31T01:00:00-07:00",
+    }),
+  );
+  assert.equal(late.time, "12:00 AM");
 });

@@ -26,6 +26,8 @@ import {
   addDaysToKey,
   deriveFrontendTags,
   endedBeforePT,
+  restoreParagraphBreaks,
+  sanitizeDescription,
   todayPT,
 } from "../lib/normalize.js";
 
@@ -437,6 +439,16 @@ function decodeIcalText(text: string): string {
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+/** Like decodeIcalText, but keeps line breaks and repairs glued paragraphs. */
+function decodeIcalDescription(text: string): string {
+  const unescaped = text
+    .replace(/\\n/g, "\n")
+    .replace(/\\,/g, ",")
+    .replace(/\\;/g, ";")
+    .replace(/\\\\/g, "\\");
+  return restoreParagraphBreaks(sanitizeDescription(unescaped));
 }
 
 /** A calendar that was cut off mid-response. Smaller windows can recover it. */
@@ -1240,7 +1252,7 @@ export async function fetchLiveWhale(
         asString(ve.url) || `https://events.berkeley.edu/live/events/${ve.uid}`;
       const { slug, unit } = await unitFromUrl(url, lookups);
 
-      const description = decodeIcalText(asString(ve.description));
+      const description = decodeIcalDescription(asString(ve.description));
       const location = decodeIcalText(asString(ve.location));
       const categoriesRaw: string[] | string | undefined = ve.categories;
       const categories = Array.isArray(categoriesRaw)

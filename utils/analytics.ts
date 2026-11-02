@@ -160,6 +160,13 @@ export function trackFilter(params: FilterParams): void {
 /**
  * Track event card clicks (opening detail view)
  */
+/**
+ * Track a shared link to an event the feed no longer lists
+ */
+export function trackEndedEventLink(eventId: string): void {
+  trackEvent("ended_event_link", { event_id: eventId });
+}
+
 export function trackEventClick(params: EventClickParams): void {
   trackEvent("event_click", {
     event_id: params.event_id,

@@ -3,8 +3,10 @@ import test from "node:test";
 
 import {
   buildEventGroups,
+  dateGroupLabel,
   dateRangeStartKey,
   firstOccurrenceInRange,
+  formatEventDate,
   formatMultiDayWhen,
   formatRelativeEventDate,
   getCurrentPacificMinutes,
@@ -109,6 +111,26 @@ test("formatRelativeEventDate uses today, tomorrow, weekday, and absolute labels
   assert.equal(
     formatRelativeEventDate({ date: "2026-05-30", time: "3:00 PM" }, now),
     "May 30, 3pm",
+  );
+});
+
+test("date labels carry a weekday, and a year only outside this year", () => {
+  const now = new Date("2026-11-02T12:00:00-08:00");
+
+  assert.equal(formatEventDate("2026-11-05", now), "Thu, Nov 5");
+  assert.equal(formatEventDate("2027-01-02", now), "Sat, Jan 2, 2027");
+  assert.equal(
+    formatRelativeEventDate({ date: "2026-11-15", time: "4:00 PM" }, now),
+    "Nov 15, 4pm",
+  );
+  assert.equal(
+    formatRelativeEventDate({ date: "2027-11-15", time: "4:00 PM" }, now),
+    "Nov 15, 2027, 4pm",
+  );
+  assert.equal(dateGroupLabel("2026-11-15", "2026-11-02"), "Sunday · Nov 15");
+  assert.equal(
+    dateGroupLabel("2027-11-15", "2026-11-02"),
+    "Monday · Nov 15, 2027",
   );
 });
 

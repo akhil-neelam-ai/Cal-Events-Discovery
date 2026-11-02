@@ -97,6 +97,16 @@ const BERKELEY_LOCATIONS = [
   "hearst greek",
 ];
 
+/** False when the description is empty or only repeats the title. */
+export function hasDistinctDescription(
+  event: Pick<CalEvent, "title" | "description">,
+): boolean {
+  const normalize = (text: string) =>
+    text.replace(/\s+/g, " ").trim().toLowerCase();
+  const description = normalize(event.description ?? "");
+  return description !== "" && description !== normalize(event.title);
+}
+
 export function getDirectionsUrl(location: string): string | null {
   if (!location || ONLINE_LOCATION_RE.test(location)) {
     return null;
