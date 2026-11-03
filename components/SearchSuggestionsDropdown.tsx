@@ -69,7 +69,7 @@ export function SearchSuggestionsDropdown({
         {recentSuggestions.length > 0 && (
           <div className="p-3">
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
                 Recent
               </span>
               <button
@@ -81,7 +81,7 @@ export function SearchSuggestionsDropdown({
                 onClick={(event) => {
                   if (event.detail === 0) onClear();
                 }}
-                className="text-[11px] text-slate-400 tap-highlight hover:text-slate-600 active:text-slate-800 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
+                className="text-xs text-slate-500 tap-highlight hover:text-slate-600 active:text-slate-800 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
               >
                 Clear
               </button>
@@ -124,7 +124,7 @@ export function SearchSuggestionsDropdown({
           <div
             className={`p-3 ${recentSuggestions.length > 0 ? "border-t border-slate-100" : ""}`}
           >
-            <span className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500">
               Popular
             </span>
             <div className="flex flex-wrap gap-1.5">

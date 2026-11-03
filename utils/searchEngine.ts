@@ -19,6 +19,7 @@ import {
   type BuildSearchPlanOptions,
   type SearchPlan,
 } from "./searchIntent";
+import { isListedBy } from "./eventPresentation";
 
 export type { SearchIndex };
 export type {
@@ -287,10 +288,10 @@ const SOURCE_ORGANIZERS: Partial<Record<string, string>> = {
 
 /** True when an event comes from, or is run by, a source named in a query. */
 function matchesSourceIntent(
-  event: Pick<CalEvent, "source" | "organizer">,
+  event: Pick<CalEvent, "source" | "also_listed" | "organizer">,
   source: string,
 ): boolean {
-  if (event.source === source) return true;
+  if (isListedBy(event, source)) return true;
   const organizer = SOURCE_ORGANIZERS[source];
   return (
     organizer !== undefined &&

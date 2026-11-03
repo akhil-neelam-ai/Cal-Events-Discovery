@@ -218,6 +218,85 @@ test("dedupe still lets a higher-priority source replace every lower row", () =>
   );
 });
 
+test("dedupe merges a renamed cross-source copy at the same time and venue", () => {
+  const livewhale = event({
+    source_name: "livewhale",
+    source_id: "325305",
+    title: "California Women's Basketball vs Washington State",
+    start_at: "2026-11-02T19:00:00-08:00",
+    venue: "",
+    address: ", Haas Pavilion",
+    canonical_url: "https://events.berkeley.edu/sports/event/325305",
+  });
+  const calbears = event({
+    source_name: "calbears",
+    source_id: "38782",
+    title: "California Women's Basketball vs Washington State University",
+    start_at: "2026-11-02T19:00:00-08:00",
+    venue: "Haas Pavilion",
+    canonical_url: "https://calbears.com/calendar?game_id=38782",
+  });
+
+  const { events, duplicatesRemoved } = dedupeEvents([calbears, livewhale]);
+
+  assert.equal(duplicatesRemoved, 1);
+  assert.equal(events.length, 1);
+  assert.equal(events[0].source_name, "livewhale");
+  assert.deepEqual(events[0].also_listed, [
+    { source: "calbears", url: "https://calbears.com/calendar?game_id=38782" },
+  ]);
+});
+
+test("dedupe records the source of an exact-title copy it drops", () => {
+  const haas = event({
+    source_name: "haas",
+    source_id: "h-1",
+    title: "Founder Fireside",
+    canonical_url: "https://haas.berkeley.edu/event/h-1",
+  });
+  const livewhale = event({
+    source_name: "livewhale",
+    source_id: "lw-1",
+    title: "Founder Fireside",
+    canonical_url: "https://events.berkeley.edu/event/lw-1",
+  });
+
+  const { events } = dedupeEvents([haas, livewhale]);
+
+  assert.equal(events.length, 1);
+  assert.equal(events[0].source_name, "livewhale");
+  assert.deepEqual(events[0].also_listed, [
+    { source: "haas", url: "https://haas.berkeley.edu/event/h-1" },
+  ]);
+});
+
+test("dedupe keeps near-matching titles apart at another time or venue", () => {
+  const base = {
+    title: "California Women's Basketball vs Washington State",
+    start_at: "2026-11-02T19:00:00-08:00",
+    venue: "Haas Pavilion",
+  };
+  const cases = [
+    { start_at: "2026-11-02T17:00:00-08:00" },
+    { venue: "Pullman, Wash." },
+    { title: "California Men's Basketball vs Washington State University" },
+  ];
+
+  for (const change of cases) {
+    const { events } = dedupeEvents([
+      event({ ...base, source_name: "livewhale", source_id: "a" }),
+      event({
+        ...base,
+        title: `${base.title} University`,
+        ...change,
+        source_name: "calbears",
+        source_id: "b",
+      }),
+    ]);
+    assert.equal(events.length, 2, JSON.stringify(change));
+  }
+});
+
 test("normalizeForDedupe strips stopwords, punctuation, and case", () => {
   assert.equal(
     normalizeForDedupe("The Spring Lecture of Music"),

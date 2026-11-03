@@ -130,6 +130,7 @@ function makeEvent(overrides: Partial<CalEvent> = {}): CalEvent {
     ...(overrides.end_date ? { end_date: overrides.end_date } : {}),
     ...(overrides.dates ? { dates: overrides.dates } : {}),
     ...(overrides.end_time ? { end_time: overrides.end_time } : {}),
+    ...(overrides.also_listed ? { also_listed: overrides.also_listed } : {}),
   };
 }
 
@@ -783,7 +784,7 @@ describe("App UI regressions", () => {
     }
   });
 
-  it("hides today's events once their end time passes", () => {
+  it("hides today's single-day events once they start, but keeps multi-day ones", () => {
     mockNowMinutes = 22 * 60;
     const events = [
       makeEvent({
@@ -799,9 +800,16 @@ describe("App UI regressions", () => {
         end_time: "11:00 PM",
       }),
       makeEvent({
-        id: "no-end",
-        title: "Open Studio Hours",
+        id: "later",
+        title: "Night Owl Lecture",
+        time: "10:30 PM",
+      }),
+      makeEvent({
+        id: "exhibit",
+        title: "Week-Long Exhibit",
         time: "10:00 AM",
+        dates: [TODAY_KEY, TOMORROW_KEY],
+        end_date: TOMORROW_KEY,
       }),
       makeEvent({
         id: "tomorrow",
@@ -818,17 +826,17 @@ describe("App UI regressions", () => {
       const { unmount } = render(<App />);
 
       expect(screen.queryByText("Morning Robotics Talk"), range).toBeNull();
-      expect(screen.getByText("Late Jazz Set"), range).toBeInTheDocument();
-      // Without a published end there is nothing to compare against.
-      expect(screen.getByText("Open Studio Hours"), range).toBeInTheDocument();
+      expect(screen.queryByText("Late Jazz Set"), range).toBeNull();
+      expect(screen.getByText("Night Owl Lecture"), range).toBeInTheDocument();
+      expect(screen.getByText("Week-Long Exhibit"), range).toBeInTheDocument();
       if (range !== "today") {
         expect(screen.getByText("Tomorrow Morning Talk")).toBeInTheDocument();
       }
       unmount();
     }
 
-    // When everything today is over, Today falls back to the week.
-    mockFeedState = makeFeedState([events[0], events[3]]);
+    // When everything today has started, Today falls back to the week.
+    mockFeedState = makeFeedState([events[0], events[1], events[4]]);
     window.history.replaceState({}, "", "/?date=today");
     render(<App />);
 
@@ -1293,6 +1301,118 @@ describe("App UI regressions", () => {
     expect(addRecentSearch).toHaveBeenCalledWith("design");
   });
 
+  it("uses one h1, h2 for the view, h3 for days, and h4 for cards", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "a", title: "Today Talk" }),
+      makeEvent({ id: "b", title: "Tomorrow Talk", date: TOMORROW_KEY }),
+    ]);
+    window.history.replaceState({}, "", "/?date=week");
+
+    render(<App />);
+
+    expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
+    expect(
+      screen.getByRole("heading", { level: 2, name: /this week/i }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole("heading", { level: 3 })).toHaveLength(2);
+    expect(
+      screen
+        .getAllByRole("heading", { level: 4 })
+        .map((heading) => heading.textContent),
+    ).toEqual(["Today Talk", "Tomorrow Talk"]);
+  });
+
+  it("collapses a day's Rec Sports schedules into one row", async () => {
+    const user = userEvent.setup();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "talk", title: "Robotics Talk", time: "6:00 PM" }),
+      makeEvent({
+        id: "rsf",
+        title: "Building Hours - RSF",
+        organizer: "Recreational Sports",
+        time: "7:00 AM",
+        end_time: "11:00 PM",
+      }),
+      makeEvent({
+        id: "swim",
+        title: "Lap Swim",
+        organizer: "Recreational Sports",
+        time: "7:00 AM",
+        location: "Golden Bear Pool",
+      }),
+    ]);
+
+    render(<App />);
+
+    expect(screen.queryByText("Lap Swim")).toBeNull();
+    const toggle = screen.getByRole("button", { name: /rec facility hours/i });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(
+      screen.getByText(/2 schedules: Building Hours - RSF, Lap Swim/),
+    ).toBeInTheDocument();
+
+    await user.click(toggle);
+    await user.click(screen.getByRole("button", { name: /lap swim/i }));
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(window.location.search).toContain("event=swim");
+  });
+
+  it("shows every source on a merged card and keeps it under each filter", () => {
+    const game = makeEvent({
+      id: "game",
+      title: "Women's Basketball vs Washington State",
+      tags: ["Sports"],
+      source: "livewhale",
+      location: "Haas Pavilion",
+      also_listed: [
+        { source: "calbears", url: "https://calbears.com/game?id=1" },
+      ],
+    });
+    mockFeedState = makeFeedState([game]);
+    window.history.replaceState({}, "", "/?source=calbears");
+
+    render(<App />);
+
+    expect(
+      screen.getByText("UC Berkeley Events · Cal Bears"),
+    ).toBeInTheDocument();
+
+    const details = render(
+      <EventDetailOverlay event={game} isMobile={false} onClose={() => {}} />,
+    );
+    expect(
+      within(details.container).getByRole("link", { name: "Cal Bears" }),
+    ).toHaveAttribute("href", "https://calbears.com/game?id=1");
+  });
+
+  it("puts the next event still ahead under the view title", () => {
+    mockNowMinutes = 17 * 60;
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "past", title: "Lunch Talk", time: "12:00 PM" }),
+      makeEvent({
+        id: "game",
+        title: "Women's Basketball",
+        time: "7:00 PM",
+        location: ", Haas Pavilion",
+      }),
+      makeEvent({
+        id: "gym",
+        title: "Building Hours - RSF",
+        organizer: "Recreational Sports",
+        time: "6:00 PM",
+      }),
+    ]);
+
+    render(<App />);
+
+    expect(screen.getByText("Next up:").parentElement).toHaveTextContent(
+      "Next up: 7pm Women's Basketball, Haas Pavilion",
+    );
+    // The header keeps the cadence; the subtitle no longer repeats it.
+    expect(screen.getAllByText("Updates every day")).toHaveLength(1);
+  });
+
   it("keeps the source link outside the card's button", async () => {
     const user = userEvent.setup();
 
@@ -1308,7 +1428,7 @@ describe("App UI regressions", () => {
     render(<App />);
 
     const title = screen.getByRole("button", { name: "Design Review Night" });
-    expect(title.closest("h3")).not.toBeNull();
+    expect(title.closest("h4")).not.toBeNull();
     expect(title).toHaveAccessibleDescription(/wurster hall/i);
     expect(title).toHaveAccessibleDescription(/environmental design/i);
 

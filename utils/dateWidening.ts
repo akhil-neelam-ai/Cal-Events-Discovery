@@ -1,5 +1,5 @@
 import type { CalEvent, SearchFilters } from "../types";
-import { firstOccurrenceInRange, hasEventEnded } from "./eventDates";
+import { firstOccurrenceInRange, hasEventStarted } from "./eventDates";
 import type { SearchOutput } from "./searchEngine";
 
 // The rule that widens an empty "today" or "tomorrow" to the week. The page
@@ -29,9 +29,10 @@ export function partitionDateBuckets(
 
   // Bucket by occurrence, not by `date`. A multi-day event runs on every day
   // in `dates`, and its `date` is already past from midnight until the next
-  // publish. An event that already ended today is no longer upcoming.
+  // publish. A single-day event that already started today is no longer
+  // upcoming.
   for (const event of events) {
-    if (hasEventEnded(event, todayKey, nowMinutes)) {
+    if (hasEventStarted(event, todayKey, nowMinutes)) {
       continue;
     }
     const next = firstOccurrenceInRange(event, todayKey);

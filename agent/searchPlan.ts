@@ -8,7 +8,7 @@ import {
 import {
   addDaysToDateKey,
   firstOccurrenceInRange,
-  hasEventEnded,
+  hasEventStarted,
   sortEventsChronologically,
   weekEndKey,
 } from "../utils/eventDates";
@@ -21,6 +21,7 @@ import {
 import type { SearchTopicDefinition } from "../utils/searchIntent";
 import type { SearchIndex } from "../utils/textUtils";
 import { type DatePreset, resolveDatePreset } from "./filterInput";
+import { isListedBy } from "../utils/eventPresentation";
 
 // With no date input and no date in the query, search runs from today with
 // no end. The UI opens on "week", but an agent asking about a lecture next
@@ -110,12 +111,12 @@ export function runAgentSearch(
     input.dismiss,
   );
 
-  // A window that starts today starts now, as in the UI. An event that
-  // already ended today is left out.
+  // A window that starts today starts now, as in the UI. A single-day event
+  // that already started today is left out.
   const inBounds = (bounds: Bounds) => (event: CalEvent) =>
     firstOccurrenceInRange(event, bounds.startDate, bounds.endDate) !== null &&
     (bounds.startDate < todayKey ||
-      !hasEventEnded(event, todayKey, nowMinutes));
+      !hasEventStarted(event, todayKey, nowMinutes));
   const withTopic = (pool: CalEvent[]) =>
     topic
       ? pool.filter((event) =>
@@ -128,7 +129,7 @@ export function runAgentSearch(
     const primaryCategory = event.tags?.[0]?.toLowerCase() ?? "";
     const matchesCategory =
       !category || primaryCategory === category.toLowerCase();
-    const matchesSource = !source || event.source === source;
+    const matchesSource = !source || isListedBy(event, source);
     return matchesCategory && matchesSource;
   });
 

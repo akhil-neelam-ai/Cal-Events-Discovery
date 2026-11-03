@@ -5,6 +5,7 @@ import type { SourceOption } from "../appConfig";
 import { fetchEventArtifacts } from "../services/eventsLoader";
 import { CalEvent, LoadingState, type TopicVocabulary } from "../types";
 import type { SearchIndex } from "../utils/textUtils";
+import { eventSources } from "../utils/eventPresentation";
 
 interface EventFeedState {
   allEvents: CalEvent[];
@@ -141,10 +142,10 @@ export function useEventFeed(needsSearchIndex = false): EventFeedState {
   const sourceOptions = useMemo<SourceOption[]>(() => {
     const counts = new Map<string, number>();
     for (const event of allEvents) {
-      if (!event.source) {
-        continue;
+      // A merged copy counts once for every source that listed it.
+      for (const source of eventSources(event)) {
+        if (source) counts.set(source, (counts.get(source) ?? 0) + 1);
       }
-      counts.set(event.source, (counts.get(event.source) ?? 0) + 1);
     }
 
     const options: SourceOption[] = [

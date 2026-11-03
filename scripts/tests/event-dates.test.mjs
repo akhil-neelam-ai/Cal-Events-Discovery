@@ -10,7 +10,7 @@ import {
   formatMultiDayWhen,
   formatRelativeEventDate,
   getCurrentPacificMinutes,
-  hasEventEnded,
+  hasEventStarted,
   listingDateKey,
   occurrenceDateKeys,
   weekEndKey,
@@ -317,36 +317,45 @@ test("getCurrentPacificMinutes reads the Pacific wall clock", () => {
   assert.equal(getCurrentPacificMinutes(new Date("2026-01-15T08:30:00Z")), 30);
 });
 
-test("hasEventEnded hides today's events once their end time passes", () => {
+test("hasEventStarted drops today's single-day events once they start", () => {
   const today = "2026-05-13";
   const tenPm = 22 * 60;
   const morning = event({ time: "10:00 AM", end_time: "11:30 AM" });
 
-  assert.equal(hasEventEnded(morning, today, tenPm), true);
-  assert.equal(hasEventEnded(morning, today, 11 * 60 + 29), false);
-  assert.equal(hasEventEnded(morning, today, 11 * 60 + 30), true);
-  // Only today's events end early. Later days wait for their own day.
+  assert.equal(hasEventStarted(morning, today, tenPm), true);
+  assert.equal(hasEventStarted(morning, today, 9 * 60 + 59), false);
+  assert.equal(hasEventStarted(morning, today, 10 * 60), true);
+  // A running event counts as started.
   assert.equal(
-    hasEventEnded({ ...morning, date: "2026-05-14" }, today, tenPm),
-    false,
-  );
-
-  // No published end, or an end past midnight, keeps the event all day.
-  assert.equal(hasEventEnded(event({ time: "10:00 AM" }), today, tenPm), false);
-  assert.equal(
-    hasEventEnded(
-      event({ time: "9:00 PM", end_time: "1:00 AM" }),
-      today,
-      23 * 60 + 59,
-    ),
-    false,
-  );
-  assert.equal(
-    hasEventEnded(
-      event({ time: "All day", end_time: "5:00 PM" }),
+    hasEventStarted(
+      event({ time: "9:00 PM", end_time: "11:00 PM" }),
       today,
       tenPm,
     ),
+    true,
+  );
+  // Only today's events drop early. Later days wait for their own day.
+  assert.equal(
+    hasEventStarted({ ...morning, date: "2026-05-14" }, today, tenPm),
+    false,
+  );
+
+  // Multi-day events stay on every day they run, including their last day.
+  assert.equal(
+    hasEventStarted(
+      event({ time: "10:00 AM", dates: [today, "2026-05-14"] }),
+      today,
+      tenPm,
+    ),
+    false,
+  );
+  assert.equal(
+    hasEventStarted(event({ time: "10:00 AM", end_date: today }), today, tenPm),
+    false,
+  );
+  // An all-day event has no start to pass.
+  assert.equal(
+    hasEventStarted(event({ time: "All day" }), today, tenPm),
     false,
   );
 });

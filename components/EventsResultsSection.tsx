@@ -1,6 +1,10 @@
-import { FEED_CADENCE_COPY } from "../appConfig";
 import type { CalEvent, SearchFilters } from "../types";
 import type { EventGroup } from "../utils/eventDates";
+import { findNextUpEvent, formatRelativeEventDate } from "../utils/eventDates";
+import {
+  isRecFacilitySchedule,
+  shortenVenue,
+} from "../utils/eventPresentation";
 import type { EmptyStateConfig } from "../utils/emptyState";
 import type { InterpretedChip } from "../utils/searchEngine";
 import { EmptyStateCard } from "./EmptyStateCard";
@@ -16,6 +20,27 @@ function rangeLabel(dateRange: SearchFilters["dateRange"]) {
   return "All Upcoming Events";
 }
 
+/** "7pm Women's Basketball, Haas Pavilion", or "Tomorrow 7pm ..." later on. */
+function nextUpLabel(
+  event: CalEvent,
+  dateRange: SearchFilters["dateRange"],
+  todayKey: string,
+): string {
+  const relative = formatRelativeEventDate(
+    event,
+    undefined,
+    dateRange,
+    todayKey,
+  ).replace(/^Today, /, "");
+  const comma = relative.lastIndexOf(", ");
+  const when =
+    comma === -1
+      ? relative
+      : `${relative.slice(0, comma)} ${relative.slice(comma + 2)}`;
+  const venue = shortenVenue(event.location);
+  return `${when} ${event.title}${venue ? `, ${venue}` : ""}`;
+}
+
 export function EventsResultsSection({
   fallbackBannerCopy,
   activeChips,
@@ -23,6 +48,7 @@ export function EventsResultsSection({
   category,
   effectiveDateRange,
   todayKey,
+  nowMinutes,
   filteredEvents,
   searchFallbackMessage,
   emptyState,
@@ -39,6 +65,7 @@ export function EventsResultsSection({
   category: string;
   effectiveDateRange: SearchFilters["dateRange"];
   todayKey: string;
+  nowMinutes: number;
   filteredEvents: CalEvent[];
   searchFallbackMessage?: string;
   emptyState: EmptyStateConfig;
@@ -49,6 +76,12 @@ export function EventsResultsSection({
   onEventClick: (event: CalEvent) => void;
   onLoadMore: () => void;
 }) {
+  const nextUp = findNextUpEvent(
+    filteredEvents,
+    todayKey,
+    nowMinutes,
+    isRecFacilitySchedule,
+  );
   return (
     <>
       {fallbackBannerCopy && (
@@ -60,18 +93,24 @@ export function EventsResultsSection({
       <InterpretedChips chips={activeChips} onDismiss={onDismissChip} />
 
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
+        <div className="min-w-0 max-w-full">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-600">
             Campus feed
           </p>
           <h2 className="mt-1 text-2xl font-semibold text-berkeley-blue md:text-[2rem] md:font-serif">
             {category !== "All" ? `${category} · ` : ""}
             {rangeLabel(effectiveDateRange)}
-            <span className="ml-2 text-sm font-normal text-slate-400">
+            <span className="ml-2 text-sm font-normal text-slate-600">
               ({filteredEvents.length})
             </span>
           </h2>
-          <p className="mt-1 text-sm text-slate-500">{FEED_CADENCE_COPY}</p>
+          {/* The header already says the feed updates daily. */}
+          {nextUp && (
+            <p className="mt-1 truncate text-sm text-slate-600">
+              <span className="font-semibold text-slate-700">Next up:</span>{" "}
+              {nextUpLabel(nextUp, effectiveDateRange, todayKey)}
+            </p>
+          )}
         </div>
       </div>
 

@@ -64,13 +64,13 @@ export function MobileHeader({
     >
       <div className="container mx-auto flex flex-col gap-3 px-4 pb-3 pt-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <h1 className="flex items-center gap-2">
             <span className="text-2xl font-bold tracking-tight text-berkeley-gold">
               Cal
             </span>
             <span className="text-2xl font-light tracking-wide">Events</span>
-          </div>
-          <span className="flex items-center gap-1.5 text-[10px] text-berkeley-gold/70">
+          </h1>
+          <span className="flex items-center gap-1.5 text-xs text-berkeley-gold">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
             {FEED_CADENCE_COPY}
           </span>

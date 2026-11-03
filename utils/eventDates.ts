@@ -450,26 +450,54 @@ function timeSortValue(time: string | undefined): number {
 }
 
 /**
- * True once an event on `todayKey` has passed its published `end_time` on
- * the Pacific clock. Only single-day timed events publish one. An end before
- * the start runs past midnight, so that event lasts the rest of today.
+ * The soonest single-day timed event still ahead, for the "Next up" line.
+ * `skip` leaves out rows that are not real events, such as facility hours.
  */
-export function hasEventEnded(
-  event: Pick<CalEvent, "date" | "time" | "end_time">,
+export function findNextUpEvent(
+  events: readonly CalEvent[],
+  todayKey: string,
+  nowMinutes: number,
+  skip: (event: CalEvent) => boolean = () => false,
+): CalEvent | null {
+  let next: CalEvent | null = null;
+  let nextKey = "";
+  for (const event of events) {
+    if (skip(event) || (event.dates?.length ?? 0) > 1 || event.end_date) {
+      continue;
+    }
+    const start = clockMinutes(event.time);
+    const day = getPacificDateKey(event.date);
+    if (start === null || !day || day < todayKey) continue;
+    if (day === todayKey && start < nowMinutes) continue;
+    const key = `${day} ${String(start).padStart(4, "0")}`;
+    if (!next || key < nextKey) {
+      next = event;
+      nextKey = key;
+    }
+  }
+  return next;
+}
+
+/**
+ * True once a single-day event on `todayKey` has reached its start time on
+ * the Pacific clock, so Today stops listing it. A multi-day event keeps its
+ * place on every day it runs, including its last day (`end_date`), and an
+ * all-day event has no start to pass.
+ */
+export function hasEventStarted(
+  event: Pick<CalEvent, "date" | "time" | "dates" | "end_date">,
   todayKey: string,
   nowMinutes: number,
 ): boolean {
+  if ((event.dates?.length ?? 0) > 1 || event.end_date) {
+    return false;
+  }
   if (getPacificDateKey(event.date) !== todayKey) {
     return false;
   }
 
   const start = clockMinutes(event.time);
-  const end = clockMinutes(event.end_time);
-  if (start === null || end === null || end <= start) {
-    return false;
-  }
-
-  return nowMinutes >= end;
+  return start !== null && nowMinutes >= start;
 }
 
 /**

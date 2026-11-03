@@ -26,6 +26,7 @@ import {
   type InterpretedChip,
 } from "../utils/searchEngine";
 import type { SearchIndex } from "../utils/textUtils";
+import { isListedBy } from "../utils/eventPresentation";
 
 interface UseEventBrowserStateParams {
   allEvents: CalEvent[];
@@ -180,8 +181,9 @@ export function useEventBrowserState({
         filters.category === "All" ||
         primaryCategory === filters.category.toLowerCase();
 
+      // A merged copy still answers to every source that listed it.
       const matchesSource =
-        filters.source === "All" || event.source === filters.source;
+        filters.source === "All" || isListedBy(event, filters.source);
 
       return matchesCategory && matchesSource;
     });

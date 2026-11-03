@@ -234,7 +234,7 @@ export function SourceDropdown({
                 >
                   <span className="truncate">{option.label}</span>
                   <span
-                    className={`shrink-0 rounded-full px-1.5 py-0.5 text-[11px] tabular-nums ${
+                    className={`shrink-0 rounded-full px-1.5 py-0.5 text-xs tabular-nums ${
                       isSelected
                         ? "bg-white/20 text-white"
                         : "bg-slate-100 text-slate-500"

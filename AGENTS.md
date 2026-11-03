@@ -47,7 +47,7 @@ Three layers, cleanly separated.
 
 `scripts/updateEvents.ts` is the orchestrator. It runs 12 source adapters in parallel with a 60 s timeout each (Simons gets 100 s for its full-history download, LiveWhale 90 s for its windows and group feeds), dedupes the union, projects to legacy shape, writes 3 static JSON artifacts to `public/`.
 
-**Source priority** (used by dedupe to pick the winner when two sources have the same event):
+**Source priority** (used by dedupe to pick the winner when two sources have the same event). Dedupe first merges copies with the same normalized title and day. A second pass merges copies from different sources that start at the same instant at the same venue when one title's words all appear in the other's, as with "…vs Washington State" and "…vs Washington State University". The winner records each merged copy as `also_listed: [{ source, url }]`, the card names every source, and a source filter matches any of them:
 
 ```
 livewhale (4) > cal_performances / calbears / bampfa / haas / berkeley_law / simons / luma / begin / ai_risk / brsl / cltc (3)
@@ -95,7 +95,9 @@ Loads `events.json` and `search-index.json` at startup. Search is entirely clien
 
 **URL state** (`utils/urlState.ts`): query, date range, category, source, and selected event ID round-trip through the URL, with allow-list validation for category and source. Opening an event from the list pushes a history entry, so the phone Back gesture closes it. Closing steps back over that entry. An event opened from a shared link has no entry and closes in place.
 
-**Date handling**: all comparisons use `America/Los_Angeles` via `Intl.DateTimeFormat`. Date keys refresh every 60 s so the UI stays correct across midnight.
+**Date handling**: all comparisons use `America/Los_Angeles` via `Intl.DateTimeFormat`. Date keys refresh every 60 s so the UI stays correct across midnight. Today drops a single-day event once its start time passes (`hasEventStarted`, shared with agent search). Multi-day events stay, including a span's last day, which publishes `end_date` without `dates`.
+
+**Rec Sports schedules**: every `Recreational Sports` row is a facility schedule (building hours, open rec, lap swim, team practices), not an event. The grid collapses a day's schedules into one expandable "Rec facility hours" row (`components/RecHoursCard.tsx`), and "Next up" skips them.
 
 ## Agent-facing surfaces
 
@@ -143,7 +145,7 @@ Established in `docs/brainstorms/2026-08-17-publish-vs-quality-pipeline-requirem
 
 The topic filter layer from `docs/plans/2026-09-03-001-feat-topic-filter-layer-plan.md` is on `main` (PR 173). Do not re-implement U1 through U9.
 
-Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` merged in PR 174 on 2026-09-04. Successful empty assignments clear topics. Broad identity mappings are gone. The breadth cap stays 200. Public discovery versions are 1.5.0. The September audit's multi-day fields set 1.3.0, the published `end_time` set 1.4.0, and the October agent-native fixes set 1.5.0.
+Leftover review work from `docs/code-review-2026-09-04-topic-filter-layer.md` merged in PR 174 on 2026-09-04. Successful empty assignments clear topics. Broad identity mappings are gone. The breadth cap stays 200. Public discovery versions are 1.6.0. The September audit's multi-day fields set 1.3.0, the published `end_time` set 1.4.0, the October agent-native fixes set 1.5.0, and the November `also_listed` field set 1.6.0.
 
 The October 2 review of PR 174 is `docs/code-review-2026-10-02-topic-filter-fixes.md`. PRs 215, 217, 218, and 219 fixed all 15 findings on 2026-10-03. Since PR 217, BAMPFA's calendar labels and Cal Performances genres reach `assignTopics` as internal `event_types`. Lessons that apply beyond one bug are in `docs/solutions/`.
 
@@ -157,7 +159,7 @@ The September full-repo audit is `docs/code-review-2026-09-25.md`. Every item ha
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `scripts/updateEvents.ts`                           | Orchestrator: runs adapters, dedupes, writes public JSON                                                                                                                                                                 |
 | `scripts/lib/schema.ts`                             | Zod schemas: `CanonicalEvent`, `LegacyCalEvent`, `StatusReport`                                                                                                                                                          |
-| `scripts/lib/dedupe.ts`                             | Source-priority dedupe by normalized title and date                                                                                                                                                                      |
+| `scripts/lib/dedupe.ts`                             | Source-priority dedupe by title and date, then same-time same-venue near matches; records `also_listed`                                                                                                                                                                      |
 | `scripts/lib/normalize.ts`                          | `projectToLegacy`, `deriveFrontendTags`, `isoDateInPT`, `cleanTitle`                                                                                                                                                     |
 | `scripts/lib/buildIndex.ts`                         | Inverted index generator with venue alias expansion                                                                                                                                                                      |
 | `scripts/lib/lastGoodFallback.ts`                   | Recovery policies, `markRecovery`, and last-good restore with cancellation filtering                                                                                                                                     |

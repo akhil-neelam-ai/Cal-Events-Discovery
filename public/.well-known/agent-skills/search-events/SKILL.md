@@ -67,8 +67,9 @@ For ranked offline search, also load `https://cal-events.com/search-index.json`.
 4. Keep an event when any day in `dates` falls in the user's date window. Use
    `date` when `dates` is absent.
    A single-day timed event may also have `end_time`, in the same format as
-   `time`. For a window that starts today, drop an event dated today once its
-   `end_time` has passed on the Pacific clock. The UI does the same.
+   `time`. For a window that starts today, drop a single-day event dated today
+   once its start `time` has passed on the Pacific clock. Keep multi-day events
+   (with `dates` or `end_date`) and all-day events. The UI does the same.
 5. For category filtering, prefer the first value in `tags` because it is the primary displayed category.
 6. For topic filtering, match the event's published `topics` slugs. Topics are independent of `tags`.
 7. Return concise results with title, date, time, location, organizer, topics, and the official `url`.

@@ -301,10 +301,12 @@ test("WebMCP date bounds apply before topic fallback", async () => {
 
   const { tools } = loadTools({
     ...makePayload([
+      // All day, so the real clock cannot have passed its start.
       event({
         id: "today-law",
         title: "Law today",
         date: todayKey,
+        time: "All day",
         topics: ["law"],
         description: "A law briefing.",
       }),
@@ -396,7 +398,13 @@ test("WebMCP datePreset 'today' resolves Pacific bounds to today's events", asyn
 
   const { tools } = loadTools(
     makePayload([
-      event({ id: "today-evt", title: "Today AI", date: todayKey }),
+      // All day, so the real clock cannot have passed its start.
+      event({
+        id: "today-evt",
+        title: "Today AI",
+        date: todayKey,
+        time: "All day",
+      }),
       event({ id: "tomorrow-evt", title: "Tomorrow AI", date: tomorrowKey }),
     ]),
   );
@@ -583,7 +591,7 @@ test("WebMCP get_event_directions returns maps URL", async () => {
   assert.match(byLocation.directionsUrl, /Sproul/);
 });
 
-test("WebMCP search leaves out today's events once they end, like the UI", async (t) => {
+test("WebMCP search leaves out today's events once they start, like the UI", async (t) => {
   // 05:00Z on Oct 18 is 10:00 PM PDT on Oct 17.
   t.mock.timers.enable({
     apis: ["Date"],
@@ -604,6 +612,12 @@ test("WebMCP search leaves out today's events once they end, like the UI", async
         end_time: "11:00 PM",
       }),
       event({
+        id: "later",
+        date: "2026-10-17",
+        time: "10:30 PM",
+        end_time: "11:30 PM",
+      }),
+      event({
         id: "tomorrow",
         date: "2026-10-18",
         time: "10:00 AM",
@@ -613,23 +627,24 @@ test("WebMCP search leaves out today's events once they end, like the UI", async
   );
   const search = tools.get("search_berkeley_events");
 
+  // "running" started at 9:00 PM, so it is gone like "ended".
   const today = await search.execute({ datePreset: "today" });
   assert.deepEqual(
     today.events.map((item) => item.id),
-    ["running"],
+    ["later"],
   );
-  assert.equal(today.events[0].end_time, "11:00 PM");
+  assert.equal(today.events[0].end_time, "11:30 PM");
 
   const upcoming = await search.execute({});
   assert.deepEqual(
     upcoming.events.map((item) => item.id),
-    ["running", "tomorrow"],
+    ["later", "tomorrow"],
   );
 
   // A window that starts before today asks about the past, so it keeps them.
   const pastWindow = await search.execute({ startDate: "2026-10-16" });
   assert.deepEqual(
     pastWindow.events.map((item) => item.id),
-    ["ended", "running", "tomorrow"],
+    ["ended", "running", "later", "tomorrow"],
   );
 });
