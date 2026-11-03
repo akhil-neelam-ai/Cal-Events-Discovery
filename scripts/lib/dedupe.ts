@@ -8,7 +8,11 @@
  */
 
 import type { CanonicalEvent, LegacyCalEvent, SourceName } from "./schema.js";
-import { firstOccurrencePT, normalizeForDedupe } from "./normalize.js";
+import {
+  firstOccurrencePT,
+  normalizeForDedupe,
+  sanitizePlainText,
+} from "./normalize.js";
 
 const SOURCE_PRIORITY: Record<SourceName, number> = {
   livewhale: 4,
@@ -75,11 +79,96 @@ function startInstant(event: CanonicalEvent): number {
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
+/** `target` with `copy`'s source and page added to its other listings. */
+function withListing(
+  target: CanonicalEvent,
+  copy: CanonicalEvent,
+): CanonicalEvent {
+  const listings = [...(target.also_listed ?? [])];
+  const incoming = [
+    { source: copy.source_name, url: copy.canonical_url || copy.source_url },
+    ...(copy.also_listed ?? []),
+  ];
+  for (const listing of incoming) {
+    if (
+      listing.source !== target.source_name &&
+      !listings.some((held) => held.source === listing.source)
+    ) {
+      listings.push(listing);
+    }
+  }
+  return { ...target, also_listed: listings };
+}
+
+function venueKey(event: CanonicalEvent): string {
+  const venue =
+    [event.venue, event.building].filter(Boolean).join(" ") || event.address;
+  return sanitizePlainText(venue)
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+}
+
+function titleWords(title: string): Set<string> {
+  return new Set(normalizeForDedupe(title).split(" ").filter(Boolean));
+}
+
+/** True when every word of the shorter title, two or more, is in the other. */
+function titlesMatch(a: string, b: string): boolean {
+  const x = titleWords(a);
+  const y = titleWords(b);
+  const [shorter, longer] = x.size <= y.size ? [x, y] : [y, x];
+  return shorter.size >= 2 && [...shorter].every((word) => longer.has(word));
+}
+
+/**
+ * Two sources can title one event differently, as with "California Women's
+ * Basketball vs Washington State" and "... Washington State University".
+ * Copies from different sources merge when they start at the same instant,
+ * at the same venue (one name may contain the other), and one title's words
+ * all appear in the other's.
+ */
+function mergeNearDuplicates(events: CanonicalEvent[]): CanonicalEvent[] {
+  const byStart = new Map<number, number[]>();
+  events.forEach((event, index) => {
+    const at = startInstant(event);
+    byStart.set(at, [...(byStart.get(at) ?? []), index]);
+  });
+
+  const result = [...events];
+  const dropped = new Set<number>();
+  for (const indexes of byStart.values()) {
+    for (let a = 0; a < indexes.length; a++) {
+      for (let b = a + 1; b < indexes.length; b++) {
+        const [i, j] = [indexes[a], indexes[b]];
+        if (dropped.has(i) || dropped.has(j)) continue;
+        const [x, y] = [result[i], result[j]];
+        const [xVenue, yVenue] = [venueKey(x), venueKey(y)];
+        if (
+          x.source_name === y.source_name ||
+          !xVenue ||
+          !yVenue ||
+          !(xVenue.includes(yVenue) || yVenue.includes(xVenue)) ||
+          !titlesMatch(x.title, y.title)
+        ) {
+          continue;
+        }
+        const [keep, drop] = outranks(x, y) ? [i, j] : [j, i];
+        result[keep] = withListing(result[keep], result[drop]);
+        dropped.add(drop);
+      }
+    }
+  }
+  return result.filter((_, index) => !dropped.has(index));
+}
+
 export function dedupeEvents(events: CanonicalEvent[]): DedupeResult {
   // Each key keeps only the winning source's rows. One source can list a
   // title twice on one day, like a doubleheader or a second tour session,
   // so its own rows merge only when their start times also match.
   const buckets = new Map<string, CanonicalEvent[]>();
+  // Other sources' copies dropped from each key, so the kept row can list them.
+  const mergedCopies = new Map<string, CanonicalEvent[]>();
 
   for (const event of events) {
     const key = dedupeKey(event);
@@ -89,7 +178,14 @@ export function dedupeEvents(events: CanonicalEvent[]): DedupeResult {
       continue;
     }
     if (rows[0].source_name !== event.source_name) {
-      if (outranks(event, rows[0])) buckets.set(key, [event]);
+      const copies = mergedCopies.get(key) ?? [];
+      if (outranks(event, rows[0])) {
+        copies.push(...rows);
+        buckets.set(key, [event]);
+      } else {
+        copies.push(event);
+      }
+      mergedCopies.set(key, copies);
       continue;
     }
     const sameStart = rows.findIndex(
@@ -102,7 +198,19 @@ export function dedupeEvents(events: CanonicalEvent[]): DedupeResult {
     }
   }
 
-  const deduped = [...buckets.values()].flat();
+  // A merged copy goes to the kept row with its start time, else the first.
+  for (const [key, copies] of mergedCopies) {
+    const rows = buckets.get(key) ?? [];
+    for (const copy of copies) {
+      const index = Math.max(
+        0,
+        rows.findIndex((row) => startInstant(row) === startInstant(copy)),
+      );
+      rows[index] = withListing(rows[index], copy);
+    }
+  }
+
+  const deduped = mergeNearDuplicates([...buckets.values()].flat());
   return {
     events: deduped,
     duplicatesRemoved: events.length - deduped.length,

@@ -598,13 +598,14 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
   const time = displayTime(event.start_at, allDay);
   // Venue and organizer text arrives with entities and line breaks too, and
   // React would show a literal "&nbsp;".
+  // An empty first part can leave a leading separator: ", Haas Pavilion".
   const location =
-    [event.venue, event.building]
-      .map(sanitizePlainText)
-      .filter(Boolean)
-      .join(" — ") ||
-    sanitizePlainText(event.address) ||
-    "Berkeley, CA";
+    (
+      [event.venue, event.building]
+        .map(sanitizePlainText)
+        .filter(Boolean)
+        .join(" — ") || sanitizePlainText(event.address)
+    ).replace(/^[\s,;—-]+|[\s,;—-]+$/g, "") || "Berkeley, CA";
   const tags =
     event.tags.length > 0
       ? dedupeOrderedTags(event.tags as FrontendCategory[])
@@ -625,6 +626,12 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
     url: event.canonical_url || event.source_url,
     source: event.source_name,
   };
+  if (event.also_listed?.length) {
+    legacy.also_listed = event.also_listed.map(({ source, url }) => ({
+      source,
+      url,
+    }));
+  }
 
   // Multi-day events carry their upcoming occurrence list (set by
   // collapseMultiDay or withSpanOccurrences). `date` is the earliest of
@@ -635,9 +642,15 @@ export function projectToLegacy(event: CanonicalEvent): LegacyCalEvent {
     legacy.end_date = event.end_at
       ? isoDateInPT(event.end_at)
       : dates[dates.length - 1];
-  } else if (!event.occurrence_dates) {
+  } else if (
+    event.occurrence_dates?.length === 1 &&
+    isoDateInPT(event.start_at) < event.occurrence_dates[0]
+  ) {
     // A span on its last day keeps one occurrence and its first day's
-    // `time`, so it gets no end time.
+    // `time`, so it gets no end time. Its end date marks it multi-day, which
+    // keeps Today listing it after that first day's start time passes.
+    legacy.end_date = event.occurrence_dates[0];
+  } else if (!event.occurrence_dates) {
     const endTime = allDay ? undefined : displayEndTime(event);
     if (endTime) legacy.end_time = endTime;
   }

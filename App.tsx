@@ -392,6 +392,7 @@ export default function App() {
             category={filters.category}
             effectiveDateRange={effectiveDateRange}
             todayKey={todayKey}
+            nowMinutes={nowMinutes}
             filteredEvents={filteredEvents}
             searchFallbackMessage={searchFallbackMessage}
             emptyState={emptyState}

@@ -23,7 +23,7 @@ Each event in `events.json` has:
 - `title`: event title
 - `organizer`: organizer or campus unit
 - `date`: first upcoming Pacific date in `YYYY-MM-DD`
-- `end_date`: multi-day events only, the last Pacific date the event occurs
+- `end_date`: multi-day events only, the last Pacific date the event occurs. A multi-day event on its last day carries `end_date` without `dates`
 - `dates`: multi-day events only, every upcoming Pacific date the event occurs
 - `time`: display time
 - `end_time`: single-day timed events only, the Pacific end time in the same format as `time`, when the source gives one
@@ -32,6 +32,7 @@ Each event in `events.json` has:
 - `tags`: primary category first, with optional secondary tags
 - `topics`: zero to three published topic slugs; independent of `tags`
 - `url`: official source URL
+- `also_listed`: other sources that list the same event, as `{ source, url }`, each with its own page. Absent when only one source lists it
 - `source`: normalized source id such as `livewhale`, `bampfa`, `calbears`, `cal_performances`, `haas`, `berkeley_law`, `simons`, `luma`, `begin`, `ai_risk`, `brsl`, or `cltc`. Call `list_filter_options` for the current list.
 
 ## Categories

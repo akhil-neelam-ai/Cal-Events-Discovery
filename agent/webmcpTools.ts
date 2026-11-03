@@ -100,6 +100,8 @@ function summarizeEvent(event: CalEvent) {
     topics: Array.isArray(event.topics) ? event.topics : [],
     source: event.source || null,
     url: event.url,
+    // Other sources that list the same event, each with its own page.
+    also_listed: event.also_listed ?? [],
     directionsUrl: getDirectionsUrl(event.location),
     googleCalendarUrl: buildGoogleCalendarUrl(event),
   };

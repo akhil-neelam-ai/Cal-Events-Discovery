@@ -128,7 +128,35 @@ export function shortenVenue(location: string): string {
   for (const [pattern, alias] of VENUE_ALIASES) {
     if (pattern.test(location)) return alias;
   }
-  return location;
+  // Older rows can start with an empty venue part: ", Haas Pavilion".
+  return location.replace(/^[\s,;]+/, "");
+}
+
+/**
+ * Recreational Sports posts facility schedules (building hours, open rec,
+ * lap swim, team practices), not events, so the grid collapses them.
+ */
+export function isRecFacilitySchedule(
+  event: Pick<CalEvent, "organizer">,
+): boolean {
+  return (event.organizer ?? "").trim().toLowerCase() === "recreational sports";
+}
+
+/** Every source that lists an event: its own, then any merged in by dedupe. */
+export function eventSources(
+  event: Pick<CalEvent, "source" | "also_listed">,
+): string[] {
+  return [
+    event.source,
+    ...(event.also_listed ?? []).map(({ source }) => source),
+  ];
+}
+
+export function isListedBy(
+  event: Pick<CalEvent, "source" | "also_listed">,
+  source: string,
+): boolean {
+  return eventSources(event).includes(source);
 }
 
 export function getCategoryStyle(tag?: string): CategoryStyle {

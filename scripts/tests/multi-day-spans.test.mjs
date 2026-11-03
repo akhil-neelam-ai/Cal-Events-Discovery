@@ -126,13 +126,14 @@ test("a running span publishes today as its date and every day left", () => {
   assert.equal(legacy.end_time, undefined);
 });
 
-test("a span on its last day publishes as a one-day event today", () => {
+test("a span on its last day publishes today with its end date", () => {
   const span = canonical({ end_at: at(TODAY, "23:00") });
   const legacy = projectToLegacy(withSpanOccurrences(span, TODAY));
 
   assert.equal(legacy.date, TODAY);
   assert.equal(legacy.dates, undefined);
-  assert.equal(legacy.end_date, undefined);
+  // The end date marks it multi-day, so Today keeps it after its start time.
+  assert.equal(legacy.end_date, TODAY);
   // Its `time` is the first day's start, so an end time would mislead.
   assert.equal(legacy.end_time, undefined);
 });

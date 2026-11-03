@@ -109,6 +109,10 @@ export const CanonicalEventSchema = z.object({
   // frontend can distinguish a continuous run from a gappy/recurring series.
   // Absent for single-day events.
   occurrence_dates: z.array(z.string()).optional(),
+  // Other sources that list the same event, merged away by dedupe.
+  also_listed: z
+    .array(z.object({ source: SourceNameSchema, url: HttpUrlSchema }))
+    .optional(),
 
   // Place
   venue: z.string().max(500).default(""),
@@ -215,12 +219,18 @@ export const LegacyCalEventSchema = z.object({
   // Multi-day events only (set by collapseMultiDay or withSpanOccurrences).
   // `date` is the earliest upcoming occurrence; `end_date` is the last;
   // `dates` lists every upcoming occurrence day (PT YYYY-MM-DD), capped at
-  // 120 for a long span. Single-day events omit both.
+  // 120 for a long span. A span on its last day keeps `end_date` alone.
+  // Single-day events omit both.
   end_date: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
     .optional(),
   dates: z.array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)).optional(),
+  // Other sources that list the same event. Dedupe keeps one copy and
+  // records each merged copy's source and page here.
+  also_listed: z
+    .array(z.object({ source: z.string().min(1), url: HttpUrlSchema }))
+    .optional(),
   // Single-day timed events only, when the source gives an end after the
   // start. Same format as `time`. An end before `time` runs past midnight.
   end_time: z.string().optional(),

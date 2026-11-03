@@ -122,6 +122,12 @@ test.beforeEach(async ({ page }) => {
   const events = buildFixtureEvents();
   const status = buildStatusReport(events.length);
 
+  // Today hides events once they start, so pin the page to the fixture's
+  // morning. Its 4 PM and 7 PM events then stay listed at any real hour.
+  await page.clock.setFixedTime(
+    new Date(`${pacificDateKey(0)}T08:00:00-08:00`),
+  );
+
   await page.route("**/events.json", async (route) => {
     await route.fulfill({
       status: 200,
@@ -183,8 +189,12 @@ test("preserves search and filter state across detail open and reload", async ({
       name: /arts · all upcoming events/i,
     }),
   ).toBeVisible();
-  await expect(page.getByText("Dreams Are Colder Than Death")).toBeVisible();
-  await expect(page.getByText("AI Research Forum")).toHaveCount(0);
+  await expect(
+    page.getByText("Dreams Are Colder Than Death", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("AI Research Forum", { exact: true }),
+  ).toHaveCount(0);
 
   // The title button stretches over the card and is named by the title.
   await page
@@ -228,8 +238,12 @@ test("filters by primary category only", async ({ page }) => {
       name: /arts · all upcoming events/i,
     }),
   ).toBeVisible();
-  await expect(page.getByText("Dreams Are Colder Than Death")).toBeVisible();
-  await expect(page.getByText("Cricket Archive Lecture")).toHaveCount(0);
+  await expect(
+    page.getByText("Dreams Are Colder Than Death", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Cricket Archive Lecture", { exact: true }),
+  ).toHaveCount(0);
 });
 
 test("filters by source dropdown", async ({ page }) => {
@@ -238,8 +252,12 @@ test("filters by source dropdown", async ({ page }) => {
   await page.getByRole("button", { name: /^All \(\d+\)$/ }).click();
   await page.getByRole("option", { name: /CalLink/ }).click();
 
-  await expect(page.getByText("Free Pizza Mixer")).toBeVisible();
-  await expect(page.getByText("Dreams Are Colder Than Death")).toHaveCount(0);
+  await expect(
+    page.getByText("Free Pizza Mixer", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Dreams Are Colder Than Death", { exact: true }),
+  ).toHaveCount(0);
   await expect(page).toHaveURL(/source=callink/);
 });
 
@@ -259,8 +277,12 @@ test("desktop topic chips expand and filter across categories", async ({
     .getByRole("button", { name: /AI and Machine Learning, 1 event/ })
     .click();
 
-  await expect(page.getByText("AI Research Forum")).toBeVisible();
-  await expect(page.getByText("Dreams Are Colder Than Death")).toHaveCount(0);
+  await expect(
+    page.getByText("AI Research Forum", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Dreams Are Colder Than Death", { exact: true }),
+  ).toHaveCount(0);
   await expect(page).toHaveURL(/topic=ai-machine-learning/);
 });
 
@@ -302,7 +324,9 @@ test("never shows pipeline health to visitors", async ({ page }) => {
 
   await page.goto("/");
 
-  await expect(page.getByText("AI Research Forum")).toBeVisible();
+  await expect(
+    page.getByText("AI Research Forum", { exact: true }),
+  ).toBeVisible();
   await expect(page.getByText(/mostly fresh data|partial data/i)).toHaveCount(
     0,
   );
@@ -317,8 +341,12 @@ test("supports mobile advanced filters", async ({ page }) => {
   await page.getByRole("button", { name: "Student Life" }).click();
   await page.getByRole("button", { name: "Done" }).click();
 
-  await expect(page.getByText("Free Pizza Mixer")).toBeVisible();
-  await expect(page.getByText("Dreams Are Colder Than Death")).toHaveCount(0);
+  await expect(
+    page.getByText("Free Pizza Mixer", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Dreams Are Colder Than Death", { exact: true }),
+  ).toHaveCount(0);
   await expect(page).toHaveURL(/category=Student\+Life/);
 });
 
@@ -333,7 +361,11 @@ test("mobile topic selection updates the filter badge and summary", async ({
 
   await expect(page.getByRole("button", { name: /Filters 1/ })).toBeVisible();
   await expect(page.getByText("Topic: Social and Clubs")).toBeVisible();
-  await expect(page.getByText("Free Pizza Mixer")).toBeVisible();
-  await expect(page.getByText("Dreams Are Colder Than Death")).toHaveCount(0);
+  await expect(
+    page.getByText("Free Pizza Mixer", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Dreams Are Colder Than Death", { exact: true }),
+  ).toHaveCount(0);
   await expect(page).toHaveURL(/topic=social-clubs/);
 });

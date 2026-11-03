@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   Categories,
@@ -107,8 +107,8 @@ function TopicChip({
       <span>{topic.label}</span>
       <span
         aria-hidden="true"
-        className={`text-[11px] tabular-nums ${
-          active ? "text-white/75" : "text-slate-400"
+        className={`text-xs tabular-nums ${
+          active ? "text-white/80" : "text-slate-500"
         }`}
       >
         {count}
@@ -138,7 +138,7 @@ function TopicGroup({
 
   return (
     <div className={mobile ? undefined : "min-w-0"}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
         {label}
       </p>
       <div className="mt-2 flex flex-wrap gap-2">
@@ -242,7 +242,7 @@ export function DesktopFiltersBar({
         <div className="hidden h-6 w-px shrink-0 bg-slate-200 lg:block" />
 
         <div className="flex shrink-0 items-center gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Source
           </span>
           <SourceDropdown
@@ -311,6 +311,22 @@ export function MobileFiltersBar({
   onSourceChange: (next: string) => void;
 }) {
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  // The date tabs fade at the right edge while more of them sit offscreen.
+  const tabsRef = useRef<HTMLDivElement | null>(null);
+  const [moreTabs, setMoreTabs] = useState(false);
+  const updateTabsFade = useCallback(() => {
+    const tabs = tabsRef.current;
+    if (tabs) {
+      setMoreTabs(tabs.scrollLeft + tabs.clientWidth < tabs.scrollWidth - 1);
+    }
+  }, []);
+  useEffect(() => {
+    const tabs = tabsRef.current;
+    if (!tabs || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(updateTabsFade);
+    observer.observe(tabs);
+    return () => observer.disconnect();
+  }, [updateTabsFade]);
   const activeFilterCount =
     Number(filters.category !== "All") +
     Number(filters.source !== "All") +
@@ -329,9 +345,17 @@ export function MobileFiltersBar({
 
   return (
     <div className="border-b border-slate-200/80 bg-white/95 shadow-xs backdrop-blur-md">
-      <div className="container mx-auto flex items-center gap-2 px-4 py-2.5">
-        {/* Only the date pills scroll, so Filters stays visible on narrow phones. */}
-        <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-300">
+      <div className="container mx-auto space-y-1 px-4 py-2.5">
+        {/* The date tabs scroll sideways, and Filters gets its own line. */}
+        <div
+          ref={tabsRef}
+          onScroll={updateTabsFade}
+          className={`-mb-1 -mt-1.5 flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-3 pt-1.5 no-scrollbar ${
+            moreTabs
+              ? "[mask-image:linear-gradient(to_right,#000_calc(100%-2.5rem),transparent)]"
+              : ""
+          }`}
+        >
           {DateRanges.map((range) => {
             const active = activeDateRange === range.value;
             return (
@@ -352,12 +376,14 @@ export function MobileFiltersBar({
               </button>
             );
           })}
+          {/* Room to scroll the last tab clear of the fade. */}
+          <span aria-hidden="true" className="w-6 shrink-0" />
         </div>
 
         <button
           type="button"
           onClick={() => setAdvancedOpen((open) => !open)}
-          className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold tap-highlight select-none ${
+          className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold tap-highlight select-none ${
             advancedOpen || activeFilterCount > 0
               ? "border-berkeley-blue bg-berkeley-blue text-white shadow-[0_2px_10px_rgba(0,50,98,0.25)]"
               : "border-slate-200 bg-white text-slate-700 active:bg-slate-50"
@@ -366,7 +392,7 @@ export function MobileFiltersBar({
           Filters
           {activeFilterCount > 0 && (
             <span
-              className={`inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] ${advancedOpen ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700"}`}
+              className={`inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-xs ${advancedOpen ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700"}`}
             >
               {activeFilterCount}
             </span>
@@ -379,7 +405,7 @@ export function MobileFiltersBar({
           <div className="container mx-auto space-y-4 px-4 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
                   Filters
                 </p>
                 <p className="mt-1 text-sm text-slate-600">
@@ -411,7 +437,7 @@ export function MobileFiltersBar({
 
             {topicVocabulary && (
               <div className="space-y-4 border-t border-slate-100 pt-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
                   Topic
                 </p>
                 {TOPIC_GROUP_PRESENTATION.map((group) => (
@@ -433,7 +459,7 @@ export function MobileFiltersBar({
             )}
 
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
                 Category
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
@@ -455,7 +481,7 @@ export function MobileFiltersBar({
             </div>
 
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
                 Source
               </p>
               <div className="mt-2">

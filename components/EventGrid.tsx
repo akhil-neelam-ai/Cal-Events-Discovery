@@ -6,10 +6,20 @@ import { formatRelativeEventDate } from "../utils/eventDates";
 import {
   getCategoryStyle,
   isHomeGame,
+  isRecFacilitySchedule,
   shortenVenue,
 } from "../utils/eventPresentation";
 import { CalEvent, SearchFilters } from "../types";
+import { RecHoursCard } from "./RecHoursCard";
 import { SourceBadge } from "./SourceBadge";
+
+// A day's Rec Sports schedules collapse into one row once there are two.
+function splitRecSchedules(events: CalEvent[]) {
+  const rec = events.filter(isRecFacilitySchedule);
+  return rec.length >= 2
+    ? { cards: events.filter((event) => !isRecFacilitySchedule(event)), rec }
+    : { cards: events, rec: [] };
+}
 
 export function EventGrid({
   eventGroups,
@@ -41,17 +51,17 @@ export function EventGrid({
             <React.Fragment key={group.dateKey}>
               {eventGroups.length > 1 && (
                 <div className="col-span-full flex items-center gap-3 pb-1 pt-4">
-                  <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-600">
                     {group.label}
                   </h3>
                   <div className="h-px flex-1 bg-gray-200" />
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-slate-600">
                     {group.events.length} event
                     {group.events.length !== 1 ? "s" : ""}
                   </span>
                 </div>
               )}
-              {group.events.map((event) => {
+              {splitRecSchedules(group.events).cards.map((event) => {
                 const idx = globalIdx++;
                 const categoryStyle = getCategoryStyle(event.tags?.[0]);
                 const metaId = `event-card-meta-${idx}`;
@@ -79,12 +89,12 @@ export function EventGrid({
                     <div className="p-5 pl-6">
                       <div className="mb-3 flex items-start justify-between gap-2">
                         <span
-                          className={`inline-flex rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${categoryStyle.badge}`}
+                          className={`inline-flex rounded-md px-2 py-0.5 text-xs font-bold uppercase tracking-wider ${categoryStyle.badge}`}
                         >
                           {event.tags?.[0] || "Event"}
                         </span>
                         {event.source === "calbears" && !isHomeGame(event) && (
-                          <span className="inline-flex items-center rounded-sm bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-gray-600">
+                          <span className="inline-flex items-center rounded-sm bg-gray-100 px-1.5 py-0.5 text-xs font-bold uppercase tracking-wider text-gray-600">
                             Away
                           </span>
                         )}
@@ -101,11 +111,11 @@ export function EventGrid({
                               });
                             }}
                             aria-label={`Open source page for ${event.title}`}
-                            className="relative z-10 shrink-0 rounded-full p-1.5 text-slate-300 transition hover:bg-white/80 hover:text-berkeley-blue"
+                            className="relative z-10 -m-1 shrink-0 rounded-full p-2.5 text-slate-500 transition hover:bg-slate-100 hover:text-berkeley-blue"
                           >
                             <svg
                               aria-hidden="true"
-                              className="h-3.5 w-3.5"
+                              className="h-4 w-4"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -122,7 +132,7 @@ export function EventGrid({
                       </div>
 
                       <div className="text-left">
-                        <h3
+                        <h4
                           className="mb-4 font-serif text-[1.05rem] font-semibold leading-snug text-berkeley-blue transition-colors group-hover:text-berkeley-medblue"
                           style={{ letterSpacing: "-0.01em" }}
                         >
@@ -137,16 +147,16 @@ export function EventGrid({
                           >
                             {event.title}
                           </button>
-                        </h3>
+                        </h4>
 
                         <div
                           id={metaId}
                           className="space-y-1.5 text-xs text-slate-500"
                         >
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-start gap-1.5">
                             <svg
                               aria-hidden="true"
-                              className="h-3.5 w-3.5 shrink-0 text-[#FDB515]"
+                              className="mt-px h-3.5 w-3.5 shrink-0 text-[#FDB515]"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -166,15 +176,28 @@ export function EventGrid({
                                 todayKey,
                               )}
                             </span>
-                            {event.location && (
-                              <>
-                                <span className="text-slate-300">·</span>
-                                <span className="truncate">
-                                  {shortenVenue(event.location)}
-                                </span>
-                              </>
-                            )}
                           </div>
+                          {event.location && (
+                            <div className="flex items-start gap-1.5">
+                              <svg
+                                aria-hidden="true"
+                                className="mt-px h-3.5 w-3.5 shrink-0 text-[#FDB515]"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                />
+                              </svg>
+                              <span className="line-clamp-2">
+                                {shortenVenue(event.location)}
+                              </span>
+                            </div>
+                          )}
                           <div className="flex items-center gap-1.5">
                             <svg
                               aria-hidden="true"
@@ -205,10 +228,16 @@ export function EventGrid({
                       className="flex items-center justify-between px-6 py-3"
                       style={{ borderTop: "1px solid rgba(0,50,98,0.06)" }}
                     >
-                      <SourceBadge source={event.source} linked={false} />
+                      <SourceBadge
+                        source={event.source}
+                        alsoListed={(event.also_listed ?? []).map(
+                          ({ source }) => source,
+                        )}
+                        linked={false}
+                      />
                       <span
                         aria-hidden="true"
-                        className="text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-berkeley-medblue"
+                        className="text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-berkeley-medblue"
                       >
                         <svg
                           className="h-3.5 w-3.5"
@@ -228,12 +257,18 @@ export function EventGrid({
                   </article>
                 );
               })}
+              {splitRecSchedules(group.events).rec.length > 0 && (
+                <RecHoursCard
+                  events={splitRecSchedules(group.events).rec}
+                  onEventClick={onEventClick}
+                />
+              )}
             </React.Fragment>
           ));
         })()}
       </div>
       <div className="mt-6 flex flex-col items-center gap-3">
-        <p className="text-center text-sm text-gray-400">
+        <p className="text-center text-sm text-slate-600">
           Showing {visibleEventsCount} of {filteredEventsCount} events
         </p>
         {hiddenEventCount > 0 ? (
@@ -245,7 +280,7 @@ export function EventGrid({
             Load more events ({hiddenEventCount} remaining)
           </button>
         ) : (
-          <p className="text-center text-sm text-gray-400">
+          <p className="text-center text-sm text-slate-600">
             All {filteredEventsCount} events loaded
           </p>
         )}

@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "CalEvents Public Data API",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "description": "Static public data resources for UC Berkeley campus event discovery. Read-only: there are no create, update, or delete operations for events or feed status. Mutations are not supported."
   },
   "servers": [
@@ -160,7 +160,7 @@
           "end_date": {
             "type": "string",
             "format": "date",
-            "description": "Multi-day events only: the last Pacific day the event occurs."
+            "description": "Multi-day events only: the last Pacific day the event occurs. On its last day a multi-day event carries end_date without dates."
           },
           "dates": {
             "type": "array",
@@ -170,7 +170,7 @@
           "time": { "type": "string" },
           "end_time": {
             "type": "string",
-            "description": "Single-day timed events only, when the source gives an end: the Pacific end time, in the same format as time. An end before time runs past midnight. The UI hides today's events once this passes."
+            "description": "Single-day timed events only, when the source gives an end: the Pacific end time, in the same format as time. An end before time runs past midnight. The UI hides today's single-day events once their start time passes."
           },
           "location": { "type": "string" },
           "description": { "type": "string" },
@@ -185,7 +185,19 @@
             "description": "Zero to three topic slugs from the published topic_vocabulary; independent of tags[0]."
           },
           "url": { "type": "string", "format": "uri" },
-          "source": { "type": "string" }
+          "source": { "type": "string" },
+          "also_listed": {
+            "type": "array",
+            "description": "Other sources that list the same event, each with its own page. A source filter matches any of them.",
+            "items": {
+              "type": "object",
+              "required": ["source", "url"],
+              "properties": {
+                "source": { "type": "string" },
+                "url": { "type": "string", "format": "uri" }
+              }
+            }
+          }
         }
       },
       "Source": {

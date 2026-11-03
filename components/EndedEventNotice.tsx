@@ -13,7 +13,7 @@ export function EndedEventNotice({ onDismiss }: { onDismiss: () => void }) {
         type="button"
         aria-label="Dismiss"
         onClick={onDismiss}
-        className="-m-1 shrink-0 rounded-full p-2 text-slate-400 transition-colors hover:bg-berkeley-gold/20 hover:text-berkeley-blue focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/70"
+        className="-m-1 shrink-0 rounded-full p-2 text-slate-500 transition-colors hover:bg-berkeley-gold/20 hover:text-berkeley-blue focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/70"
       >
         <svg
           className="h-3 w-3"

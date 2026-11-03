@@ -156,3 +156,22 @@ test("projectToLegacy treats 12:00 AM to 11:59 PM as all day", () => {
   );
   assert.equal(late.time, "12:00 AM");
 });
+
+test("projectToLegacy trims a leading separator and keeps other listings", () => {
+  const legacy = projectToLegacy(
+    canonicalEvent({
+      venue: "",
+      building: "",
+      address: ", Haas Pavilion",
+      also_listed: [
+        { source: "calbears", url: "https://calbears.com/calendar?game_id=1" },
+      ],
+    }),
+  );
+
+  assert.equal(legacy.location, "Haas Pavilion");
+  assert.deepEqual(legacy.also_listed, [
+    { source: "calbears", url: "https://calbears.com/calendar?game_id=1" },
+  ]);
+  assert.equal(projectToLegacy(canonicalEvent()).also_listed, undefined);
+});

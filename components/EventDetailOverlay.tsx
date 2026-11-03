@@ -16,7 +16,34 @@ import { displaySegments } from "../utils/linkify";
 import { useDialogAccessibility } from "../hooks/useDialogAccessibility";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 import { CalEvent } from "../types";
+import { SOURCE_LABELS } from "../appConfig";
 import { SourceBadge } from "./SourceBadge";
+
+/** "Also listed on Cal Bears", linking to each other source's own page. */
+function AlsoListed({ event }: { event: CalEvent }) {
+  const listings = (event.also_listed ?? []).filter(
+    ({ source }) => SOURCE_LABELS[source],
+  );
+  if (listings.length === 0) return null;
+  return (
+    <p className="text-sm text-slate-600">
+      Also listed on{" "}
+      {listings.map(({ source, url }, index) => (
+        <React.Fragment key={source}>
+          {index > 0 && (index === listings.length - 1 ? " and " : ", ")}
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-berkeley-medblue underline underline-offset-2"
+          >
+            {SOURCE_LABELS[source]}
+          </a>
+        </React.Fragment>
+      ))}
+    </p>
+  );
+}
 
 /**
  * Plain feed text with tappable links. A printed "anchor (url)" shows as the
@@ -469,7 +496,7 @@ function BottomSheet({
         {/* Pinned above the scroll area, so close stays in reach on long pages. */}
         <div className="flex shrink-0 items-center justify-between px-5 pb-3">
           <span
-            className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${categoryStyle.badge}`}
+            className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-bold uppercase tracking-[0.14em] ${categoryStyle.badge}`}
           >
             {categoryStyle.label}
           </span>
@@ -573,6 +600,7 @@ function BottomSheet({
               </div>
               <div className="italic">{event.organizer}</div>
             </div>
+            <AlsoListed event={event} />
           </div>
 
           {/* Actions sit above the description, which can run very long. */}
@@ -693,7 +721,7 @@ function SlideOutPanel({
         <div className="h-[calc(100%-60px)] overflow-y-auto overscroll-contain p-6">
           <div className="mb-3 flex items-center justify-between">
             <span
-              className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${categoryStyle.badge}`}
+              className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-bold uppercase tracking-[0.14em] ${categoryStyle.badge}`}
             >
               {categoryStyle.label}
             </span>
@@ -773,6 +801,7 @@ function SlideOutPanel({
               </div>
               <div className="text-base italic">{event.organizer}</div>
             </div>
+            <AlsoListed event={event} />
           </div>
 
           <div className="mb-8">

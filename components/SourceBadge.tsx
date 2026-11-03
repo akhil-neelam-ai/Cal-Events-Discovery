@@ -2,19 +2,25 @@ import { SOURCE_LABELS, SOURCE_URLS } from "../appConfig";
 
 export function SourceBadge({
   source,
+  alsoListed = [],
   linked = true,
 }: {
   source?: string;
+  /** Other sources that list the same event, named after the first. */
+  alsoListed?: string[];
   linked?: boolean;
 }) {
   if (!source || !SOURCE_LABELS[source]) return null;
 
-  const label = SOURCE_LABELS[source];
+  const label = [source, ...alsoListed]
+    .map((name) => SOURCE_LABELS[name])
+    .filter(Boolean)
+    .join(" · ");
   const url = SOURCE_URLS[source];
   const inner = (
-    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-gray-400">
+    <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-500">
       <svg
-        className="h-2.5 w-2.5 shrink-0"
+        className="h-3 w-3 shrink-0"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"

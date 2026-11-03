@@ -6,7 +6,7 @@
       "type": "skill-md",
       "description": "Search upcoming UC Berkeley campus events using the public CalEvents event feed.",
       "url": "/.well-known/agent-skills/search-events/SKILL.md",
-      "digest": "sha256:6b474a6a745ff12f66ae8ba3027628b4bbdc2f03c0ea76c6d60e869f38fc5e61"
+      "digest": "sha256:0bcb00fe68ebc9b6e860ff68fced4ee4f35427e25aaff35f9e6fd9d2530fa215"
     },
     {
       "name": "event-feed-status",
