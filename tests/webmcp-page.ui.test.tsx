@@ -113,6 +113,22 @@ async function readView(): Promise<UiViewState> {
   return view;
 }
 
+// App publishes its view in an effect, so the snapshot can trail the screen
+// by a tick. Agents read again while the view is pending. Tests poll the same
+// way: a single read here failed in CI and under local load.
+async function expectView(
+  check: (view: UiViewState) => void,
+): Promise<UiViewState> {
+  let settled: UiViewState | undefined;
+  await waitFor(async () => {
+    const view = await readView();
+    check(view);
+    settled = view;
+  });
+  if (!settled) throw new Error("the view never matched");
+  return settled;
+}
+
 describe("WebMCP agent to page", () => {
   beforeEach(() => {
     window.history.replaceState({}, "", "/");
@@ -157,24 +173,25 @@ describe("WebMCP agent to page", () => {
       screen.getByRole("button", { name: /remove tomorrow filter/i }),
     ).toBeInTheDocument();
 
-    const view = await readView();
-    expect(view).toMatchObject({
-      todayKey: TODAY_KEY,
-      loading: "success",
-      pending: false,
-      searchQuery: "jazz tomorrow",
-      requestedDateRange: "tomorrow",
-      effectiveDateRange: "tomorrow",
-      dateRangeWidened: false,
-      hasExplicitDateRange: false,
-      dismissedChipKeys: [],
-      resultCount: 1,
-      visibleEventIds: ["jazz-night"],
-      fallbackMessage: null,
+    const view = await expectView((current) => {
+      expect(current).toMatchObject({
+        todayKey: TODAY_KEY,
+        loading: "success",
+        pending: false,
+        searchQuery: "jazz tomorrow",
+        requestedDateRange: "tomorrow",
+        effectiveDateRange: "tomorrow",
+        dateRangeWidened: false,
+        hasExplicitDateRange: false,
+        dismissedChipKeys: [],
+        resultCount: 1,
+        visibleEventIds: ["jazz-night"],
+        fallbackMessage: null,
+      });
+      expect(current.activeChips).toEqual([
+        { key: "dateRange:tomorrow", label: "Tomorrow" },
+      ]);
     });
-    expect(view.activeChips).toEqual([
-      { key: "dateRange:tomorrow", label: "Tomorrow" },
-    ]);
     expect(Object.isFrozen(view)).toBe(true);
   });
 
@@ -189,9 +206,9 @@ describe("WebMCP agent to page", () => {
     await waitFor(() => {
       expect(screen.getByText("Jazz Brunch")).toBeInTheDocument();
     });
-    expect((await readView()).dismissedChipKeys).toEqual([
-      "dateRange:tomorrow",
-    ]);
+    await expectView((view) => {
+      expect(view.dismissedChipKeys).toEqual(["dateRange:tomorrow"]);
+    });
 
     await callTool("apply_ui_state", { q: "jazz tomorrow" });
 
@@ -202,9 +219,10 @@ describe("WebMCP agent to page", () => {
     expect(
       screen.getByRole("button", { name: /remove tomorrow filter/i }),
     ).toBeInTheDocument();
-    const view = await readView();
-    expect(view.dismissedChipKeys).toEqual([]);
-    expect(view.effectiveDateRange).toBe("tomorrow");
+    await expectView((view) => {
+      expect(view.dismissedChipKeys).toEqual([]);
+      expect(view.effectiveDateRange).toBe("tomorrow");
+    });
   });
 
   it("keeps an explicit date=week over the query's own date", async () => {
@@ -224,13 +242,15 @@ describe("WebMCP agent to page", () => {
       "week",
     );
 
-    const state = await callTool("get_ui_state");
-    expect(state.hasExplicitDateRange).toBe(true);
-    expect(state.view).toMatchObject({
-      requestedDateRange: "week",
-      effectiveDateRange: "week",
-      hasExplicitDateRange: true,
-      resultCount: 2,
+    await waitFor(async () => {
+      const state = await callTool("get_ui_state");
+      expect(state.hasExplicitDateRange).toBe(true);
+      expect(state.view).toMatchObject({
+        requestedDateRange: "week",
+        effectiveDateRange: "week",
+        hasExplicitDateRange: true,
+        resultCount: 2,
+      });
     });
   });
 
@@ -245,10 +265,12 @@ describe("WebMCP agent to page", () => {
       ).toBeInTheDocument();
     });
     expect(screen.getByText("Jazz Night")).toBeInTheDocument();
-    expect(await readView()).toMatchObject({
-      requestedDateRange: "today",
-      effectiveDateRange: "week",
-      dateRangeWidened: true,
+    await expectView((view) => {
+      expect(view).toMatchObject({
+        requestedDateRange: "today",
+        effectiveDateRange: "week",
+        dateRangeWidened: true,
+      });
     });
   });
 
@@ -278,9 +300,9 @@ describe("WebMCP agent to page", () => {
       screen.queryByRole("button", { name: /remove tomorrow filter/i }),
     ).not.toBeInTheDocument();
     expect(screen.getByText("Jazz Brunch")).toBeInTheDocument();
-    expect((await readView()).dismissedChipKeys).toEqual([
-      "dateRange:tomorrow",
-    ]);
+    await expectView((view) => {
+      expect(view.dismissedChipKeys).toEqual(["dateRange:tomorrow"]);
+    });
   });
 });
 
