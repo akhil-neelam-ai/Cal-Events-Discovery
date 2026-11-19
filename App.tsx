@@ -115,7 +115,7 @@ export default function App() {
   const { todayKey, tomorrowKey, weekEndKey, nowMinutes } =
     usePacificDateKeys();
   const wallRef = useRef<HTMLElement | null>(null);
-  useMasonry(wallRef);
+  useMasonry(wallRef, { anchor: ".notice", beside: ".beside" });
   const debouncedSearchQuery = useDebouncedValue(filters.searchQuery, 140);
   const browserStateFilters = useMemo(
     () => ({ ...filters, searchQuery: debouncedSearchQuery }),

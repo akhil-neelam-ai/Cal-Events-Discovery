@@ -63,7 +63,8 @@ export function SourceDropdown({
       const rect = triggerRef.current?.getBoundingClientRect();
       if (!rect) return;
 
-      const minWidth = 220;
+      // Wide enough for the longest source names without an ellipsis.
+      const minWidth = 280;
       const width = Math.max(rect.width, minWidth);
       const maxLeft = window.innerWidth - width - 8;
       const left = Math.max(8, Math.min(rect.left, maxLeft));
