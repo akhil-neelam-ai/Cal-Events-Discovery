@@ -1,4 +1,4 @@
-import type { QuickFilterPreset, SourceOption } from "../appConfig";
+import type { QuickFilterPreset } from "../appConfig";
 import type { LoadingState, SearchFilters, TopicVocabulary } from "../types";
 import { DesktopFiltersBar, MobileFiltersBar } from "./FiltersBar";
 import { NoticeSheet } from "./NoticeSheet";
@@ -16,14 +16,12 @@ export function AppHeaderShell({
   weekEndKey,
   filters,
   activeDateRange,
-  sourceOptions,
   topicVocabulary,
   topicCounts,
   onSearchChange,
   onDateChange,
   onCategoryChange,
   onTopicChange,
-  onSourceChange,
   onPresetSelect,
   onSurprise,
   onClearAll,
@@ -36,14 +34,12 @@ export function AppHeaderShell({
   weekEndKey: string;
   filters: SearchFilters;
   activeDateRange: SearchFilters["dateRange"];
-  sourceOptions: SourceOption[];
   topicVocabulary: TopicVocabulary | null;
   topicCounts: ReadonlyMap<string, number>;
   onSearchChange: (query: string) => void;
   onDateChange: (next: SearchFilters["dateRange"]) => void;
   onCategoryChange: (next: string) => void;
   onTopicChange: (next: string) => void;
-  onSourceChange: (next: string) => void;
   onPresetSelect: (preset: QuickFilterPreset) => void;
   onSurprise: (() => void) | null;
   /** Resets every filter. Null hides "Clear all". */
@@ -51,12 +47,10 @@ export function AppHeaderShell({
 }) {
   const filterProps = {
     filters,
-    sourceOptions,
     topicVocabulary,
     topicCounts,
     onCategoryChange,
     onTopicChange,
-    onSourceChange,
   };
 
   return (

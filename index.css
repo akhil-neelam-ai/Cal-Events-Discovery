@@ -444,13 +444,6 @@
   font-size: 0.9375rem;
 }
 
-.source-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem 0.6rem;
-}
-
 .topic-groups {
   display: grid;
   gap: 0.6rem;
@@ -611,8 +604,7 @@
   font-stretch: 92%;
 }
 
-.slip-row:hover,
-.slip-row[data-active='true'] {
+.slip-row:hover {
   background: rgb(18 18 18 / 0.08);
 }
 
@@ -620,11 +612,6 @@
   background: var(--color-toner);
   color: var(--color-plain);
   --ring: var(--color-gold);
-}
-
-.slip-row .count {
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
 }
 
 .slip-chips {
@@ -771,6 +758,11 @@
   font-stretch: 78%;
   font-size: 0.9375rem;
   --ring: var(--color-toner);
+}
+
+/* "Only from" starts a second group when search chips come first. */
+.chips .wall-label:not(:first-child) {
+  margin-left: 0.5rem;
 }
 
 .chip button {

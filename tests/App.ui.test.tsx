@@ -2060,6 +2060,100 @@ describe("App UI regressions", () => {
     expect(trackClearAll).toHaveBeenCalledExactlyOnceWith("drawer");
   });
 
+  it("has no source control, and shows a linked source as a chip that clears it", async () => {
+    const user = userEvent.setup();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "campus", title: "Campus Talk", source: "livewhale" }),
+      makeEvent({ id: "film", title: "Museum Film", source: "bampfa" }),
+    ]);
+    window.history.replaceState({}, "", "/?source=bampfa&date=upcoming");
+
+    render(<App />);
+
+    expect(
+      screen.queryByRole("button", { name: /^All \(\d+\)$/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Source")).not.toBeInTheDocument();
+    expect(screen.getByText("Museum Film")).toBeInTheDocument();
+    expect(screen.queryByText("Campus Talk")).not.toBeInTheDocument();
+    expect(screen.getByText("Only from")).toBeInTheDocument();
+    expect(screen.queryByText("Interpreted as")).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "Remove BAMPFA source filter" }),
+    );
+
+    await waitFor(() => {
+      expect(window.location.search).not.toContain("source=");
+    });
+    expect(screen.getByText("Campus Talk")).toBeInTheDocument();
+    expect(screen.queryByText("Only from")).not.toBeInTheDocument();
+  });
+
+  it("names a linked source once, beside any search chips", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "law", title: "Law Talk", source: "berkeley_law" }),
+      makeEvent({ id: "campus", title: "Campus Talk", source: "livewhale" }),
+    ]);
+
+    // The search already names this source, so no second chip.
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=berkeley%20law&source=berkeley_law&date=upcoming",
+    );
+    const same = render(<App />);
+    expect(
+      screen.getByRole("button", { name: "Remove Berkeley Law filter" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Only from")).not.toBeInTheDocument();
+    same.unmount();
+
+    // A different linked source hides the search's source chip, so the
+    // linked one gets its own.
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=berkeley%20law%20tomorrow&source=livewhale&date=upcoming",
+    );
+    render(<App />);
+    expect(screen.getByText("Interpreted as")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Remove Tomorrow filter" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Only from")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: "Remove UC Berkeley Events source filter",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("counts only the topic on the phone Filters scrap, and the drawer has no source", async () => {
+    const user = userEvent.setup();
+    mockIsMobile = true;
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "a", title: "AI Talk", tags: ["Arts"] }),
+    ]);
+    window.history.replaceState({}, "", "/?category=Arts&source=livewhale");
+
+    const view = render(<App />);
+    const filters = screen.getByRole("button", { name: /^Filters/ });
+    expect(filters).toHaveAccessibleName("Filters");
+    await user.click(filters);
+    const drawer = document.getElementById("mobile-filters") as HTMLElement;
+    expect(within(drawer).queryByText(/Source:/)).not.toBeInTheDocument();
+    expect(within(drawer).getByText(/Category:/)).toBeInTheDocument();
+    view.unmount();
+
+    window.history.replaceState({}, "", "/?topic=ai-machine-learning");
+    render(<App />);
+    // jsdom joins the count without the space a browser adds.
+    expect(
+      screen.getByRole("button", { name: /^Filters/ }),
+    ).toHaveAccessibleName(/^Filters ?1$/);
+  });
+
   it("does not flash an empty grid for a doomed topic", () => {
     mockFeedState = makeFeedState([
       makeEvent({

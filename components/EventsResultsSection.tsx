@@ -49,6 +49,8 @@ export function EventsResultsSection({
   fallbackBannerCopy,
   activeChips,
   onDismissChip,
+  sourceChipLabel,
+  onClearSource,
   category,
   effectiveDateRange,
   todayKey,
@@ -66,6 +68,9 @@ export function EventsResultsSection({
   fallbackBannerCopy: string | null;
   activeChips: InterpretedChip[];
   onDismissChip: (key: string) => void;
+  /** A source no search chip names, or null. */
+  sourceChipLabel: string | null;
+  onClearSource: () => void;
   category: string;
   effectiveDateRange: SearchFilters["dateRange"];
   todayKey: string;
@@ -117,7 +122,12 @@ export function EventsResultsSection({
         </div>
       )}
 
-      <InterpretedChips chips={activeChips} onDismiss={onDismissChip} />
+      <InterpretedChips
+        chips={activeChips}
+        onDismiss={onDismissChip}
+        sourceLabel={sourceChipLabel}
+        onClearSource={onClearSource}
+      />
 
       <div
         role="status"

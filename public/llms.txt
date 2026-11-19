@@ -4,7 +4,7 @@ CalEvents is a public UC Berkeley campus events discovery site. It aggregates up
 
 ## Primary Resources
 
-- [Homepage](https://cal-events.com/): Search and browse upcoming Berkeley events by date, category, topic, source, and keyword.
+- [Homepage](https://cal-events.com/): Search and browse upcoming Berkeley events by date, category, topic, and keyword. It has no source control. A `source` URL parameter or source words in the search still filter by source.
 - [For Agents](https://cal-events.com/for-agents.html): Human-readable agent entry point (tools, URL schema, CRUD limits).
 - [Day pages](https://cal-events.com/days/index.txt): One plain-text page per day for the next 14 days, each small enough to read in one fetch. Start here if your reader cuts off long pages.
 - [Events JSON](https://cal-events.com/events.json): Public machine-readable event feed. The top-level object contains `events`, `sources`, `lastUpdated`, and `topic_vocabulary`.
