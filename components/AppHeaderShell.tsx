@@ -1,24 +1,19 @@
-import { useId } from "react";
-
-import { Analytics } from "@vercel/analytics/react";
-
-import {
-  FEED_CADENCE_COPY,
-  type QuickFilterPreset,
-  type SourceOption,
-} from "../appConfig";
-import { LoadingState, type SearchFilters } from "../types";
-import type { TopicVocabulary } from "../types";
-import { DesktopHero } from "./DesktopHero";
+import type { QuickFilterPreset, SourceOption } from "../appConfig";
+import type { LoadingState, SearchFilters, TopicVocabulary } from "../types";
 import { DesktopFiltersBar, MobileFiltersBar } from "./FiltersBar";
-import { MobileHeader } from "./MobileHeader";
+import { NoticeSheet } from "./NoticeSheet";
 
+/**
+ * The top of the wall: the white notice with search and the date tabs,
+ * then the category scraps and the other filters.
+ */
 export function AppHeaderShell({
-  mainContentId,
   isMobile,
   loading,
   allEventsCount,
   sourceCount,
+  todayKey,
+  weekEndKey,
   filters,
   activeDateRange,
   sourceOptions,
@@ -31,11 +26,12 @@ export function AppHeaderShell({
   onSourceChange,
   onPresetSelect,
 }: {
-  mainContentId: string;
   isMobile: boolean;
   loading: LoadingState;
   allEventsCount: number;
   sourceCount: number;
+  todayKey: string;
+  weekEndKey: string;
   filters: SearchFilters;
   activeDateRange: SearchFilters["dateRange"];
   sourceOptions: SourceOption[];
@@ -48,73 +44,35 @@ export function AppHeaderShell({
   onSourceChange: (next: string) => void;
   onPresetSelect: (preset: QuickFilterPreset) => void;
 }) {
-  const desktopSearchInputId = useId();
-
-  const desktopHeroStatusCopy =
-    loading === LoadingState.ERROR
-      ? "Latest batch unavailable"
-      : loading === LoadingState.SUCCESS
-        ? FEED_CADENCE_COPY
-        : "Loading latest batch";
-
-  const desktopHeroSummaryCopy =
-    loading === LoadingState.SUCCESS && allEventsCount > 0
-      ? `${allEventsCount.toLocaleString()} events across ${sourceCount} campus feeds. Search by topic, speaker, venue, or organizer.`
-      : "Search Berkeley events by topic, speaker, venue, or organizer, then refine with filters below.";
+  const filterProps = {
+    filters,
+    sourceOptions,
+    topicVocabulary,
+    topicCounts,
+    onCategoryChange,
+    onTopicChange,
+    onSourceChange,
+  };
 
   return (
     <>
-      <a
-        href={`#${mainContentId}`}
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-100 focus:px-4 focus:py-2 focus:bg-berkeley-blue focus:text-white focus:rounded-md focus:text-sm focus:font-medium"
-      >
-        Skip to events
-      </a>
-      <Analytics />
+      <NoticeSheet
+        isMobile={isMobile}
+        todayKey={todayKey}
+        weekEndKey={weekEndKey}
+        loading={loading}
+        allEventsCount={allEventsCount}
+        sourceCount={sourceCount}
+        searchQuery={filters.searchQuery}
+        activeDateRange={activeDateRange}
+        onSearchChange={onSearchChange}
+        onPresetSelect={onPresetSelect}
+        onDateChange={onDateChange}
+      />
       {isMobile ? (
-        <>
-          <MobileHeader
-            searchQuery={filters.searchQuery}
-            onSearchChange={onSearchChange}
-          />
-          <div className="sticky top-0 z-50">
-            <MobileFiltersBar
-              filters={filters}
-              activeDateRange={activeDateRange}
-              sourceOptions={sourceOptions}
-              topicVocabulary={topicVocabulary}
-              topicCounts={topicCounts}
-              onDateChange={onDateChange}
-              onCategoryChange={onCategoryChange}
-              onTopicChange={onTopicChange}
-              onSourceChange={onSourceChange}
-            />
-          </div>
-        </>
+        <MobileFiltersBar {...filterProps} />
       ) : (
-        <>
-          <DesktopHero
-            statusCopy={desktopHeroStatusCopy}
-            summaryCopy={desktopHeroSummaryCopy}
-            searchQuery={filters.searchQuery}
-            onSearchChange={onSearchChange}
-            onPresetSelect={onPresetSelect}
-            inputId={desktopSearchInputId}
-          />
-          <div className="sticky top-0 z-50 shadow-xs">
-            <DesktopFiltersBar
-              filters={filters}
-              activeDateRange={activeDateRange}
-              sourceOptions={sourceOptions}
-              topicVocabulary={topicVocabulary}
-              topicCounts={topicCounts}
-              onDateChange={onDateChange}
-              onCategoryChange={onCategoryChange}
-              onTopicChange={onTopicChange}
-              onSourceChange={onSourceChange}
-            />
-          </div>
-        </>
+        <DesktopFiltersBar {...filterProps} />
       )}
     </>
   );

@@ -880,7 +880,9 @@ describe("App UI regressions", () => {
       screen.getByRole("heading", { level: 2, name: /this week/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Tomorrow Founder Talk")).toBeInTheDocument();
-    expect(screen.getAllByText("Updates every day").length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/public calendars every morning/),
+    ).toBeInTheDocument();
     expect(screen.queryByText(/Updated \d+h ago/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Synced \d+h ago/)).not.toBeInTheDocument();
   });
@@ -1410,8 +1412,8 @@ describe("App UI regressions", () => {
     expect(screen.getByText("Next up:").parentElement).toHaveTextContent(
       "Next up: 7pm Women's Basketball, Haas Pavilion",
     );
-    // The header keeps the cadence; the subtitle no longer repeats it.
-    expect(screen.getAllByText("Updates every day")).toHaveLength(1);
+    // The footer states the cadence once; the view subtitle does not.
+    expect(screen.getAllByText(/every morning/)).toHaveLength(1);
   });
 
   it("keeps the source link outside the card's button", async () => {

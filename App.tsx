@@ -5,6 +5,8 @@ import React, {
   useCallback,
   useRef,
 } from "react";
+import { Analytics } from "@vercel/analytics/react";
+
 import { CalEvent, SearchFilters, LoadingState } from "./types";
 import { DEFAULT_FILTERS } from "./appConfig";
 import { publishViewState } from "./agent/viewState";
@@ -17,7 +19,10 @@ import {
 } from "./components/EndedEventNotice";
 import { EventDetailOverlay } from "./components/EventDetailOverlay";
 import { ErrorStateView } from "./components/ErrorStateView";
-import { EventsResultsSection } from "./components/EventsResultsSection";
+import {
+  EventsResultsSection,
+  RESULTS_ANCHOR_ID,
+} from "./components/EventsResultsSection";
 import { LoadingStateView } from "./components/LoadingStateView";
 import { useDebouncedValue } from "./hooks/useDebouncedValue";
 import { useEventBrowserActions } from "./hooks/useEventBrowserActions";
@@ -26,6 +31,7 @@ import { useBackToTopVisibility } from "./hooks/useBackToTopVisibility";
 import { useEventFeed } from "./hooks/useEventFeed";
 import { useEventGridState } from "./hooks/useEventGridState";
 import { useIsMobile } from "./hooks/useIsMobile";
+import { useMasonry } from "./hooks/useMasonry";
 import { usePacificDateKeys } from "./hooks/usePacificDateKeys";
 import { usePrefersReducedMotion } from "./hooks/usePrefersReducedMotion";
 import { readAppUrlState, useUrlStateSync } from "./hooks/useUrlStateSync";
@@ -106,6 +112,8 @@ export default function App() {
 
   const { todayKey, tomorrowKey, weekEndKey, nowMinutes } =
     usePacificDateKeys();
+  const wallRef = useRef<HTMLElement | null>(null);
+  useMasonry(wallRef);
   const debouncedSearchQuery = useDebouncedValue(filters.searchQuery, 140);
   const browserStateFilters = useMemo(
     () => ({ ...filters, searchQuery: debouncedSearchQuery }),
@@ -210,19 +218,13 @@ export default function App() {
     if (endedEventId) trackEndedEventLink(endedEventId);
   }, [endedEventId]);
 
-  const {
-    shouldAnimateCards,
-    visibleEvents,
-    hiddenEventCount,
-    eventGroups,
-    showMoreEvents,
-  } = useEventGridState({
-    loading,
-    filteredEvents,
-    effectiveDateRange,
-    prefersReducedMotion,
-    todayKey,
-  });
+  const { visibleEvents, hiddenEventCount, eventGroups, showMoreEvents } =
+    useEventGridState({
+      filteredEvents,
+      effectiveDateRange,
+      prefersReducedMotion,
+      todayKey,
+    });
 
   // A URL that arrives through popstate (back, forward, or an agent's
   // apply_ui_state) decides the view alone. Chips dismissed on the previous
@@ -346,71 +348,73 @@ export default function App() {
   ]);
   useEffect(() => () => publishViewState(null), []);
 
-  const mainContentId = "main-content";
-
   return (
-    <div className="min-h-screen bg-berkeley-lightgray text-gray-800 font-sans">
-      <AppHeaderShell
-        mainContentId={mainContentId}
-        isMobile={isMobile}
-        loading={loading}
-        allEventsCount={allEvents.length}
-        sourceCount={sourceCount}
-        filters={filters}
-        activeDateRange={effectiveDateRange}
-        sourceOptions={sourceOptions}
-        topicVocabulary={topicVocabulary}
-        topicCounts={topicCounts}
-        onSearchChange={handleSearchChange}
-        onDateChange={handleDateRangeChange}
-        onCategoryChange={handleCategoryChange}
-        onTopicChange={handleTopicChange}
-        onSourceChange={handleSourceChange}
-        onPresetSelect={handleQuickPreset}
-      />
+    <div className="min-h-screen">
+      <a href={`#${RESULTS_ANCHOR_ID}`} className="skip-link">
+        Skip to events
+      </a>
+      <Analytics />
 
-      {/* Main Content */}
-      <main
-        id={mainContentId}
-        tabIndex={-1}
-        className="container mx-auto px-4 py-6 md:py-7"
-      >
-        {loading === LoadingState.LOADING && <LoadingStateView />}
-
-        {loading === LoadingState.ERROR && (
-          <ErrorStateView onRetry={loadEvents} />
-        )}
-
-        {/* Dismissing clears the stale selection that drives the notice. */}
-        {endedEventId && (
-          <EndedEventNotice onDismiss={() => setSelectedEventId(null)} />
-        )}
-
-        {loading === LoadingState.SUCCESS && (
-          <EventsResultsSection
-            fallbackBannerCopy={notice}
-            activeChips={activeChips}
-            onDismissChip={handleDismissChip}
-            category={filters.category}
-            effectiveDateRange={effectiveDateRange}
+      <div className="wrap">
+        {/* The wall: the notice, the scraps, and every sheet share one
+            masonry grid, so sheets pack in beside the notice. */}
+        <main ref={wallRef} id="main-content" className="wall">
+          <AppHeaderShell
+            isMobile={isMobile}
+            loading={loading}
+            allEventsCount={allEvents.length}
+            sourceCount={sourceCount}
             todayKey={todayKey}
-            nowMinutes={nowMinutes}
-            filteredEvents={filteredEvents}
-            searchFallbackMessage={searchFallbackMessage}
-            emptyState={emptyState}
-            eventGroups={eventGroups}
-            visibleEventsCount={visibleEvents.length}
-            hiddenEventCount={hiddenEventCount}
-            shouldAnimateCards={shouldAnimateCards}
-            onEventClick={handleEventClick}
-            onLoadMore={showMoreEvents}
+            weekEndKey={weekEndKey}
+            filters={filters}
+            activeDateRange={effectiveDateRange}
+            sourceOptions={sourceOptions}
+            topicVocabulary={topicVocabulary}
+            topicCounts={topicCounts}
+            onSearchChange={handleSearchChange}
+            onDateChange={handleDateRangeChange}
+            onCategoryChange={handleCategoryChange}
+            onTopicChange={handleTopicChange}
+            onSourceChange={handleSourceChange}
+            onPresetSelect={handleQuickPreset}
           />
-        )}
-      </main>
 
-      <AppFooter />
+          {loading === LoadingState.LOADING && <LoadingStateView />}
 
-      {/* Event Detail Panel/Sheet */}
+          {loading === LoadingState.ERROR && (
+            <ErrorStateView onRetry={loadEvents} />
+          )}
+
+          {/* Dismissing clears the stale selection that drives the notice. */}
+          {endedEventId && (
+            <EndedEventNotice onDismiss={() => setSelectedEventId(null)} />
+          )}
+
+          {loading === LoadingState.SUCCESS && (
+            <EventsResultsSection
+              fallbackBannerCopy={notice}
+              activeChips={activeChips}
+              onDismissChip={handleDismissChip}
+              category={filters.category}
+              effectiveDateRange={effectiveDateRange}
+              todayKey={todayKey}
+              nowMinutes={nowMinutes}
+              filteredEvents={filteredEvents}
+              searchFallbackMessage={searchFallbackMessage}
+              emptyState={emptyState}
+              eventGroups={eventGroups}
+              visibleEventsCount={visibleEvents.length}
+              hiddenEventCount={hiddenEventCount}
+              onEventClick={handleEventClick}
+              onLoadMore={showMoreEvents}
+            />
+          )}
+        </main>
+
+        <AppFooter />
+      </div>
+
+      {/* The open event, pulled off the wall */}
       {selectedEvent && (
         <EventDetailOverlay
           event={selectedEvent}

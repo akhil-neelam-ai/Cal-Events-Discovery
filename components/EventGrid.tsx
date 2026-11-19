@@ -1,14 +1,23 @@
-import React from "react";
+import React, { type CSSProperties } from "react";
 
 import { trackExternalLink } from "../utils/analytics";
 import type { EventGroup } from "../utils/eventDates";
-import { formatRelativeEventDate } from "../utils/eventDates";
 import {
-  getCategoryStyle,
+  addDaysToDateKey,
+  clockMinutes,
+  formatMultiDayWhen,
+} from "../utils/eventDates";
+import {
   isHomeGame,
   isRecFacilitySchedule,
   shortenVenue,
 } from "../utils/eventPresentation";
+import {
+  isWideSheet,
+  paperColor,
+  sheetTilt,
+  titleSizeClass,
+} from "../utils/flyerWall";
 import { CalEvent, SearchFilters } from "../types";
 import { RecHoursCard } from "./RecHoursCard";
 import { SourceBadge } from "./SourceBadge";
@@ -21,12 +30,145 @@ function splitRecSchedules(events: CalEvent[]) {
     : { cards: events, rec: [] };
 }
 
+function sameText(left: string, right: string): boolean {
+  return left.trim().toLowerCase() === right.trim().toLowerCase();
+}
+
+/** "7:00 PM" as a big clock and a small "PM". */
+function splitClock(time: string): [string, string] | null {
+  const match = time.match(/^\s*(\d{1,2}(?::\d{2})?)\s*(am|pm)\s*$/i);
+  return match ? [match[1], match[2].toUpperCase()] : null;
+}
+
+/** The time at the top of a sheet, and the run of a multi-day event. */
+function SheetWhen({
+  event,
+  id,
+  dateRange,
+  todayKey,
+}: {
+  event: CalEvent;
+  id: string;
+  dateRange: SearchFilters["dateRange"];
+  todayKey: string;
+}) {
+  const run = formatMultiDayWhen(event, undefined, dateRange, todayKey);
+  const clock =
+    clockMinutes(event.time) === null ? null : splitClock(event.time);
+  return (
+    <p id={id} className="when">
+      {clock ? (
+        <>
+          {clock[0]}
+          <small>{clock[1]}</small>
+        </>
+      ) : (
+        <small className="allday">{event.time || "All day"}</small>
+      )}
+      {run && <small className="hours">{run}</small>}
+    </p>
+  );
+}
+
+function Sheet({
+  event,
+  index,
+  dateRange,
+  todayKey,
+  onEventClick,
+}: {
+  event: CalEvent;
+  index: number;
+  dateRange: SearchFilters["dateRange"];
+  todayKey: string;
+  onEventClick: (event: CalEvent) => void;
+}) {
+  const whenId = `event-card-when-${index}`;
+  const metaId = `event-card-meta-${index}`;
+  const venue = shortenVenue(event.location);
+  const away = event.source === "calbears" && !isHomeGame(event);
+
+  return (
+    <article
+      className={`sheet${isWideSheet(event) ? " wide" : ""}`}
+      style={
+        {
+          "--p": paperColor(event.tags?.[0]),
+          "--r": `${sheetTilt(event.id || event.title)}deg`,
+        } as CSSProperties
+      }
+    >
+      <SheetWhen
+        event={event}
+        id={whenId}
+        dateRange={dateRange}
+        todayKey={todayKey}
+      />
+      <h4 className={`what ${titleSizeClass(event.title)}`}>
+        {/* The title button covers the sheet, so a click anywhere opens the
+            details. The source link stays a sibling above it. */}
+        <button
+          type="button"
+          onClick={() => onEventClick(event)}
+          aria-describedby={`${whenId} ${metaId}`}
+          className="sheet-open"
+        >
+          {event.title}
+        </button>
+      </h4>
+      <div id={metaId}>
+        {venue && <p className="where">{venue}</p>}
+        {event.organizer && !sameText(event.organizer, venue) && (
+          <p className="who">{event.organizer}</p>
+        )}
+      </div>
+      {away && <span className="perk">Away</span>}
+      <div className="fine">
+        <SourceBadge
+          source={event.source}
+          alsoListed={(event.also_listed ?? []).map(({ source }) => source)}
+          linked={false}
+        />
+        {event.url && (
+          <a
+            href={event.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              trackExternalLink({
+                event_id: event.id,
+                event_title: event.title,
+                destination_url: event.url,
+              });
+            }}
+            aria-label={`Open source page for ${event.title}`}
+            className="sheet-link"
+          >
+            <svg
+              aria-hidden="true"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="square"
+                strokeWidth={2.5}
+                d="M10 6H5v13h13v-5M14 4h6v6m0-6L10 14"
+              />
+            </svg>
+          </a>
+        )}
+      </div>
+    </article>
+  );
+}
+
 export function EventGrid({
   eventGroups,
   filteredEventsCount,
   visibleEventsCount,
   hiddenEventCount,
-  shouldAnimateCards,
   effectiveDateRange,
   todayKey,
   onEventClick,
@@ -36,253 +178,68 @@ export function EventGrid({
   filteredEventsCount: number;
   visibleEventsCount: number;
   hiddenEventCount: number;
-  shouldAnimateCards: boolean;
   effectiveDateRange: SearchFilters["dateRange"];
   todayKey: string;
   onEventClick: (event: CalEvent) => void;
   onLoadMore: () => void;
 }) {
+  // Sheets show only the time, so chalk strips name the day. Only a
+  // one-day range showing just that day can leave them out.
+  const impliedDayKey =
+    effectiveDateRange === "today"
+      ? todayKey
+      : effectiveDateRange === "tomorrow"
+        ? addDaysToDateKey(todayKey, 1)
+        : null;
+  const showStrips =
+    eventGroups.length > 1 ||
+    (eventGroups.length === 1 && eventGroups[0].dateKey !== impliedDayKey);
+  let globalIdx = 0;
+
   return (
     <>
-      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {(() => {
-          let globalIdx = 0;
-          return eventGroups.map((group) => (
-            <React.Fragment key={group.dateKey}>
-              {eventGroups.length > 1 && (
-                <div className="col-span-full flex items-center gap-3 pb-1 pt-4">
-                  <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-600">
-                    {group.label}
-                  </h3>
-                  <div className="h-px flex-1 bg-gray-200" />
-                  <span className="text-xs text-slate-600">
-                    {group.events.length} event
-                    {group.events.length !== 1 ? "s" : ""}
-                  </span>
-                </div>
-              )}
-              {splitRecSchedules(group.events).cards.map((event) => {
-                const idx = globalIdx++;
-                const categoryStyle = getCategoryStyle(event.tags?.[0]);
-                const metaId = `event-card-meta-${idx}`;
-
-                return (
-                  <article
-                    key={event.id || idx}
-                    className={`group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,50,98,0.06),0_4px_16px_rgba(0,50,98,0.05)] transition-[transform,box-shadow] duration-150 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform motion-reduce:transition-none motion-safe:hover:translate-y-[-3px] motion-safe:hover:shadow-[0_8px_32px_rgba(0,50,98,0.13),0_1px_4px_rgba(0,50,98,0.06)] motion-safe:active:scale-[0.985] ${shouldAnimateCards ? "animate-card-in opacity-0" : ""}`}
-                    style={{
-                      ...(shouldAnimateCards
-                        ? {
-                            animationDelay: `${Math.min(idx * 50, 500)}ms`,
-                            animationFillMode: "forwards",
-                          }
-                        : {}),
-                    }}
-                  >
-                    <div
-                      className="absolute bottom-0 left-0 top-0 w-[3px] rounded-l-2xl"
-                      style={{
-                        background: `linear-gradient(to bottom, ${categoryStyle.stripColor} 0%, transparent 100%)`,
-                      }}
-                    />
-
-                    <div className="p-5 pl-6">
-                      <div className="mb-3 flex items-start justify-between gap-2">
-                        <span
-                          className={`inline-flex rounded-md px-2 py-0.5 text-xs font-bold uppercase tracking-wider ${categoryStyle.badge}`}
-                        >
-                          {event.tags?.[0] || "Event"}
-                        </span>
-                        {event.source === "calbears" && !isHomeGame(event) && (
-                          <span className="inline-flex items-center rounded-sm bg-gray-100 px-1.5 py-0.5 text-xs font-bold uppercase tracking-wider text-gray-600">
-                            Away
-                          </span>
-                        )}
-                        {event.url && (
-                          <a
-                            href={event.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => {
-                              trackExternalLink({
-                                event_id: event.id,
-                                event_title: event.title,
-                                destination_url: event.url,
-                              });
-                            }}
-                            aria-label={`Open source page for ${event.title}`}
-                            className="relative z-10 -m-1 shrink-0 rounded-full p-2.5 text-slate-500 transition hover:bg-slate-100 hover:text-berkeley-blue"
-                          >
-                            <svg
-                              aria-hidden="true"
-                              className="h-4 w-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                              />
-                            </svg>
-                          </a>
-                        )}
-                      </div>
-
-                      <div className="text-left">
-                        <h4
-                          className="mb-4 font-serif text-[1.05rem] font-semibold leading-snug text-berkeley-blue transition-colors group-hover:text-berkeley-medblue"
-                          style={{ letterSpacing: "-0.01em" }}
-                        >
-                          {/* The title button stretches over the card, so a
-                              click anywhere opens the details. The source link
-                              stays a sibling above it. */}
-                          <button
-                            type="button"
-                            onClick={() => onEventClick(event)}
-                            aria-describedby={metaId}
-                            className="w-full cursor-pointer text-left after:absolute after:inset-0 after:rounded-2xl focus:outline-hidden focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-berkeley-gold/60"
-                          >
-                            {event.title}
-                          </button>
-                        </h4>
-
-                        <div
-                          id={metaId}
-                          className="space-y-1.5 text-xs text-slate-500"
-                        >
-                          <div className="flex items-start gap-1.5">
-                            <svg
-                              aria-hidden="true"
-                              className="mt-px h-3.5 w-3.5 shrink-0 text-[#FDB515]"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                              />
-                            </svg>
-                            <span className="font-medium text-slate-700">
-                              {formatRelativeEventDate(
-                                event,
-                                undefined,
-                                effectiveDateRange,
-                                todayKey,
-                              )}
-                            </span>
-                          </div>
-                          {event.location && (
-                            <div className="flex items-start gap-1.5">
-                              <svg
-                                aria-hidden="true"
-                                className="mt-px h-3.5 w-3.5 shrink-0 text-[#FDB515]"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                />
-                              </svg>
-                              <span className="line-clamp-2">
-                                {shortenVenue(event.location)}
-                              </span>
-                            </div>
-                          )}
-                          <div className="flex items-center gap-1.5">
-                            <svg
-                              aria-hidden="true"
-                              className="h-3.5 w-3.5 shrink-0 text-[#FDB515]"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                              />
-                            </svg>
-                            <span
-                              className="truncate italic text-slate-500"
-                              title={event.organizer}
-                            >
-                              {event.organizer}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div
-                      className="flex items-center justify-between px-6 py-3"
-                      style={{ borderTop: "1px solid rgba(0,50,98,0.06)" }}
-                    >
-                      <SourceBadge
-                        source={event.source}
-                        alsoListed={(event.also_listed ?? []).map(
-                          ({ source }) => source,
-                        )}
-                        linked={false}
-                      />
-                      <span
-                        aria-hidden="true"
-                        className="text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-berkeley-medblue"
-                      >
-                        <svg
-                          className="h-3.5 w-3.5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2.5}
-                            d="M9 5l7 7-7 7"
-                          />
-                        </svg>
-                      </span>
-                    </div>
-                  </article>
-                );
-              })}
-              {splitRecSchedules(group.events).rec.length > 0 && (
-                <RecHoursCard
-                  events={splitRecSchedules(group.events).rec}
+      {eventGroups.map((group, groupIndex) => {
+        const { cards, rec } = splitRecSchedules(group.events);
+        return (
+          <React.Fragment key={group.dateKey}>
+            {showStrips && (
+              <div className={`strip${groupIndex === 0 ? " beside" : ""}`}>
+                <h3>{group.label}</h3>
+                <p>
+                  {group.events.length} event
+                  {group.events.length !== 1 ? "s" : ""}
+                </p>
+              </div>
+            )}
+            {cards.map((event) => {
+              const idx = globalIdx++;
+              return (
+                <Sheet
+                  key={event.id || idx}
+                  event={event}
+                  index={idx}
+                  dateRange={effectiveDateRange}
+                  todayKey={todayKey}
                   onEventClick={onEventClick}
                 />
-              )}
-            </React.Fragment>
-          ));
-        })()}
-      </div>
-      <div className="mt-6 flex flex-col items-center gap-3">
-        <p className="text-center text-sm text-slate-600">
+              );
+            })}
+            {rec.length > 0 && (
+              <RecHoursCard events={rec} onEventClick={onEventClick} />
+            )}
+          </React.Fragment>
+        );
+      })}
+      <div className="more wall-full">
+        <p>
           Showing {visibleEventsCount} of {filteredEventsCount} events
         </p>
         {hiddenEventCount > 0 ? (
-          <button
-            type="button"
-            onClick={onLoadMore}
-            className="rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-xs transition-colors duration-200 hover:border-slate-300 hover:bg-slate-50 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/60 focus-visible:ring-offset-2"
-          >
+          <button type="button" onClick={onLoadMore}>
             Load more events ({hiddenEventCount} remaining)
           </button>
         ) : (
-          <p className="text-center text-sm text-slate-600">
-            All {filteredEventsCount} events loaded
-          </p>
+          <p>All {filteredEventsCount} events loaded</p>
         )}
       </div>
     </>

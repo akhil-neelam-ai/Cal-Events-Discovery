@@ -6,12 +6,10 @@ export function SourceDropdown({
   options,
   value,
   onChange,
-  tone = "light",
 }: {
   options: SourceOption[];
   value: string;
   onChange: (next: string) => void;
-  tone?: "light" | "dark";
 }) {
   const [open, setOpen] = useState(false);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
@@ -152,11 +150,6 @@ export function SourceDropdown({
     }
   };
 
-  const triggerClasses =
-    tone === "dark"
-      ? "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 transition text-white"
-      : "inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-2 text-slate-700 shadow-xs transition hover:border-slate-300 hover:bg-slate-50";
-
   return (
     <div ref={containerRef} className="relative">
       <button
@@ -166,18 +159,14 @@ export function SourceDropdown({
         aria-expanded={open}
         onClick={() => (open ? closeMenu() : openMenu())}
         onKeyDown={handleTriggerKey}
-        className={
-          triggerClasses +
-          " focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold focus-visible:ring-offset-2"
-        }
+        className="scrap"
       >
-        <span className="font-medium">
-          {selected.label}{" "}
-          <span className="opacity-70">({selected.count})</span>
+        <span>
+          {selected.label} <span className="count">({selected.count})</span>
         </span>
         <svg
           aria-hidden="true"
-          className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`h-3 w-3 ${open ? "rotate-180" : ""}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -185,7 +174,7 @@ export function SourceDropdown({
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
+            strokeWidth={3}
             d="M19 9l-7 7-7-7"
           />
         </svg>
@@ -203,49 +192,31 @@ export function SourceDropdown({
             width: panelPos.width,
             zIndex: 9999,
           }}
-          className="max-h-[60vh] overflow-y-auto rounded-xl border border-slate-200 bg-white py-1.5 text-gray-800 shadow-2xl"
+          className="slip max-h-[60vh] py-1.5"
         >
-          {options.map((option, index) => {
-            const isSelected = option.value === value;
-            const isAllOption = option.value === "All";
-            return (
-              <div key={option.value}>
-                {index === 1 && (
-                  <div className="mx-3 my-1.5 border-t border-slate-100" />
-                )}
-                <button
-                  ref={(element) => {
-                    itemRefs.current[index] = element;
-                  }}
-                  type="button"
-                  role="option"
-                  aria-selected={isSelected}
-                  onClick={() => pick(option.value)}
-                  onKeyDown={(event) => handleItemKey(event, index)}
-                  onMouseEnter={() => setFocusIndex(index)}
-                  className={`mx-1 flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-xs transition-colors ${
-                    isSelected
-                      ? "bg-berkeley-blue text-white"
-                      : focusIndex === index
-                        ? "bg-slate-100 text-berkeley-blue"
-                        : "text-slate-700 hover:bg-slate-50"
-                  } ${isAllOption ? "font-semibold" : ""}`}
-                  style={{ width: "calc(100% - 8px)" }}
-                >
-                  <span className="truncate">{option.label}</span>
-                  <span
-                    className={`shrink-0 rounded-full px-1.5 py-0.5 text-xs tabular-nums ${
-                      isSelected
-                        ? "bg-white/20 text-white"
-                        : "bg-slate-100 text-slate-500"
-                    }`}
-                  >
-                    {option.count}
-                  </span>
-                </button>
-              </div>
-            );
-          })}
+          {options.map((option, index) => (
+            <div key={option.value}>
+              {index === 1 && (
+                <div className="mx-3 my-1.5 border-t-2 border-dashed border-toner" />
+              )}
+              <button
+                ref={(element) => {
+                  itemRefs.current[index] = element;
+                }}
+                type="button"
+                role="option"
+                aria-selected={option.value === value}
+                data-active={focusIndex === index}
+                onClick={() => pick(option.value)}
+                onKeyDown={(event) => handleItemKey(event, index)}
+                onMouseEnter={() => setFocusIndex(index)}
+                className="slip-row"
+              >
+                <span className="truncate">{option.label}</span>
+                <span className="count">{option.count}</span>
+              </button>
+            </div>
+          ))}
         </div>
       )}
     </div>

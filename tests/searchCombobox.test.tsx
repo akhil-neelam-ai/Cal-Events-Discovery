@@ -3,29 +3,38 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { DesktopHero } from "../components/DesktopHero";
-import { MobileHeader } from "../components/MobileHeader";
+import { NoticeSheet } from "../components/NoticeSheet";
+import { LoadingState } from "../types";
 import { getRecentSearches } from "../utils/recentSearches";
 
 const RECENT_SEARCHES_KEY = "cal-events:recent-v1";
 
-function DesktopHarness() {
+// The notice holds the one search box on phones and desktops.
+function NoticeHarness({ isMobile }: { isMobile: boolean }) {
   const [query, setQuery] = useState("");
   return (
-    <DesktopHero
-      statusCopy=""
-      summaryCopy=""
+    <NoticeSheet
+      isMobile={isMobile}
+      todayKey="2026-04-22"
+      weekEndKey="2026-04-28"
+      loading={LoadingState.SUCCESS}
+      allEventsCount={0}
+      sourceCount={0}
       searchQuery={query}
+      activeDateRange="week"
       onSearchChange={setQuery}
       onPresetSelect={() => {}}
-      inputId="desktop-search"
+      onDateChange={() => {}}
     />
   );
 }
 
+function DesktopHarness() {
+  return <NoticeHarness isMobile={false} />;
+}
+
 function MobileHarness() {
-  const [query, setQuery] = useState("");
-  return <MobileHeader searchQuery={query} onSearchChange={setQuery} />;
+  return <NoticeHarness isMobile />;
 }
 
 function searchInput(): HTMLInputElement {
