@@ -90,6 +90,7 @@ test("static pages cover about, privacy, and the 404", () => {
 test("the home page shell reads without JavaScript", () => {
   const html = readText("index.html");
   const root = html.match(/<div id="root">([\s\S]*?)<script/)?.[1] ?? "";
+  assert.match(root, /<main class="boot">/);
   assert.match(root, /<h1>[^<]+<\/h1>/);
   assert.match(root, /href="\/about\.html"/);
   assert.match(root, /href="\/privacy\.html"/);
