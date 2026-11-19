@@ -291,7 +291,9 @@ describe("WebMCP agent to page", () => {
     // Same first word as the applied query, so the dismissal stays. Compared
     // against the page's first query, "brunch", it would reset.
     await user.type(
-      screen.getByRole("combobox", { name: /search campus events/i }),
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
       "!",
     );
     await waitFor(async () => {

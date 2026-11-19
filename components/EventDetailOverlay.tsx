@@ -380,10 +380,13 @@ export function EventDetailOverlay({
               ref={closeButtonRef}
               type="button"
               onClick={handleClose}
-              aria-label="Close event details"
               className="flyer-close"
             >
-              Back to the wall
+              {/* The name starts with the visible words. */}
+              <span aria-hidden="true">Back to the wall</span>
+              <span className="sr-only">
+                Back to the wall, close event details
+              </span>
             </button>
             <p className="d-when">
               <span>{detailWhenPrimary(event)}</span>,{" "}

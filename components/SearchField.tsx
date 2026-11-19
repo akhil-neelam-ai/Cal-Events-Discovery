@@ -62,7 +62,12 @@ export function SearchField({
 
   return (
     <div className="find" role="search">
-      <label htmlFor={inputId}>Looking for</label>
+      {/* The name starts with the visible words, so voice control users can
+          say what they see. */}
+      <label htmlFor={inputId}>
+        <span aria-hidden="true">Looking for</span>
+        <span className="sr-only">Looking for: search campus events</span>
+      </label>
       <div className="find-row">
         <input
           id={inputId}
@@ -73,7 +78,6 @@ export function SearchField({
           aria-controls="search-suggestions"
           aria-autocomplete="list"
           aria-activedescendant={activeDescendantId}
-          aria-label="Search campus events"
           autoComplete="off"
           placeholder="a speaker, a topic, a place"
           className={searchQuery ? "has-clear" : undefined}

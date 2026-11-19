@@ -39,7 +39,9 @@ function MobileHarness() {
 }
 
 function searchInput(): HTMLInputElement {
-  return screen.getByRole("combobox", { name: /search campus events/i });
+  return screen.getByRole("combobox", {
+    name: /looking for: search campus events/i,
+  });
 }
 
 describe.each([

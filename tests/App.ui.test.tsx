@@ -255,7 +255,9 @@ describe("App UI regressions", () => {
     render(<App />);
 
     expect(
-      screen.getByRole("combobox", { name: /search campus events/i }),
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
     ).toHaveValue("ai");
     expect(
       screen.getByRole("heading", {
@@ -438,7 +440,9 @@ describe("App UI regressions", () => {
     await user.click(screen.getByRole("button", { name: /list event/i }));
     const back = vi.spyOn(window.history, "back");
     await user.click(
-      screen.getByRole("button", { name: "Close event details" }),
+      screen.getByRole("button", {
+        name: "Back to the wall, close event details",
+      }),
     );
 
     await waitFor(() => {
@@ -460,7 +464,9 @@ describe("App UI regressions", () => {
     render(<App />);
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     await user.click(
-      screen.getByRole("button", { name: "Close event details" }),
+      screen.getByRole("button", {
+        name: "Back to the wall, close event details",
+      }),
     );
 
     await waitFor(() => {
@@ -1074,7 +1080,9 @@ describe("App UI regressions", () => {
     await user.click(screen.getByRole("button", { name: /tonight/i }));
 
     expect(
-      screen.getByRole("combobox", { name: /search campus events/i }),
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
     ).toHaveValue("tonight");
     await waitFor(() => {
       expect(screen.getByText("Evening Concert")).toBeInTheDocument();
@@ -1259,7 +1267,9 @@ describe("App UI regressions", () => {
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /close event details/i }),
+      screen.getByRole("button", {
+        name: /back to the wall, close event details/i,
+      }),
     ).toBeInTheDocument();
   });
 
@@ -1519,7 +1529,9 @@ describe("App UI regressions", () => {
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /close event details/i }),
+      screen.getByRole("button", {
+        name: /back to the wall, close event details/i,
+      }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /view official page/i }),
