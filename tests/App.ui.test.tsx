@@ -1245,7 +1245,7 @@ describe("App UI regressions", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("lets users dismiss interpreted campus-area chips and broadens results", async () => {
+  it("removes a campus-area chip's words and broadens results", async () => {
     const user = userEvent.setup();
 
     mockFeedState = makeFeedState([
@@ -1279,6 +1279,12 @@ describe("App UI regressions", () => {
       expect(screen.queryByText("Northside")).not.toBeInTheDocument();
       expect(screen.getByText("Southside Talk")).toBeInTheDocument();
     });
+    expect(
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
+    ).toHaveValue("talks");
+    expect(new URLSearchParams(window.location.search).get("q")).toBe("talks");
   });
 
   it("opens event details from the primary card action", async () => {
@@ -1887,6 +1893,82 @@ describe("App UI regressions", () => {
     await waitFor(() => {
       expect(window.location.search).not.toContain("topic=");
     });
+    expect(window.location.search).not.toContain("q=");
+    expect(
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
+    ).toHaveValue("");
+  });
+
+  it("takes a chip's words out of the search box, one chip at a time", async () => {
+    const user = userEvent.setup();
+    const box = () =>
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      });
+    const count = () =>
+      screen.getByRole("heading", { level: 2 }).textContent ?? "";
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "bampfa-film",
+        title: "Dreams Are Colder Than Death",
+        source: "bampfa",
+        tags: ["Arts"],
+        topics: ["film"],
+      }),
+      makeEvent({
+        id: "bampfa-talk",
+        title: "Gallery Talk",
+        source: "bampfa",
+        tags: ["Arts"],
+        topics: ["visual-arts-exhibitions"],
+        description: "A gallery talk at the museum.",
+      }),
+      makeEvent({
+        id: "other-film",
+        title: "Campus Film Night",
+        source: "livewhale",
+        tags: ["Arts"],
+        topics: ["film"],
+        description: "A film night.",
+      }),
+      makeEvent({
+        id: "arts-other",
+        title: "Choir Concert",
+        source: "livewhale",
+        tags: ["Arts"],
+        topics: ["music-performance"],
+        description: "A concert.",
+      }),
+    ]);
+    // The "A film at BAMPFA" example: two chips, inside an explicit Arts.
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=bampfa%20film&category=Arts&date=upcoming",
+    );
+
+    render(<App />);
+    expect(count()).toContain("(1)");
+
+    await user.click(
+      screen.getByRole("button", { name: /remove film filter/i }),
+    );
+    await waitFor(() => expect(box()).toHaveValue("bampfa"));
+    expect(new URLSearchParams(window.location.search).get("q")).toBe("bampfa");
+    // Results follow the box after the search debounce.
+    await waitFor(() => expect(count()).toContain("(2)"));
+    expect(screen.getByText("Gallery Talk")).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: /remove bampfa filter/i }),
+    );
+    await waitFor(() => expect(box()).toHaveValue(""));
+    expect(window.location.search).not.toContain("q=");
+    expect(window.location.search).toContain("category=Arts");
+    await waitFor(() => expect(count()).toContain("(4)"));
+    expect(getViewState()?.dismissedChipKeys).toEqual([]);
   });
 
   it("does not flash an empty grid for a doomed topic", () => {

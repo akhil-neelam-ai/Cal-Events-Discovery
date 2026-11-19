@@ -304,7 +304,7 @@ export default function App() {
 
   const {
     handleSearchChange,
-    handleDismissChip,
+    handleRemoveChip,
     handleDateRangeChange,
     handleCategoryChange,
     handleTopicChange,
@@ -320,6 +320,13 @@ export default function App() {
     searchTimeoutRef,
     prevSearchQueryRef,
   });
+
+  // Removing a chip edits the query in the box, the one being typed.
+  const handleDismissChip = useCallback(
+    (key: string) =>
+      handleRemoveChip(key, filters.searchQuery, topicDefinitions ?? undefined),
+    [filters.searchQuery, handleRemoveChip, topicDefinitions],
+  );
 
   // Read-only snapshot of what the page shows, for the get_ui_state tool.
   const notice = topicFilterNotice ?? fallbackBannerCopy;

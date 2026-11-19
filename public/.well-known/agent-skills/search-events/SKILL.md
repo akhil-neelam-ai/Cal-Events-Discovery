@@ -31,9 +31,11 @@ Read these outputs on every call:
   weekend, category, or topic filter and says so. Tell the user which filter
   was dropped. Do not present the results as exact matches.
 - `interpretations`: chips the query set, each with a `key` and `label`. To
-  undo one, call again with its key in `dismiss`, like the chip's "x" in the UI.
-  Dismissal is search-only. `apply_ui_state` has no dismiss field, and the
-  page clears dismissed chips whenever its URL changes.
+  undo one, call again with its key in `dismiss`. The words behind a dismissed
+  source, category, or topic chip become search text again. Dismissal is
+  search-only. `apply_ui_state` has no dismiss field, and the page clears
+  dismissed chips whenever its URL changes. On the page, a chip's "x" takes
+  its words out of the search box instead, so `q` changes.
 - `total`, `offset`, `limit`: page with `offset += limit` while
   `offset < total`.
 
