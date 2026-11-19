@@ -1,11 +1,18 @@
 /**
- * Google Analytics 4 Utilities for CalEvents Discovery
+ * Analytics utilities for CalEvents Discovery: GA4 and PostHog
  *
  * Tracks user interactions to understand how students use the app.
+ * Every custom event goes through trackEvent, which sends it to both.
  */
+
+import type { PostHog } from "posthog-js";
 
 // GA4 Measurement ID
 const GA_MEASUREMENT_ID = "G-E8MCW83PNG";
+
+// Same-origin path that vercel.json forwards to PostHog. Requests stay on
+// cal-events.com, so the CSP needs no PostHog hosts.
+const POSTHOG_PROXY_PATH = "/pulse";
 
 // Type definitions for analytics events
 interface EventParams {
@@ -95,9 +102,66 @@ export function initGA(): void {
   }, 100);
 }
 
+type QueuedEvent = [eventName: string, params: EventParams | undefined];
+
+let posthogClient: PostHog | null = null;
+// Holds events fired while the PostHog chunk loads. Null when not loading.
+let posthogQueue: QueuedEvent[] | null = null;
+
 /**
- * Track page views
+ * Initialize PostHog
+ * Call this once when the app loads
+ *
+ * The project key comes from VITE_POSTHOG_KEY, which is public like the GA4
+ * ID. PostHog stays off when the key is unset: local dev, tests, and previews.
+ * The library loads in its own chunk so it never delays first paint.
+ */
+export function initPostHog(): void {
+  if (typeof window === "undefined") return;
+  if (posthogClient || posthogQueue) return;
+
+  const key: string | undefined = import.meta.env.VITE_POSTHOG_KEY;
+  if (!key) return;
+
+  posthogQueue = [];
+  import("posthog-js")
+    .then(({ default: posthog }) => {
+      posthog.init(key, {
+        api_host: POSTHOG_PROXY_PATH,
+        ui_host: "https://us.posthog.com",
+        defaults: "2026-08-30",
+        // No cookies or local storage. PostHog's servers derive a daily
+        // anonymous ID instead, so the site needs no consent banner.
+        cookieless_mode: "always",
+        disable_session_recording: true,
+        disable_surveys: true,
+      });
+      posthogClient = posthog;
+      for (const [eventName, params] of posthogQueue ?? []) {
+        posthog.capture(eventName, params);
+      }
+      posthogQueue = null;
+      if (import.meta.env.DEV) console.log("[Analytics] PostHog initialized");
+    })
+    .catch(() => {
+      // A blocked or failed chunk leaves PostHog off for this visit.
+      posthogQueue = null;
+    });
+}
+
+function capturePostHog(eventName: string, params?: EventParams): void {
+  if (posthogClient) {
+    posthogClient.capture(eventName, params);
+  } else {
+    posthogQueue?.push([eventName, params]);
+  }
+}
+
+/**
+ * Track page views in GA4
  * Call on initial load and route changes
+ *
+ * PostHog sends its own $pageview when it initializes, so this stays GA4-only.
  */
 export function trackPageView(params: PageViewParams): void {
   if (typeof window === "undefined") return;
@@ -122,6 +186,8 @@ export function trackPageView(params: PageViewParams): void {
  */
 export function trackEvent(eventName: string, params?: EventParams): void {
   if (typeof window === "undefined") return;
+
+  capturePostHog(eventName, params);
 
   if (!window.gtag) {
     if (import.meta.env.DEV)

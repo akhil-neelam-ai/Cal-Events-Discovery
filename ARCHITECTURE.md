@@ -34,8 +34,9 @@ This project is built around static published artifacts and a client-side search
 
 ## Operational Expectations
 
-- The GA4 measurement ID in `utils/analytics.ts` is public and not secret.
-- Search terms are sent to analytics events, so retention and privacy policy should match that behavior.
+- The GA4 measurement ID in `utils/analytics.ts` is public and not secret. So is the PostHog project key in `VITE_POSTHOG_KEY`.
+- PostHog runs cookieless with session replay off, through the same-origin `/pulse` routes in `vercel.json`, so the CSP lists no PostHog hosts.
+- Search terms are sent to GA4 and PostHog events, so retention and privacy policy should match that behavior.
 - The published JSON artifacts are intended to be committed together through an automation PR so branch protection can remain enabled on `main`.
 
 ## Why This Holds Up

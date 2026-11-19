@@ -144,6 +144,39 @@
       "continue": true
     },
     {
+      "src": "^/pulse/static/(.*)$",
+      "dest": "https://us-assets.i.posthog.com/static/$1",
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "delete",
+          "target": { "key": "cookie" }
+        }
+      ]
+    },
+    {
+      "src": "^/pulse/array/(.*)$",
+      "dest": "https://us-assets.i.posthog.com/array/$1",
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "delete",
+          "target": { "key": "cookie" }
+        }
+      ]
+    },
+    {
+      "src": "^/pulse/(.*)$",
+      "dest": "https://us.i.posthog.com/$1",
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "delete",
+          "target": { "key": "cookie" }
+        }
+      ]
+    },
+    {
       "handle": "filesystem"
     }
   ]

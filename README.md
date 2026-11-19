@@ -205,5 +205,6 @@ Post-deploy verification runs automatically via **Production Smoke** on every `m
 ## Notes
 
 - `services/eventsLoader.ts` only loads static JSON in the browser.
-- GA4 in `utils/analytics.ts` sends search terms to analytics. The measurement ID is public; tune retention in GA4 if needed.
+- `utils/analytics.ts` sends every custom event, search terms included, to GA4 and PostHog. The GA4 ID and the PostHog key are public; tune retention in each tool if needed.
+- PostHog runs cookieless with session replay off. Its requests go through the same-origin `/pulse` routes in `vercel.json`. It stays off unless `VITE_POSTHOG_KEY` is set, which Vercel does for production builds only.
 - Pipeline deps (`cheerio`, `node-ical`, etc.) are in `dependencies` for CI script runs but are not bundled into the frontend.
