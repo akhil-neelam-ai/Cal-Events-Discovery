@@ -115,34 +115,29 @@ function detailWhenSecondary(event: CalEvent): string {
   return event.time;
 }
 
-/**
- * The tear on a tear-off tab. A tap runs the action at once. Where motion
- * is allowed, a copy of the tab falls away while the tab itself stays, so
- * it works again on the next tap.
- */
-function useTear(label: string, prefersReducedMotion: boolean) {
-  // The falling copy keeps the label it had when torn.
-  const [torn, setTorn] = useState<{ count: number; label: string } | null>(
-    null,
-  );
-  const tear = () => {
-    if (prefersReducedMotion) return;
-    setTorn((previous) => ({ count: (previous?.count ?? 0) + 1, label }));
-  };
-  const ghost = torn ? (
-    <span
-      key={torn.count}
+/** The check the copy button showed before the redesign, in ink. */
+function CheckMark() {
+  return (
+    <svg
       aria-hidden="true"
-      className="tear-ghost"
-      onAnimationEnd={() => setTorn(null)}
+      className="h-4 w-4 shrink-0"
+      viewBox="0 0 20 20"
+      fill="currentColor"
     >
-      <span className="tear-label">{torn.label}</span>
-    </span>
-  ) : null;
-  return [tear, ghost] as const;
+      <path
+        fillRule="evenodd"
+        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
 }
 
-function TearTabs({
+/**
+ * The flyer's actions as ink buttons. The first is filled and the rest are
+ * outlined, the rule for anything pressed on paper.
+ */
+function FlyerActions({
   event,
   directionsUrl,
   preferGoogleCalendar,
@@ -193,50 +188,42 @@ function TearTabs({
   const calendarLabel = preferGoogleCalendar
     ? "Add to Google Calendar"
     : "Add to Calendar";
+  const calendarText = preferGoogleCalendar
+    ? "Add to Google Calendar"
+    : "Add to calendar";
   const copyLabel =
     copyState === "copied"
       ? "Copied!"
       : copyState === "failed"
         ? "Copy failed"
         : "Copy link";
-
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const calendarText = preferGoogleCalendar
-    ? "Add to Google Calendar"
-    : "Add to calendar";
-  const [tearOfficial, officialGhost] = useTear(
-    "View official page",
-    prefersReducedMotion,
-  );
-  const [tearDirections, directionsGhost] = useTear(
-    "Directions",
-    prefersReducedMotion,
-  );
-  const [tearCalendar, calendarGhost] = useTear(
-    calendarText,
-    prefersReducedMotion,
-  );
-  const [tearCopy, copyGhost] = useTear(copyLabel, prefersReducedMotion);
+  // The first action in the row is the filled one.
+  const primary = event.url
+    ? "official"
+    : directionsUrl
+      ? "directions"
+      : "calendar";
+  const look = (action: string) =>
+    action === primary ? "btn-toner" : "btn-line";
 
   return (
-    <div className="tear">
+    <div className="flyer-actions">
       {event.url && (
         <a
           href={event.url}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="View Official Page"
-          onClick={() => {
-            tearOfficial();
+          className={look("official")}
+          onClick={() =>
             trackExternalLink({
               event_id: event.id,
               event_title: event.title,
               destination_url: event.url,
-            });
-          }}
+            })
+          }
         >
-          <span className="tear-label">View official page</span>
-          {officialGhost}
+          View official page
         </a>
       )}
       {directionsUrl && (
@@ -245,9 +232,9 @@ function TearTabs({
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Map & Directions"
+          className={look("directions")}
           onClick={(eventClick) => {
             eventClick.stopPropagation();
-            tearDirections();
             trackExternalLink({
               event_id: event.id,
               event_title: event.title,
@@ -255,39 +242,32 @@ function TearTabs({
             });
           }}
         >
-          <span className="tear-label">Directions</span>
-          {directionsGhost}
+          Directions
         </a>
       )}
       <button
         type="button"
         aria-label={calendarLabel}
-        onClick={() => {
-          tearCalendar();
-          addEventToCalendar(event, { preferGoogle: preferGoogleCalendar });
-        }}
+        className={look("calendar")}
+        onClick={() =>
+          addEventToCalendar(event, { preferGoogle: preferGoogleCalendar })
+        }
       >
-        <span className="tear-label">{calendarText}</span>
-        {calendarGhost}
+        {calendarText}
       </button>
-      <button
-        type="button"
-        onClick={() => {
-          tearCopy();
-          handleCopyLink();
-        }}
-      >
-        <span className="tear-label">{copyLabel}</span>
-        {copyGhost}
+      <button type="button" className={look("copy")} onClick={handleCopyLink}>
+        {copyState === "copied" && <CheckMark />}
+        {copyLabel}
       </button>
     </div>
   );
 }
 
 /**
- * One flyer pulled off the wall: the event in its category's paper, with
- * tear-off tabs for its actions, and the description on a plain sheet
- * stapled underneath. The same flyer serves phones and desktops.
+ * One flyer pulled off the wall: the event in its category's paper, its
+ * actions as ink buttons, and the description on a plain sheet stapled
+ * underneath. A black close square stays pinned to the flyer's corner
+ * while the rest scrolls. The same flyer serves phones and desktops.
  */
 export function EventDetailOverlay({
   event,
@@ -309,6 +289,7 @@ export function EventDetailOverlay({
   const prefersReducedMotion = usePrefersReducedMotion();
   const category = event.tags?.[0];
   const directionsUrl = getDirectionsUrl(event.location);
+  const hasDescription = hasDistinctDescription(event);
 
   const handleClose = useCallback(() => {
     if (closingRef.current) return;
@@ -334,6 +315,16 @@ export function EventDetailOverlay({
     onClose: handleClose,
   });
 
+  // The last thing on paper: after the description, or at the end of the
+  // flyer when there is none.
+  const backToWall = (
+    <div className="flyer-back">
+      <button type="button" className="btn-line" onClick={handleClose}>
+        Back to the wall
+      </button>
+    </div>
+  );
+
   return (
     <div className={`flyer-layer${isClosing ? " closing" : ""}`}>
       <div
@@ -350,86 +341,107 @@ export function EventDetailOverlay({
         className="flyer-dialog"
         style={dragY > 0 ? { transform: `translateY(${dragY}px)` } : undefined}
       >
-        <div
-          className="flyer"
-          style={{ "--p": paperColor(category) } as CSSProperties}
-        >
-          {/* The staple edge. On a phone, pulling it down closes the flyer. */}
-          <div
-            className="flyer-grip"
-            aria-hidden="true"
-            onTouchStart={(eventTouch) => {
-              touchStartYRef.current = eventTouch.touches[0].clientY;
-            }}
-            onTouchMove={(eventTouch) => {
-              if (touchStartYRef.current === null) return;
-              const deltaY =
-                eventTouch.touches[0].clientY - touchStartYRef.current;
-              setDragY(Math.max(deltaY, 0));
-            }}
-            onTouchEnd={() => {
-              touchStartYRef.current = null;
-              if (dragY > DRAG_CLOSE_PX) {
-                handleClose();
-              }
-              setDragY(0);
-            }}
-          />
-          <div className="flyer-body">
-            <button
-              ref={closeButtonRef}
-              type="button"
-              onClick={handleClose}
-              className="flyer-close"
-            >
-              {/* The name starts with the visible words. */}
-              <span aria-hidden="true">Back to the wall</span>
-              <span className="sr-only">
-                Back to the wall, close event details
-              </span>
-            </button>
-            <p className="d-when">
-              <span>{detailWhenPrimary(event)}</span>,{" "}
-              <span>{detailWhenSecondary(event)}</span>
-            </p>
-            <h2
-              id={titleId}
-              className={`d-what ${titleSizeClass(event.title)}`}
-            >
-              {event.title}
-            </h2>
-            {event.location && (
-              <p className="d-where">
-                <LinkifiedText text={event.location} />
-              </p>
-            )}
-            <p className="d-who">
-              {event.organizer ? `${event.organizer.replace(/\.$/, "")}. ` : ""}
-              Filed under {categoryLabel(category)}.
-            </p>
-            {SOURCE_LABELS[event.source] && (
-              <p className="d-from">
-                From <SourceBadge source={event.source} />.
-                <AlsoListed event={event} />
-              </p>
-            )}
-          </div>
-          {/* Actions come before the description, which can run very long. */}
-          <TearTabs
-            event={event}
-            directionsUrl={directionsUrl}
-            preferGoogleCalendar={!isMobile}
-          />
-        </div>
+        <div className="flyer-frame">
+          <div className="flyer-scroll">
+            {/* Sticky, so it stays in the flyer's corner as the rest scrolls. */}
+            <div className="flyer-x-pin">
+              <button
+                ref={closeButtonRef}
+                type="button"
+                onClick={handleClose}
+                aria-label="Close event details"
+                className="flyer-x"
+              >
+                <svg
+                  aria-hidden="true"
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="square"
+                    strokeWidth={2.5}
+                    d="M6 6l12 12M18 6L6 18"
+                  />
+                </svg>
+              </button>
+            </div>
 
-        {hasDistinctDescription(event) && (
-          <div className="flyer-notes">
-            <h3>About this event</h3>
-            <p className="d-desc">
-              <LinkifiedText text={event.description} />
-            </p>
+            <div
+              className="flyer"
+              style={{ "--p": paperColor(category) } as CSSProperties}
+            >
+              {/* The staple edge. On a phone, pulling it down closes the flyer. */}
+              <div
+                className="flyer-grip"
+                aria-hidden="true"
+                onTouchStart={(eventTouch) => {
+                  touchStartYRef.current = eventTouch.touches[0].clientY;
+                }}
+                onTouchMove={(eventTouch) => {
+                  if (touchStartYRef.current === null) return;
+                  const deltaY =
+                    eventTouch.touches[0].clientY - touchStartYRef.current;
+                  setDragY(Math.max(deltaY, 0));
+                }}
+                onTouchEnd={() => {
+                  touchStartYRef.current = null;
+                  if (dragY > DRAG_CLOSE_PX) {
+                    handleClose();
+                  }
+                  setDragY(0);
+                }}
+              />
+              <div className="flyer-body">
+                <p className="d-when">
+                  <span>{detailWhenPrimary(event)}</span>,{" "}
+                  <span>{detailWhenSecondary(event)}</span>
+                </p>
+                <h2
+                  id={titleId}
+                  className={`d-what ${titleSizeClass(event.title)}`}
+                >
+                  {event.title}
+                </h2>
+                {event.location && (
+                  <p className="d-where">
+                    <LinkifiedText text={event.location} />
+                  </p>
+                )}
+                <p className="d-who">
+                  {event.organizer
+                    ? `${event.organizer.replace(/\.$/, "")}. `
+                    : ""}
+                  Filed under {categoryLabel(category)}.
+                </p>
+                {SOURCE_LABELS[event.source] && (
+                  <p className="d-from">
+                    From <SourceBadge source={event.source} />.
+                    <AlsoListed event={event} />
+                  </p>
+                )}
+              </div>
+              {/* Actions come before the description, which can run very long. */}
+              <FlyerActions
+                event={event}
+                directionsUrl={directionsUrl}
+                preferGoogleCalendar={!isMobile}
+              />
+              {!hasDescription && backToWall}
+            </div>
+
+            {hasDescription && (
+              <div className="flyer-notes">
+                <h3>About this event</h3>
+                <p className="d-desc">
+                  <LinkifiedText text={event.description} />
+                </p>
+                {backToWall}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

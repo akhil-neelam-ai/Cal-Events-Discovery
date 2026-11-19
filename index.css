@@ -986,20 +986,50 @@
 
 .btn-toner,
 .btn-line {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
   min-height: 2.75rem;
   padding: 0.3rem 1rem;
   font-weight: 800;
   font-stretch: 82%;
   font-size: 1rem;
+  line-height: 1.15;
+  text-align: center;
+  text-decoration: none;
 }
 
+/* Anything pressed on paper is ink: one filled button, the rest outlined.
+   The states darken or tint with ink, so they read on every paper color. */
 .btn-toner {
   background: var(--color-toner);
   color: var(--color-plain);
 }
 
 .btn-line {
+  color: var(--color-toner);
   box-shadow: inset 0 0 0 2px var(--color-toner);
+}
+
+@media (hover: hover) {
+  .btn-toner:hover {
+    background: #3a3a3a;
+  }
+
+  .btn-line:hover {
+    background: rgb(18 18 18 / 0.1);
+  }
+}
+
+.btn-toner:active {
+  background: #000;
+  transform: translateY(1px);
+}
+
+.btn-line:active {
+  background: rgb(18 18 18 / 0.2);
+  transform: translateY(1px);
 }
 
 .more {
@@ -1047,6 +1077,19 @@
 .flyer-dialog {
   position: relative;
   width: min(35rem, 100%);
+}
+
+.flyer-dialog:focus {
+  outline: none;
+}
+
+/* The tilt sits on the frame, so the close square and the flyer share it
+   and the square stays flush with the flyer's corner. */
+.flyer-frame {
+  transform: rotate(-0.6deg);
+}
+
+.flyer-scroll {
   max-height: calc(100dvh - 2rem);
   padding: 0.5rem;
   overflow-x: hidden;
@@ -1054,14 +1097,43 @@
   overscroll-behavior: contain;
 }
 
-.flyer-dialog:focus {
-  outline: none;
+.flyer-x-pin {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  height: 0;
+}
+
+.flyer-x {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--color-toner);
+  color: var(--color-plain);
+}
+
+.flyer-x:focus-visible {
+  outline: 3px solid var(--color-plain);
+  outline-offset: -7px;
+}
+
+@media (hover: hover) {
+  .flyer-x:hover {
+    background: #3a3a3a;
+  }
+}
+
+.flyer-x:active {
+  background: #000;
 }
 
 .flyer {
   background: var(--p, var(--color-plain));
   color: var(--color-toner);
-  transform: rotate(-0.6deg);
   --ring: var(--color-toner);
 }
 
@@ -1087,14 +1159,10 @@
   padding: 0 1.1rem 1.2rem;
 }
 
-.flyer-close {
-  min-height: 2.75rem;
-  font-weight: 700;
-  font-stretch: 88%;
-  font-size: 1rem;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  text-decoration-thickness: 2px;
+/* Room for the close square, so it never sits on the time or the title. */
+.flyer-body .d-when,
+.flyer-body .d-what {
+  padding-right: 2.25rem;
 }
 
 .d-when {
@@ -1164,52 +1232,24 @@
   text-underline-offset: 3px;
 }
 
-.tear {
-  position: relative;
+.flyer-actions {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 1rem 1.1rem 1.1rem;
   border-top: 2px dashed var(--color-toner);
-  overflow: clip;
 }
 
-.tear > * {
-  position: relative;
-  display: grid;
-  place-items: center;
-  height: 7.25rem;
-  padding: 0.4rem 0;
-  border-left: 2px dashed var(--color-toner);
-  color: var(--color-toner);
-  text-decoration: none;
+.flyer-actions > * {
+  padding-inline: 0.5rem;
 }
 
-.tear > *:first-child {
-  border-left: 0;
+.flyer > .flyer-back {
+  padding: 0 1.1rem 1.1rem;
 }
 
-.tear > *:focus-visible {
-  outline-offset: -6px;
-}
-
-.tear-label {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-weight: 800;
-  font-stretch: 78%;
-  font-size: 1rem;
-  line-height: 1.05;
-  text-align: center;
-}
-
-/* A torn tab falls away and a fresh one stays, so a tab works every time. */
-.tear-ghost {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  background: var(--p, var(--color-plain));
-  pointer-events: none;
+.flyer-notes .flyer-back {
+  margin-top: 1.1rem;
 }
 
 .flyer-notes {
@@ -1318,18 +1358,8 @@
     transition: opacity 0.18s ease-in;
   }
 
-  .tear-ghost {
-    animation: tear-fall 0.45s cubic-bezier(0.5, 0, 0.8, 0.4) forwards;
-  }
-
   .slip-search {
     animation: backdrop-in 0.12s ease-out backwards;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tear-ghost {
-    display: none;
   }
 }
 
@@ -1346,14 +1376,16 @@
   }
 }
 
-@keyframes tear-fall {
-  to {
-    transform: translateY(5rem) rotate(14deg);
-    opacity: 0;
-  }
-}
-
 @media (min-width: 44rem) {
+  .flyer-actions {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .flyer-actions > * {
+    padding-inline: 1rem;
+  }
+
   .wall {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     column-gap: 12px;

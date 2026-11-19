@@ -440,9 +440,7 @@ describe("App UI regressions", () => {
     await user.click(screen.getByRole("button", { name: /list event/i }));
     const back = vi.spyOn(window.history, "back");
     await user.click(
-      screen.getByRole("button", {
-        name: "Back to the wall, close event details",
-      }),
+      screen.getByRole("button", { name: "Close event details" }),
     );
 
     await waitFor(() => {
@@ -451,6 +449,46 @@ describe("App UI regressions", () => {
     expect(back).toHaveBeenCalledTimes(1);
     expect(window.location.search).not.toContain("event=");
     back.mockRestore();
+  });
+
+  it("closes with Back to the wall at the end of the flyer, the way × does", async () => {
+    const user = userEvent.setup();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "with-notes", title: "With Notes" }),
+      makeEvent({
+        id: "no-notes",
+        title: "No Notes",
+        description: "No Notes",
+        time: "6:00 PM",
+      }),
+    ]);
+
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: /with notes/i }));
+    const backToWall = screen.getByRole("button", { name: "Back to the wall" });
+    // It comes last, after the description.
+    expect(
+      screen
+        .getByRole("heading", { name: "About this event" })
+        .compareDocumentPosition(backToWall) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+
+    const back = vi.spyOn(window.history, "back");
+    await user.click(backToWall);
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+    expect(back).toHaveBeenCalledTimes(1);
+    back.mockRestore();
+
+    // Without a description it ends the flyer itself.
+    await user.click(screen.getByRole("button", { name: /no notes/i }));
+    expect(
+      screen.queryByRole("heading", { name: "About this event" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Back to the wall" }),
+    ).toBeInTheDocument();
   });
 
   it("closes a shared-link event in place instead of going back", async () => {
@@ -464,9 +502,7 @@ describe("App UI regressions", () => {
     render(<App />);
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     await user.click(
-      screen.getByRole("button", {
-        name: "Back to the wall, close event details",
-      }),
+      screen.getByRole("button", { name: "Close event details" }),
     );
 
     await waitFor(() => {
@@ -1267,9 +1303,7 @@ describe("App UI regressions", () => {
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", {
-        name: /back to the wall, close event details/i,
-      }),
+      screen.getByRole("button", { name: /close event details/i }),
     ).toBeInTheDocument();
   });
 
@@ -1529,9 +1563,7 @@ describe("App UI regressions", () => {
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", {
-        name: /back to the wall, close event details/i,
-      }),
+      screen.getByRole("button", { name: /close event details/i }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /view official page/i }),
