@@ -22,6 +22,7 @@ import { LoadingState } from "../types";
 import { buildSearchIndex } from "../scripts/lib/buildIndex";
 import { TOPIC_VOCABULARY } from "../scripts/lib/topics";
 import {
+  trackClearAll,
   trackEndedEventLink,
   trackEventClick,
   trackSurpriseMe,
@@ -47,6 +48,7 @@ type MockFeedState = {
 
 let mockFeedState: MockFeedState;
 let mockNowMinutes = 0;
+let mockIsMobile = false;
 
 vi.mock("@vercel/analytics/react", () => ({
   Analytics: () => null,
@@ -64,6 +66,7 @@ vi.mock("../utils/analytics", () => ({
   trackFilter: vi.fn(),
   trackExternalLink: vi.fn(),
   trackSurpriseMe: vi.fn(),
+  trackClearAll: vi.fn(),
 }));
 
 vi.mock("../utils/recentSearches", async (importOriginal) => {
@@ -77,7 +80,7 @@ vi.mock("../hooks/useEventFeed", () => ({
 }));
 
 vi.mock("../hooks/useIsMobile", () => ({
-  useIsMobile: () => false,
+  useIsMobile: () => mockIsMobile,
 }));
 
 vi.mock("../hooks/usePacificDateKeys", () => ({
@@ -167,6 +170,7 @@ describe("App UI regressions", () => {
     window.sessionStorage.clear();
     mockFeedState = makeFeedState([]);
     mockNowMinutes = 0;
+    mockIsMobile = false;
   });
 
   it("replaces one selected topic and toggles the active topic off", () => {
@@ -1969,6 +1973,90 @@ describe("App UI regressions", () => {
     expect(window.location.search).toContain("category=Arts");
     await waitFor(() => expect(count()).toContain("(4)"));
     expect(getViewState()?.dismissedChipKeys).toEqual([]);
+  });
+
+  it("shows Clear all only while something beyond the date narrows the view", () => {
+    mockFeedState = makeFeedState([makeEvent({ id: "a", title: "AI Talk" })]);
+    const clearAll = () => screen.queryByRole("button", { name: "Clear all" });
+
+    for (const search of ["", "?date=today", "?date=upcoming"]) {
+      window.history.replaceState({}, "", `/${search}`);
+      const view = render(<App />);
+      expect(clearAll()).not.toBeInTheDocument();
+      view.unmount();
+    }
+
+    for (const search of [
+      "?q=a",
+      "?category=Arts",
+      "?topic=ai-machine-learning",
+      "?source=livewhale",
+    ]) {
+      window.history.replaceState({}, "", `/${search}`);
+      const view = render(<App />);
+      expect(clearAll()).toBeInTheDocument();
+      view.unmount();
+    }
+  });
+
+  it("Clear all resets search, filters, and date, then focuses the results", async () => {
+    const user = userEvent.setup();
+    vi.mocked(trackClearAll).mockClear();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "a", title: "AI Talk", tags: ["Arts"] }),
+    ]);
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=ai&date=upcoming&category=Arts&source=livewhale",
+    );
+
+    render(<App />);
+    const link = screen.getByRole("button", { name: "Clear all" });
+    expect(link).toHaveTextContent(/^Clear all$/);
+    await user.click(link);
+
+    await waitFor(() => {
+      expect(window.location.search).toBe("");
+    });
+    expect(
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
+    ).toHaveValue("");
+    expect(
+      screen.getByRole("heading", { level: 2, name: /^this week/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Clear all" }),
+    ).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(
+      screen.getByRole("heading", { level: 2, name: /^this week/i }),
+    );
+    expect(trackClearAll).toHaveBeenCalledExactlyOnceWith("wall");
+  });
+
+  it("puts Clear all in the phone Filters drawer too", async () => {
+    const user = userEvent.setup();
+    vi.mocked(trackClearAll).mockClear();
+    mockIsMobile = true;
+    mockFeedState = makeFeedState([makeEvent({ id: "a", title: "AI Talk" })]);
+    window.history.replaceState({}, "", "/?source=livewhale");
+
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: /^Filters/ }));
+    const inDrawer = within(
+      document.getElementById("mobile-filters") as HTMLElement,
+    ).getByRole("button", { name: "Clear all" });
+    await user.click(inDrawer);
+
+    await waitFor(() => {
+      expect(window.location.search).toBe("");
+    });
+    expect(
+      screen.queryByRole("button", { name: "Clear all" }),
+    ).not.toBeInTheDocument();
+    expect(trackClearAll).toHaveBeenCalledExactlyOnceWith("drawer");
   });
 
   it("does not flash an empty grid for a doomed topic", () => {

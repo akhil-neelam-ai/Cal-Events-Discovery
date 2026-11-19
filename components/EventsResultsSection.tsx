@@ -42,6 +42,8 @@ function nextUpLabel(
 }
 
 export const RESULTS_ANCHOR_ID = "events";
+/** Focus moves here after "Clear all", which takes its own link away. */
+export const RESULTS_HEADING_ID = "events-heading";
 
 export function EventsResultsSection({
   fallbackBannerCopy,
@@ -59,6 +61,7 @@ export function EventsResultsSection({
   hiddenEventCount,
   onEventClick,
   onLoadMore,
+  onClearAll,
 }: {
   fallbackBannerCopy: string | null;
   activeChips: InterpretedChip[];
@@ -75,6 +78,8 @@ export function EventsResultsSection({
   hiddenEventCount: number;
   onEventClick: (event: CalEvent) => void;
   onLoadMore: () => void;
+  /** Resets every filter. Null hides "Clear all". */
+  onClearAll: (() => void) | null;
 }) {
   const nextUp = findNextUpEvent(
     filteredEvents,
@@ -86,11 +91,18 @@ export function EventsResultsSection({
     <>
       {/* Chalk on the wall: the view, its count, and the next thing on. */}
       <div id={RESULTS_ANCHOR_ID} tabIndex={-1} className="chalk-head beside">
-        <h2 className="view-title">
-          {category !== "All" ? `${category}, ` : ""}
-          {rangeLabel(effectiveDateRange)}{" "}
-          <span className="view-count">({filteredEvents.length})</span>
-        </h2>
+        <div className="view-head">
+          <h2 id={RESULTS_HEADING_ID} tabIndex={-1} className="view-title">
+            {category !== "All" ? `${category}, ` : ""}
+            {rangeLabel(effectiveDateRange)}{" "}
+            <span className="view-count">({filteredEvents.length})</span>
+          </h2>
+          {onClearAll && (
+            <button type="button" onClick={onClearAll} className="chalk-link">
+              Clear all
+            </button>
+          )}
+        </div>
         {nextUp && (
           <p className="next-up">
             <span>Next up:</span>{" "}

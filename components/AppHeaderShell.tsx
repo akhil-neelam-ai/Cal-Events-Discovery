@@ -26,6 +26,7 @@ export function AppHeaderShell({
   onSourceChange,
   onPresetSelect,
   onSurprise,
+  onClearAll,
 }: {
   isMobile: boolean;
   loading: LoadingState;
@@ -45,6 +46,8 @@ export function AppHeaderShell({
   onSourceChange: (next: string) => void;
   onPresetSelect: (preset: QuickFilterPreset) => void;
   onSurprise: (() => void) | null;
+  /** Resets every filter. Null hides "Clear all". */
+  onClearAll: (() => void) | null;
 }) {
   const filterProps = {
     filters,
@@ -73,7 +76,7 @@ export function AppHeaderShell({
         onSurprise={onSurprise}
       />
       {isMobile ? (
-        <MobileFiltersBar {...filterProps} />
+        <MobileFiltersBar {...filterProps} onClearAll={onClearAll} />
       ) : (
         <DesktopFiltersBar {...filterProps} />
       )}

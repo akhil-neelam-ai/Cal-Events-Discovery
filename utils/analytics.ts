@@ -257,6 +257,14 @@ export function trackSurpriseMe(params: {
 }
 
 /**
+ * Track the "Clear all" link, beside the view heading or in the phone
+ * Filters drawer.
+ */
+export function trackClearAll(placement: "wall" | "drawer"): void {
+  trackEvent("clear_all", { placement });
+}
+
+/**
  * Track clicks to external event pages
  */
 export function trackExternalLink(params: ExternalLinkParams): void {

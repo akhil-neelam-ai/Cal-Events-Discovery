@@ -93,7 +93,7 @@ Loads `events.json` and `search-index.json` at startup. Search is entirely clien
 
 **`tags[0]` is the primary-category contract.** It is read as the category in `hooks/useEventBrowserState.ts`, in `agent/webmcpTools.ts` and `agent/searchPlan.ts`, in the search-events agent skill, and the whole `tags` array feeds the `g` index field at weight 45. Do not add non-category values to `tags`.
 
-**URL state** (`utils/urlState.ts`): query, date range, category, source, and selected event ID round-trip through the URL, with allow-list validation for category and source. Opening an event from the list pushes a history entry, so the phone Back gesture closes it. Closing steps back over that entry. An event opened from a shared link has no entry and closes in place.
+**URL state** (`utils/urlState.ts`): query, date range, category, source, and selected event ID round-trip through the URL, with allow-list validation for category and source. Opening an event from the list pushes a history entry, so the phone Back gesture closes it. Closing steps back over that entry. An event opened from a shared link has no entry and closes in place. A "Clear all" link beside the view heading, and in the phone Filters drawer, shows while a search, category, topic, or source is set. It runs `resetAll`, which also resets the date.
 
 **Date handling**: all comparisons use `America/Los_Angeles` via `Intl.DateTimeFormat`. Date keys refresh every 60 s so the UI stays correct across midnight. Today drops a single-day event once its start time passes (`hasEventStarted`, shared with agent search). Multi-day events stay, including a span's last day, which publishes `end_date` without `dates`.
 

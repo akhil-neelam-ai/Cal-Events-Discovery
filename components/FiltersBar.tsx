@@ -237,6 +237,7 @@ export function MobileFiltersBar({
   onCategoryChange,
   onTopicChange,
   onSourceChange,
+  onClearAll = null,
 }: {
   filters: SearchFilters;
   sourceOptions: SourceOption[];
@@ -245,6 +246,8 @@ export function MobileFiltersBar({
   onCategoryChange: (next: string) => void;
   onTopicChange: (next: string) => void;
   onSourceChange: (next: string) => void;
+  /** Resets every filter. Null hides "Clear all". */
+  onClearAll?: (() => void) | null;
 }) {
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const activeFilterCount =
@@ -292,13 +295,20 @@ export function MobileFiltersBar({
                 Topic: <b>{selectedTopic?.label ?? "All topics"}</b>
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setAdvancedOpen(false)}
-              className="done"
-            >
-              Done
-            </button>
+            <div className="drawer-actions">
+              {onClearAll && (
+                <button type="button" onClick={onClearAll} className="done">
+                  Clear all
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setAdvancedOpen(false)}
+                className="done"
+              >
+                Done
+              </button>
+            </div>
           </div>
 
           {topicVocabulary && (

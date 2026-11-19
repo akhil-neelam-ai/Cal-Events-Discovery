@@ -369,3 +369,38 @@ test("mobile topic selection updates the filter badge and summary", async ({
   ).toHaveCount(0);
   await expect(page).toHaveURL(/topic=social-clubs/);
 });
+
+test("removing chips empties the search box, and Clear all resets the rest", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const box = page.getByRole("combobox", {
+    name: /looking for: search campus events/i,
+  });
+
+  // The "A film at BAMPFA" example sets a query, Arts, and All Events.
+  await page.getByRole("button", { name: "A film at BAMPFA" }).click();
+  await expect(box).toHaveValue("bampfa film");
+  await expect(page).toHaveURL(/category=Arts/);
+
+  await page.getByRole("button", { name: /remove film filter/i }).click();
+  await expect(box).toHaveValue("bampfa");
+  await expect(page).toHaveURL(/q=bampfa(&|$)/);
+
+  await page.getByRole("button", { name: /remove bampfa filter/i }).click();
+  await expect(box).toHaveValue("");
+  await expect(page).not.toHaveURL(/q=/);
+  await expect(
+    page.getByRole("button", { name: /remove .* filter/i }),
+  ).toHaveCount(0);
+
+  // Arts is still set, so Clear all shows. It resets category and date too.
+  await page.getByRole("button", { name: "Clear all", exact: true }).click();
+  await expect(page).not.toHaveURL(/category=|date=/);
+  await expect(
+    page.getByRole("heading", { level: 2, name: /^this week/i }),
+  ).toBeFocused();
+  await expect(
+    page.getByRole("button", { name: "Clear all", exact: true }),
+  ).toHaveCount(0);
+});
