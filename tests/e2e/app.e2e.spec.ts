@@ -179,14 +179,14 @@ test("preserves search and filter state across detail open and reload", async ({
   await page.getByRole("button", { name: /^arts$/i }).click();
 
   const searchInput = page.getByRole("combobox", {
-    name: /search campus events/i,
+    name: /looking for: search campus events/i,
   });
   await searchInput.fill("dreams");
 
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: /arts · all upcoming events/i,
+      name: /arts, all upcoming events/i,
     }),
   ).toBeVisible();
   await expect(
@@ -213,12 +213,12 @@ test("preserves search and filter state across detail open and reload", async ({
 
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(
-    page.getByRole("combobox", { name: /search campus events/i }),
+    page.getByRole("combobox", { name: /looking for: search campus events/i }),
   ).toHaveValue("dreams");
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: /arts · all upcoming events/i,
+      name: /arts, all upcoming events/i,
     }),
   ).toBeVisible();
   await expect(
@@ -235,7 +235,7 @@ test("filters by primary category only", async ({ page }) => {
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: /arts · all upcoming events/i,
+      name: /arts, all upcoming events/i,
     }),
   ).toBeVisible();
   await expect(

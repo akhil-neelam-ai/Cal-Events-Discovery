@@ -21,7 +21,11 @@ import type { CalEvent } from "../types";
 import { LoadingState } from "../types";
 import { buildSearchIndex } from "../scripts/lib/buildIndex";
 import { TOPIC_VOCABULARY } from "../scripts/lib/topics";
-import { trackEndedEventLink } from "../utils/analytics";
+import {
+  trackEndedEventLink,
+  trackEventClick,
+  trackSurpriseMe,
+} from "../utils/analytics";
 import { addRecentSearch } from "../utils/recentSearches";
 import type { SearchIndex } from "../utils/textUtils";
 
@@ -59,6 +63,7 @@ vi.mock("../utils/analytics", () => ({
   trackEventClick: vi.fn(),
   trackFilter: vi.fn(),
   trackExternalLink: vi.fn(),
+  trackSurpriseMe: vi.fn(),
 }));
 
 vi.mock("../utils/recentSearches", async (importOriginal) => {
@@ -250,12 +255,14 @@ describe("App UI regressions", () => {
     render(<App />);
 
     expect(
-      screen.getByRole("combobox", { name: /search campus events/i }),
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
     ).toHaveValue("ai");
     expect(
       screen.getByRole("heading", {
         level: 2,
-        name: /science & tech · this week/i,
+        name: /science & tech, this week/i,
       }),
     ).toBeInTheDocument();
     expect(screen.getByText("AI Research Forum")).toBeInTheDocument();
@@ -442,6 +449,46 @@ describe("App UI regressions", () => {
     expect(back).toHaveBeenCalledTimes(1);
     expect(window.location.search).not.toContain("event=");
     back.mockRestore();
+  });
+
+  it("closes with Back to the wall at the end of the flyer, the way × does", async () => {
+    const user = userEvent.setup();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "with-notes", title: "With Notes" }),
+      makeEvent({
+        id: "no-notes",
+        title: "No Notes",
+        description: "No Notes",
+        time: "6:00 PM",
+      }),
+    ]);
+
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: /with notes/i }));
+    const backToWall = screen.getByRole("button", { name: "Back to the wall" });
+    // It comes last, after the description.
+    expect(
+      screen
+        .getByRole("heading", { name: "About this event" })
+        .compareDocumentPosition(backToWall) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+
+    const back = vi.spyOn(window.history, "back");
+    await user.click(backToWall);
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+    expect(back).toHaveBeenCalledTimes(1);
+    back.mockRestore();
+
+    // Without a description it ends the flyer itself.
+    await user.click(screen.getByRole("button", { name: /no notes/i }));
+    expect(
+      screen.queryByRole("heading", { name: "About this event" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Back to the wall" }),
+    ).toBeInTheDocument();
   });
 
   it("closes a shared-link event in place instead of going back", async () => {
@@ -778,7 +825,7 @@ describe("App UI regressions", () => {
         screen.queryByText("Nothing today — showing this week instead."),
       ).not.toBeInTheDocument();
       if (range === "week") {
-        expect(screen.getByText("Today · Apr 22")).toBeInTheDocument();
+        expect(screen.getByText("Today, Apr 22")).toBeInTheDocument();
         expect(screen.queryByText(/Apr 21/)).not.toBeInTheDocument();
       }
       unmount();
@@ -880,7 +927,9 @@ describe("App UI regressions", () => {
       screen.getByRole("heading", { level: 2, name: /this week/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Tomorrow Founder Talk")).toBeInTheDocument();
-    expect(screen.getAllByText("Updates every day").length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/public calendars every morning/),
+    ).toBeInTheDocument();
     expect(screen.queryByText(/Updated \d+h ago/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Synced \d+h ago/)).not.toBeInTheDocument();
   });
@@ -913,7 +962,7 @@ describe("App UI regressions", () => {
     await user.click(screen.getByRole("button", { name: "Arts" }));
 
     expect(
-      screen.getByRole("heading", { level: 2, name: /arts · this week/i }),
+      screen.getByRole("heading", { level: 2, name: /arts, this week/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("BAMPFA Screening")).toBeInTheDocument();
     expect(
@@ -1067,7 +1116,9 @@ describe("App UI regressions", () => {
     await user.click(screen.getByRole("button", { name: /tonight/i }));
 
     expect(
-      screen.getByRole("combobox", { name: /search campus events/i }),
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
     ).toHaveValue("tonight");
     await waitFor(() => {
       expect(screen.getByText("Evening Concert")).toBeInTheDocument();
@@ -1323,6 +1374,56 @@ describe("App UI regressions", () => {
     ).toEqual(["Today Talk", "Tomorrow Talk"]);
   });
 
+  it("opens a random result from Surprise me, the way a card click does", async () => {
+    const user = userEvent.setup();
+    vi.mocked(trackSurpriseMe).mockClear();
+    vi.mocked(trackEventClick).mockClear();
+    const random = vi.spyOn(Math, "random").mockReturnValue(0.99);
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "first", title: "First Talk", time: "4:00 PM" }),
+      makeEvent({ id: "second", title: "Second Talk", time: "6:00 PM" }),
+      makeEvent({
+        id: "pool",
+        title: "Lap Swim",
+        organizer: "Recreational Sports",
+        time: "9:00 PM",
+      }),
+    ]);
+    const startLength = window.history.length;
+
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "Surprise me" }));
+    random.mockRestore();
+
+    // Facility schedules are not events, so the pick skips them.
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Second Talk" }),
+    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(window.location.search).toContain("event=second");
+    });
+    expect(window.history.length).toBe(startLength + 1);
+    expect(trackSurpriseMe).toHaveBeenCalledExactlyOnceWith({
+      event_id: "second",
+      results_count: 2,
+    });
+    expect(trackEventClick).toHaveBeenCalledOnce();
+  });
+
+  it("hides Surprise me when nothing matches", async () => {
+    mockFeedState = makeFeedState([makeEvent({ id: "a", title: "AI Talk" })]);
+    window.history.replaceState({}, "", "/?q=zzzxqv");
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/No results for/)).toBeInTheDocument();
+    });
+    expect(
+      screen.queryByRole("button", { name: "Surprise me" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("collapses a day's Rec Sports schedules into one row", async () => {
     const user = userEvent.setup();
     mockFeedState = makeFeedState([
@@ -1376,7 +1477,7 @@ describe("App UI regressions", () => {
     render(<App />);
 
     expect(
-      screen.getByText("UC Berkeley Events · Cal Bears"),
+      screen.getByText("UC Berkeley Events, Cal Bears"),
     ).toBeInTheDocument();
 
     const details = render(
@@ -1410,8 +1511,8 @@ describe("App UI regressions", () => {
     expect(screen.getByText("Next up:").parentElement).toHaveTextContent(
       "Next up: 7pm Women's Basketball, Haas Pavilion",
     );
-    // The header keeps the cadence; the subtitle no longer repeats it.
-    expect(screen.getAllByText("Updates every day")).toHaveLength(1);
+    // The footer states the cadence once; the view subtitle does not.
+    expect(screen.getAllByText(/every morning/)).toHaveLength(1);
   });
 
   it("keeps the source link outside the card's button", async () => {

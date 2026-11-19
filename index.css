@@ -1,137 +1,1428 @@
 @import 'tailwindcss';
 
-@theme {
-  --font-serif: 'Source Serif 4', Georgia, serif;
-
-  --color-berkeley-blue: #003262;
-  --color-berkeley-gold: #fdb515;
-  --color-berkeley-medblue: #3b7ea1;
-  --color-berkeley-lightgray: #f2f2f2;
-
-  --animate-slide-in: slideIn 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-  --animate-slide-up: slideUp 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-  --animate-fade-in: fadeIn 0.3s ease-out forwards;
-  --animate-card-in: cardIn 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards;
-  --animate-dropdown-in: dropdownIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  --animate-panel-in: panelIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-
-  @keyframes slideIn {
-    0% {
-      transform: translateX(100%);
-      opacity: 0.8;
-    }
-    100% {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-  @keyframes slideUp {
-    0% {
-      transform: translateY(100%);
-      opacity: 0.9;
-    }
-    100% {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-  @keyframes cardIn {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  @keyframes dropdownIn {
-    0% {
-      opacity: 0;
-      transform: translateY(-6px) scale(0.97);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-  @keyframes panelIn {
-    0% {
-      opacity: 0;
-      transform: translateY(-8px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-}
-
 /*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
+  The flyer wall. The page is a campus kiosk: a Berkeley blue wall with
+  sheets of colored copy paper pinned to it. Each event is a sheet, and the
+  paper color is its category (tags[0]). Type is black toner on paper and
+  white chalk on the wall. One typeface, Archivo, set through its width axis
+  (font-stretch) and weight. AGENTS.md has the short version.
 
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
+  The theme is static so every paper color is emitted: sheets pick theirs
+  at runtime through --p, which no utility class can see.
 */
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
+@theme static {
+  --font-sans: 'Archivo', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+
+  --color-wall: #003262;
+  --color-chalk: #ffffff;
+  --color-toner: #121212;
+  --color-plain: #fcfcf9;
+  --color-gold: #fdb515;
+  --color-paper-academic: #ffe55e;
+  --color-paper-arts: #ff93c6;
+  --color-paper-sports: #ffa052;
+  --color-paper-scitech: #93d2ff;
+  --color-paper-life: #83e4a5;
+  --color-paper-entre: #d0b6ff;
+  --color-paper-other: #fcfcf9;
+}
+
+:root {
+  /* Focus rings are gold where they land on the wall, toner on paper. */
+  --ring: var(--color-gold);
 }
 
 @layer base {
-  a:focus-visible,
-  button:focus-visible,
-  input:focus-visible,
-  select:focus-visible,
-  textarea:focus-visible,
-  [role="button"]:focus-visible,
-  [role="combobox"]:focus-visible,
-  [role="option"]:focus-visible {
-    @apply outline-hidden ring-2 ring-berkeley-gold ring-offset-2;
+  html {
+    background: var(--color-wall);
+  }
+
+  body {
+    background: var(--color-wall);
+    color: var(--color-toner);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.3;
+    overflow-x: clip;
+  }
+
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
-body {
-  font-family: 'Inter', sans-serif;
+/* Paper surfaces: anything drawn on a sheet gets a dark ring. */
+.on-paper {
+  --ring: var(--color-toner);
 }
 
-/* Hide scrollbar while keeping scroll functionality */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  background: var(--color-gold);
+  color: var(--color-toner);
+  font-weight: 800;
+  font-stretch: 88%;
+  --ring: var(--color-plain);
 }
 
-/* Remove grey iOS tap flash — all interactive elements */
-button, a, [role="button"] {
-  -webkit-tap-highlight-color: transparent;
+.skip-link:focus {
+  top: 0.5rem;
 }
 
-/* Smooth press feedback for touch targets */
-.tap-highlight {
-  transition: transform 150ms cubic-bezier(0.32, 0.72, 0, 1),
-              box-shadow 150ms cubic-bezier(0.32, 0.72, 0, 1),
-              background-color 150ms ease,
-              color 150ms ease,
-              border-color 150ms ease;
+.wrap {
+  width: 100%;
+  max-width: 86rem;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-.tap-highlight:active {
-  transform: scale(0.95);
+
+/* The wall: a masonry grid of 4px rows. hooks/useMasonry.ts gives each
+   item a row span from its measured height. Sparse placement keeps every
+   sheet at or below the one before it, so the wall reads top to bottom. */
+.wall {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 4px;
+  column-gap: 8px;
+  padding-block: 1.25rem 3rem;
+}
+
+.wall > * {
+  align-self: start;
+}
+
+.wall-full,
+.beside,
+.notice,
+.strip {
+  grid-column: 1 / -1;
+}
+
+/* The notice: wordmark, date, search, and tear-off tabs for the range */
+.notice {
+  position: relative;
+  z-index: 2;
+  padding: 1rem 1rem 0;
+  background: var(--color-plain);
+  color: var(--color-toner);
+  transform: rotate(-0.5deg);
+  --ring: var(--color-toner);
+}
+
+.mark {
+  margin: 0;
+  font-weight: 900;
+  font-stretch: 118%;
+  font-size: clamp(2.9rem, 15.5vw, 4.4rem);
+  line-height: 0.84;
+  letter-spacing: -0.035em;
+}
+
+.mark span {
+  display: block;
+}
+
+.dateline {
+  margin: 0.8rem 0 0;
+  font-weight: 800;
+  font-stretch: 78%;
+  font-size: 1.5rem;
+  line-height: 1.05;
+}
+
+.tally {
+  margin: 0.2rem 0 0;
+  font-weight: 500;
+  font-stretch: 92%;
+  font-size: 1rem;
+}
+
+.find {
+  position: relative;
+  margin-top: 0.9rem;
+}
+
+.find label {
+  display: block;
+  font-weight: 700;
+  font-stretch: 88%;
+  font-size: 0.9375rem;
+}
+
+.find-row {
+  position: relative;
+  margin-top: 0.35rem;
+}
+
+.find input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.3rem 0;
+  border: 0;
+  border-bottom: 3px solid var(--color-toner);
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-toner);
+  font: 600 1.125rem var(--font-sans);
+  font-stretch: 92%;
+}
+
+.find input.has-clear {
+  padding-right: 3.5rem;
+}
+
+.find input::placeholder {
+  color: #5c5c5c;
+  opacity: 1;
+}
+
+.find input:focus-visible {
+  outline-offset: 3px;
+}
+
+.find-clear {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0 0.25rem;
+  transform: translateY(-50%);
+  font-weight: 700;
+  font-stretch: 88%;
+  font-size: 0.9375rem;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0.6rem 0 0;
+  font-weight: 500;
+  font-stretch: 92%;
+  font-size: 0.9375rem;
+  line-height: 1.3;
+}
+
+.hint a,
+.try button,
+.text-link {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.hint button {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-weight: 800;
+  font-size: 1.125rem;
+}
+
+.try {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.85rem;
+  margin: 0.4rem 0 0;
+  font-stretch: 90%;
+  font-size: 0.9375rem;
+}
+
+.try > span {
+  font-weight: 700;
+  font-stretch: 88%;
+}
+
+.try button {
+  min-height: 2.5rem;
+  font-weight: 600;
+}
+
+.sticker {
+  position: absolute;
+  top: -0.6rem;
+  right: -0.35rem;
+  display: grid;
+  place-items: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  padding: 0.4rem;
+  border-radius: 50%;
+  background: var(--color-gold);
+  color: var(--color-wall);
+  text-align: center;
+  font-weight: 900;
+  font-stretch: 80%;
+  font-size: 1.0625rem;
+  line-height: 0.95;
+  transform: rotate(10deg);
+}
+
+.sticker:focus-visible {
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--color-plain);
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 1rem -1rem 0;
+  border-top: 2px dashed var(--color-toner);
+}
+
+.tabs button {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  min-height: 4rem;
+  padding: 0.3rem 0.25rem 0.5rem;
+  border-left: 2px dashed var(--color-toner);
+  text-align: center;
+}
+
+.tabs button:first-child {
+  border-left: 0;
+}
+
+.tabs button:focus-visible {
+  outline-offset: -6px;
+}
+
+.tabs .dw {
+  font-weight: 700;
+  font-stretch: 80%;
+  font-size: 0.875rem;
+}
+
+.tabs .dn {
+  font-weight: 900;
+  font-stretch: 70%;
+  font-size: clamp(1.375rem, 6.5vw, 1.75rem);
+  line-height: 0.95;
+  white-space: nowrap;
+}
+
+.tabs button[aria-pressed='true'] {
+  background: var(--color-toner);
+  color: var(--color-plain);
+  --ring: var(--color-plain);
+}
+
+/* Scraps: categories, topics, and the source picker on the wall */
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.35rem;
+  color: var(--color-chalk);
+}
+
+.scraps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.scrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.5rem;
+  padding: 0.25rem 0.6rem;
+  background: var(--p, var(--color-plain));
+  color: var(--color-toner);
+  font-weight: 800;
+  font-stretch: 78%;
+  font-size: 0.9375rem;
+}
+
+.scrap[aria-pressed='true'],
+.scrap[aria-expanded='true'] {
+  box-shadow: inset 0 0 0 3px var(--color-toner);
+}
+
+.scrap .count {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.scrap-dark {
+  background: var(--color-toner);
+  color: var(--color-plain);
+}
+
+.scrap-dark[aria-expanded='true'] {
+  box-shadow: inset 0 0 0 3px var(--color-gold);
+}
+
+.scrap-dark .count {
+  min-width: 1.25rem;
+  padding: 0 0.3rem;
+  background: var(--color-gold);
+  color: var(--color-toner);
+  font-weight: 800;
+  text-align: center;
+}
+
+.wall-label {
+  font-weight: 700;
+  font-stretch: 88%;
+  font-size: 0.9375rem;
+}
+
+.source-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+}
+
+.topic-groups {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.topic-group .scraps {
+  margin-top: 0.3rem;
+}
+
+.topic {
+  font-weight: 700;
+  font-stretch: 82%;
+  border: 2px solid transparent;
+}
+
+.topic:disabled {
+  border: 2px dashed rgb(255 255 255 / 0.5);
+  background: transparent;
+  color: rgb(255 255 255 / 0.75);
+}
+
+.chalk-link {
+  min-height: 2.75rem;
+  color: var(--color-chalk);
+  font-weight: 600;
+  font-stretch: 90%;
+  font-size: 1rem;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--color-gold);
+}
+
+/* The phone drawer: one plain sheet that unfolds under the scraps */
+.drawer {
+  padding: 0.9rem 1rem 1rem;
+  background: var(--color-plain);
+  color: var(--color-toner);
+  --ring: var(--color-toner);
+}
+
+.drawer-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  font-stretch: 92%;
+}
+
+.drawer-head p {
+  margin: 0;
+}
+
+.drawer-head p + p {
+  margin-top: 0.15rem;
+}
+
+.drawer-head b {
+  font-weight: 800;
+}
+
+.drawer .wall-label {
+  color: var(--color-toner);
+}
+
+.drawer .topic {
+  border-color: var(--color-toner);
+  background: transparent;
+}
+
+.drawer .topic[aria-pressed='true'] {
+  background: var(--color-toner);
+  color: var(--color-plain);
+  box-shadow: none;
+}
+
+.drawer .topic:disabled {
+  border: 2px dashed #8a8a8a;
+  color: #5c5c5c;
+}
+
+.drawer-section {
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 2px dashed var(--color-toner);
+}
+
+.done {
+  min-height: 2.75rem;
+  padding: 0 0.25rem;
+  font-weight: 800;
+  font-stretch: 88%;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* Slips: the dropdowns for search suggestions and sources */
+.slip {
+  overflow-y: auto;
+  background: var(--color-plain);
+  color: var(--color-toner);
+  box-shadow: 0 0 0 2px var(--color-toner);
+  --ring: var(--color-toner);
+}
+
+.slip-search {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 60;
+  margin-top: 0.45rem;
+  max-height: min(320px, 40vh);
+}
+
+.slip-section {
+  padding: 0.6rem 0.75rem;
+}
+
+.slip-section + .slip-section {
+  border-top: 2px dashed var(--color-toner);
+}
+
+.slip-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-stretch: 88%;
+  font-size: 0.875rem;
+}
+
+.slip-head button {
+  min-height: 2.5rem;
+  padding: 0 0.25rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.slip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.3rem 0.5rem;
+  text-align: left;
+  font-weight: 600;
+  font-stretch: 92%;
+}
+
+.slip-row:hover,
+.slip-row[data-active='true'] {
+  background: rgb(18 18 18 / 0.08);
+}
+
+.slip-row[aria-selected='true'] {
+  background: var(--color-toner);
+  color: var(--color-plain);
+  --ring: var(--color-gold);
+}
+
+.slip-row .count {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.slip-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.slip-chip {
+  min-height: 2.5rem;
+  padding: 0 0.7rem;
+  box-shadow: inset 0 0 0 2px var(--color-toner);
+  font-weight: 700;
+  font-stretch: 86%;
+  font-size: 0.9375rem;
+}
+
+.slip-chip:hover,
+.slip-chip[aria-selected='true'] {
+  background: var(--color-toner);
+  color: var(--color-plain);
+}
+
+/* Chalk on the wall: the view heading, day strips, and counts */
+.chalk-head {
+  padding-top: 0.6rem;
+  color: var(--color-chalk);
+}
+
+.chalk-head:focus {
+  outline: none;
+}
+
+.view-title {
+  margin: 0;
+  font-weight: 900;
+  font-stretch: 100%;
+  font-size: 1.9rem;
+  line-height: 1;
+  letter-spacing: -0.015em;
+}
+
+.view-count {
+  margin-left: 0.1rem;
+  font-weight: 600;
+  font-stretch: 90%;
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.next-up {
+  margin: 0.4rem 0 0;
+  font-stretch: 92%;
+  overflow-wrap: anywhere;
+}
+
+.next-up span {
+  font-weight: 800;
+}
+
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding-top: 1.1rem;
+  color: var(--color-chalk);
+}
+
+.strip h3 {
+  margin: 0;
+  font-weight: 900;
+  font-stretch: 100%;
+  font-size: 1.5rem;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.strip p {
+  margin: 0;
+  font-stretch: 92%;
+}
+
+/* Notes: plain or gold slips that carry a message about the view */
+.note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--color-plain);
+  color: var(--color-toner);
+  font-weight: 600;
+  font-stretch: 92%;
+  transform: rotate(-0.3deg);
+  --ring: var(--color-toner);
+}
+
+.note p {
+  margin: 0;
+}
+
+.note-gold {
+  background: var(--color-gold);
+}
+
+.note button {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: -0.4rem -0.5rem -0.4rem 0;
+  font-weight: 800;
+  font-size: 1.125rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-chalk);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding-left: 0.6rem;
+  background: var(--color-plain);
+  color: var(--color-toner);
+  font-weight: 800;
+  font-stretch: 78%;
+  font-size: 0.9375rem;
+  --ring: var(--color-toner);
+}
+
+.chip button {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.125rem;
+}
+
+.chip button:focus-visible {
+  outline-offset: -5px;
+}
+
+/* A sheet: one event on colored copy paper */
+.sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  width: 100%;
+  padding: 0.95rem 0.75rem 0.8rem;
+  background: var(--p, var(--color-plain));
+  color: var(--color-toner);
+  text-align: left;
+  transform: rotate(var(--r, 0deg));
+  --ring: var(--color-toner);
+}
+
+.sheet::before {
+  content: '';
+  position: absolute;
+  top: 0.3rem;
+  left: calc(50% - 0.45rem);
+  width: 0.9rem;
+  height: 2px;
+  background: #2b2b2b;
+  opacity: 0.6;
+  transform: rotate(-7deg);
+}
+
+.sheet.wide {
+  grid-column: 1 / -1;
+  padding: 1.1rem 1rem 1rem;
+}
+
+.sheet p {
+  margin: 0;
+}
+
+.when {
+  font-weight: 900;
+  font-stretch: 62%;
+  font-size: 2.35rem;
+  line-height: 0.82;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.when small {
+  margin-left: 0.2rem;
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: 0.9375rem;
+  letter-spacing: 0;
+}
+
+.when .allday {
+  margin: 0;
+  font-size: 1.0625rem;
+}
+
+.when .hours {
+  display: block;
+  margin: 0.3rem 0 0;
+  font-weight: 700;
+  font-stretch: 82%;
+  font-size: 0.875rem;
+  line-height: 1.1;
+}
+
+.what {
+  margin-top: 0.15rem;
+  font-weight: 800;
+  line-height: 1.03;
+  letter-spacing: -0.012em;
+  overflow-wrap: anywhere;
+}
+
+.what.s1 {
+  font-size: 1.7rem;
+  font-stretch: 108%;
+}
+
+.what.s2 {
+  font-size: 1.4rem;
+  font-stretch: 92%;
+}
+
+.what.s3 {
+  font-size: 1.2rem;
+  font-stretch: 78%;
+  letter-spacing: 0;
+}
+
+.what.s4 {
+  font-size: 1.0625rem;
+  font-stretch: 68%;
+  letter-spacing: 0;
+}
+
+.wide .what.s1 {
+  font-size: 2.6rem;
+}
+
+.wide .what.s2 {
+  font-size: 2.1rem;
+}
+
+.wide .what.s3 {
+  font-size: 1.6rem;
+}
+
+.wide .what.s4 {
+  font-size: 1.3rem;
+}
+
+/* The title button covers the sheet, so a tap anywhere opens it. */
+.sheet-open {
+  text-align: left;
+}
+
+.sheet-open::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.sheet-open:focus-visible {
+  outline: none;
+}
+
+.sheet-open:focus-visible::after {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.where {
+  margin-top: 0.15rem;
+  font-weight: 600;
+  font-stretch: 86%;
+  font-size: 0.9375rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.who {
+  font-weight: 500;
+  font-stretch: 92%;
+  font-size: 0.875rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.fine {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.2rem;
+  font-weight: 600;
+  font-stretch: 86%;
+  font-size: 0.8125rem;
+  line-height: 1.2;
+}
+
+.sheet-link {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: -0.6rem -0.55rem -0.55rem 0;
+}
+
+.perk {
+  padding: 0.05rem 0.3rem;
+  border: 2px solid var(--color-toner);
+  font-weight: 800;
+  font-stretch: 80%;
+  font-size: 0.8125rem;
+}
+
+/* The collapsed Rec facility hours row */
+.rec-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 2.75rem;
+  text-align: left;
+}
+
+.rec-list {
+  width: 100%;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 2px dashed var(--color-toner);
+}
+
+.rec-list li + li {
+  border-top: 2px dashed var(--color-toner);
+}
+
+.rec-list button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.4rem 0;
+  text-align: left;
+}
+
+.rec-list b {
+  font-weight: 800;
+  font-stretch: 86%;
+}
+
+.rec-list span {
+  font-weight: 500;
+  font-stretch: 92%;
+  font-size: 0.875rem;
+}
+
+/* Plain sheets for empty, error, and loading states */
+.sheet-plain {
+  padding: 1.1rem 1rem 1.2rem;
+  background: var(--color-plain);
+  color: var(--color-toner);
+  transform: rotate(0.3deg);
+  --ring: var(--color-toner);
+}
+
+.sheet-plain h2,
+.sheet-plain h3 {
+  margin: 0;
+  font-weight: 900;
+  font-stretch: 92%;
+  font-size: 1.4rem;
+  line-height: 1.05;
+}
+
+.sheet-plain p {
+  max-width: 60ch;
+  margin: 0.5rem 0 0;
+  font-stretch: 96%;
+  line-height: 1.4;
+}
+
+.sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.btn-toner,
+.btn-line {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 1rem;
+  font-weight: 800;
+  font-stretch: 82%;
+  font-size: 1rem;
+  line-height: 1.15;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Anything pressed on paper is ink: one filled button, the rest outlined.
+   The states darken or tint with ink, so they read on every paper color. */
+.btn-toner {
+  background: var(--color-toner);
+  color: var(--color-plain);
+}
+
+.btn-line {
+  color: var(--color-toner);
+  box-shadow: inset 0 0 0 2px var(--color-toner);
+}
+
+@media (hover: hover) {
+  .btn-toner:hover {
+    background: #3a3a3a;
+  }
+
+  .btn-line:hover {
+    background: rgb(18 18 18 / 0.1);
+  }
+}
+
+.btn-toner:active {
+  background: #000;
+  transform: translateY(1px);
+}
+
+.btn-line:active {
+  background: rgb(18 18 18 / 0.2);
+  transform: translateY(1px);
+}
+
+.more {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  color: var(--color-chalk);
+  text-align: center;
+  font-stretch: 92%;
+}
+
+.more p {
+  margin: 0;
+}
+
+.more button {
+  min-height: 2.75rem;
+  padding: 0.3rem 1rem;
+  background: var(--color-plain);
+  color: var(--color-toner);
+  font-weight: 800;
+  font-stretch: 82%;
+  font-size: 1rem;
+  --ring: var(--color-gold);
+}
+
+/* One flyer, pulled off the wall */
+.flyer-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem 0.5rem;
+}
+
+.flyer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 22 46 / 0.82);
+}
+
+.flyer-dialog {
+  position: relative;
+  width: min(35rem, 100%);
+}
+
+.flyer-dialog:focus {
+  outline: none;
+}
+
+/* The tilt sits on the frame, so the close square and the flyer share it
+   and the square stays flush with the flyer's corner. */
+.flyer-frame {
+  transform: rotate(-0.6deg);
+}
+
+.flyer-scroll {
+  max-height: calc(100dvh - 2rem);
+  padding: 0.5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.flyer-x-pin {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  height: 0;
+}
+
+.flyer-x {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--color-toner);
+  color: var(--color-plain);
+}
+
+.flyer-x:focus-visible {
+  outline: 3px solid var(--color-plain);
+  outline-offset: -7px;
+}
+
+@media (hover: hover) {
+  .flyer-x:hover {
+    background: #3a3a3a;
+  }
+}
+
+.flyer-x:active {
+  background: #000;
+}
+
+.flyer {
+  background: var(--p, var(--color-plain));
+  color: var(--color-toner);
+  --ring: var(--color-toner);
+}
+
+.flyer-grip {
+  position: relative;
+  height: 1.25rem;
+  touch-action: none;
+}
+
+.flyer-grip::before {
+  content: '';
+  position: absolute;
+  top: 0.55rem;
+  left: calc(50% - 0.6rem);
+  width: 1.2rem;
+  height: 2px;
+  background: #2b2b2b;
+  opacity: 0.6;
+  transform: rotate(-7deg);
+}
+
+.flyer-body {
+  padding: 0 1.1rem 1.2rem;
+}
+
+/* Room for the close square, so it never sits on the time or the title. */
+.flyer-body .d-when,
+.flyer-body .d-what {
+  padding-right: 2.25rem;
+}
+
+.d-when {
+  margin: 0.6rem 0 0;
+  font-weight: 900;
+  font-stretch: 66%;
+  font-size: 1.9rem;
+  line-height: 0.95;
+}
+
+.d-what {
+  margin: 0.6rem 0 0;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.015em;
+  overflow-wrap: anywhere;
+}
+
+.d-what.s1 {
+  font-size: 3rem;
+  font-stretch: 108%;
+}
+
+.d-what.s2 {
+  font-size: 2.4rem;
+  font-stretch: 92%;
+}
+
+.d-what.s3 {
+  font-size: 1.9rem;
+  font-stretch: 78%;
+}
+
+.d-what.s4 {
+  font-size: 1.5rem;
+  font-stretch: 68%;
+}
+
+.d-where {
+  margin: 0.9rem 0 0;
+  font-weight: 800;
+  font-stretch: 84%;
+  font-size: 1.25rem;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.d-who,
+.d-from {
+  margin: 0.15rem 0 0;
+  font-weight: 500;
+  font-stretch: 92%;
+  overflow-wrap: anywhere;
+}
+
+.d-from {
+  margin-top: 0.5rem;
+  font-size: 0.9375rem;
+}
+
+.d-from a,
+.d-where a,
+.d-desc a {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.flyer-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 1rem 1.1rem 1.1rem;
+  border-top: 2px dashed var(--color-toner);
+}
+
+.flyer-actions > * {
+  padding-inline: 0.5rem;
+}
+
+.flyer > .flyer-back {
+  padding: 0 1.1rem 1.1rem;
+}
+
+.flyer-notes .flyer-back {
+  margin-top: 1.1rem;
+}
+
+.flyer-notes {
+  margin-top: 0.75rem;
+  padding: 1rem 1.1rem 1.2rem;
+  background: var(--color-plain);
+  color: var(--color-toner);
+  transform: rotate(0.4deg);
+  --ring: var(--color-toner);
+}
+
+.flyer-notes h3 {
+  margin: 0;
+  font-weight: 800;
+  font-stretch: 84%;
+  font-size: 1.25rem;
+}
+
+.d-desc {
+  max-width: 60ch;
+  margin: 0.6rem 0 0;
+  font-weight: 400;
+  font-stretch: 96%;
+  font-size: 1rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.foot {
+  padding-block: 0 5.5rem;
+  color: var(--color-chalk);
+  font-stretch: 92%;
+  font-size: 0.9375rem;
+}
+
+.foot p {
+  max-width: 60ch;
+  margin: 0;
+}
+
+.foot p + p {
+  margin-top: 0.6rem;
+}
+
+.foot a {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--color-gold);
+}
+
+.to-top {
+  position: fixed;
+  right: 1rem;
+  bottom: 1.25rem;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--color-gold);
+  color: var(--color-wall);
+  font-weight: 900;
+  font-size: 1.25rem;
+  --ring: var(--color-plain);
+}
+
+.loading-chalk {
+  padding-top: 1rem;
+  color: var(--color-chalk);
+}
+
+.loading-chalk h3 {
+  margin: 0;
+  font-weight: 900;
+  font-size: 1.5rem;
+}
+
+.loading-chalk p {
+  margin: 0.3rem 0 0;
+  font-stretch: 92%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .flyer-dialog {
+    animation: flyer-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
+
+  .flyer-backdrop {
+    animation: backdrop-in 0.22s ease-out backwards;
+  }
+
+  .flyer-layer.closing .flyer-dialog {
+    opacity: 0;
+    transform: translateY(1rem) rotate(1deg);
+    transition:
+      opacity 0.18s ease-in,
+      transform 0.18s ease-in;
+  }
+
+  .flyer-layer.closing .flyer-backdrop {
+    opacity: 0;
+    transition: opacity 0.18s ease-in;
+  }
+
+  .slip-search {
+    animation: backdrop-in 0.12s ease-out backwards;
+  }
+}
+
+@keyframes flyer-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) rotate(-2deg) scale(0.97);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (min-width: 44rem) {
+  .flyer-actions {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .flyer-actions > * {
+    padding-inline: 1rem;
+  }
+
+  .wall {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 12px;
+  }
+
+  .sheet.wide {
+    grid-column: span 2;
+  }
+}
+
+/* From four columns up, the notice takes two and the scraps, the view
+   heading, and the first day sit beside it. */
+@media (min-width: 64rem) {
+  .wall {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding-top: 2rem;
+  }
+
+  .notice {
+    grid-column: 1 / span 2;
+  }
+
+  .beside {
+    grid-column: 3 / -1;
+  }
+
+  .legend {
+    padding-top: 0;
+  }
+}
+
+@media (min-width: 82rem) {
+  .wall {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .topic-groups {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
 }

@@ -3,8 +3,27 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AGENT_HINT_DISMISSED_KEY, AgentHint } from "../components/AgentHint";
-import { DesktopHero } from "../components/DesktopHero";
-import { MobileHeader } from "../components/MobileHeader";
+import { NoticeSheet } from "../components/NoticeSheet";
+import { LoadingState } from "../types";
+
+function renderNotice(isMobile: boolean) {
+  return render(
+    <NoticeSheet
+      isMobile={isMobile}
+      todayKey="2026-04-22"
+      weekEndKey="2026-04-28"
+      loading={LoadingState.SUCCESS}
+      allEventsCount={0}
+      sourceCount={0}
+      searchQuery=""
+      activeDateRange="week"
+      onSearchChange={() => {}}
+      onPresetSelect={() => {}}
+      onDateChange={() => {}}
+      onSurprise={null}
+    />,
+  );
+}
 
 function installModelContext() {
   Object.defineProperty(navigator, "modelContext", {
@@ -26,30 +45,21 @@ describe("AgentHint", () => {
   });
 
   it("renders nothing when the browser has no modelContext", () => {
-    const { container } = render(<AgentHint variant="desktop" />);
+    const { container } = render(<AgentHint />);
     expect(container).toBeEmptyDOMElement();
     expect(hintLink()).not.toBeInTheDocument();
   });
 
-  it("shows the line and link under both search boxes with modelContext", () => {
+  it("shows the line and link under the search box with modelContext", () => {
     installModelContext();
-    render(
-      <DesktopHero
-        statusCopy="Updated daily"
-        summaryCopy="Search events"
-        searchQuery=""
-        onSearchChange={() => {}}
-        onPresetSelect={() => {}}
-        inputId="desktop-search"
-      />,
-    );
+    renderNotice(false);
     expect(screen.getByText(/using an ai agent\?/i)).toBeInTheDocument();
     expect(hintLink()).toHaveAttribute("href", "/for-agents.html");
     expect(
       screen.getByRole("button", { name: "Dismiss AI agent tip" }),
     ).toBeInTheDocument();
 
-    render(<MobileHeader searchQuery="" onSearchChange={() => {}} />);
+    renderNotice(true);
     expect(
       screen.getAllByRole("link", { name: /how agents use calevents/i }),
     ).toHaveLength(2);
@@ -58,7 +68,7 @@ describe("AgentHint", () => {
   it("stays dismissed after a remount", async () => {
     const user = userEvent.setup();
     installModelContext();
-    const first = render(<AgentHint variant="mobile" />);
+    const first = render(<AgentHint />);
 
     await user.click(
       screen.getByRole("button", { name: "Dismiss AI agent tip" }),
@@ -67,7 +77,7 @@ describe("AgentHint", () => {
     expect(window.localStorage.getItem(AGENT_HINT_DISMISSED_KEY)).toBe("1");
 
     first.unmount();
-    render(<AgentHint variant="mobile" />);
+    render(<AgentHint />);
     expect(hintLink()).not.toBeInTheDocument();
   });
 
@@ -85,7 +95,7 @@ describe("AgentHint", () => {
         throw new Error("blocked");
       });
     try {
-      render(<AgentHint variant="desktop" />);
+      render(<AgentHint />);
       await user.click(
         screen.getByRole("button", { name: "Dismiss AI agent tip" }),
       );

@@ -13,38 +13,20 @@ export function InterpretedChips({
 
   return (
     <div
-      className="mb-4 flex flex-wrap items-center gap-2"
+      className="chips beside"
       aria-live="polite"
       aria-label="Search interpretations"
     >
-      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
-        Interpreted as
-      </span>
+      <span className="wall-label">Interpreted as</span>
       {chips.map((chip) => (
-        <span
-          key={chip.key}
-          className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(253,181,21,0.4)] bg-[rgba(253,181,21,0.08)] px-3 py-1 text-xs font-semibold text-berkeley-blue"
-        >
+        <span key={chip.key} className="chip">
           {chip.label}
           <button
             type="button"
             aria-label={`Remove ${chip.label} filter`}
             onClick={() => onDismiss(chip.key)}
-            className="-m-1 ml-0.5 rounded-full p-2 text-slate-500 transition-colors hover:bg-berkeley-gold/20 hover:text-berkeley-blue focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/70"
           >
-            <svg
-              className="h-3 w-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2.5}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <span aria-hidden="true">×</span>
           </button>
         </span>
       ))}

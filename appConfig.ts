@@ -100,8 +100,6 @@ export const DEFAULT_FILTERS: SearchFilters = {
 
 export const VISIBLE_EVENT_BATCH_SIZE = 72;
 
-export const FEED_CADENCE_COPY = "Updates every day";
-
 // Natural-language example queries shown as chips below the hero search bar.
 // Each sets a sensible scope plus a query the client search engine interprets.
 export const DESKTOP_HERO_PRESETS: QuickFilterPreset[] = [
@@ -145,11 +143,4 @@ export const POPULAR_SEARCHES = [
   "Speaker",
   "Workshop",
   "Wellness",
-];
-
-export const CAL_PHRASES: Array<{ plain: string; gold: string }> = [
-  { plain: "Go Bears.", gold: "What's the move?" },
-  { plain: "Oski says", gold: "something's happening." },
-  { plain: "Bear territory.", gold: "What are you into?" },
-  { plain: "It's a good day", gold: "to be a Bear." },
 ];
