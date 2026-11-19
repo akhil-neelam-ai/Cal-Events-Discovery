@@ -79,7 +79,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap"
       rel="stylesheet"
     />
     <!-- Structured data: site name and search URL for search engines -->
@@ -110,81 +110,100 @@
     <!-- Styles for the fallback inside #root. It shows until the app loads,
          and is all that readers without JavaScript see. -->
     <style>
-      .boot {
-        padding: 1.75rem 1.5rem 3rem;
-        border-bottom: 3px solid #fdb515;
+      /* The same blue wall and white notice the app draws, so the swap on
+         load does not flash a different look. */
+      body {
+        margin: 0;
         background: #003262;
-        color: #fff;
-        font-family: "Inter", system-ui, sans-serif;
-        text-align: center;
+      }
+      .boot {
+        box-sizing: border-box;
+        min-height: 100vh;
+        padding: 1.25rem 16px 3rem;
+        background: #003262;
+        color: #121212;
+        font-family: "Archivo", "Arial Narrow", "Helvetica Neue", Arial,
+          sans-serif;
+      }
+      .boot-sheet {
+        box-sizing: border-box;
+        max-width: 34rem;
+        padding: 1rem 1rem 1.25rem;
+        background: #fcfcf9;
+        transform: rotate(-0.5deg);
       }
       .boot-mark {
-        display: flex;
-        align-items: baseline;
-        gap: 0.5rem;
-        max-width: 72rem;
-        margin: 0 auto;
-        font-size: 1.5rem;
-      }
-      .boot-mark b {
-        font-weight: 700;
-        letter-spacing: -0.025em;
-        color: #fdb515;
+        font-weight: 900;
+        font-stretch: 118%;
+        font-size: clamp(2.9rem, 15.5vw, 4.4rem);
+        line-height: 0.84;
+        letter-spacing: -0.035em;
       }
       .boot-mark span {
-        font-weight: 300;
-        letter-spacing: 0.025em;
+        display: block;
       }
       .boot h1 {
-        max-width: 48rem;
-        margin: 2.25rem auto 0.75rem;
-        font-family: "Source Serif 4", Georgia, serif;
-        font-size: clamp(2rem, 5vw, 3.35rem);
-        font-weight: 600;
-        line-height: 1.15;
-        letter-spacing: -0.02em;
-        text-wrap: balance;
+        margin: 0.8rem 0 0;
+        font-weight: 800;
+        font-stretch: 78%;
+        font-size: 1.5rem;
+        line-height: 1.05;
       }
       .boot p {
-        max-width: 40rem;
-        margin: 0 auto;
-        font-size: 0.9375rem;
-        line-height: 1.75;
-        color: rgba(255, 255, 255, 0.72);
+        max-width: 60ch;
+        margin: 0.6rem 0 0;
+        font-weight: 500;
+        font-stretch: 92%;
+        font-size: 1rem;
+        line-height: 1.35;
       }
       .boot nav {
         display: flex;
         flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.5rem 1.5rem;
-        margin-top: 1.5rem;
-        font-size: 0.875rem;
+        gap: 0.25rem 1.25rem;
+        margin: 1rem -1rem 0;
+        padding: 0.6rem 1rem 0;
+        border-top: 2px dashed #121212;
+        font-weight: 700;
+        font-stretch: 88%;
       }
       .boot a {
-        color: #fdb515;
+        color: #121212;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 4px;
+      }
+      .boot nav a {
+        display: inline-block;
+        padding: 0.6rem 0;
+      }
+      .boot a:focus-visible {
+        outline: 3px solid #121212;
+        outline-offset: 2px;
       }
     </style>
   </head>
   <body>
     <div id="root">
       <main class="boot">
-        <div class="boot-mark"><b>Cal</b><span>Events</span></div>
-        <h1>UC Berkeley events in one searchable feed</h1>
-        <p>
-          CalEvents gathers lectures, performances, games and student events
-          from campus calendars, and updates every morning.
-        </p>
-        <noscript>
+        <div class="boot-sheet">
+          <div class="boot-mark"><span>Cal</span><span>Events</span></div>
+          <h1>UC Berkeley events in one searchable feed</h1>
           <p>
-            The live feed needs JavaScript. Turn it on, or read the events as
-            <a href="/events.json">JSON</a>.
+            CalEvents gathers lectures, performances, games and student events
+            from campus calendars, and updates every morning.
           </p>
-        </noscript>
-        <nav aria-label="Site">
-          <a href="/about.html">About</a>
-          <a href="/privacy.html">Privacy</a>
-          <a href="/for-agents.html">For agents</a>
-        </nav>
+          <noscript>
+            <p>
+              The live feed needs JavaScript. Turn it on, or read the events
+              as <a href="/events.json">JSON</a>.
+            </p>
+          </noscript>
+          <nav aria-label="Site">
+            <a href="/about.html">About</a>
+            <a href="/privacy.html">Privacy</a>
+            <a href="/for-agents.html">For agents</a>
+          </nav>
+        </div>
       </main>
     </div>
     <script src="/webmcp-tools.js" defer></script>
