@@ -61,6 +61,7 @@ vi.mock("../utils/analytics", () => ({
   trackExternalLink: vi.fn(),
   trackSurpriseMe: vi.fn(),
   trackClearAll: vi.fn(),
+  trackAgentPrompt: vi.fn(),
 }));
 
 vi.mock("../hooks/useEventFeed", () => ({

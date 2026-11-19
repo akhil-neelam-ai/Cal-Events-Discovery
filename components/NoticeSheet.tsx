@@ -1,7 +1,7 @@
 import { DESKTOP_HERO_PRESETS, DateRanges } from "../appConfig";
 import type { QuickFilterPreset } from "../appConfig";
 import { LoadingState, type SearchFilters } from "../types";
-import { AgentHint } from "./AgentHint";
+import { AgentPromptCard } from "./AgentPromptCard";
 import { SearchField } from "./SearchField";
 
 const MONTHS = [
@@ -116,7 +116,7 @@ export function NoticeSheet({
       <p className="tally">{tallyCopy(loading, allEventsCount, sourceCount)}</p>
 
       <SearchField searchQuery={searchQuery} onSearchChange={onSearchChange} />
-      <AgentHint />
+      <AgentPromptCard />
 
       {!isMobile && (
         <div className="try">

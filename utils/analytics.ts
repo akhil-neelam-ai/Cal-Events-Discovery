@@ -265,6 +265,16 @@ export function trackClearAll(placement: "wall" | "drawer"): void {
 }
 
 /**
+ * Track the notice's agent prompt card: a copy, a copy the browser refused,
+ * or opening the prompt to read it.
+ */
+export function trackAgentPrompt(
+  action: "copy" | "copy_failed" | "show_prompt",
+): void {
+  trackEvent("agent_prompt", { action });
+}
+
+/**
  * Track clicks to external event pages
  */
 export function trackExternalLink(params: ExternalLinkParams): void {
