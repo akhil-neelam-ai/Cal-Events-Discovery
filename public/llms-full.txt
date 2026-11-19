@@ -132,7 +132,7 @@ Outputs besides `events`:
 
 `apply_ui_state` defaults to `mode: "replace"`: fields you leave out return to their defaults. `mode: "merge"` keeps the current URL and changes only what you pass. `reset: true` starts from the default view. `event: null` closes the detail panel. An unknown value or event id returns `applied: false` with an error. Merge checks the event id it keeps from the URL too. If the visitor changes the URL while a merge runs, it returns `applied: false` with a conflict error. Call `get_ui_state`, then retry. A `date` you pass stays in the URL even when it equals the default.
 
-Chip dismissal is search-only. Pass `dismiss` to `search_berkeley_events`. `apply_ui_state` has no dismiss field, and the page clears dismissed chips whenever its URL changes.
+Chip dismissal is search-only. Pass `dismiss` to `search_berkeley_events`. `apply_ui_state` has no dismiss field, and the page clears dismissed chips whenever its URL changes. On the page, a chip's "x" takes the words that set it out of the search box, so `q` changes and nothing is dismissed. `view.dismissedChipKeys` then holds only a topic the page cleared because nothing matched it.
 
 The URL carries `q`, `date`, `category`, `topic`, `source`, and `event` only. `startDate`, `endDate`, `limit`, `offset`, and `dismiss` have no URL form, so the page can differ from a search that used them.
 

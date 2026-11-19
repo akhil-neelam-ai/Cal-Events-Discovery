@@ -60,6 +60,7 @@ vi.mock("../utils/analytics", () => ({
   trackFilter: vi.fn(),
   trackExternalLink: vi.fn(),
   trackSurpriseMe: vi.fn(),
+  trackClearAll: vi.fn(),
 }));
 
 vi.mock("../hooks/useEventFeed", () => ({
@@ -196,11 +197,12 @@ describe("WebMCP agent to page", () => {
     expect(Object.isFrozen(view)).toBe(true);
   });
 
-  it("drops a dismissed chip when the agent reapplies the same URL", async () => {
+  it("brings back a removed chip when the agent reapplies the query", async () => {
     const user = userEvent.setup();
     window.history.replaceState({}, "", "/?q=jazz%20tomorrow");
     render(<App />);
 
+    // The × takes "tomorrow" out of the query. Nothing is dismissed.
     await user.click(
       screen.getByRole("button", { name: /remove tomorrow filter/i }),
     );
@@ -208,7 +210,8 @@ describe("WebMCP agent to page", () => {
       expect(screen.getByText("Jazz Brunch")).toBeInTheDocument();
     });
     await expectView((view) => {
-      expect(view.dismissedChipKeys).toEqual(["dateRange:tomorrow"]);
+      expect(view.searchQuery).toBe("jazz");
+      expect(view.dismissedChipKeys).toEqual([]);
     });
 
     await callTool("apply_ui_state", { q: "jazz tomorrow" });
@@ -280,12 +283,12 @@ describe("WebMCP agent to page", () => {
     window.history.replaceState({}, "", "/?q=brunch");
     render(<App />);
 
-    await callTool("apply_ui_state", { q: "jazz tomorrow" });
-    await user.click(
-      await screen.findByRole("button", { name: /remove tomorrow filter/i }),
-    );
-    await waitFor(() => {
-      expect(screen.getByText("Jazz Brunch")).toBeInTheDocument();
+    // No fixture event has a topic, so the page clears this one itself and
+    // records topic:law as dismissed. The × no longer dismisses anything.
+    await callTool("apply_ui_state", { q: "jazz tomorrow", topic: "law" });
+    await expectView((view) => {
+      expect(view.searchQuery).toBe("jazz tomorrow");
+      expect(view.dismissedChipKeys).toEqual(["topic:law"]);
     });
 
     // Same first word as the applied query, so the dismissal stays. Compared
@@ -299,12 +302,8 @@ describe("WebMCP agent to page", () => {
     await waitFor(async () => {
       expect((await readView()).searchQuery).toBe("jazz tomorrow!");
     });
-    expect(
-      screen.queryByRole("button", { name: /remove tomorrow filter/i }),
-    ).not.toBeInTheDocument();
-    expect(screen.getByText("Jazz Brunch")).toBeInTheDocument();
     await expectView((view) => {
-      expect(view.dismissedChipKeys).toEqual(["dateRange:tomorrow"]);
+      expect(view.dismissedChipKeys).toEqual(["topic:law"]);
     });
   });
 });

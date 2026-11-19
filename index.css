@@ -462,6 +462,12 @@
   margin-top: 0.15rem;
 }
 
+.drawer-actions {
+  display: flex;
+  flex: none;
+  gap: 1rem;
+}
+
 .drawer-head b {
   font-weight: 800;
 }
@@ -603,8 +609,16 @@
   color: var(--color-chalk);
 }
 
-.chalk-head:focus {
+.chalk-head:focus,
+.view-title:focus {
   outline: none;
+}
+
+.view-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 1rem;
 }
 
 .view-title {

@@ -22,6 +22,7 @@ import { LoadingState } from "../types";
 import { buildSearchIndex } from "../scripts/lib/buildIndex";
 import { TOPIC_VOCABULARY } from "../scripts/lib/topics";
 import {
+  trackClearAll,
   trackEndedEventLink,
   trackEventClick,
   trackSurpriseMe,
@@ -47,6 +48,7 @@ type MockFeedState = {
 
 let mockFeedState: MockFeedState;
 let mockNowMinutes = 0;
+let mockIsMobile = false;
 
 vi.mock("@vercel/analytics/react", () => ({
   Analytics: () => null,
@@ -64,6 +66,7 @@ vi.mock("../utils/analytics", () => ({
   trackFilter: vi.fn(),
   trackExternalLink: vi.fn(),
   trackSurpriseMe: vi.fn(),
+  trackClearAll: vi.fn(),
 }));
 
 vi.mock("../utils/recentSearches", async (importOriginal) => {
@@ -77,7 +80,7 @@ vi.mock("../hooks/useEventFeed", () => ({
 }));
 
 vi.mock("../hooks/useIsMobile", () => ({
-  useIsMobile: () => false,
+  useIsMobile: () => mockIsMobile,
 }));
 
 vi.mock("../hooks/usePacificDateKeys", () => ({
@@ -167,6 +170,7 @@ describe("App UI regressions", () => {
     window.sessionStorage.clear();
     mockFeedState = makeFeedState([]);
     mockNowMinutes = 0;
+    mockIsMobile = false;
   });
 
   it("replaces one selected topic and toggles the active topic off", () => {
@@ -1245,7 +1249,7 @@ describe("App UI regressions", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("lets users dismiss interpreted campus-area chips and broadens results", async () => {
+  it("removes a campus-area chip's words and broadens results", async () => {
     const user = userEvent.setup();
 
     mockFeedState = makeFeedState([
@@ -1279,6 +1283,12 @@ describe("App UI regressions", () => {
       expect(screen.queryByText("Northside")).not.toBeInTheDocument();
       expect(screen.getByText("Southside Talk")).toBeInTheDocument();
     });
+    expect(
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
+    ).toHaveValue("talks");
+    expect(new URLSearchParams(window.location.search).get("q")).toBe("talks");
   });
 
   it("opens event details from the primary card action", async () => {
@@ -1887,6 +1897,166 @@ describe("App UI regressions", () => {
     await waitFor(() => {
       expect(window.location.search).not.toContain("topic=");
     });
+    expect(window.location.search).not.toContain("q=");
+    expect(
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
+    ).toHaveValue("");
+  });
+
+  it("takes a chip's words out of the search box, one chip at a time", async () => {
+    const user = userEvent.setup();
+    const box = () =>
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      });
+    const count = () =>
+      screen.getByRole("heading", { level: 2 }).textContent ?? "";
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "bampfa-film",
+        title: "Dreams Are Colder Than Death",
+        source: "bampfa",
+        tags: ["Arts"],
+        topics: ["film"],
+      }),
+      makeEvent({
+        id: "bampfa-talk",
+        title: "Gallery Talk",
+        source: "bampfa",
+        tags: ["Arts"],
+        topics: ["visual-arts-exhibitions"],
+        description: "A gallery talk at the museum.",
+      }),
+      makeEvent({
+        id: "other-film",
+        title: "Campus Film Night",
+        source: "livewhale",
+        tags: ["Arts"],
+        topics: ["film"],
+        description: "A film night.",
+      }),
+      makeEvent({
+        id: "arts-other",
+        title: "Choir Concert",
+        source: "livewhale",
+        tags: ["Arts"],
+        topics: ["music-performance"],
+        description: "A concert.",
+      }),
+    ]);
+    // The "A film at BAMPFA" example: two chips, inside an explicit Arts.
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=bampfa%20film&category=Arts&date=upcoming",
+    );
+
+    render(<App />);
+    expect(count()).toContain("(1)");
+
+    await user.click(
+      screen.getByRole("button", { name: /remove film filter/i }),
+    );
+    await waitFor(() => expect(box()).toHaveValue("bampfa"));
+    expect(new URLSearchParams(window.location.search).get("q")).toBe("bampfa");
+    // Results follow the box after the search debounce.
+    await waitFor(() => expect(count()).toContain("(2)"));
+    expect(screen.getByText("Gallery Talk")).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: /remove bampfa filter/i }),
+    );
+    await waitFor(() => expect(box()).toHaveValue(""));
+    expect(window.location.search).not.toContain("q=");
+    expect(window.location.search).toContain("category=Arts");
+    await waitFor(() => expect(count()).toContain("(4)"));
+    expect(getViewState()?.dismissedChipKeys).toEqual([]);
+  });
+
+  it("shows Clear all only while something beyond the date narrows the view", () => {
+    mockFeedState = makeFeedState([makeEvent({ id: "a", title: "AI Talk" })]);
+    const clearAll = () => screen.queryByRole("button", { name: "Clear all" });
+
+    for (const search of ["", "?date=today", "?date=upcoming"]) {
+      window.history.replaceState({}, "", `/${search}`);
+      const view = render(<App />);
+      expect(clearAll()).not.toBeInTheDocument();
+      view.unmount();
+    }
+
+    for (const search of [
+      "?q=a",
+      "?category=Arts",
+      "?topic=ai-machine-learning",
+      "?source=livewhale",
+    ]) {
+      window.history.replaceState({}, "", `/${search}`);
+      const view = render(<App />);
+      expect(clearAll()).toBeInTheDocument();
+      view.unmount();
+    }
+  });
+
+  it("Clear all resets search, filters, and date, then focuses the results", async () => {
+    const user = userEvent.setup();
+    vi.mocked(trackClearAll).mockClear();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "a", title: "AI Talk", tags: ["Arts"] }),
+    ]);
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=ai&date=upcoming&category=Arts&source=livewhale",
+    );
+
+    render(<App />);
+    const link = screen.getByRole("button", { name: "Clear all" });
+    expect(link).toHaveTextContent(/^Clear all$/);
+    await user.click(link);
+
+    await waitFor(() => {
+      expect(window.location.search).toBe("");
+    });
+    expect(
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
+    ).toHaveValue("");
+    expect(
+      screen.getByRole("heading", { level: 2, name: /^this week/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Clear all" }),
+    ).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(
+      screen.getByRole("heading", { level: 2, name: /^this week/i }),
+    );
+    expect(trackClearAll).toHaveBeenCalledExactlyOnceWith("wall");
+  });
+
+  it("puts Clear all in the phone Filters drawer too", async () => {
+    const user = userEvent.setup();
+    vi.mocked(trackClearAll).mockClear();
+    mockIsMobile = true;
+    mockFeedState = makeFeedState([makeEvent({ id: "a", title: "AI Talk" })]);
+    window.history.replaceState({}, "", "/?source=livewhale");
+
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: /^Filters/ }));
+    const inDrawer = within(
+      document.getElementById("mobile-filters") as HTMLElement,
+    ).getByRole("button", { name: "Clear all" });
+    await user.click(inDrawer);
+
+    await waitFor(() => {
+      expect(window.location.search).toBe("");
+    });
+    expect(
+      screen.queryByRole("button", { name: "Clear all" }),
+    ).not.toBeInTheDocument();
+    expect(trackClearAll).toHaveBeenCalledExactlyOnceWith("drawer");
   });
 
   it("does not flash an empty grid for a doomed topic", () => {

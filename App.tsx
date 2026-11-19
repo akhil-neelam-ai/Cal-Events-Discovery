@@ -22,6 +22,7 @@ import { ErrorStateView } from "./components/ErrorStateView";
 import {
   EventsResultsSection,
   RESULTS_ANCHOR_ID,
+  RESULTS_HEADING_ID,
 } from "./components/EventsResultsSection";
 import { LoadingStateView } from "./components/LoadingStateView";
 import { useDebouncedValue } from "./hooks/useDebouncedValue";
@@ -42,6 +43,7 @@ import {
   trackEventClick,
   trackEndedEventLink,
   trackSurpriseMe,
+  trackClearAll,
 } from "./utils/analytics";
 import { isRecFacilitySchedule } from "./utils/eventPresentation";
 import { addRecentSearch } from "./utils/recentSearches";
@@ -304,7 +306,7 @@ export default function App() {
 
   const {
     handleSearchChange,
-    handleDismissChip,
+    handleRemoveChip,
     handleDateRangeChange,
     handleCategoryChange,
     handleTopicChange,
@@ -320,6 +322,29 @@ export default function App() {
     searchTimeoutRef,
     prevSearchQueryRef,
   });
+
+  // Removing a chip edits the query in the box, the one being typed.
+  const handleDismissChip = useCallback(
+    (key: string) =>
+      handleRemoveChip(key, filters.searchQuery, topicDefinitions ?? undefined),
+    [filters.searchQuery, handleRemoveChip, topicDefinitions],
+  );
+
+  // "Clear all" shows while anything beyond the date tab narrows the view.
+  const canClearAll =
+    filters.searchQuery.trim() !== "" ||
+    filters.category !== DEFAULT_FILTERS.category ||
+    filters.topic !== DEFAULT_FILTERS.topic ||
+    filters.source !== DEFAULT_FILTERS.source;
+  const handleClearAll = useCallback(
+    (placement: "wall" | "drawer") => {
+      resetAll();
+      trackClearAll(placement);
+      // The link goes away, so focus lands on the results heading.
+      document.getElementById(RESULTS_HEADING_ID)?.focus();
+    },
+    [resetAll],
+  );
 
   // Read-only snapshot of what the page shows, for the get_ui_state tool.
   const notice = topicFilterNotice ?? fallbackBannerCopy;
@@ -401,6 +426,7 @@ export default function App() {
             onSourceChange={handleSourceChange}
             onPresetSelect={handleQuickPreset}
             onSurprise={surpriseCandidates.length > 0 ? handleSurprise : null}
+            onClearAll={canClearAll ? () => handleClearAll("drawer") : null}
           />
 
           {loading === LoadingState.LOADING && <LoadingStateView />}
@@ -431,6 +457,7 @@ export default function App() {
               hiddenEventCount={hiddenEventCount}
               onEventClick={handleEventClick}
               onLoadMore={showMoreEvents}
+              onClearAll={canClearAll ? () => handleClearAll("wall") : null}
             />
           )}
         </main>

@@ -4,6 +4,10 @@ import type { Dispatch, MutableRefObject, SetStateAction } from "react";
 import type { QuickFilterPreset } from "../appConfig";
 import type { SearchFilters } from "../types";
 import {
+  removeChipWords,
+  type SearchTopicDefinition,
+} from "../utils/searchIntent";
+import {
   trackCategoryFilter,
   trackDateFilter,
   trackFilter,
@@ -50,8 +54,10 @@ export function useEventBrowserActions({
     };
   }, [searchTimeoutRef]);
 
-  const handleSearchChange = useCallback(
-    (query: string) => {
+  // One path for every change to the query: typing, and removing a chip.
+  // Only typing counts as a search for analytics.
+  const updateSearchQuery = useCallback(
+    (query: string, trackAsSearch: boolean) => {
       onHistoryIntent("replace");
       setFilters((prev) => ({ ...prev, searchQuery: query }));
       setSelectedEventId(null);
@@ -74,7 +80,7 @@ export function useEventBrowserActions({
         clearTimeout(searchTimeoutRef.current);
       }
 
-      if (query.trim().length >= 2) {
+      if (trackAsSearch && query.trim().length >= 2) {
         searchTimeoutRef.current = setTimeout(() => {
           trackSearch({
             search_term: query.trim(),
@@ -94,18 +100,32 @@ export function useEventBrowserActions({
     ],
   );
 
-  const handleDismissChip = useCallback(
-    (key: string) => {
-      setDismissedInterpretationKeys((prev) => new Set([...prev, key]));
+  const handleSearchChange = useCallback(
+    (query: string) => updateSearchQuery(query, true),
+    [updateSearchQuery],
+  );
+
+  /**
+   * The × on an "Interpreted as" chip takes the words that set the chip out
+   * of the query, so the box shows what is searched. A topic chip that
+   * matches the explicit topic clears that too.
+   */
+  const handleRemoveChip = useCallback(
+    (key: string, query: string, topics?: readonly SearchTopicDefinition[]) => {
       if (key.startsWith("topic:")) {
         const slug = key.slice("topic:".length);
         setFilters((prev) =>
           prev.topic === slug ? { ...prev, topic: "" } : prev,
         );
       }
-      setSelectedEventId(null);
+      const nextQuery = removeChipWords(query, key, { topics });
+      if (nextQuery === query) {
+        setSelectedEventId(null);
+        return;
+      }
+      updateSearchQuery(nextQuery, false);
     },
-    [setDismissedInterpretationKeys, setFilters, setSelectedEventId],
+    [setFilters, setSelectedEventId, updateSearchQuery],
   );
 
   const handleDateRangeChange = useCallback(
@@ -195,7 +215,7 @@ export function useEventBrowserActions({
 
   return {
     handleSearchChange,
-    handleDismissChip,
+    handleRemoveChip,
     handleDateRangeChange,
     handleCategoryChange,
     handleTopicChange,
