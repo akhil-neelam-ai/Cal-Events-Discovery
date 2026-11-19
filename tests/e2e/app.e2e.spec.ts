@@ -186,7 +186,7 @@ test("preserves search and filter state across detail open and reload", async ({
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: /arts · all upcoming events/i,
+      name: /arts, all upcoming events/i,
     }),
   ).toBeVisible();
   await expect(
@@ -218,7 +218,7 @@ test("preserves search and filter state across detail open and reload", async ({
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: /arts · all upcoming events/i,
+      name: /arts, all upcoming events/i,
     }),
   ).toBeVisible();
   await expect(
@@ -235,7 +235,7 @@ test("filters by primary category only", async ({ page }) => {
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: /arts · all upcoming events/i,
+      name: /arts, all upcoming events/i,
     }),
   ).toBeVisible();
   await expect(

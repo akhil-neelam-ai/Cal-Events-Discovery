@@ -262,7 +262,7 @@ describe("App UI regressions", () => {
     expect(
       screen.getByRole("heading", {
         level: 2,
-        name: /science & tech · this week/i,
+        name: /science & tech, this week/i,
       }),
     ).toBeInTheDocument();
     expect(screen.getByText("AI Research Forum")).toBeInTheDocument();
@@ -789,7 +789,7 @@ describe("App UI regressions", () => {
         screen.queryByText("Nothing today — showing this week instead."),
       ).not.toBeInTheDocument();
       if (range === "week") {
-        expect(screen.getByText("Today · Apr 22")).toBeInTheDocument();
+        expect(screen.getByText("Today, Apr 22")).toBeInTheDocument();
         expect(screen.queryByText(/Apr 21/)).not.toBeInTheDocument();
       }
       unmount();
@@ -926,7 +926,7 @@ describe("App UI regressions", () => {
     await user.click(screen.getByRole("button", { name: "Arts" }));
 
     expect(
-      screen.getByRole("heading", { level: 2, name: /arts · this week/i }),
+      screen.getByRole("heading", { level: 2, name: /arts, this week/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("BAMPFA Screening")).toBeInTheDocument();
     expect(
@@ -1443,7 +1443,7 @@ describe("App UI regressions", () => {
     render(<App />);
 
     expect(
-      screen.getByText("UC Berkeley Events · Cal Bears"),
+      screen.getByText("UC Berkeley Events, Cal Bears"),
     ).toBeInTheDocument();
 
     const details = render(

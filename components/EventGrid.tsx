@@ -17,6 +17,7 @@ import {
   paperColor,
   sheetTilt,
   titleSizeClass,
+  wallText,
 } from "../utils/flyerWall";
 import { CalEvent, SearchFilters } from "../types";
 import { RecHoursCard } from "./RecHoursCard";
@@ -65,7 +66,7 @@ function SheetWhen({
       ) : (
         <small className="allday">{event.time || "All day"}</small>
       )}
-      {run && <small className="hours">{run}</small>}
+      {run && <small className="hours">{wallText(run)}</small>}
     </p>
   );
 }
@@ -204,7 +205,7 @@ export function EventGrid({
           <React.Fragment key={group.dateKey}>
             {showStrips && (
               <div className={`strip${groupIndex === 0 ? " beside" : ""}`}>
-                <h3>{group.label}</h3>
+                <h3>{wallText(group.label)}</h3>
                 <p>
                   {group.events.length} event
                   {group.events.length !== 1 ? "s" : ""}

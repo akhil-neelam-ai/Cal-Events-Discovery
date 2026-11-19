@@ -15,7 +15,7 @@ export function SourceBadge({
   const label = [source, ...alsoListed]
     .map((name) => SOURCE_LABELS[name])
     .filter(Boolean)
-    .join(" · ");
+    .join(", ");
   const url = SOURCE_URLS[source];
 
   if (url && linked) {

@@ -24,6 +24,15 @@ export function categoryLabel(category?: string): string {
   return category && PAPER_SLUGS[category] ? category : "Event";
 }
 
+/**
+ * Copy on the wall separates its parts with commas. Shared labels such as
+ * "Today · Nov 19" keep their middle dot for other callers and tests, so
+ * the wall swaps it at render time.
+ */
+export function wallText(label: string): string {
+  return label.replace(/ · /g, ", ");
+}
+
 /** Title size on a sheet: short titles print big, long ones condense. */
 export function titleSizeClass(title: string): "s1" | "s2" | "s3" | "s4" {
   const length = title.length;

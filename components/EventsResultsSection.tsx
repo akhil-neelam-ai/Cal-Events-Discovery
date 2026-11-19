@@ -87,7 +87,7 @@ export function EventsResultsSection({
       {/* Chalk on the wall: the view, its count, and the next thing on. */}
       <div id={RESULTS_ANCHOR_ID} tabIndex={-1} className="chalk-head beside">
         <h2 className="view-title">
-          {category !== "All" ? `${category} · ` : ""}
+          {category !== "All" ? `${category}, ` : ""}
           {rangeLabel(effectiveDateRange)}{" "}
           <span className="view-count">({filteredEvents.length})</span>
         </h2>
