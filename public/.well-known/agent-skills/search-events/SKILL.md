@@ -59,10 +59,16 @@ Accept: application/json
 
 For ranked offline search, also load `https://cal-events.com/search-index.json`.
 
+`events.json` is about 1.5 MB. If your fetch tool cuts off long pages, read
+`https://cal-events.com/days/index.txt` instead. It links one plain-text page
+per day for the next 14 days, each under 36,000 characters, with one event per
+line: `time | title | place | category | topics | link`.
+
 ## Procedure
 
 1. Prefer WebMCP `search_berkeley_events` when available.
-2. Otherwise read the top-level `events` array from `events.json`.
+2. Otherwise read the top-level `events` array from `events.json`, or the day
+   pages when your reader cannot take the whole feed.
 3. Treat `date` as an America/Los_Angeles calendar date in `YYYY-MM-DD`.
    A multi-day event also has `end_date` and `dates`, and `date` is only its
    first upcoming day.

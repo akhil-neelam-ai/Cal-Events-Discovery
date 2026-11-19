@@ -5,10 +5,8 @@ import {
   COLLAPSED_TOPICS_PER_GROUP,
   TOPIC_GROUP_PRESENTATION,
 } from "../appConfig";
-import type { SourceOption } from "../appConfig";
 import type { SearchFilters, TopicDefinition, TopicVocabulary } from "../types";
 import { paperColor } from "../utils/flyerWall";
-import { SourceDropdown } from "./SourceDropdown";
 
 type TopicGroupValue = (typeof TOPIC_GROUP_PRESENTATION)[number]["value"];
 
@@ -152,22 +150,20 @@ function CategoryScraps({
   );
 }
 
+// There is no source control. A source arrives from search words, a shared
+// link, or an agent, and the chip row shows it with a × to clear it.
 export function DesktopFiltersBar({
   filters,
-  sourceOptions,
   topicVocabulary,
   topicCounts,
   onCategoryChange,
   onTopicChange,
-  onSourceChange,
 }: {
   filters: SearchFilters;
-  sourceOptions: SourceOption[];
   topicVocabulary: TopicVocabulary | null;
   topicCounts: ReadonlyMap<string, number>;
   onCategoryChange: (next: string) => void;
   onTopicChange: (next: string) => void;
-  onSourceChange: (next: string) => void;
 }) {
   const [topicsExpanded, setTopicsExpanded] = useState(false);
   const topicGroups = TOPIC_GROUP_PRESENTATION.map((group) => {
@@ -188,15 +184,6 @@ export function DesktopFiltersBar({
         category={filters.category}
         onCategoryChange={onCategoryChange}
       />
-
-      <div className="source-row">
-        <span className="wall-label">Source</span>
-        <SourceDropdown
-          value={filters.source}
-          options={sourceOptions}
-          onChange={onSourceChange}
-        />
-      </div>
 
       {topicVocabulary && (
         <div id="desktop-topic-filters" data-testid="desktop-topic-filters">
@@ -231,32 +218,24 @@ export function DesktopFiltersBar({
 
 export function MobileFiltersBar({
   filters,
-  sourceOptions,
   topicVocabulary,
   topicCounts,
   onCategoryChange,
   onTopicChange,
-  onSourceChange,
   onClearAll = null,
 }: {
   filters: SearchFilters;
-  sourceOptions: SourceOption[];
   topicVocabulary: TopicVocabulary | null;
   topicCounts: ReadonlyMap<string, number>;
   onCategoryChange: (next: string) => void;
   onTopicChange: (next: string) => void;
-  onSourceChange: (next: string) => void;
   /** Resets every filter. Null hides "Clear all". */
   onClearAll?: (() => void) | null;
 }) {
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const activeFilterCount =
-    Number(filters.category !== "All") +
-    Number(filters.source !== "All") +
-    Number(Boolean(filters.topic));
-  const selectedSource =
-    sourceOptions.find((option) => option.value === filters.source)?.label ||
-    "All sources";
+  // The count covers only what the drawer holds: the topic. Categories sit
+  // on the wall beside it.
+  const activeFilterCount = Number(Boolean(filters.topic));
   const selectedTopic = topicVocabulary?.topics.find(
     (topic) => topic.slug === filters.topic,
   );
@@ -287,9 +266,6 @@ export function MobileFiltersBar({
             <div>
               <p>
                 Category: <b>{filters.category}</b>
-              </p>
-              <p>
-                Source: <b>{selectedSource}</b>
               </p>
               <p>
                 Topic: <b>{selectedTopic?.label ?? "All topics"}</b>
@@ -329,15 +305,6 @@ export function MobileFiltersBar({
               ))}
             </div>
           )}
-
-          <div className="drawer-section source-row">
-            <span className="wall-label">Source</span>
-            <SourceDropdown
-              value={filters.source}
-              options={sourceOptions}
-              onChange={onSourceChange}
-            />
-          </div>
         </div>
       )}
     </div>

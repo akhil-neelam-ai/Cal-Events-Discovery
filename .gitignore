@@ -31,6 +31,9 @@ dist-ssr
 playwright-report
 test-results
 
+# Day pages for AI assistants, written at build time by scripts/dayPages.ts.
+public/days/
+
 # Screenshots dropped at repo root by audit / demo-reel runs.
 # Real product images live under public/ and components/, never at root.
 /*.png

@@ -246,11 +246,11 @@ test("filters by primary category only", async ({ page }) => {
   ).toHaveCount(0);
 });
 
-test("filters by source dropdown", async ({ page }) => {
-  await page.goto("/");
-
-  await page.getByRole("button", { name: /^All \(\d+\)$/ }).click();
-  await page.getByRole("option", { name: /CalLink/ }).click();
+test("filters by a linked source, clears it from its chip, and reads source words", async ({
+  page,
+}) => {
+  // The page has no source control. A shared link still filters.
+  await page.goto("/?source=callink&date=upcoming");
 
   await expect(
     page.getByText("Free Pizza Mixer", { exact: true }),
@@ -258,7 +258,26 @@ test("filters by source dropdown", async ({ page }) => {
   await expect(
     page.getByText("Dreams Are Colder Than Death", { exact: true }),
   ).toHaveCount(0);
-  await expect(page).toHaveURL(/source=callink/);
+  await expect(page.getByText("Only from", { exact: true })).toBeVisible();
+
+  await page
+    .getByRole("button", { name: "Remove CalLink source filter" })
+    .click();
+  await expect(page).not.toHaveURL(/source=/);
+  await expect(
+    page.getByText("Dreams Are Colder Than Death", { exact: true }),
+  ).toBeVisible();
+
+  // Search words still set a source, with an "Interpreted as" chip.
+  await page
+    .getByRole("combobox", { name: /looking for: search campus events/i })
+    .fill("bampfa");
+  await expect(
+    page.getByRole("button", { name: "Remove BAMPFA filter" }),
+  ).toBeVisible();
+  await expect(page.getByText("Free Pizza Mixer", { exact: true })).toHaveCount(
+    0,
+  );
 });
 
 test("desktop topic chips expand and filter across categories", async ({

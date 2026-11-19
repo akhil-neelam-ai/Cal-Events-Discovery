@@ -8,7 +8,7 @@ import React, {
 import { Analytics } from "@vercel/analytics/react";
 
 import { CalEvent, SearchFilters, LoadingState } from "./types";
-import { DEFAULT_FILTERS } from "./appConfig";
+import { DEFAULT_FILTERS, SOURCE_LABELS } from "./appConfig";
 import { publishViewState } from "./agent/viewState";
 import { AppFooter } from "./components/AppFooter";
 import { BackToTopButton } from "./components/BackToTopButton";
@@ -67,7 +67,6 @@ export default function App() {
     searchIndex,
     searchIndexSettled,
     topicVocabulary,
-    sourceOptions,
     sourceCount,
     loadEvents,
   } = useEventFeed(filters.searchQuery.trim().length >= 2);
@@ -330,6 +329,20 @@ export default function App() {
     [filters.searchQuery, handleRemoveChip, topicDefinitions],
   );
 
+  // The page has no source control. A source from a shared link or an agent
+  // gets its own chip, unless a search chip already names it.
+  const sourceChipLabel =
+    filters.source !== DEFAULT_FILTERS.source &&
+    !activeChips.some((chip) => chip.key === `source:${filters.source}`)
+      ? (SOURCE_LABELS[filters.source] ?? filters.source)
+      : null;
+  // The same path the old dropdown's "All" took: a history entry and a
+  // source filter event.
+  const handleClearSourceChip = useCallback(
+    () => handleSourceChange(DEFAULT_FILTERS.source),
+    [handleSourceChange],
+  );
+
   // "Clear all" shows while anything beyond the date tab narrows the view.
   const canClearAll =
     filters.searchQuery.trim() !== "" ||
@@ -416,14 +429,12 @@ export default function App() {
             weekEndKey={weekEndKey}
             filters={filters}
             activeDateRange={effectiveDateRange}
-            sourceOptions={sourceOptions}
             topicVocabulary={topicVocabulary}
             topicCounts={topicCounts}
             onSearchChange={handleSearchChange}
             onDateChange={handleDateRangeChange}
             onCategoryChange={handleCategoryChange}
             onTopicChange={handleTopicChange}
-            onSourceChange={handleSourceChange}
             onPresetSelect={handleQuickPreset}
             onSurprise={surpriseCandidates.length > 0 ? handleSurprise : null}
             onClearAll={canClearAll ? () => handleClearAll("drawer") : null}
@@ -445,6 +456,8 @@ export default function App() {
               fallbackBannerCopy={notice}
               activeChips={activeChips}
               onDismissChip={handleDismissChip}
+              sourceChipLabel={sourceChipLabel}
+              onClearSource={handleClearSourceChip}
               category={filters.category}
               effectiveDateRange={effectiveDateRange}
               todayKey={todayKey}

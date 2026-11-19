@@ -4,8 +4,9 @@ CalEvents is a public UC Berkeley campus events discovery site. It aggregates up
 
 ## Primary Resources
 
-- [Homepage](https://cal-events.com/): Search and browse upcoming Berkeley events by date, category, topic, source, and keyword.
+- [Homepage](https://cal-events.com/): Search and browse upcoming Berkeley events by date, category, topic, and keyword. It has no source control. A `source` URL parameter or source words in the search still filter by source.
 - [For Agents](https://cal-events.com/for-agents.html): Human-readable agent entry point (tools, URL schema, CRUD limits).
+- [Day pages](https://cal-events.com/days/index.txt): One plain-text page per day for the next 14 days, each small enough to read in one fetch. Start here if your reader cuts off long pages.
 - [Events JSON](https://cal-events.com/events.json): Public machine-readable event feed. The top-level object contains `events`, `sources`, `lastUpdated`, and `topic_vocabulary`.
 - [Search Index](https://cal-events.com/search-index.json): Compact text-search index generated from the published events.
 - [Feed Status](https://cal-events.com/status.json): Machine-readable ingestion status, source health, fallback usage, duplicate counts, and filtering counts.
@@ -14,6 +15,10 @@ CalEvents is a public UC Berkeley campus events discovery site. It aggregates up
 - [Agent Skills](https://cal-events.com/.well-known/agent-skills/index.json): Skill files for search, status, detail, calendar export, and share.
 - [Agent Card](https://cal-events.com/.well-known/agent-card.json): A2A agent card with the WebMCP and OpenAPI interfaces.
 - [MCP Server Card](https://cal-events.com/.well-known/mcp/server-card.json): Browser WebMCP tool list and four named prompts. There is no remote MCP endpoint.
+
+## Day pages
+
+`events.json` is about 1.5 MB, and many fetch tools stop near 40,000 characters. Read [the day index](https://cal-events.com/days/index.txt) instead. It lists `https://cal-events.com/days/YYYY-MM-DD.txt` for today through 13 days ahead, Pacific time, with an event count for each. Each day page stays under 36,000 characters. Each line reads `time | title | place | category | topics | link`, and the link opens the event on CalEvents. Rec facility schedules are counted in one line, not listed. The pages are rebuilt with each deploy, which follows the daily data update.
 
 ## Event Feed Shape
 
