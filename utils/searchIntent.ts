@@ -19,11 +19,23 @@ export interface SearchFilter {
   topic?: string;
 }
 
+/** Where words sit in `SearchPlan.raw`, as [start, end) offsets. */
+export interface ChipSpan {
+  start: number;
+  end: number;
+}
+
 export interface InterpretedChip {
   key: string;
   label: string;
   /** The query words that set a source, category, or topic chip. */
   text?: string;
+  /**
+   * Every place in `raw` whose words set this chip, for chips of every kind.
+   * Two chips can share a span, as "tonight" sets Today and Evening. The
+   * page removes these words when a person removes the chip.
+   */
+  spans?: ChipSpan[];
 }
 
 export interface SearchPlan {
@@ -177,13 +189,111 @@ function stripIntent(text: string, pattern: RegExp): string {
   return text.replace(pattern, " ").replace(/\s+/g, " ").trim();
 }
 
+/**
+ * The residual query text with each character's offset in `raw`, or -1 for
+ * a space a strip put in. It follows `cleaned` step for step, so a match in
+ * the residual text maps back to the words the person typed.
+ */
+interface TrackedText {
+  text: string;
+  origin: number[];
+}
+
+function trackText(text: string): TrackedText {
+  return { text, origin: Array.from({ length: text.length }, (_, i) => i) };
+}
+
+/** The same edit as stripIntent, keeping offsets, plus the span removed. */
+function stripTracked(
+  tracked: TrackedText,
+  pattern: RegExp,
+): { tracked: TrackedText; span: ChipSpan | null } {
+  const match = new RegExp(pattern.source, pattern.flags.replace("g", "")).exec(
+    tracked.text,
+  );
+  let text = tracked.text;
+  let origin = tracked.origin;
+  let span: ChipSpan | null = null;
+  if (match) {
+    span = spanAt(tracked, match.index, match[0].length);
+    const end = match.index + match[0].length;
+    text = `${text.slice(0, match.index)} ${text.slice(end)}`;
+    origin = [...origin.slice(0, match.index), -1, ...origin.slice(end)];
+  }
+
+  // .replace(/\s+/g, " ").trim(), one character at a time.
+  let collapsed = "";
+  const collapsedOrigin: number[] = [];
+  for (let index = 0; index < text.length; index++) {
+    if (/\s/.test(text[index])) {
+      if (collapsed.endsWith(" ")) continue;
+      collapsed += " ";
+    } else {
+      collapsed += text[index];
+    }
+    collapsedOrigin.push(origin[index]);
+  }
+  let start = 0;
+  let stop = collapsed.length;
+  while (start < stop && collapsed[start] === " ") start++;
+  while (stop > start && collapsed[stop - 1] === " ") stop--;
+  return {
+    tracked: {
+      text: collapsed.slice(start, stop),
+      origin: collapsedOrigin.slice(start, stop),
+    },
+    span,
+  };
+}
+
+/** The raw span behind characters [index, index + length) of tracked text. */
+function spanAt(
+  tracked: TrackedText,
+  index: number,
+  length: number,
+): ChipSpan | null {
+  let first = index;
+  let last = index + length - 1;
+  while (first <= last && (tracked.origin[first] ?? -1) < 0) first++;
+  while (last >= first && (tracked.origin[last] ?? -1) < 0) last--;
+  if (first > last) return null;
+  return { start: tracked.origin[first], end: tracked.origin[last] + 1 };
+}
+
+/** The first match of a pattern in raw text, as a span. */
+function rawSpan(raw: string, pattern: RegExp): ChipSpan | null {
+  const match = new RegExp(pattern.source, pattern.flags.replace("g", "")).exec(
+    raw,
+  );
+  return match
+    ? { start: match.index, end: match.index + match[0].length }
+    : null;
+}
+
+function spanList(...spans: Array<ChipSpan | null>): ChipSpan[] {
+  const list: ChipSpan[] = [];
+  for (const span of spans) {
+    if (
+      span &&
+      !list.some((item) => item.start === span.start && item.end === span.end)
+    ) {
+      list.push(span);
+    }
+  }
+  return list;
+}
+
 function addInterpretationOnce(
   interpretations: InterpretedChip[],
   next: InterpretedChip,
 ): void {
-  if (!interpretations.some((item) => item.key === next.key)) {
+  const existing = interpretations.find((item) => item.key === next.key);
+  if (!existing) {
     interpretations.push(next);
+    return;
   }
+  // "tonight after work" sets Evening twice. Both phrases belong to it.
+  existing.spans = spanList(...(existing.spans ?? []), ...(next.spans ?? []));
 }
 
 export function topicPattern(synonym: string): RegExp {
@@ -318,6 +428,14 @@ export function buildSearchPlan(
   const interpretations: InterpretedChip[] = [];
   const phrases: string[] = [];
   let cleaned = raw;
+  let tracked = trackText(raw);
+  // Strips cleaned and its tracked twin together, and returns the span.
+  const strip = (pattern: RegExp): ChipSpan | null => {
+    cleaned = stripIntent(cleaned, pattern);
+    const result = stripTracked(tracked, pattern);
+    tracked = result.tracked;
+    return result.span;
+  };
 
   if (!raw) {
     return {
@@ -334,39 +452,63 @@ export function buildSearchPlan(
   if (RE_TONIGHT.test(raw)) {
     filters.dateRange = "today";
     filters.timeOfDay = "evening";
-    interpretations.push({ key: "dateRange:today", label: "Today" });
-    interpretations.push({ key: "timeOfDay:evening", label: "Evening" });
-    cleaned = stripIntent(cleaned, RE_TONIGHT);
+    const spans = spanList(strip(RE_TONIGHT));
+    interpretations.push({ key: "dateRange:today", label: "Today", spans });
+    interpretations.push({
+      key: "timeOfDay:evening",
+      label: "Evening",
+      spans: [...spans],
+    });
   } else if (RE_TODAY.test(raw)) {
     filters.dateRange = "today";
-    interpretations.push({ key: "dateRange:today", label: "Today" });
-    cleaned = stripIntent(cleaned, RE_TODAY);
+    interpretations.push({
+      key: "dateRange:today",
+      label: "Today",
+      spans: spanList(strip(RE_TODAY)),
+    });
   } else if (RE_TOMORROW.test(raw)) {
     filters.dateRange = "tomorrow";
-    interpretations.push({ key: "dateRange:tomorrow", label: "Tomorrow" });
-    cleaned = stripIntent(cleaned, RE_TOMORROW);
+    interpretations.push({
+      key: "dateRange:tomorrow",
+      label: "Tomorrow",
+      spans: spanList(strip(RE_TOMORROW)),
+    });
   } else if (RE_WEEKEND.test(raw)) {
     filters.dateRange = "week";
     filters.weekend = true;
-    interpretations.push({ key: "dateRange:week", label: "This Week" });
-    interpretations.push({ key: "weekend:true", label: "This Weekend" });
-    cleaned = stripIntent(cleaned, RE_WEEKEND);
+    const spans = spanList(strip(RE_WEEKEND));
+    interpretations.push({ key: "dateRange:week", label: "This Week", spans });
+    interpretations.push({
+      key: "weekend:true",
+      label: "This Weekend",
+      spans: [...spans],
+    });
   } else if (RE_WEEK.test(raw)) {
     filters.dateRange = "week";
-    interpretations.push({ key: "dateRange:week", label: "This Week" });
-    cleaned = stripIntent(cleaned, RE_WEEK);
+    interpretations.push({
+      key: "dateRange:week",
+      label: "This Week",
+      spans: spanList(strip(RE_WEEK)),
+    });
   } else if (RE_UPCOMING.test(raw)) {
     filters.dateRange = "upcoming";
-    interpretations.push({ key: "dateRange:upcoming", label: "Upcoming" });
-    cleaned = stripIntent(cleaned, RE_UPCOMING);
+    interpretations.push({
+      key: "dateRange:upcoming",
+      label: "Upcoming",
+      spans: spanList(strip(RE_UPCOMING)),
+    });
   }
 
   for (const [source, pattern, label] of SOURCE_PATTERNS) {
     const match = cleaned.match(pattern);
     if (match) {
       filters.source = source;
-      interpretations.push({ key: `source:${source}`, label, text: match[0] });
-      cleaned = stripIntent(cleaned, pattern);
+      interpretations.push({
+        key: `source:${source}`,
+        label,
+        text: match[0],
+        spans: spanList(strip(pattern)),
+      });
       break;
     }
   }
@@ -375,68 +517,105 @@ export function buildSearchPlan(
   const firstTopic = topicSpans[0] ?? null;
   if (firstTopic) {
     filters.topic = firstTopic.topic.slug;
+    const text = cleaned.slice(
+      firstTopic.index,
+      firstTopic.index + firstTopic.length,
+    );
     interpretations.push({
       key: `topic:${firstTopic.topic.slug}`,
       label: firstTopic.topic.label,
-      text: cleaned.slice(
-        firstTopic.index,
-        firstTopic.index + firstTopic.length,
-      ),
+      text,
+      spans: spanList(strip(topicPattern(firstTopic.synonym))),
     });
-    cleaned = stripIntent(cleaned, topicPattern(firstTopic.synonym));
   }
 
   const remainingSpans = collectTopicSpans(cleaned, topics);
   const detectorText = maskSpans(cleaned, remainingSpans);
+  // detectorText keeps cleaned's length, so this snapshot maps its matches.
+  const detectorTracked = tracked;
+  const detectorSpan = (pattern: RegExp, words?: RegExp): ChipSpan | null => {
+    const match = pattern.exec(detectorText);
+    if (!match) return null;
+    // Narrow to the words that matter, such as "free" in "free food".
+    const inner = words ? words.exec(match[0]) : null;
+    return inner
+      ? spanAt(detectorTracked, match.index + inner.index, inner[0].length)
+      : spanAt(detectorTracked, match.index, match[0].length);
+  };
 
+  // Time of day reads the raw query but strips the residual text, so its
+  // chip owns both the raw match and the words it stripped.
   if (RE_MORNING.test(raw)) {
     filters.timeOfDay = "morning";
+    const stripped = strip(RE_MORNING);
     addInterpretationOnce(interpretations, {
       key: "timeOfDay:morning",
       label: "Morning",
+      spans: spanList(rawSpan(raw, RE_MORNING), stripped),
     });
-    cleaned = stripIntent(cleaned, RE_MORNING);
   } else if (RE_AFTERNOON_CLOCK.test(raw) || RE_LUNCH.test(detectorText)) {
     filters.timeOfDay = "afternoon";
+    const lunch = detectorSpan(RE_LUNCH);
+    const clock = strip(RE_AFTERNOON_CLOCK);
+    strip(RE_LUNCH);
     addInterpretationOnce(interpretations, {
       key: "timeOfDay:afternoon",
       label: "Afternoon",
+      spans: spanList(rawSpan(raw, RE_AFTERNOON_CLOCK), clock, lunch),
     });
-    cleaned = stripIntent(cleaned, RE_AFTERNOON_CLOCK);
-    cleaned = stripIntent(cleaned, RE_LUNCH);
   } else if (RE_EVENING.test(raw)) {
     // Runs after "tonight" too, so "tonight after work" strips "after work"
     // instead of leaving it as a required keyword.
     filters.timeOfDay = "evening";
+    const stripped = strip(RE_EVENING);
     addInterpretationOnce(interpretations, {
       key: "timeOfDay:evening",
       label: "Evening",
+      spans: spanList(rawSpan(raw, RE_EVENING), stripped),
     });
-    cleaned = stripIntent(cleaned, RE_EVENING);
   }
 
   if (RE_ONLINE.test(detectorText)) {
     filters.modality = "online";
-    interpretations.push({ key: "modality:online", label: "Online" });
-    cleaned = stripIntent(cleaned, RE_ONLINE);
+    interpretations.push({
+      key: "modality:online",
+      label: "Online",
+      spans: spanList(detectorSpan(RE_ONLINE)),
+    });
+    strip(RE_ONLINE);
   } else if (RE_INPERSON.test(detectorText)) {
     filters.modality = "in-person";
-    interpretations.push({ key: "modality:in-person", label: "In Person" });
-    cleaned = stripIntent(cleaned, RE_INPERSON);
+    interpretations.push({
+      key: "modality:in-person",
+      label: "In Person",
+      spans: spanList(detectorSpan(RE_INPERSON)),
+    });
+    strip(RE_INPERSON);
   }
 
+  // The Free chip owns the price words, not the thing that is free: "free
+  // food" gives up "free" and keeps "food".
+  const RE_PRICE_WORDS = /free|complimentary|no[-\s]?charge|no[-\s]?cost|\$0/i;
   if (RE_CONTEXTUAL_FREE.test(raw)) {
-    cleaned = stripIntent(cleaned, /\bfree\b/i);
+    strip(/\bfree\b/i);
   } else if (RE_FREE.test(detectorText)) {
     filters.free = true;
-    interpretations.push({ key: "free:true", label: "Free" });
+    interpretations.push({
+      key: "free:true",
+      label: "Free",
+      spans: spanList(detectorSpan(RE_FREE, RE_PRICE_WORDS)),
+    });
   } else if (
     firstTopic &&
     RE_BARE_FREE.test(detectorText) &&
     !/\bfree will\b/i.test(raw)
   ) {
     filters.free = true;
-    interpretations.push({ key: "free:true", label: "Free" });
+    interpretations.push({
+      key: "free:true",
+      label: "Free",
+      spans: spanList(detectorSpan(RE_BARE_FREE, /free/i)),
+    });
   }
 
   for (const [category, pattern] of CATEGORY_PATTERNS) {
@@ -447,8 +626,9 @@ export function buildSearchPlan(
         key: `category:${category}`,
         label: category,
         text: match[0],
+        spans: spanList(detectorSpan(pattern)),
       });
-      cleaned = stripIntent(cleaned, pattern);
+      strip(pattern);
       break;
     }
   }
@@ -462,8 +642,12 @@ export function buildSearchPlan(
           : area === "southside"
             ? "Southside"
             : "Downtown";
-      interpretations.push({ key: `campusArea:${area}`, label });
-      cleaned = stripIntent(cleaned, pattern);
+      const stripped = strip(pattern);
+      interpretations.push({
+        key: `campusArea:${area}`,
+        label,
+        spans: spanList(rawSpan(raw, pattern), stripped),
+      });
       break;
     }
   }
@@ -539,4 +723,43 @@ export function withDismissedInterpretations(
       (item) => !dismissedKeys.has(item.key),
     ),
   };
+}
+
+// Punctuation left standing alone once its words are gone, such as the ","
+// in "tonight, jazz" or the "?" in "film tonight?".
+const LONE_PUNCTUATION = /^[,.;:!?]+$/;
+
+/**
+ * The query with the words behind one chip taken out, for the page's ×
+ * button. It removes the occurrence that set the chip, as whole words in any
+ * case, then collapses spaces, drops punctuation left standing alone, and
+ * trims. Chips that share words lose them together: "tonight" sets Today
+ * and Evening. A key the query does not set leaves the query as it is.
+ *
+ * The agent tool's `dismiss` input keeps its own meaning through
+ * withDismissedInterpretations.
+ */
+export function removeChipWords(
+  query: string,
+  key: string,
+  options: BuildSearchPlanOptions = {},
+): string {
+  const plan = buildSearchPlan(query, options);
+  const spans = plan.interpretations.find((item) => item.key === key)?.spans;
+  if (!spans || spans.length === 0) return query;
+
+  // Spans count from the trimmed query.
+  const offset = query.length - query.trimStart().length;
+  let next = query;
+  for (const span of [...spans].sort(
+    (left, right) => right.start - left.start,
+  )) {
+    next = `${next.slice(0, offset + span.start)} ${next.slice(offset + span.end)}`;
+  }
+
+  return next
+    .split(/\s+/)
+    .filter((word) => word && !LONE_PUNCTUATION.test(word))
+    .join(" ")
+    .replace(/[,;:]+$/, "");
 }
