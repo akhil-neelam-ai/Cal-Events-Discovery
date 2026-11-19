@@ -1,0 +1,344 @@
+/* Shared styles for the static pages: about, privacy, and 404.
+   Colors and type match the app (index.css): Berkeley blue, gold, Source Serif 4, Inter. */
+
+:root {
+  --blue: #003262;
+  --gold: #fdb515;
+  --paper: #ffffff;
+  --text: #1d2b3a;
+  --muted: #55606e;
+  --rule: #d3d9e0;
+  --serif: "Source Serif 4", Georgia, serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  color: var(--text);
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+/* One left edge for the wordmark, the headline, and the text. */
+.wrap {
+  width: 100%;
+  max-width: 68rem;
+  margin: 0 auto;
+  padding-inline: 1.25rem;
+}
+
+a {
+  color: var(--blue);
+  text-decoration-color: var(--gold);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-color: var(--blue);
+}
+
+:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Masthead */
+
+.masthead {
+  background: var(--blue);
+  border-bottom: 3px solid var(--gold);
+}
+
+.masthead .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  padding-block: 1.1rem;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.wordmark b {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--gold);
+}
+
+.wordmark span {
+  font-weight: 300;
+  letter-spacing: 0.025em;
+}
+
+.site-nav {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.9375rem;
+}
+
+.site-nav a {
+  padding-block: 0.25rem;
+  border-bottom: 2px solid transparent;
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+}
+
+.site-nav a:hover {
+  color: #ffffff;
+  border-bottom-color: rgba(255, 255, 255, 0.5);
+}
+
+.site-nav a[aria-current="page"] {
+  color: #ffffff;
+  border-bottom-color: var(--gold);
+}
+
+/* Page body */
+
+main {
+  flex: 1;
+  padding-block: 2.5rem 4rem;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-family: var(--serif);
+  font-size: clamp(2.125rem, 6vw, 3rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--blue);
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 36rem;
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 3.2vw, 1.4375rem);
+  line-height: 1.5;
+}
+
+.layout {
+  display: grid;
+  gap: 2.5rem;
+  margin-top: 2.5rem;
+}
+
+/* The short answers. They sit above the text on a phone and beside it on a wide screen. */
+.facts {
+  margin: 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 3px solid var(--gold);
+}
+
+.facts div + div {
+  margin-top: 1rem;
+}
+
+.facts dt {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.facts dd {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.1875rem;
+  line-height: 1.35;
+  color: var(--blue);
+  overflow-wrap: anywhere;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose h2 {
+  margin: 2.5rem 0 0.5rem;
+  font-size: 1.1875rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--blue);
+}
+
+.prose p,
+.prose ul {
+  max-width: 38rem;
+  margin: 0 0 1rem;
+}
+
+.prose ul {
+  padding-left: 1.15rem;
+}
+
+.prose li {
+  margin-bottom: 0.35rem;
+}
+
+.note {
+  color: var(--muted);
+}
+
+/* One row per analytics tool: name on the left, what it does on the right. */
+.tools {
+  max-width: 38rem;
+  margin: 1.25rem 0 1.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.tool {
+  display: grid;
+  gap: 0.25rem 2rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.tool h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.65;
+  color: var(--blue);
+}
+
+.tool p {
+  margin: 0;
+}
+
+.tool .cookies {
+  margin-top: 0.25rem;
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+
+/* Search form on the 404 page */
+
+.search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: 32rem;
+  margin: 1.75rem 0 1.25rem;
+}
+
+.search label {
+  flex-basis: 100%;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--blue);
+}
+
+.search input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #8793a0;
+  border-radius: 0.5rem;
+  font: inherit;
+  color: var(--text);
+}
+
+.search button {
+  padding: 0.7rem 1.1rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: var(--blue);
+  font: inherit;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.search button:hover {
+  background: #00254a;
+}
+
+/* Footer */
+
+.site-footer {
+  background: var(--blue);
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.site-footer .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  padding-block: 1.5rem;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+.site-footer nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.site-footer a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 40rem) {
+  .tool {
+    grid-template-columns: 11rem minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 48rem) {
+  .wrap {
+    padding-inline: 2.5rem;
+  }
+
+  main {
+    padding-block: 3.5rem 5rem;
+  }
+}
+
+@media (min-width: 60rem) {
+  .layout {
+    grid-template-columns: minmax(0, 38rem) minmax(0, 17rem);
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .facts {
+    order: 2;
+    position: sticky;
+    top: 1.5rem;
+  }
+}

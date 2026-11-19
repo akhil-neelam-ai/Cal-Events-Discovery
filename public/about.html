@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About CalEvents: UC Berkeley Events in One Feed</title>
+    <meta
+      name="description"
+      content="CalEvents gathers UC Berkeley's public event calendars into one searchable feed, updated every morning. See where events come from and who runs the site."
+    />
+    <link rel="canonical" href="https://cal-events.com/about.html" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cal-events.com/about.html" />
+    <meta
+      property="og:title"
+      content="About CalEvents: UC Berkeley Events in One Feed"
+    />
+    <meta
+      property="og:description"
+      content="CalEvents gathers UC Berkeley's public event calendars into one searchable feed, updated every morning. See where events come from and who runs the site."
+    />
+    <meta property="og:image" content="https://cal-events.com/og-image.png" />
+    <meta property="og:site_name" content="CalEvents" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/site-pages.css" />
+  </head>
+  <body>
+    <header class="masthead">
+      <div class="wrap">
+        <a class="wordmark" href="/" aria-label="CalEvents home"
+          ><b>Cal</b><span>Events</span></a
+        >
+        <nav class="site-nav" aria-label="Site">
+          <a href="/">Events</a>
+          <a href="/about.html" aria-current="page">About</a>
+          <a href="/privacy.html">Privacy</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="wrap">
+        <h1>About CalEvents</h1>
+        <p class="lead">
+          CalEvents gathers UC Berkeley's public event calendars into one feed
+          you can search. It updates every morning.
+        </p>
+
+        <div class="layout">
+          <dl class="facts">
+            <div>
+              <dt>Updated</dt>
+              <dd>Every morning, around 4 AM Pacific</dd>
+            </div>
+            <div>
+              <dt>Sources</dt>
+              <dd>12 public campus calendars</dd>
+            </div>
+            <div>
+              <dt>Account</dt>
+              <dd>None needed, and it's free</dd>
+            </div>
+            <div>
+              <dt>Run by</dt>
+              <dd>Akhil Neelam, Berkeley Haas MBA student</dd>
+            </div>
+            <div>
+              <dt>Contact</dt>
+              <dd>
+                <a href="mailto:akhil_neelam@berkeley.edu"
+                  >akhil_neelam@berkeley.edu</a
+                >
+              </dd>
+            </div>
+          </dl>
+
+          <div class="prose">
+            <h2>Where events come from</h2>
+            <p>
+              Each morning CalEvents reads these public calendars, removes
+              duplicates and sorts every event into a category.
+            </p>
+            <ul>
+              <li>
+                <a href="https://events.berkeley.edu/">UC Berkeley Events</a>,
+                the official campus calendar, with its department and
+                student-life calendars
+              </li>
+              <li>
+                <a href="https://calperformances.org/events/"
+                  >Cal Performances</a
+                >
+              </li>
+              <li>
+                <a href="https://calbears.com/calendar">Cal Bears Athletics</a>
+              </li>
+              <li>
+                <a href="https://bampfa.org/visit/calendar">BAMPFA</a>, the
+                campus art museum and film archive
+              </li>
+              <li>
+                <a href="https://haas.berkeley.edu/events/">Berkeley Haas</a>
+              </li>
+              <li>
+                <a href="https://www.law.berkeley.edu/events/">Berkeley Law</a>
+              </li>
+              <li>
+                <a href="https://simons.berkeley.edu/programs-events"
+                  >Simons Institute</a
+                >
+              </li>
+              <li>
+                <a href="https://begin.berkeley.edu/events/"
+                  >Berkeley Gateway to Innovation</a
+                >
+              </li>
+              <li>
+                <a href="https://ai-risk.berkeley.edu/#upcoming"
+                  >Berkeley AI Risk speaker series</a
+                >
+              </li>
+              <li>
+                <a href="https://brsl.berkeley.edu/events/"
+                  >Berkeley Risk and Security Lab</a
+                >
+              </li>
+              <li>
+                <a href="https://cltc.berkeley.edu/events/"
+                  >Center for Long-Term Cybersecurity</a
+                >
+              </li>
+              <li>Luma calendars run by Berkeley groups</li>
+            </ul>
+            <p>
+              Every event links to its original listing. Times and places can
+              change, so check that listing before you go.
+            </p>
+
+            <h2>Who runs it</h2>
+            <p>
+              <a href="https://akhilneelam.com/">Akhil Neelam</a>, an MBA
+              student at Berkeley Haas, built CalEvents and keeps it running.
+              It is an independent student project, not an official UC Berkeley
+              service.
+            </p>
+            <p>
+              The code is public on
+              <a href="https://github.com/akhil-neelam-ai/Cal-Events-Discovery"
+                >GitHub</a
+              >.
+            </p>
+
+            <h2>Get in touch</h2>
+            <p>
+              Found a wrong detail, a missing calendar or a bug? Email
+              <a href="mailto:akhil_neelam@berkeley.edu"
+                >akhil_neelam@berkeley.edu</a
+              >.
+            </p>
+
+            <h2>For developers and agents</h2>
+            <p>
+              The full feed is open as <a href="/events.json">JSON</a>, and the
+              site describes itself to AI agents. Start at the
+              <a href="/for-agents.html">page for agents</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>CalEvents is an independent student project.</p>
+        <nav aria-label="Footer">
+          <a href="/">Events</a>
+          <a href="/about.html">About</a>
+          <a href="/privacy.html">Privacy</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>
