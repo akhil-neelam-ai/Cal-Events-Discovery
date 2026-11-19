@@ -31,6 +31,7 @@ import { usePrefersReducedMotion } from "./hooks/usePrefersReducedMotion";
 import { readAppUrlState, useUrlStateSync } from "./hooks/useUrlStateSync";
 import {
   initGA,
+  initPostHog,
   trackPageView,
   trackEventClick,
   trackEndedEventLink,
@@ -93,9 +94,10 @@ export default function App() {
   );
 
   useEffect(() => {
-    // Initialize GA4 and track page view
+    // Initialize GA4 and PostHog, then track the page view
     // Vercel Analytics is initialized via the <Analytics /> component wrapper
     initGA();
+    initPostHog();
     trackPageView({
       page_path: "/",
       page_title: "CalEvents - UC Berkeley Events",

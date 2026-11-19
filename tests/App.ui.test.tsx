@@ -50,6 +50,7 @@ vi.mock("@vercel/analytics/react", () => ({
 
 vi.mock("../utils/analytics", () => ({
   initGA: vi.fn(),
+  initPostHog: vi.fn(),
   trackPageView: vi.fn(),
   trackSearch: vi.fn(),
   trackCategoryFilter: vi.fn(),
