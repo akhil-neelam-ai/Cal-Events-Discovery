@@ -206,7 +206,7 @@ describe("AgentPromptCard", () => {
       "",
       "1. Read https://cal-events.com/llms.txt first.",
       '2. Ask me two things in one message: "What kind of events would you like?" and "Do you want a daily digest, a weekly digest, or one a few times a week?"',
-      "3. Read the day pages listed at https://cal-events.com/days/index.txt for the days your digest covers. Only suggest events you find there.",
+      "3. Read the day pages listed at https://cal-events.com/days/index.txt: today for a daily digest, the next three days for a few times a week, or the next seven days for a weekly one. Only suggest events you find there.",
       "4. Send me the events that fit best, and leave out weak matches. For each, give the title, day and time, place, one line on why it fits, and its link.",
       "5. If you can schedule tasks, repeat this at the pace I chose. If you can't, tell me, and I'll ask again when I want the next one.",
     ]);
