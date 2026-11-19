@@ -108,6 +108,7 @@ The site exposes itself to agents, and the standing rule is parity: any action a
 - `public/.well-known/agent-skills/` holds skill files plus `index.json`, which carries SHA-256 content digests that must be regenerated when a skill file changes
 - `public/llms.txt`, `public/llms-full.txt`, `public/openapi.json`
 - `public/webmcp-tools.js` is a thin legacy shim; the real implementation lives in `agent/`
+- `public/.well-known/security.txt` has an `Expires` date of 2027-11-18. Move it a year out before then. Tests check its format, not the date
 
 `list_filter_options` returns the categories, active sources, date presets, and topics every other tool accepts, so agents do not guess values. `agent/viewState.ts` holds a snapshot App publishes after each render, and `get_ui_state` returns it as `view`: the date range searched, chips, result count, and visible ids. When the page gains a new filter or result state, add it to both.
 
