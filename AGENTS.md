@@ -111,6 +111,7 @@ The site exposes itself to agents, and the standing rule is parity: any action a
 - `public/.well-known/mcp/server-card.json`, `public/.well-known/agent-card.json`
 - `public/.well-known/agent-skills/` holds skill files plus `index.json`, which carries SHA-256 content digests that must be regenerated when a skill file changes
 - `public/llms.txt`, `public/llms-full.txt`, `public/openapi.json`
+- `public/days/`: plain-text day pages, generated at build time and not committed (see "Day pages" below)
 - `public/webmcp-tools.js` is a thin legacy shim; the real implementation lives in `agent/`
 - `public/.well-known/security.txt` has an `Expires` date of 2027-11-18. Move it a year out before then. Tests check its format, not the date
 
@@ -194,6 +195,8 @@ The September full-repo audit is `docs/code-review-2026-09-25.md`. Every item ha
 **Shared-link previews**: chat apps read Open Graph tags without running JavaScript. A `vercel.json` route sends `/?event=<id>` to `api/event-preview.ts` only when the user agent matches a known link-preview crawler. People still get the static app. That page names `api/event-image.tsx` as its `og:image`, a 1200x630 card drawn with `@vercel/og`. Both functions read the committed `public/events.json` through `includeFiles`, so previews match the last deploy. An unknown or ended event gets the site-wide preview. In the app, such a link opens the normal listing with a dismissible "This event has ended" notice, also published as the `get_ui_state` notice. `@vercel/og` is pinned to 1.0.1 because 1.0.2 and 1.0.3 crash under plain Node ESM. Relative imports under `api/` need a `.js` extension for the same reason.
 
 **Analytics**: `utils/analytics.ts` sends each custom event to GA4 and PostHog through `trackEvent`. PostHog loads only when `VITE_POSTHOG_KEY` is set, which Vercel does for production builds, so local dev, tests, and previews send nothing. It runs cookieless with session replay off, and talks to the same-origin `/pulse` path that `vercel.json` forwards to PostHog. That keeps PostHog hosts out of the CSP. Cookieless events are dropped unless the PostHog project has cookieless mode switched on in its settings. `public/privacy.html` tells visitors what GA4, PostHog, and Vercel Analytics record. Update it whenever analytics change.
+
+**Day pages**: an assistant that can only fetch pages reads about 40,000 characters at a time, a few percent of `events.json`. `scripts/dayPages.ts` writes `public/days/index.txt` and one `public/days/YYYY-MM-DD.txt` per day for 14 days from today, Pacific time. A Vite plugin in `vite.config.ts` runs it at the start of every build and dev server, so the folder is gitignored and the daily pipeline never touches it. It uses the app's day rule (`firstOccurrenceInRange`), leaves Rec facility schedules as one count line, and keeps each page under 36,000 characters by shortening places first, then leaving events off with a note. `vercel.json` serves them as `text/plain` with a one-hour cache.
 
 **Static pages**: `public/about.html`, `public/privacy.html`, and `public/404.html` are plain HTML that share `public/site-pages.css`. `index.html` carries a short fallback inside `#root`, which the app replaces on load. It is all that readers without JavaScript see, so keep its heading and links accurate.
 
