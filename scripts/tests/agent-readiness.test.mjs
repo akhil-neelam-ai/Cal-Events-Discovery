@@ -44,6 +44,10 @@ test("agent-readable static files are present", () => {
     "public/favicon.svg",
     "public/favicon.ico",
     "public/apple-touch-icon.png",
+    "public/about.html",
+    "public/privacy.html",
+    "public/404.html",
+    "public/site-pages.css",
   ]) {
     assert.ok(fs.existsSync(path.join(rootDir, relativePath)), relativePath);
   }
@@ -62,6 +66,44 @@ test("security.txt carries the RFC 9116 fields", () => {
   const expires = securityTxt.match(/^Expires: (\S+)$/m)?.[1];
   assert.ok(expires, "Expires is required");
   assert.ok(!Number.isNaN(Date.parse(expires)), "Expires must be a date");
+});
+
+test("static pages cover about, privacy, and the 404", () => {
+  const sitemap = readText("public/sitemap.xml");
+  for (const page of ["about.html", "privacy.html"]) {
+    assert.ok(sitemap.includes(`<loc>https://cal-events.com/${page}</loc>`));
+    const html = readText(`public/${page}`);
+    assert.match(html, /<h1>[^<]+<\/h1>/);
+    assert.match(html, /href="\/site-pages\.css"/);
+  }
+  assert.match(
+    readText("public/404.html"),
+    /<meta name="robots" content="noindex" \/>/,
+  );
+  // The privacy page must name every analytics tool the site loads.
+  const privacy = readText("public/privacy.html");
+  for (const tool of ["Google Analytics", "PostHog", "Vercel Web Analytics"]) {
+    assert.ok(privacy.includes(tool), tool);
+  }
+});
+
+test("the home page shell reads without JavaScript", () => {
+  const html = readText("index.html");
+  const root = html.match(/<div id="root">([\s\S]*?)<script/)?.[1] ?? "";
+  assert.match(root, /<h1>[^<]+<\/h1>/);
+  assert.match(root, /href="\/about\.html"/);
+  assert.match(root, /href="\/privacy\.html"/);
+
+  const jsonLd = html.match(
+    /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+  )?.[1];
+  assert.ok(jsonLd, "WebSite structured data");
+  const data = JSON.parse(jsonLd);
+  assert.equal(data["@type"], "WebSite");
+  assert.equal(
+    data.potentialAction.target.urlTemplate,
+    "https://cal-events.com/?q={search_term_string}",
+  );
 });
 
 test("robots.txt declares sitemap, AI bot rules, and content signals", () => {

@@ -82,9 +82,111 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap"
       rel="stylesheet"
     />
+    <!-- Structured data: site name and search URL for search engines -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "CalEvents",
+        "url": "https://cal-events.com/",
+        "description": "UC Berkeley campus events in one searchable feed, updated every morning.",
+        "inLanguage": "en",
+        "publisher": {
+          "@type": "Person",
+          "name": "Akhil Neelam",
+          "url": "https://akhilneelam.com/"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://cal-events.com/?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+
+    <!-- Styles for the fallback inside #root. It shows until the app loads,
+         and is all that readers without JavaScript see. -->
+    <style>
+      .boot {
+        padding: 1.75rem 1.5rem 3rem;
+        border-bottom: 3px solid #fdb515;
+        background: #003262;
+        color: #fff;
+        font-family: "Inter", system-ui, sans-serif;
+        text-align: center;
+      }
+      .boot-mark {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        max-width: 72rem;
+        margin: 0 auto;
+        font-size: 1.5rem;
+      }
+      .boot-mark b {
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        color: #fdb515;
+      }
+      .boot-mark span {
+        font-weight: 300;
+        letter-spacing: 0.025em;
+      }
+      .boot h1 {
+        max-width: 48rem;
+        margin: 2.25rem auto 0.75rem;
+        font-family: "Source Serif 4", Georgia, serif;
+        font-size: clamp(2rem, 5vw, 3.35rem);
+        font-weight: 600;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        text-wrap: balance;
+      }
+      .boot p {
+        max-width: 40rem;
+        margin: 0 auto;
+        font-size: 0.9375rem;
+        line-height: 1.75;
+        color: rgba(255, 255, 255, 0.72);
+      }
+      .boot nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem 1.5rem;
+        margin-top: 1.5rem;
+        font-size: 0.875rem;
+      }
+      .boot a {
+        color: #fdb515;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="boot">
+        <div class="boot-mark"><b>Cal</b><span>Events</span></div>
+        <h1>UC Berkeley events in one searchable feed</h1>
+        <p>
+          CalEvents gathers lectures, performances, games and student events
+          from campus calendars, and updates every morning.
+        </p>
+        <noscript>
+          <p>
+            The live feed needs JavaScript. Turn it on, or read the events as
+            <a href="/events.json">JSON</a>.
+          </p>
+        </noscript>
+        <nav aria-label="Site">
+          <a href="/about.html">About</a>
+          <a href="/privacy.html">Privacy</a>
+          <a href="/for-agents.html">For agents</a>
+        </nav>
+      </div>
+    </div>
     <script src="/webmcp-tools.js" defer></script>
     <script type="module" src="/index.tsx"></script>
   </body>

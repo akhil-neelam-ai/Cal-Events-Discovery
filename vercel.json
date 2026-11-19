@@ -158,6 +158,21 @@
       "continue": true
     },
     {
+      "src": "^/site-pages\\.css$",
+      "headers": {
+        "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/about/?$",
+      "dest": "/about.html"
+    },
+    {
+      "src": "^/privacy/?$",
+      "dest": "/privacy.html"
+    },
+    {
       "src": "^/\\.well-known/security\\.txt$",
       "headers": {
         "Content-Type": "text/plain; charset=utf-8"

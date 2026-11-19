@@ -39,8 +39,18 @@ export function AppFooter() {
           , and browser WebMCP tools on this page.
         </p>
         <p className="mt-3 text-xs text-white/50">
-          This site uses Google Analytics for anonymous usage stats, including
-          search terms entered, to improve event discovery.
+          This site counts visits and searches with analytics. Read the{" "}
+          <a
+            href="/privacy.html"
+            className="text-berkeley-gold hover:underline"
+          >
+            privacy page
+          </a>{" "}
+          or{" "}
+          <a href="/about.html" className="text-berkeley-gold hover:underline">
+            about CalEvents
+          </a>
+          .
         </p>
       </div>
     </footer>
