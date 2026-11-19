@@ -20,6 +20,7 @@ function renderNotice(isMobile: boolean) {
       onSearchChange={() => {}}
       onPresetSelect={() => {}}
       onDateChange={() => {}}
+      onSurprise={null}
     />,
   );
 }

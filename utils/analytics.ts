@@ -243,6 +243,20 @@ export function trackEventClick(params: EventClickParams): void {
 }
 
 /**
+ * Track the "Surprise me" sticker. The event it opens also sends
+ * event_click, the same as a card click.
+ */
+export function trackSurpriseMe(params: {
+  event_id: string;
+  results_count: number;
+}): void {
+  trackEvent("surprise_me", {
+    event_id: params.event_id,
+    results_count: params.results_count,
+  });
+}
+
+/**
  * Track clicks to external event pages
  */
 export function trackExternalLink(params: ExternalLinkParams): void {

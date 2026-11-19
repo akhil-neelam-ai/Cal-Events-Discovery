@@ -41,7 +41,9 @@ import {
   trackPageView,
   trackEventClick,
   trackEndedEventLink,
+  trackSurpriseMe,
 } from "./utils/analytics";
+import { isRecFacilitySchedule } from "./utils/eventPresentation";
 import { addRecentSearch } from "./utils/recentSearches";
 import type { AppUrlState } from "./utils/urlState";
 
@@ -268,6 +270,27 @@ export default function App() {
     [filters.searchQuery, onHistoryIntent, visibleSelectedEventId],
   );
 
+  // "Surprise me" opens one random result through the same path as a card
+  // click. Facility schedules are not events, so it skips them as Next up
+  // does.
+  const surpriseCandidates = useMemo(
+    () =>
+      loading === LoadingState.SUCCESS
+        ? filteredEvents.filter((event) => !isRecFacilitySchedule(event))
+        : [],
+    [filteredEvents, loading],
+  );
+  const handleSurprise = useCallback(() => {
+    if (surpriseCandidates.length === 0) return;
+    const event =
+      surpriseCandidates[Math.floor(Math.random() * surpriseCandidates.length)];
+    trackSurpriseMe({
+      event_id: event.id,
+      results_count: surpriseCandidates.length,
+    });
+    handleEventClick(event);
+  }, [handleEventClick, surpriseCandidates]);
+
   // Closing steps back over the entry the open added, so Back never lands on
   // the same event again. An event opened from a shared link has no entry.
   const handleCloseDetail = useCallback(() => {
@@ -377,6 +400,7 @@ export default function App() {
             onTopicChange={handleTopicChange}
             onSourceChange={handleSourceChange}
             onPresetSelect={handleQuickPreset}
+            onSurprise={surpriseCandidates.length > 0 ? handleSurprise : null}
           />
 
           {loading === LoadingState.LOADING && <LoadingStateView />}

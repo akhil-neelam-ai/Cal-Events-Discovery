@@ -86,6 +86,7 @@ export function NoticeSheet({
   onSearchChange,
   onPresetSelect,
   onDateChange,
+  onSurprise,
 }: {
   isMobile: boolean;
   todayKey: string;
@@ -98,12 +99,19 @@ export function NoticeSheet({
   onSearchChange: (query: string) => void;
   onPresetSelect: (preset: QuickFilterPreset) => void;
   onDateChange: (next: SearchFilters["dateRange"]) => void;
+  /** Opens one random result. Null hides the sticker. */
+  onSurprise: (() => void) | null;
 }) {
   return (
     <header className="notice">
       <h1 className="mark">
         <span>Cal</span> <span>Events</span>
       </h1>
+      {onSurprise && (
+        <button type="button" className="sticker" onClick={onSurprise}>
+          Surprise me
+        </button>
+      )}
       <p className="dateline">{longDate(todayKey)}</p>
       <p className="tally">{tallyCopy(loading, allEventsCount, sourceCount)}</p>
 

@@ -25,6 +25,7 @@ function NoticeHarness({ isMobile }: { isMobile: boolean }) {
       onSearchChange={setQuery}
       onPresetSelect={() => {}}
       onDateChange={() => {}}
+      onSurprise={null}
     />
   );
 }

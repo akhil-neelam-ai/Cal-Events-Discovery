@@ -21,7 +21,11 @@ import type { CalEvent } from "../types";
 import { LoadingState } from "../types";
 import { buildSearchIndex } from "../scripts/lib/buildIndex";
 import { TOPIC_VOCABULARY } from "../scripts/lib/topics";
-import { trackEndedEventLink } from "../utils/analytics";
+import {
+  trackEndedEventLink,
+  trackEventClick,
+  trackSurpriseMe,
+} from "../utils/analytics";
 import { addRecentSearch } from "../utils/recentSearches";
 import type { SearchIndex } from "../utils/textUtils";
 
@@ -59,6 +63,7 @@ vi.mock("../utils/analytics", () => ({
   trackEventClick: vi.fn(),
   trackFilter: vi.fn(),
   trackExternalLink: vi.fn(),
+  trackSurpriseMe: vi.fn(),
 }));
 
 vi.mock("../utils/recentSearches", async (importOriginal) => {
@@ -1323,6 +1328,56 @@ describe("App UI regressions", () => {
         .getAllByRole("heading", { level: 4 })
         .map((heading) => heading.textContent),
     ).toEqual(["Today Talk", "Tomorrow Talk"]);
+  });
+
+  it("opens a random result from Surprise me, the way a card click does", async () => {
+    const user = userEvent.setup();
+    vi.mocked(trackSurpriseMe).mockClear();
+    vi.mocked(trackEventClick).mockClear();
+    const random = vi.spyOn(Math, "random").mockReturnValue(0.99);
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "first", title: "First Talk", time: "4:00 PM" }),
+      makeEvent({ id: "second", title: "Second Talk", time: "6:00 PM" }),
+      makeEvent({
+        id: "pool",
+        title: "Lap Swim",
+        organizer: "Recreational Sports",
+        time: "9:00 PM",
+      }),
+    ]);
+    const startLength = window.history.length;
+
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "Surprise me" }));
+    random.mockRestore();
+
+    // Facility schedules are not events, so the pick skips them.
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Second Talk" }),
+    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(window.location.search).toContain("event=second");
+    });
+    expect(window.history.length).toBe(startLength + 1);
+    expect(trackSurpriseMe).toHaveBeenCalledExactlyOnceWith({
+      event_id: "second",
+      results_count: 2,
+    });
+    expect(trackEventClick).toHaveBeenCalledOnce();
+  });
+
+  it("hides Surprise me when nothing matches", async () => {
+    mockFeedState = makeFeedState([makeEvent({ id: "a", title: "AI Talk" })]);
+    window.history.replaceState({}, "", "/?q=zzzxqv");
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/No results for/)).toBeInTheDocument();
+    });
+    expect(
+      screen.queryByRole("button", { name: "Surprise me" }),
+    ).not.toBeInTheDocument();
   });
 
   it("collapses a day's Rec Sports schedules into one row", async () => {

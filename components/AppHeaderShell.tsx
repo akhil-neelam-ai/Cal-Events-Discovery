@@ -25,6 +25,7 @@ export function AppHeaderShell({
   onTopicChange,
   onSourceChange,
   onPresetSelect,
+  onSurprise,
 }: {
   isMobile: boolean;
   loading: LoadingState;
@@ -43,6 +44,7 @@ export function AppHeaderShell({
   onTopicChange: (next: string) => void;
   onSourceChange: (next: string) => void;
   onPresetSelect: (preset: QuickFilterPreset) => void;
+  onSurprise: (() => void) | null;
 }) {
   const filterProps = {
     filters,
@@ -68,6 +70,7 @@ export function AppHeaderShell({
         onSearchChange={onSearchChange}
         onPresetSelect={onPresetSelect}
         onDateChange={onDateChange}
+        onSurprise={onSurprise}
       />
       {isMobile ? (
         <MobileFiltersBar {...filterProps} />
