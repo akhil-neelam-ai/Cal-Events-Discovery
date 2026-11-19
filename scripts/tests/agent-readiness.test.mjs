@@ -40,9 +40,28 @@ test("agent-readable static files are present", () => {
     "public/.well-known/mcp/server-card.json",
     "public/.well-known/agent-card.json",
     "public/.well-known/agent-skills/index.json",
+    "public/.well-known/security.txt",
+    "public/favicon.svg",
+    "public/favicon.ico",
+    "public/apple-touch-icon.png",
   ]) {
     assert.ok(fs.existsSync(path.join(rootDir, relativePath)), relativePath);
   }
+});
+
+// Expires is checked for format only. A date check here would start failing
+// the daily data pull request once the file goes stale.
+test("security.txt carries the RFC 9116 fields", () => {
+  const securityTxt = readText("public/.well-known/security.txt");
+  assert.match(securityTxt, /^Contact: mailto:\S+@\S+$/m);
+  assert.match(securityTxt, /^Preferred-Languages: en$/m);
+  assert.match(
+    securityTxt,
+    /^Canonical: https:\/\/cal-events\.com\/\.well-known\/security\.txt$/m,
+  );
+  const expires = securityTxt.match(/^Expires: (\S+)$/m)?.[1];
+  assert.ok(expires, "Expires is required");
+  assert.ok(!Number.isNaN(Date.parse(expires)), "Expires must be a date");
 });
 
 test("robots.txt declares sitemap, AI bot rules, and content signals", () => {
@@ -310,11 +329,31 @@ test("homepage and Vercel config expose discovery hooks", () => {
   assert.match(JSON.stringify(homeHeaders), /api-catalog/);
   assert.match(JSON.stringify(homeHeaders), /llms\.txt/);
 
-  const filesystemRoute = vercel.routes.find(
+  const filesystemIndex = vercel.routes.findIndex(
     (entry) => entry.handle === "filesystem",
   );
   assert.ok(
-    filesystemRoute,
+    filesystemIndex >= 0,
     "Vercel filesystem route must still serve the app",
+  );
+
+  // The two root scripts are not content-hashed, so they get a short
+  // lifetime rather than immutable.
+  for (const src of ["^/gtag-init\\.js$", "^/webmcp-tools\\.js$"]) {
+    const index = vercel.routes.findIndex((entry) => entry.src === src);
+    assert.ok(index >= 0 && index < filesystemIndex, src);
+    const route = vercel.routes[index];
+    assert.equal(route.continue, true, src);
+    assert.equal(
+      route.headers["Cache-Control"],
+      "public, max-age=3600, stale-while-revalidate=86400",
+    );
+  }
+  const securityTxtRoute = vercel.routes.find(
+    (entry) => entry.src === "^/\\.well-known/security\\.txt$",
+  );
+  assert.equal(
+    securityTxtRoute?.headers["Content-Type"],
+    "text/plain; charset=utf-8",
   );
 });
