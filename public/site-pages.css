@@ -144,6 +144,12 @@ main {
   --ring: var(--toner);
 }
 
+/* A text sheet is only as wide as a comfortable line, so on a wide screen
+   it hangs on the left of the wall under the wordmark. */
+.page-text {
+  max-width: 44rem;
+}
+
 /* Two staples along the top edge */
 .page::before,
 .page::after {
@@ -202,34 +208,12 @@ h1 {
   margin-top: 1.5rem;
 }
 
-/* The short answers. They sit above the text on a phone and beside it on a
-   wide screen, between dashed tear lines. */
-.facts {
-  display: grid;
-  gap: 0.85rem;
-  margin: 0 -1.1rem;
-  padding: 1rem 1.1rem 1.1rem;
-  border-block: 2px dashed var(--toner);
-}
-
-.facts dt {
+.updated {
+  margin: 0.75rem 0 0;
   font-weight: 700;
   font-stretch: 88%;
   font-size: 0.875rem;
   color: var(--muted);
-}
-
-.facts dd {
-  margin: 0.1rem 0 0;
-  font-weight: 800;
-  font-stretch: 84%;
-  font-size: 1.1875rem;
-  line-height: 1.15;
-  overflow-wrap: anywhere;
-}
-
-.facts dd a {
-  font-weight: 800;
 }
 
 .prose {
@@ -547,11 +531,6 @@ code {
     --askew: 6px;
   }
 
-  .facts {
-    margin-inline: -3rem;
-    padding-inline: 3rem;
-  }
-
   .sheet-foot {
     margin: 2rem -3rem 0;
     padding: 1.25rem 3rem 1.5rem;
@@ -577,20 +556,7 @@ code {
 
 @media (min-width: 60rem) {
   .layout {
-    grid-template-columns: minmax(0, 38rem) minmax(0, 1fr);
-    column-gap: 3rem;
-    align-items: start;
     margin-top: 2.5rem;
-  }
-
-  .facts {
-    order: 2;
-    position: sticky;
-    top: 1.5rem;
-    margin: 0;
-    padding: 0 0 0 2rem;
-    border-block: 0;
-    border-left: 2px dashed var(--toner);
   }
 
   .prose {
