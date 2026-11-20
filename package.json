@@ -29,7 +29,8 @@
     "test": "npm run validate",
     "update-events": "tsx scripts/updateEvents.ts",
     "check:livewhale-budget": "tsx scripts/checkLiveWhaleBudget.ts",
-    "rebuild-index": "tsx scripts/rebuildSearchIndex.ts"
+    "rebuild-index": "tsx scripts/rebuildSearchIndex.ts",
+    "render-og-image": "node scripts/renderOgImage.mjs"
   },
   "overrides": {
     "undici": "^7.29.0"
@@ -39,7 +40,7 @@
     "@vercel/og": "1.0.1",
     "cheerio": "^1.2.0",
     "fuse.js": "^7.5.0",
-    "he": "^1.2.0",
+    "he": "^2.0.0",
     "node-ical": "^0.27.6",
     "posthog-js": "^1.450.0",
     "react": "^19.3.1",
@@ -50,7 +51,7 @@
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.65.1",
     "@tailwindcss/postcss": "^4.3.5",
-    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.12",
     "@types/he": "^1.2.3",
@@ -64,7 +65,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.8",
     "globals": "^17.14.0",
-    "jsdom": "^29.1.1",
+    "jsdom": "^31.0.1",
     "postcss": "^8.5.33",
     "prettier": "^3.10.1",
     "tailwindcss": "^4.3.0",

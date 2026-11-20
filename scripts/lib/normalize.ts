@@ -5,7 +5,7 @@
  * - Date / time projection from start_at + timezone for the legacy shape
  */
 
-import he from "he";
+import { decode } from "he";
 
 import type { CanonicalEvent, LegacyCalEvent } from "./schema.js";
 import { linkifySegments } from "../../utils/linkify.js";
@@ -383,7 +383,7 @@ export function sanitizePlainText(raw: string): string {
   const withoutTags = raw
     .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, " ")
     .replace(/<[^>]+>/g, " ");
-  const decoded = he.decode(withoutTags);
+  const decoded = decode(withoutTags);
   // U+FFFD marks a character the source could not encode, such as a cut emoji.
   return decoded.replace(/[<>�]/g, "").replace(/\s+/g, " ").trim();
 }
@@ -400,8 +400,7 @@ export function sanitizeDescription(raw: string): string {
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/(p|div|li|h[1-6]|tr|blockquote)\s*>/gi, "\n")
     .replace(/<[^>]+>/g, " ");
-  return he
-    .decode(withBreaks)
+  return decode(withBreaks)
     .replace(/[<>\uFFFD]/g, "")
     .replace(/\*\*/g, "")
     .split("\n")
