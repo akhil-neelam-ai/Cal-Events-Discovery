@@ -31,6 +31,7 @@ function renderNotice(isMobile: boolean) {
       onPresetSelect={() => {}}
       onDateChange={() => {}}
       onSurprise={null}
+      onHome={() => {}}
     />,
   );
 }

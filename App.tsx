@@ -358,6 +358,12 @@ export default function App() {
     },
     [resetAll],
   );
+  // The wordmark works like a home link without reloading the page.
+  const handleHome = useCallback(() => {
+    resetAll();
+    trackClearAll("wordmark");
+    window.scrollTo({ top: 0 });
+  }, [resetAll]);
 
   // Read-only snapshot of what the page shows, for the get_ui_state tool.
   const notice = topicFilterNotice ?? fallbackBannerCopy;
@@ -438,6 +444,7 @@ export default function App() {
             onPresetSelect={handleQuickPreset}
             onSurprise={surpriseCandidates.length > 0 ? handleSurprise : null}
             onClearAll={canClearAll ? () => handleClearAll("drawer") : null}
+            onHome={handleHome}
           />
 
           {loading === LoadingState.LOADING && <LoadingStateView />}
