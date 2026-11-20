@@ -32,7 +32,7 @@ Each of these was decoration that carried no information. The goal, in the owner
 | 6. Ship | Merged after a phone test, then reran the acceptance test on production | 55 of 55 checks |
 | 7. Fix in use | The owner used the live site and reported problems | PRs 308, 316 |
 | 8. Roll out | Carried the design to every other surface | PRs 313, 314, 315, 317 |
-| 9. Audit | Ran a full site audit before and after | Score 85, then 84, with fixes chosen |
+| 9. Audit | Ran a full site audit before and after | Score 85, then 84, then two fixes (PR 320) |
 
 ### Three directions, built on real data
 
@@ -83,7 +83,7 @@ The home page was only one surface. These followed:
 
 ### The audit
 
-A full squirrelscan crawl scored 85 (B) after the home page shipped and 84 (B) after the roll-out. Accessibility, images, mobile, social previews and core SEO stayed at 100. The point lost came from the For Agents page joining the others in loading the Google Fonts stylesheet. The owner chose two fixes: structured data for the For Agents page, and serving Archivo from the site itself. Both were in progress when this note was written.
+A full squirrelscan crawl scored 85 (B) after the home page shipped and 84 (B) after the roll-out. Accessibility, images, mobile, social previews and core SEO stayed at 100. The point lost came from the For Agents page joining the others in loading the Google Fonts stylesheet. The owner chose two fixes, and PR 320 shipped both: structured data for the For Agents page, and serving Archivo from the site itself.
 
 ## The design system
 
@@ -106,7 +106,7 @@ The theme lives in the `@theme` block of `index.css`. The static pages copy the 
 The rules:
 
 - **Paper color is the category.** It comes from `tags[0]` through `utils/flyerWall.ts`. Color carries meaning, so it is never decoration.
-- **One typeface.** Archivo, a variable font with a width axis from 62 to 125 and weights from 100 to 900. Every role is a `font-stretch` and weight pair. The wordmark is wide and heavy (118%, 900). Dates are narrow and heavy (62%, 900).
+- **One typeface.** Archivo, a variable font with a width axis from 62 to 125 and weights from 100 to 900, served from `public/fonts`. Every role is a `font-stretch` and weight pair. The wordmark is wide and heavy (118%, 900). Dates are narrow and heavy (62%, 900).
 - **Chalk on the wall, toner on paper.** View headings, day strips and the footer are white text on blue. Everything on a sheet is black.
 - **Sheets are physical.** Each tilts between -0.8 and 0.8 degrees, fixed by a hash of its id so it never jumps. Each has a staple mark. The notice tilts -0.5 degrees.
 - **Ink buttons.** Anything pressed on paper is black: one filled (`btn-toner`), the rest outlined (`btn-line`), with 44px minimum targets.

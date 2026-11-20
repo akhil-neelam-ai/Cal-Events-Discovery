@@ -27,11 +27,12 @@
     <meta property="og:site_name" content="CalEvents" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/archivo-v25-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
     <link rel="stylesheet" href="/site-pages.css" />
   </head>
@@ -58,7 +59,7 @@
             the site is used with three analytics tools, and one of them sets
             cookies.
           </p>
-          <p class="updated">Last updated November 18, 2026</p>
+          <p class="updated">Last updated November 19, 2026</p>
 
           <div class="layout">
             <div class="prose">
@@ -131,10 +132,6 @@
                 <li>
                   Vercel hosts the site and, like any host, logs requests along
                   with their network addresses.
-                </li>
-                <li>
-                  Google Fonts serves the typefaces, so your browser contacts
-                  Google to load them.
                 </li>
                 <li>
                   Event pages, calendar links and map links open other sites,
