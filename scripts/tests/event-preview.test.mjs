@@ -6,9 +6,12 @@ import { fileURLToPath } from "node:url";
 
 import {
   buildDefaultPreview,
+  buildEventCard,
   buildEventPreview,
   describeWhen,
   findPublishedEvent,
+  PAPER_COLORS,
+  PLAIN_PAPER,
   renderPreviewHtml,
 } from "../../api/_lib/eventPreview.ts";
 import * as previewHandler from "../../api/event-preview.ts";
@@ -73,6 +76,32 @@ test("describeWhen covers single-day, all-day, and running spans", () => {
     ),
     "Through Oct 27",
   );
+});
+
+test("the card prints on the same paper as the event's flyer", () => {
+  const theme = fs.readFileSync(path.join(rootDir, "index.css"), "utf8");
+  const slugs = {
+    Academic: "academic",
+    Arts: "arts",
+    Sports: "sports",
+    "Science & Tech": "scitech",
+    "Student Life": "life",
+    Entrepreneurship: "entre",
+  };
+  for (const [category, slug] of Object.entries(slugs)) {
+    const token = theme.match(
+      new RegExp(`--color-paper-${slug}:\\s*(#[0-9a-f]{6})`, "i"),
+    );
+    assert.equal(PAPER_COLORS[category], token?.[1].toLowerCase(), category);
+  }
+  assert.match(theme, new RegExp(`--color-paper-other:\\s*${PLAIN_PAPER}`));
+
+  const arts = buildEventCard(makeEvent({ tags: ["Arts"] }), NOW);
+  assert.equal(arts.paper, PAPER_COLORS.Arts);
+  assert.equal(arts.category, "Arts");
+  const other = buildEventCard(makeEvent({ tags: ["Unfiled"] }), NOW);
+  assert.equal(other.paper, PLAIN_PAPER);
+  assert.equal(other.category, "");
 });
 
 test("event preview links the clean event URL and its card image", () => {
