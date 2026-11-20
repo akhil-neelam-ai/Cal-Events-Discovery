@@ -1,14 +1,20 @@
 /* Shared styles for the static pages: about, privacy, and 404.
-   Colors and type match the app (index.css): Berkeley blue, gold, Source Serif 4, Inter. */
+   They use the flyer wall from index.css: a Berkeley blue wall, white chalk
+   type on the wall, and one plain sheet of paper with black toner type.
+   One typeface, Archivo, varied through font-stretch and weight. Anything
+   pressed on paper is ink: one filled button, the rest outlined. */
 
 :root {
-  --blue: #003262;
+  --wall: #003262;
+  --chalk: #ffffff;
+  --toner: #121212;
+  --plain: #fcfcf9;
   --gold: #fdb515;
-  --paper: #ffffff;
-  --text: #1d2b3a;
-  --muted: #55606e;
-  --rule: #d3d9e0;
-  --serif: "Source Serif 4", Georgia, serif;
+  --paper-academic: #ffe55e;
+  --muted: #4d4d4d;
+  --font: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  /* Focus rings are gold on the wall and toner on paper. */
+  --ring: var(--gold);
 }
 
 *,
@@ -18,6 +24,7 @@
 }
 
 html {
+  background: var(--wall);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -26,171 +33,210 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--paper);
-  color: var(--text);
-  font-family: "Inter", system-ui, sans-serif;
-  font-size: 1.0625rem;
-  line-height: 1.65;
+  background: var(--wall);
+  color: var(--chalk);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.3;
+  overflow-x: clip;
 }
 
-/* One left edge for the wordmark, the headline, and the text. */
-.wrap {
-  width: 100%;
-  max-width: 68rem;
-  margin: 0 auto;
-  padding-inline: 1.25rem;
-}
-
-a {
-  color: var(--blue);
-  text-decoration-color: var(--gold);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 3px;
-}
-
-a:hover {
-  text-decoration-color: var(--blue);
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
 }
 
 :focus-visible {
-  outline: 3px solid var(--gold);
-  outline-offset: 3px;
-  border-radius: 2px;
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
 }
 
-/* Masthead */
-
-.masthead {
-  background: var(--blue);
-  border-bottom: 3px solid var(--gold);
+.wrap {
+  width: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
+
+/* Masthead: the wordmark and the page links, in chalk on the wall */
 
 .masthead .wrap {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 0.5rem 1.5rem;
-  padding-block: 1.1rem;
+  padding-top: 1.25rem;
+  padding-bottom: 0.75rem;
 }
 
 .wordmark {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  font-size: 1.5rem;
-  line-height: 1.2;
-  color: #ffffff;
+  display: inline-block;
+  color: var(--chalk);
+  font-weight: 900;
+  font-stretch: 118%;
+  font-size: 2rem;
+  line-height: 0.84;
+  letter-spacing: -0.035em;
   text-decoration: none;
 }
 
-.wordmark b {
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: var(--gold);
-}
-
+.wordmark b,
 .wordmark span {
-  font-weight: 300;
-  letter-spacing: 0.025em;
+  display: block;
+  font-weight: inherit;
 }
 
 .site-nav {
   display: flex;
-  gap: 1.5rem;
-  font-size: 0.9375rem;
+  gap: 1.25rem;
+  font-weight: 700;
+  font-stretch: 88%;
+  font-size: 1rem;
 }
 
-.site-nav a {
-  padding-block: 0.25rem;
-  border-bottom: 2px solid transparent;
-  color: rgba(255, 255, 255, 0.82);
-  text-decoration: none;
+.site-nav a,
+.site-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--chalk);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+  text-decoration-color: rgb(255 255 255 / 0.5);
 }
 
-.site-nav a:hover {
-  color: #ffffff;
-  border-bottom-color: rgba(255, 255, 255, 0.5);
+.site-nav a:hover,
+.site-footer a:hover,
+.site-nav a[aria-current="page"] {
+  text-decoration-color: var(--gold);
 }
 
 .site-nav a[aria-current="page"] {
-  color: #ffffff;
-  border-bottom-color: var(--gold);
+  font-weight: 900;
+  text-decoration-thickness: 3px;
 }
 
-/* Page body */
+/* The page: one plain sheet pinned to the wall */
 
 main {
   flex: 1;
-  padding-block: 2.5rem 4rem;
+  padding-block: 0.75rem 2.5rem;
+}
+
+/* The sheet sits a little askew. A rotation would tilt every line of text
+   and drift several pixels down a long page, so only the top and bottom
+   edges slant, and the type stays level. */
+.page {
+  position: relative;
+  padding: 2rem 1.1rem 0;
+  background: var(--plain);
+  color: var(--toner);
+  clip-path: polygon(
+    0 var(--askew),
+    100% 0,
+    100% calc(100% - var(--askew)),
+    0 100%
+  );
+  --askew: 4px;
+  --ring: var(--toner);
+}
+
+/* A text sheet is only as wide as a comfortable line, so on a wide screen
+   it hangs on the left of the wall under the wordmark. */
+.page-text {
+  max-width: 44rem;
+}
+
+/* Two staples along the top edge */
+.page::before,
+.page::after {
+  content: "";
+  position: absolute;
+  top: 0.6rem;
+  width: 1.1rem;
+  height: 2px;
+  background: #2b2b2b;
+  opacity: 0.6;
+}
+
+.page::before {
+  left: 1rem;
+  transform: rotate(-7deg);
+}
+
+.page::after {
+  right: 1rem;
+  transform: rotate(5deg);
 }
 
 h1 {
-  margin: 0 0 1rem;
-  font-family: var(--serif);
-  font-size: clamp(2.125rem, 6vw, 3rem);
-  font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  color: var(--blue);
+  margin: 0;
+  font-weight: 900;
+  font-stretch: 108%;
+  font-size: clamp(2.5rem, 6vw + 0.75rem, 4.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.025em;
   text-wrap: balance;
 }
 
 .lead {
   max-width: 36rem;
-  margin: 0;
-  font-family: var(--serif);
-  font-size: clamp(1.25rem, 3.2vw, 1.4375rem);
-  line-height: 1.5;
+  margin: 0.9rem 0 0;
+  font-weight: 600;
+  font-stretch: 92%;
+  font-size: clamp(1.1875rem, 1.2vw + 0.9rem, 1.4375rem);
+  line-height: 1.3;
+}
+
+.page a {
+  color: var(--toner);
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.page a:hover {
+  text-decoration-thickness: 3px;
 }
 
 .layout {
   display: grid;
-  gap: 2.5rem;
-  margin-top: 2.5rem;
+  margin-top: 1.5rem;
 }
 
-/* The short answers. They sit above the text on a phone and beside it on a wide screen. */
-.facts {
-  margin: 0;
-  padding: 0.25rem 0 0.25rem 1.25rem;
-  border-left: 3px solid var(--gold);
-}
-
-.facts div + div {
-  margin-top: 1rem;
-}
-
-.facts dt {
+.updated {
+  margin: 0.75rem 0 0;
+  font-weight: 700;
+  font-stretch: 88%;
   font-size: 0.875rem;
   color: var(--muted);
 }
 
-.facts dd {
-  margin: 0;
-  font-family: var(--serif);
-  font-size: 1.1875rem;
-  line-height: 1.35;
-  color: var(--blue);
-  overflow-wrap: anywhere;
-}
-
-.prose > :first-child {
-  margin-top: 0;
+.prose {
+  padding-top: 0.25rem;
 }
 
 .prose h2 {
-  margin: 2.5rem 0 0.5rem;
-  font-size: 1.1875rem;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--blue);
+  margin: 2rem 0 0.5rem;
+  font-weight: 900;
+  font-stretch: 92%;
+  font-size: 1.5rem;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
 }
 
 .prose p,
 .prose ul {
   max-width: 38rem;
   margin: 0 0 1rem;
+  font-weight: 400;
+  font-stretch: 96%;
+  font-size: 1.0625rem;
+  line-height: 1.5;
 }
 
 .prose ul {
@@ -201,98 +247,230 @@ h1 {
   margin-bottom: 0.35rem;
 }
 
-.note {
-  color: var(--muted);
+.prose li::marker {
+  color: var(--toner);
+}
+
+code {
+  padding: 0 0.25rem;
+  background: rgb(18 18 18 / 0.08);
+  font: inherit;
+  font-weight: 700;
 }
 
 /* One row per analytics tool: name on the left, what it does on the right. */
 .tools {
   max-width: 38rem;
   margin: 1.25rem 0 1.5rem;
-  border-top: 1px solid var(--rule);
+  border-top: 2px dashed var(--toner);
 }
 
 .tool {
   display: grid;
   gap: 0.25rem 2rem;
   padding: 1rem 0;
-  border-bottom: 1px solid var(--rule);
+  border-bottom: 2px dashed var(--toner);
 }
 
 .tool h3 {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.65;
-  color: var(--blue);
+  font-weight: 800;
+  font-stretch: 84%;
+  font-size: 1.1875rem;
+  line-height: 1.2;
 }
 
-.tool p {
+.prose .tool p {
   margin: 0;
 }
 
-.tool .cookies {
-  margin-top: 0.25rem;
+.prose .tool .cookies {
+  margin-top: 0.35rem;
+  font-weight: 500;
   font-size: 0.9375rem;
   color: var(--muted);
 }
 
-/* Search form on the 404 page */
+/* The bottom of the sheet: the way home, below a dashed tear line */
+.sheet-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.5rem -1.1rem 0;
+  padding: 1rem 1.1rem 1.25rem;
+  border-top: 2px dashed var(--toner);
+}
+
+.sheet-foot > * {
+  flex: 1 1 auto;
+}
+
+/* Ink buttons, the same as btn-toner and btn-line in index.css */
+.btn-toner,
+.btn-line {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 1rem;
+  border: 0;
+  border-radius: 0;
+  font-family: var(--font);
+  font-weight: 800;
+  font-stretch: 82%;
+  font-size: 1rem;
+  line-height: 1.15;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.page .btn-toner,
+.btn-toner {
+  background: var(--toner);
+  color: var(--plain);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.btn-line {
+  background: transparent;
+  color: var(--toner);
+  box-shadow: inset 0 0 0 2px var(--toner);
+}
+
+@media (hover: hover) {
+  .btn-toner:hover {
+    background: #3a3a3a;
+  }
+
+  .btn-line:hover {
+    background: rgb(18 18 18 / 0.1);
+  }
+}
+
+.btn-toner:active {
+  background: #000;
+  transform: translateY(1px);
+}
+
+.btn-line:active {
+  background: rgb(18 18 18 / 0.2);
+  transform: translateY(1px);
+}
+
+/* The 404: a flyer torn off the wall, and the search form on the sheet */
+
+.torn {
+  position: relative;
+  width: 12rem;
+  margin: 0.5rem 0 1.25rem 0.25rem;
+  padding: 1.4rem 1.1rem 2.4rem;
+  background: var(--paper-academic);
+  color: var(--toner);
+  transform: rotate(-2.5deg);
+  transform-origin: 50% 0.6rem;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 84%,
+    92% 91%,
+    85% 83%,
+    77% 94%,
+    69% 86%,
+    60% 97%,
+    52% 87%,
+    44% 95%,
+    35% 85%,
+    27% 96%,
+    18% 86%,
+    9% 93%,
+    0 85%
+  );
+}
+
+.torn::before {
+  content: "";
+  position: absolute;
+  top: 0.55rem;
+  left: calc(50% - 0.55rem);
+  width: 1.1rem;
+  height: 2px;
+  background: #2b2b2b;
+  opacity: 0.6;
+  transform: rotate(-7deg);
+}
+
+.torn span {
+  display: block;
+  font-weight: 900;
+  font-stretch: 62%;
+  font-size: 6.5rem;
+  line-height: 0.8;
+  letter-spacing: -0.01em;
+}
 
 .search {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  align-items: flex-end;
+  gap: 0.6rem 0.75rem;
   max-width: 32rem;
-  margin: 1.75rem 0 1.25rem;
+  margin: 1.5rem 0 0;
 }
 
 .search label {
   flex-basis: 100%;
+  font-weight: 700;
+  font-stretch: 88%;
   font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--blue);
 }
 
 .search input {
   flex: 1 1 12rem;
   min-width: 0;
-  padding: 0.7rem 0.9rem;
-  border: 1px solid #8793a0;
-  border-radius: 0.5rem;
-  font: inherit;
-  color: var(--text);
-}
-
-.search button {
-  padding: 0.7rem 1.1rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 0;
   border: 0;
-  border-radius: 0.5rem;
-  background: var(--blue);
-  font: inherit;
+  border-bottom: 3px solid var(--toner);
+  border-radius: 0;
+  background: transparent;
+  color: var(--toner);
+  font-family: var(--font);
   font-weight: 600;
-  color: #ffffff;
-  cursor: pointer;
+  font-stretch: 92%;
+  font-size: 1.125rem;
+  appearance: none;
 }
 
-.search button:hover {
-  background: #00254a;
+.search input::placeholder {
+  color: #5c5c5c;
+  opacity: 1;
 }
 
-/* Footer */
+.search input:focus-visible {
+  outline-offset: 3px;
+}
+
+.search .btn-line {
+  flex: 1 1 auto;
+}
+
+/* Footer: chalk on the wall */
 
 .site-footer {
-  background: var(--blue);
+  font-stretch: 92%;
   font-size: 0.9375rem;
-  color: rgba(255, 255, 255, 0.75);
 }
 
 .site-footer .wrap {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
-  gap: 0.5rem 2rem;
-  padding-block: 1.5rem;
+  gap: 0 2rem;
+  padding-bottom: 1.75rem;
 }
 
 .site-footer p {
@@ -301,44 +479,96 @@ h1 {
 
 .site-footer nav {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.25rem;
+  font-weight: 700;
 }
 
-.site-footer a {
-  color: var(--gold);
-  text-decoration: none;
+@media (prefers-reduced-motion: no-preference) {
+  /* The torn flyer swings once on its staple, then hangs still. */
+  .torn {
+    animation: torn-swing 0.9s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+  }
 }
 
-.site-footer a:hover {
-  text-decoration: underline;
+@keyframes torn-swing {
+  from {
+    transform: rotate(-9deg);
+  }
 }
 
 @media (min-width: 40rem) {
   .tool {
     grid-template-columns: 11rem minmax(0, 1fr);
   }
+
+  .sheet-foot > *,
+  .search .btn-line {
+    flex: none;
+  }
 }
 
 @media (min-width: 48rem) {
   .wrap {
-    padding-inline: 2.5rem;
+    padding-left: max(2rem, env(safe-area-inset-left, 0px));
+    padding-right: max(2rem, env(safe-area-inset-right, 0px));
+  }
+
+  .masthead .wrap {
+    padding-top: 2rem;
+    padding-bottom: 1rem;
+  }
+
+  .wordmark {
+    font-size: 2.5rem;
   }
 
   main {
-    padding-block: 3.5rem 5rem;
+    padding-bottom: 3.5rem;
+  }
+
+  .page {
+    padding: 3rem 3rem 0;
+    --askew: 6px;
+  }
+
+  .sheet-foot {
+    margin: 2rem -3rem 0;
+    padding: 1.25rem 3rem 1.5rem;
+  }
+
+  .lost {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 1fr);
+    align-items: start;
+    gap: 2.5rem;
+  }
+
+  .torn {
+    width: auto;
+    margin: 1rem 0 0;
+    padding: 1.75rem 1.25rem 3.25rem;
+  }
+
+  .torn span {
+    font-size: 9rem;
   }
 }
 
 @media (min-width: 60rem) {
   .layout {
-    grid-template-columns: minmax(0, 38rem) minmax(0, 17rem);
-    gap: 5rem;
-    align-items: start;
+    margin-top: 2.5rem;
   }
 
-  .facts {
-    order: 2;
-    position: sticky;
-    top: 1.5rem;
+  .prose {
+    padding-top: 0;
+  }
+
+  .prose > :first-child {
+    margin-top: 0;
+  }
+
+  .lost {
+    grid-template-columns: 17rem minmax(0, 1fr);
+    gap: 3.5rem;
   }
 }

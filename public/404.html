@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/site-pages.css" />
@@ -31,26 +31,33 @@
     </header>
 
     <main>
-      <div class="wrap">
-        <h1>This page isn't here</h1>
-        <p class="lead">
-          The address may be mistyped, or the page may have moved. The events
-          are all still on the home page.
-        </p>
+      <div class="wrap lost">
+        <!-- What is left of a flyer someone tore off the wall -->
+        <div class="torn" aria-hidden="true"><span>404</span></div>
 
-        <form class="search" action="/" method="get" role="search">
-          <label for="q">Search campus events</label>
-          <input
-            id="q"
-            name="q"
-            type="search"
-            placeholder="Speaker, topic or venue"
-            autocomplete="off"
-          />
-          <button type="submit">Search events</button>
-        </form>
+        <article class="page">
+          <h1>This page isn't here</h1>
+          <p class="lead">
+            The address may be mistyped, or the page may have moved. The events
+            are all still on the home page.
+          </p>
 
-        <p><a href="/">See this week's events</a></p>
+          <form class="search" action="/" method="get" role="search">
+            <label for="q">Search campus events</label>
+            <input
+              id="q"
+              name="q"
+              type="search"
+              placeholder="Speaker, topic or venue"
+              autocomplete="off"
+            />
+            <button class="btn-line" type="submit">Search events</button>
+          </form>
+
+          <div class="sheet-foot">
+            <a class="btn-toner" href="/">See this week's events</a>
+          </div>
+        </article>
       </div>
     </main>
 

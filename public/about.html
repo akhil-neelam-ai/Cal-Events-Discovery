@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/site-pages.css" />
@@ -51,132 +51,116 @@
 
     <main>
       <div class="wrap">
-        <h1>About CalEvents</h1>
-        <p class="lead">
-          CalEvents gathers UC Berkeley's public event calendars into one feed
-          you can search. It updates every morning.
-        </p>
+        <article class="page page-text">
+          <h1>About CalEvents</h1>
+          <p class="lead">
+            CalEvents gathers UC Berkeley's public event calendars into one feed
+            you can search. It updates every morning.
+          </p>
 
-        <div class="layout">
-          <dl class="facts">
-            <div>
-              <dt>Updated</dt>
-              <dd>Every morning, around 4 AM Pacific</dd>
-            </div>
-            <div>
-              <dt>Sources</dt>
-              <dd>12 public campus calendars</dd>
-            </div>
-            <div>
-              <dt>Account</dt>
-              <dd>None needed, and it's free</dd>
-            </div>
-            <div>
-              <dt>Run by</dt>
-              <dd>Akhil Neelam, Berkeley Haas MBA student</dd>
-            </div>
-            <div>
-              <dt>Contact</dt>
-              <dd>
+          <div class="layout">
+            <div class="prose">
+              <h2>Where events come from</h2>
+              <p>
+                Each morning CalEvents reads these public calendars, removes
+                duplicates and sorts every event into a category.
+              </p>
+              <ul>
+                <li>
+                  <a href="https://events.berkeley.edu/">UC Berkeley Events</a>,
+                  the official campus calendar, with its department and
+                  student-life calendars
+                </li>
+                <li>
+                  <a href="https://calperformances.org/events/"
+                    >Cal Performances</a
+                  >
+                </li>
+                <li>
+                  <a href="https://calbears.com/calendar"
+                    >Cal Bears Athletics</a
+                  >
+                </li>
+                <li>
+                  <a href="https://bampfa.org/visit/calendar">BAMPFA</a>, the
+                  campus art museum and film archive
+                </li>
+                <li>
+                  <a href="https://haas.berkeley.edu/events/">Berkeley Haas</a>
+                </li>
+                <li>
+                  <a href="https://www.law.berkeley.edu/events/"
+                    >Berkeley Law</a
+                  >
+                </li>
+                <li>
+                  <a href="https://simons.berkeley.edu/programs-events"
+                    >Simons Institute</a
+                  >
+                </li>
+                <li>
+                  <a href="https://begin.berkeley.edu/events/"
+                    >Berkeley Gateway to Innovation</a
+                  >
+                </li>
+                <li>
+                  <a href="https://ai-risk.berkeley.edu/#upcoming"
+                    >Berkeley AI Risk speaker series</a
+                  >
+                </li>
+                <li>
+                  <a href="https://brsl.berkeley.edu/events/"
+                    >Berkeley Risk and Security Lab</a
+                  >
+                </li>
+                <li>
+                  <a href="https://cltc.berkeley.edu/events/"
+                    >Center for Long-Term Cybersecurity</a
+                  >
+                </li>
+                <li>Luma calendars run by Berkeley groups</li>
+              </ul>
+              <p>
+                Every event links to its original listing. Times and places can
+                change, so check that listing before you go.
+              </p>
+
+              <h2>Who runs it</h2>
+              <p>
+                <a href="https://akhilneelam.com/">Akhil Neelam</a>, an MBA
+                student at Berkeley Haas, built CalEvents and keeps it running.
+                It is an independent student project, not an official UC
+                Berkeley service.
+              </p>
+              <p>
+                The code is public on
+                <a
+                  href="https://github.com/akhil-neelam-ai/Cal-Events-Discovery"
+                  >GitHub</a
+                >.
+              </p>
+
+              <h2>Get in touch</h2>
+              <p>
+                Found a wrong detail, a missing calendar or a bug? Email
                 <a href="mailto:akhil_neelam@berkeley.edu"
                   >akhil_neelam@berkeley.edu</a
-                >
-              </dd>
+                >.
+              </p>
+
+              <h2>For developers and agents</h2>
+              <p>
+                The full feed is open as <a href="/events.json">JSON</a>, and
+                the site describes itself to AI agents. Start at the
+                <a href="/for-agents.html">page for agents</a>.
+              </p>
             </div>
-          </dl>
-
-          <div class="prose">
-            <h2>Where events come from</h2>
-            <p>
-              Each morning CalEvents reads these public calendars, removes
-              duplicates and sorts every event into a category.
-            </p>
-            <ul>
-              <li>
-                <a href="https://events.berkeley.edu/">UC Berkeley Events</a>,
-                the official campus calendar, with its department and
-                student-life calendars
-              </li>
-              <li>
-                <a href="https://calperformances.org/events/"
-                  >Cal Performances</a
-                >
-              </li>
-              <li>
-                <a href="https://calbears.com/calendar">Cal Bears Athletics</a>
-              </li>
-              <li>
-                <a href="https://bampfa.org/visit/calendar">BAMPFA</a>, the
-                campus art museum and film archive
-              </li>
-              <li>
-                <a href="https://haas.berkeley.edu/events/">Berkeley Haas</a>
-              </li>
-              <li>
-                <a href="https://www.law.berkeley.edu/events/">Berkeley Law</a>
-              </li>
-              <li>
-                <a href="https://simons.berkeley.edu/programs-events"
-                  >Simons Institute</a
-                >
-              </li>
-              <li>
-                <a href="https://begin.berkeley.edu/events/"
-                  >Berkeley Gateway to Innovation</a
-                >
-              </li>
-              <li>
-                <a href="https://ai-risk.berkeley.edu/#upcoming"
-                  >Berkeley AI Risk speaker series</a
-                >
-              </li>
-              <li>
-                <a href="https://brsl.berkeley.edu/events/"
-                  >Berkeley Risk and Security Lab</a
-                >
-              </li>
-              <li>
-                <a href="https://cltc.berkeley.edu/events/"
-                  >Center for Long-Term Cybersecurity</a
-                >
-              </li>
-              <li>Luma calendars run by Berkeley groups</li>
-            </ul>
-            <p>
-              Every event links to its original listing. Times and places can
-              change, so check that listing before you go.
-            </p>
-
-            <h2>Who runs it</h2>
-            <p>
-              <a href="https://akhilneelam.com/">Akhil Neelam</a>, an MBA
-              student at Berkeley Haas, built CalEvents and keeps it running.
-              It is an independent student project, not an official UC Berkeley
-              service.
-            </p>
-            <p>
-              The code is public on
-              <a href="https://github.com/akhil-neelam-ai/Cal-Events-Discovery"
-                >GitHub</a
-              >.
-            </p>
-
-            <h2>Get in touch</h2>
-            <p>
-              Found a wrong detail, a missing calendar or a bug? Email
-              <a href="mailto:akhil_neelam@berkeley.edu"
-                >akhil_neelam@berkeley.edu</a
-              >.
-            </p>
-
-            <h2>For developers and agents</h2>
-            <p>
-              The full feed is open as <a href="/events.json">JSON</a>, and the
-              site describes itself to AI agents. Start at the
-              <a href="/for-agents.html">page for agents</a>.
-            </p>
           </div>
-        </div>
+
+          <div class="sheet-foot">
+            <a class="btn-toner" href="/">Back to the wall</a>
+          </div>
+        </article>
       </div>
     </main>
 
