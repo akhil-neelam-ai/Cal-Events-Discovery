@@ -1,6 +1,8 @@
 /**
  * The 1200x630 card that api/event-preview.ts names as og:image for a shared
- * event link. An unknown id redirects to the site-wide image.
+ * event link. It draws the event as its flyer on the wall: a sheet of the
+ * category's paper on Berkeley blue, in Archivo, like the app. An unknown id
+ * redirects to the site-wide image.
  */
 import { readFile } from "node:fs/promises";
 import path from "node:path";
@@ -14,26 +16,22 @@ import {
   type EventCard,
 } from "./_lib/eventPreview.js";
 
-const BERKELEY_BLUE = "#003262";
-const BERKELEY_GOLD = "#FDB515";
+const WALL = "#003262";
+const TONER = "#121212";
 
-/** Bundled with the function through `includeFiles` in vercel.json. */
+/**
+ * Bundled with the function through `includeFiles` in vercel.json. Satori
+ * cannot read a variable font, so each width and weight the card uses is a
+ * static Archivo instance under its own family name.
+ */
 const FONTS_DIR = path.join(process.cwd(), "api", "_fonts");
 const FONT_FILES = [
-  { name: "Inter", weight: 500, file: "inter-latin-500-normal.woff" },
-  { name: "Inter", weight: 700, file: "inter-latin-700-normal.woff" },
-  {
-    name: "Source Serif 4",
-    weight: 600,
-    file: "source-serif-4-latin-600-normal.woff",
-  },
+  { name: "Archivo XCond", weight: 900, file: "archivo-62-900.woff" },
+  { name: "Archivo Cond", weight: 800, file: "archivo-75-800.woff" },
+  { name: "Archivo Semi", weight: 700, file: "archivo-87-700.woff" },
+  { name: "Archivo", weight: 500, file: "archivo-100-500.woff" },
+  { name: "Archivo Wide", weight: 900, file: "archivo-112-900.woff" },
 ] as const;
-
-// Icon paths match the date and location icons in EventDetailOverlay.
-const CALENDAR_ICON =
-  "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z";
-const PIN_ICON =
-  "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z";
 
 let fonts: ReturnType<typeof readFonts> | null = null;
 
@@ -56,126 +54,147 @@ function loadFonts() {
   return fonts;
 }
 
+/** Short titles print big and long ones shrink, as on the wall. */
 function titleFontSize(title: string): number {
-  if (title.length <= 40) return 76;
-  if (title.length <= 70) return 64;
-  if (title.length <= 100) return 54;
-  return 46;
+  if (title.length <= 28) return 104;
+  if (title.length <= 50) return 88;
+  if (title.length <= 80) return 72;
+  return 60;
 }
 
-function DetailRow({ icon, text }: { icon: string; text: string }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-      <svg
-        width="36"
-        height="36"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke={BERKELEY_GOLD}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d={icon} />
-      </svg>
-      <span>{text}</span>
-    </div>
-  );
+function footLine(card: EventCard): string {
+  const organizer = truncate(card.organizer, 48);
+  const filed = card.category ? `Filed under ${card.category}.` : "";
+  if (!organizer) return filed;
+  return `${organizer.replace(/\.$/, "")}. ${filed}`
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function EventCardImage({ card }: { card: EventCard }) {
-  const title = truncate(card.title, 115);
+  const title = truncate(card.title, 110);
   return (
     <div
       style={{
         width: "100%",
         height: "100%",
         display: "flex",
-        flexDirection: "column",
-        padding: "56px 72px 48px 88px",
-        backgroundColor: BERKELEY_BLUE,
-        backgroundImage: "linear-gradient(135deg, #003262 0%, #001a33 100%)",
-        color: "white",
-        fontFamily: "Inter",
+        position: "relative",
+        backgroundColor: WALL,
+        fontFamily: "Archivo",
       }}
     >
+      {/* The flyer, a little askew, with its staple */}
       <div
         style={{
           position: "absolute",
-          left: 0,
-          top: 0,
-          width: 16,
-          height: 630,
-          backgroundColor: card.accent,
-        }}
-      />
-      <div
-        style={{
+          left: 56,
+          top: 44,
+          width: 836,
+          height: 542,
           display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
+          flexDirection: "column",
+          padding: "52px 56px 44px",
+          backgroundColor: card.paper,
+          color: TONER,
+          transform: "rotate(-0.6deg)",
         }}
       >
-        <div style={{ display: "flex", fontSize: 40, fontWeight: 700 }}>
-          <span style={{ color: BERKELEY_GOLD }}>Cal</span>
-          <span>Events</span>
+        <div
+          style={{
+            position: "absolute",
+            top: 16,
+            left: 404,
+            width: 30,
+            height: 4,
+            backgroundColor: "#2b2b2b",
+            opacity: 0.6,
+          }}
+        />
+        <div
+          style={{
+            display: "flex",
+            fontFamily: "Archivo XCond",
+            fontWeight: 900,
+            fontSize: 46,
+            lineHeight: 1,
+          }}
+        >
+          {card.when.replace(/ · /g, ", ")}
         </div>
         <div
           style={{
             display: "flex",
-            padding: "10px 24px",
-            borderRadius: 999,
-            backgroundColor: card.accent,
-            color: BERKELEY_BLUE,
-            fontSize: 22,
-            fontWeight: 700,
-            letterSpacing: 3,
-            textTransform: "uppercase",
+            marginTop: 20,
+            fontFamily: "Archivo Cond",
+            fontWeight: 800,
+            fontSize: titleFontSize(title),
+            lineHeight: 1.02,
+            letterSpacing: -0.5,
           }}
         >
-          {card.category}
+          {title}
+        </div>
+        <div style={{ display: "flex", flexGrow: 1 }} />
+        {card.location ? (
+          <div
+            style={{
+              display: "flex",
+              fontFamily: "Archivo Semi",
+              fontWeight: 700,
+              fontSize: 34,
+              lineHeight: 1.1,
+            }}
+          >
+            {truncate(card.location, 55)}
+          </div>
+        ) : null}
+        <div
+          style={{
+            display: "flex",
+            marginTop: 8,
+            fontSize: 26,
+            lineHeight: 1.2,
+          }}
+        >
+          {footLine(card)}
         </div>
       </div>
+
+      {/* Chalk on the wall: the wordmark and the address */}
       <div
         style={{
-          display: "flex",
-          flexGrow: 1,
-          alignItems: "center",
-          fontFamily: "Source Serif 4",
-          fontWeight: 600,
-          fontSize: titleFontSize(title),
-          lineHeight: 1.15,
-        }}
-      >
-        {title}
-      </div>
-      <div
-        style={{
+          position: "absolute",
+          top: 50,
+          right: 44,
           display: "flex",
           flexDirection: "column",
-          gap: 16,
-          fontSize: 32,
-          fontWeight: 500,
+          alignItems: "flex-end",
+          fontFamily: "Archivo Wide",
+          fontWeight: 900,
+          fontSize: 60,
+          lineHeight: 0.92,
+          color: "white",
         }}
       >
-        <DetailRow icon={CALENDAR_ICON} text={card.when} />
-        {card.location ? (
-          <DetailRow icon={PIN_ICON} text={truncate(card.location, 60)} />
-        ) : null}
+        <span>Cal</span>
+        <span>Events</span>
       </div>
       <div
         style={{
+          position: "absolute",
+          right: 44,
+          bottom: 52,
           display: "flex",
-          justifyContent: "space-between",
-          marginTop: 28,
-          paddingTop: 22,
-          borderTop: "2px solid rgba(255, 255, 255, 0.15)",
-          fontSize: 24,
-          color: "rgba(255, 255, 255, 0.7)",
+          paddingBottom: 4,
+          borderBottom: "3px solid white",
+          fontFamily: "Archivo Semi",
+          fontWeight: 700,
+          fontSize: 26,
+          color: "white",
         }}
       >
-        <span>{truncate(card.organizer, 60)}</span>
-        <span>cal-events.com</span>
+        cal-events.com
       </div>
     </div>
   );
