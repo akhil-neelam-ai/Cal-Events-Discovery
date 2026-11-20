@@ -1,113 +1,115 @@
 {
-  "generated_at": "2026-11-19T20:17:31.085Z",
-  "total_events": 1581,
-  "duplicates_removed": 487,
-  "past_events_filtered": 3699,
+  "generated_at": "2026-11-20T06:04:11.170Z",
+  "total_events": 1601,
+  "duplicates_removed": 477,
+  "past_events_filtered": 3648,
   "invalid_events_filtered": 11,
   "topics": {
     "outcome": "ok",
-    "assigned_count": 612,
+    "assigned_count": 615,
     "carried_forward_count": 0
   },
   "sources": [
     {
       "name": "livewhale",
       "ok": true,
-      "count": 2246,
-      "duration_ms": 3893,
-      "fetched_at": "2026-11-19T20:17:03.668Z",
-      "last_healthy_at": "2026-11-19T20:17:03.668Z",
+      "count": 2248,
+      "duration_ms": 4509,
+      "fetched_at": "2026-11-20T06:03:52.454Z",
+      "last_healthy_at": "2026-11-20T06:03:52.454Z",
       "consecutive_failures": 0
     },
     {
       "name": "cal_performances",
       "ok": true,
       "count": 43,
-      "duration_ms": 26072,
-      "fetched_at": "2026-11-19T20:17:03.684Z",
-      "last_healthy_at": "2026-11-19T20:17:03.684Z",
+      "duration_ms": 17360,
+      "fetched_at": "2026-11-20T06:03:52.470Z",
+      "last_healthy_at": "2026-11-20T06:03:52.470Z",
       "consecutive_failures": 0
     },
     {
       "name": "calbears",
       "ok": true,
-      "count": 272,
-      "duration_ms": 718,
-      "fetched_at": "2026-11-19T20:17:03.686Z",
-      "last_healthy_at": "2026-11-19T20:17:03.686Z",
+      "count": 282,
+      "duration_ms": 792,
+      "fetched_at": "2026-11-20T06:03:52.472Z",
+      "last_healthy_at": "2026-11-20T06:03:52.472Z",
       "consecutive_failures": 0
     },
     {
       "name": "bampfa",
       "ok": true,
-      "count": 140,
-      "duration_ms": 6883,
-      "fetched_at": "2026-11-19T20:17:03.687Z",
-      "last_healthy_at": "2026-11-19T20:17:03.687Z",
+      "count": 141,
+      "duration_ms": 5502,
+      "fetched_at": "2026-11-20T06:03:52.473Z",
+      "last_healthy_at": "2026-11-20T06:03:52.473Z",
       "consecutive_failures": 0
     },
     {
       "name": "haas",
       "ok": true,
       "count": 12,
-      "duration_ms": 4349,
-      "fetched_at": "2026-11-19T20:17:03.689Z",
-      "last_healthy_at": "2026-11-19T20:17:03.689Z",
+      "duration_ms": 2777,
+      "fetched_at": "2026-11-20T06:03:52.476Z",
+      "last_healthy_at": "2026-11-20T06:03:52.476Z",
       "consecutive_failures": 0
     },
     {
       "name": "berkeley_law",
       "ok": true,
       "count": 33,
-      "duration_ms": 3906,
-      "fetched_at": "2026-11-19T20:17:03.690Z",
-      "last_healthy_at": "2026-11-19T20:17:03.690Z",
+      "duration_ms": 1730,
+      "fetched_at": "2026-11-20T06:03:52.477Z",
+      "last_healthy_at": "2026-11-20T06:03:52.477Z",
       "consecutive_failures": 0
     },
     {
       "name": "simons",
       "ok": true,
       "count": 20,
-      "duration_ms": 17281,
-      "fetched_at": "2026-11-19T20:17:03.691Z",
-      "last_healthy_at": "2026-11-19T20:17:03.691Z",
+      "duration_ms": 708,
+      "fetched_at": "2026-11-20T06:03:52.478Z",
+      "last_healthy_at": "2026-11-20T06:03:52.478Z",
       "consecutive_failures": 0
     },
     {
       "name": "luma",
       "ok": true,
-      "count": 5,
-      "duration_ms": 468,
-      "fetched_at": "2026-11-19T20:17:03.692Z",
-      "last_healthy_at": "2026-11-19T20:17:03.692Z",
+      "count": 4,
+      "duration_ms": 455,
+      "fetched_at": "2026-11-20T06:03:52.478Z",
+      "last_healthy_at": "2026-11-20T06:03:52.478Z",
       "consecutive_failures": 0
     },
     {
       "name": "begin",
       "ok": true,
       "count": 7,
-      "duration_ms": 522,
-      "fetched_at": "2026-11-19T20:17:03.698Z",
-      "last_healthy_at": "2026-11-19T20:17:03.698Z",
+      "duration_ms": 715,
+      "fetched_at": "2026-11-20T06:03:52.484Z",
+      "last_healthy_at": "2026-11-20T06:03:52.484Z",
       "consecutive_failures": 0
     },
     {
       "name": "ai_risk",
       "ok": true,
       "count": 0,
-      "duration_ms": 487,
-      "fetched_at": "2026-11-19T20:17:03.698Z",
+      "duration_ms": 744,
+      "fetched_at": "2026-11-20T06:03:52.485Z",
       "last_healthy_at": "2026-11-17T20:40:14.178Z",
       "consecutive_failures": 0,
       "degraded": true,
-      "degraded_reason": "ai_risk returned 0 events (below healthy threshold 1)"
+      "degraded_reason": "ai_risk returned 0 events (below healthy threshold 1); ai_risk fallback expired (57.4h old, exceeding 48h); last-good events dropped",
+      "fallback_expired": true,
+      "fallback_age_hours": 57.4
     },
     {
       "name": "brsl",
       "ok": true,
       "count": 0,
-      "duration_ms": 2676,
-      "fetched_at": "2026-11-19T20:17:03.699Z",
+      "duration_ms": 2641,
+      "fetched_at": "2026-11-20T06:03:52.486Z",
       "last_healthy_at": "2026-11-18T20:13:27.146Z",
       "consecutive_failures": 0,
       "degraded": true,
@@ -117,14 +119,14 @@
       "name": "cltc",
       "ok": true,
       "count": 0,
-      "duration_ms": 1591,
-      "fetched_at": "2026-11-19T20:17:03.700Z",
+      "duration_ms": 1290,
+      "fetched_at": "2026-11-20T06:03:52.487Z",
       "last_healthy_at": "2026-10-08T17:41:07.969Z",
       "consecutive_failures": 0,
       "degraded": true,
-      "degraded_reason": "cltc returned 0 events (below healthy threshold 1); cltc fallback expired (1010.6h old, exceeding 48h); last-good events dropped",
+      "degraded_reason": "cltc returned 0 events (below healthy threshold 1); cltc fallback expired (1020.4h old, exceeding 48h); last-good events dropped",
       "fallback_expired": true,
-      "fallback_age_hours": 1010.6
+      "fallback_age_hours": 1020.4
     }
   ],
   "fallback_used": false,
@@ -134,6 +136,7 @@
   "fallback_sources": [],
   "degraded_sources": [],
   "stale_fallback_sources": [
+    "ai_risk",
     "cltc"
   ]
 }
