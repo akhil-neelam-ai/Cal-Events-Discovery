@@ -134,6 +134,22 @@ test("the For Agents page declares itself as a TechArticle", () => {
   assert.equal(data.url, "https://cal-events.com/for-agents.html");
   assert.ok(data.headline);
   assert.equal(data.isPartOf.url, "https://cal-events.com/");
+  assert.ok(data.datePublished && data.dateModified && data.image);
+  // The reader sees the same date the schema states.
+  const shown = new Date(`${data.dateModified}T12:00:00Z`).toLocaleDateString(
+    "en-US",
+    { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" },
+  );
+  assert.ok(html.includes(`Last updated ${shown}`), shown);
+
+  // Entities shared across pages carry one stable @id.
+  const home = JSON.parse(
+    readText("index.html").match(
+      /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+    )[1],
+  );
+  assert.equal(data.isPartOf["@id"], home["@id"]);
+  assert.equal(data.author["@id"], home.publisher["@id"]);
 });
 
 test("the home page shell reads without JavaScript", () => {
