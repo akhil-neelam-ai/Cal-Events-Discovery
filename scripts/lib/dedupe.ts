@@ -109,24 +109,119 @@ function venueKey(event: CanonicalEvent): string {
     .trim();
 }
 
-function titleWords(title: string): Set<string> {
-  return new Set(normalizeForDedupe(title).split(" ").filter(Boolean));
+// Words that name the campus or the city rather than a place on it.
+const GENERIC_VENUE_WORDS = new Set([
+  "and",
+  "at",
+  "berkeley",
+  "ca",
+  "california",
+  "of",
+  "room",
+  "rm",
+  "the",
+  "uc",
+  "university",
+]);
+const VENUE_ALIASES: Record<string, string> = { lab: "laboratory" };
+
+function venueWords(key: string): Set<string> {
+  return new Set(
+    key
+      .split(" ")
+      .map((word) => VENUE_ALIASES[word] ?? word)
+      .filter((word) => word && !GENERIC_VENUE_WORDS.has(word)),
+  );
 }
 
-/** True when every word of the shorter title, two or more, is in the other. */
+/**
+ * One name may contain the other ("Haas Pavilion" in ", Haas Pavilion").
+ * Otherwise, sources word a place differently ("Chou Hall N170, UC Berkeley
+ * Haas School of Business" and "Chou Hall, Room N170, Berkeley Haas"), so
+ * two venues also match when at least two words, and half the shorter
+ * name's words, are shared. Room numbers must agree when both give one.
+ */
+function venuesMatch(xKey: string, yKey: string): boolean {
+  if (!xKey || !yKey) return false;
+  // Whole words, so "berkeley ca" does not sit inside "berkeley campus".
+  const [xAll, yAll] = [xKey.split(" "), yKey.split(" ")];
+  const [fewer, more] =
+    xAll.length <= yAll.length ? [xAll, yAll] : [yAll, xAll];
+  if (fewer.every((word) => more.includes(word))) return true;
+  const x = venueWords(xKey);
+  const y = venueWords(yKey);
+  const shared = [...x].filter((word) => y.has(word));
+  if (shared.length < 2 || shared.length < Math.min(x.size, y.size) / 2) {
+    return false;
+  }
+  const xRooms = [...x].filter((word) => /\d/.test(word));
+  const yRooms = [...y].filter((word) => /\d/.test(word));
+  return (
+    xRooms.length === 0 ||
+    yRooms.length === 0 ||
+    xRooms.some((word) => y.has(word))
+  );
+}
+
+// Season and year tags that one source adds to a title and another leaves
+// off, such as "Fall 2026" or Cal Performances' "2627" season code.
+const TITLE_NOISE = /^(?:fall|spring|summer|winter|\d{4})$/;
+
+function titleWords(title: string): string[] {
+  return [
+    ...new Set(
+      normalizeForDedupe(title)
+        .split(" ")
+        .filter((word) => word && !TITLE_NOISE.test(word)),
+    ),
+  ];
+}
+
+/** True when the words differ by at most one letter added, dropped or changed. */
+function nearlySameWord(a: string, b: string): boolean {
+  if (a === b) return true;
+  if (Math.min(a.length, b.length) < 6 || Math.abs(a.length - b.length) > 1) {
+    return false;
+  }
+  let i = 0;
+  let j = 0;
+  let edits = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) {
+      i++;
+      j++;
+      continue;
+    }
+    if (++edits > 1) return false;
+    if (a.length > b.length) i++;
+    else if (b.length > a.length) j++;
+    else {
+      i++;
+      j++;
+    }
+  }
+  return edits + (a.length - i) + (b.length - j) <= 1;
+}
+
+/**
+ * True when every word of the shorter title, two or more, is in the other.
+ * A word may differ by one letter ("Abdraimov" and "Abduraimov").
+ */
 function titlesMatch(a: string, b: string): boolean {
   const x = titleWords(a);
   const y = titleWords(b);
-  const [shorter, longer] = x.size <= y.size ? [x, y] : [y, x];
-  return shorter.size >= 2 && [...shorter].every((word) => longer.has(word));
+  const [shorter, longer] = x.length <= y.length ? [x, y] : [y, x];
+  return (
+    shorter.length >= 2 &&
+    shorter.every((word) => longer.some((other) => nearlySameWord(word, other)))
+  );
 }
 
 /**
  * Two sources can title one event differently, as with "California Women's
  * Basketball vs Washington State" and "... Washington State University".
  * Copies from different sources merge when they start at the same instant,
- * at the same venue (one name may contain the other), and one title's words
- * all appear in the other's.
+ * at the same venue, and one title's words all appear in the other's.
  */
 function mergeNearDuplicates(events: CanonicalEvent[]): CanonicalEvent[] {
   const byStart = new Map<number, number[]>();
@@ -143,12 +238,9 @@ function mergeNearDuplicates(events: CanonicalEvent[]): CanonicalEvent[] {
         const [i, j] = [indexes[a], indexes[b]];
         if (dropped.has(i) || dropped.has(j)) continue;
         const [x, y] = [result[i], result[j]];
-        const [xVenue, yVenue] = [venueKey(x), venueKey(y)];
         if (
           x.source_name === y.source_name ||
-          !xVenue ||
-          !yVenue ||
-          !(xVenue.includes(yVenue) || yVenue.includes(xVenue)) ||
+          !venuesMatch(venueKey(x), venueKey(y)) ||
           !titlesMatch(x.title, y.title)
         ) {
           continue;
