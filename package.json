@@ -29,7 +29,8 @@
     "test": "npm run validate",
     "update-events": "tsx scripts/updateEvents.ts",
     "check:livewhale-budget": "tsx scripts/checkLiveWhaleBudget.ts",
-    "rebuild-index": "tsx scripts/rebuildSearchIndex.ts"
+    "rebuild-index": "tsx scripts/rebuildSearchIndex.ts",
+    "render-og-image": "node scripts/renderOgImage.mjs"
   },
   "overrides": {
     "undici": "^7.29.0"

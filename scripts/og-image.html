@@ -1,0 +1,232 @@
+<!doctype html>
+<!--
+  Source for public/og-image.png, the link preview for every page.
+  Render it with `npm run render-og-image` (scripts/renderOgImage.mjs).
+
+  It is a crop of the home page wall at about twice its size: the white
+  notice in the middle, sheets of category paper on either side. The notice
+  sits in the center so a square crop (WhatsApp's small thumbnail) still
+  shows the name. Sheets carry a generic event type and their category,
+  never an invented event.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CalEvents link preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- The site's font URL, with display=block so text never draws in a
+         fallback face. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=block"
+      rel="stylesheet"
+    />
+    <style>
+      /* The @theme colors in index.css */
+      :root {
+        --wall: #003262;
+        --toner: #121212;
+        --plain: #fcfcf9;
+        --academic: #ffe55e;
+        --arts: #ff93c6;
+        --sports: #ffa052;
+        --scitech: #93d2ff;
+        --life: #83e4a5;
+        --entre: #d0b6ff;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: var(--wall);
+      }
+
+      body {
+        position: relative;
+        color: var(--toner);
+        font-family: "Archivo", sans-serif;
+      }
+
+      /* A sheet of copy paper with a staple at the top. Left-hand sheets
+         run 20px off the left edge, right-hand ones off the right. */
+      .sheet {
+        position: absolute;
+        width: 292px;
+        padding: 40px 28px 40px 48px;
+        background: var(--p);
+        transform: rotate(var(--r));
+      }
+
+      .sheet::before {
+        content: "";
+        position: absolute;
+        top: 12px;
+        left: calc(50% - 14px);
+        width: 28px;
+        height: 4px;
+        background: #2b2b2b;
+        opacity: 0.6;
+        transform: rotate(-7deg);
+      }
+
+      .sheet b {
+        display: block;
+        font-weight: 800;
+        font-stretch: 86%;
+        font-size: 50px;
+        line-height: 0.95;
+        letter-spacing: -0.012em;
+      }
+
+      /* The category, where a real sheet prints its venue */
+      .sheet small {
+        display: block;
+        margin-top: 12px;
+        font-weight: 600;
+        font-stretch: 86%;
+        font-size: 24px;
+        line-height: 1.2;
+      }
+
+      .left {
+        left: -20px;
+      }
+
+      .right {
+        left: 928px;
+        padding-left: 28px;
+      }
+
+      .film {
+        --p: var(--arts);
+        --r: -0.6deg;
+        top: -50px;
+        height: 222px;
+        padding-top: 96px;
+      }
+
+      .lecture {
+        --p: var(--academic);
+        --r: 0.5deg;
+        top: 190px;
+        height: 196px;
+      }
+
+      .book-club {
+        --p: var(--life);
+        --r: -0.4deg;
+        top: 404px;
+        height: 260px;
+      }
+
+      .game-day {
+        --p: var(--sports);
+        --r: 0.6deg;
+        top: -30px;
+        height: 250px;
+        padding-top: 84px;
+      }
+
+      .seminar {
+        --p: var(--scitech);
+        --r: -0.4deg;
+        top: 238px;
+        height: 168px;
+      }
+
+      .demo-day {
+        --p: var(--entre);
+        --r: 0.3deg;
+        top: 424px;
+        height: 240px;
+      }
+
+      /* The white notice: wordmark, the line from the page, tear-off tabs */
+      .notice {
+        position: absolute;
+        left: 300px;
+        top: 62px;
+        width: 600px;
+        padding: 36px 36px 0;
+        background: var(--plain);
+        transform: rotate(-0.5deg);
+      }
+
+      .mark {
+        font-weight: 900;
+        font-stretch: 118%;
+        font-size: 128px;
+        line-height: 0.84;
+        letter-spacing: -0.035em;
+      }
+
+      .mark span {
+        display: block;
+      }
+
+      .line {
+        margin-top: 26px;
+        font-weight: 800;
+        font-stretch: 78%;
+        font-size: 50px;
+        line-height: 1.02;
+      }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin: 30px -36px 0;
+        border-top: 4px dashed var(--toner);
+      }
+
+      .tabs span {
+        display: grid;
+        place-items: center;
+        min-height: 92px;
+        border-left: 4px dashed var(--toner);
+        font-weight: 900;
+        font-stretch: 70%;
+        font-size: 44px;
+        line-height: 0.95;
+        white-space: nowrap;
+      }
+
+      .tabs span:first-child {
+        border-left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sheet left film"><b>Film</b><small>Arts</small></div>
+    <div class="sheet left lecture"><b>Lecture</b><small>Academic</small></div>
+    <div class="sheet left book-club">
+      <b>Book club</b><small>Student Life</small>
+    </div>
+
+    <div class="sheet right game-day"><b>Game day</b><small>Sports</small></div>
+    <div class="sheet right seminar">
+      <b>Seminar</b><small>Science &amp; Tech</small>
+    </div>
+    <div class="sheet right demo-day">
+      <b>Demo day</b><small>Entrepreneurship</small>
+    </div>
+
+    <!-- The line is the h1 of the fallback in index.html -->
+    <div class="notice">
+      <div class="mark"><span>Cal</span><span>Events</span></div>
+      <p class="line">UC Berkeley events<br />in one searchable feed</p>
+      <div class="tabs">
+        <span>Today</span>
+        <span>This Week</span>
+        <span>All Events</span>
+      </div>
+    </div>
+  </body>
+</html>
