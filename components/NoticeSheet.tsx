@@ -87,6 +87,7 @@ export function NoticeSheet({
   onPresetSelect,
   onDateChange,
   onSurprise,
+  onHome,
 }: {
   isMobile: boolean;
   todayKey: string;
@@ -101,11 +102,31 @@ export function NoticeSheet({
   onDateChange: (next: SearchFilters["dateRange"]) => void;
   /** Opens one random result. Null hides the sticker. */
   onSurprise: (() => void) | null;
+  /** The wordmark's link: back to the default view, at the top. */
+  onHome: () => void;
 }) {
   return (
     <header className="notice">
       <h1 className="mark">
-        <span>Cal</span> <span>Events</span>
+        <a
+          href="/"
+          onClick={(event) => {
+            // A modified click still opens the home page in a new tab.
+            if (
+              event.button !== 0 ||
+              event.metaKey ||
+              event.ctrlKey ||
+              event.shiftKey ||
+              event.altKey
+            ) {
+              return;
+            }
+            event.preventDefault();
+            onHome();
+          }}
+        >
+          <span>Cal</span> <span>Events</span>
+        </a>
       </h1>
       {onSurprise && (
         <button type="button" className="sticker" onClick={onSurprise}>

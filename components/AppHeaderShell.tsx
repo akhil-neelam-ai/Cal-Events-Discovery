@@ -25,6 +25,7 @@ export function AppHeaderShell({
   onPresetSelect,
   onSurprise,
   onClearAll,
+  onHome,
 }: {
   isMobile: boolean;
   loading: LoadingState;
@@ -44,6 +45,8 @@ export function AppHeaderShell({
   onSurprise: (() => void) | null;
   /** Resets every filter. Null hides "Clear all". */
   onClearAll: (() => void) | null;
+  /** The wordmark's link back to the default view. */
+  onHome: () => void;
 }) {
   const filterProps = {
     filters,
@@ -68,6 +71,7 @@ export function AppHeaderShell({
         onPresetSelect={onPresetSelect}
         onDateChange={onDateChange}
         onSurprise={onSurprise}
+        onHome={onHome}
       />
       {isMobile ? (
         <MobileFiltersBar {...filterProps} onClearAll={onClearAll} />
