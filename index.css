@@ -141,6 +141,12 @@
   display: block;
 }
 
+.mark a {
+  display: inline-block;
+  color: inherit;
+  text-decoration: none;
+}
+
 .dateline {
   margin: 0.8rem 0 0;
   font-weight: 800;

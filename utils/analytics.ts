@@ -260,7 +260,7 @@ export function trackSurpriseMe(params: {
  * Track the "Clear all" link, beside the view heading or in the phone
  * Filters drawer.
  */
-export function trackClearAll(placement: "wall" | "drawer"): void {
+export function trackClearAll(placement: "wall" | "drawer" | "wordmark"): void {
   trackEvent("clear_all", { placement });
 }
 
