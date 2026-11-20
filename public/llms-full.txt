@@ -85,10 +85,14 @@ Recovered fallback state is an engineering signal, not user-facing copy. If `dat
 
 Returns a compact generated index for local search. Agents can use this for fast matching, but direct filtering over `events.json` is simpler and stable.
 
+### `GET /days/index.txt` and `GET /days/YYYY-MM-DD.txt`
+
+Plain text, `text/plain; charset=utf-8`. The index lists one page per day for today through 13 days ahead, Pacific time, as `date | weekday | events | page`. Each day page stays under 36,000 characters, so a reader that stops near 40,000 characters can read it whole. A page opens with the day, the event count, and the feed date, then lists timed events by start and then all-day events. Each line reads `time | title | place | category | topics | link`. The link is `https://cal-events.com/?event=<id>` with the id URL-encoded. Rec facility schedules get one count line. A day too large for the cap shortens places, then names how many events it left out and links to the site. The pages use the same day rule as the UI, including `dates` and `end_date`, and are rebuilt with each deploy.
+
 ## Recommended Agent Workflow
 
 1. Prefer homepage WebMCP `search_berkeley_events` when available (same ranked path as the UI). Call `list_filter_options` first for valid categories, sources, date presets, and topic slugs.
-2. Otherwise fetch `https://cal-events.com/events.json`.
+2. Otherwise fetch `https://cal-events.com/events.json`. If your fetch tool cuts off long pages, read `https://cal-events.com/days/index.txt` and the day pages it lists instead.
 3. Keep events with a day on or after today in America/Los_Angeles. Check each day in `dates` when present, or `date` otherwise.
 4. Filter by `tags[0]` for the primary displayed category.
 5. Filter by `topics` for a published topic slug. Read valid slugs from `topic_vocabulary.topics`.
@@ -132,7 +136,7 @@ Outputs besides `events`:
 
 `apply_ui_state` defaults to `mode: "replace"`: fields you leave out return to their defaults. `mode: "merge"` keeps the current URL and changes only what you pass. `reset: true` starts from the default view. `event: null` closes the detail panel. An unknown value or event id returns `applied: false` with an error. Merge checks the event id it keeps from the URL too. If the visitor changes the URL while a merge runs, it returns `applied: false` with a conflict error. Call `get_ui_state`, then retry. A `date` you pass stays in the URL even when it equals the default.
 
-Chip dismissal is search-only. Pass `dismiss` to `search_berkeley_events`. `apply_ui_state` has no dismiss field, and the page clears dismissed chips whenever its URL changes.
+Chip dismissal is search-only. Pass `dismiss` to `search_berkeley_events`. `apply_ui_state` has no dismiss field, and the page clears dismissed chips whenever its URL changes. On the page, a chip's "x" takes the words that set it out of the search box, so `q` changes and nothing is dismissed. `view.dismissedChipKeys` then holds only a topic the page cleared because nothing matched it.
 
 The URL carries `q`, `date`, `category`, `topic`, `source`, and `event` only. `startDate`, `endDate`, `limit`, `offset`, and `dismiss` have no URL form, so the page can differ from a search that used them.
 

@@ -5,8 +5,10 @@ import React, {
   useCallback,
   useRef,
 } from "react";
+import { Analytics } from "@vercel/analytics/react";
+
 import { CalEvent, SearchFilters, LoadingState } from "./types";
-import { DEFAULT_FILTERS } from "./appConfig";
+import { DEFAULT_FILTERS, SOURCE_LABELS } from "./appConfig";
 import { publishViewState } from "./agent/viewState";
 import { AppFooter } from "./components/AppFooter";
 import { BackToTopButton } from "./components/BackToTopButton";
@@ -17,7 +19,11 @@ import {
 } from "./components/EndedEventNotice";
 import { EventDetailOverlay } from "./components/EventDetailOverlay";
 import { ErrorStateView } from "./components/ErrorStateView";
-import { EventsResultsSection } from "./components/EventsResultsSection";
+import {
+  EventsResultsSection,
+  RESULTS_ANCHOR_ID,
+  RESULTS_HEADING_ID,
+} from "./components/EventsResultsSection";
 import { LoadingStateView } from "./components/LoadingStateView";
 import { useDebouncedValue } from "./hooks/useDebouncedValue";
 import { useEventBrowserActions } from "./hooks/useEventBrowserActions";
@@ -26,6 +32,7 @@ import { useBackToTopVisibility } from "./hooks/useBackToTopVisibility";
 import { useEventFeed } from "./hooks/useEventFeed";
 import { useEventGridState } from "./hooks/useEventGridState";
 import { useIsMobile } from "./hooks/useIsMobile";
+import { useMasonry } from "./hooks/useMasonry";
 import { usePacificDateKeys } from "./hooks/usePacificDateKeys";
 import { usePrefersReducedMotion } from "./hooks/usePrefersReducedMotion";
 import { readAppUrlState, useUrlStateSync } from "./hooks/useUrlStateSync";
@@ -35,7 +42,10 @@ import {
   trackPageView,
   trackEventClick,
   trackEndedEventLink,
+  trackSurpriseMe,
+  trackClearAll,
 } from "./utils/analytics";
+import { isRecFacilitySchedule } from "./utils/eventPresentation";
 import { addRecentSearch } from "./utils/recentSearches";
 import type { AppUrlState } from "./utils/urlState";
 
@@ -57,7 +67,6 @@ export default function App() {
     searchIndex,
     searchIndexSettled,
     topicVocabulary,
-    sourceOptions,
     sourceCount,
     loadEvents,
   } = useEventFeed(filters.searchQuery.trim().length >= 2);
@@ -106,6 +115,8 @@ export default function App() {
 
   const { todayKey, tomorrowKey, weekEndKey, nowMinutes } =
     usePacificDateKeys();
+  const wallRef = useRef<HTMLElement | null>(null);
+  useMasonry(wallRef, { anchor: ".notice", beside: ".beside" });
   const debouncedSearchQuery = useDebouncedValue(filters.searchQuery, 140);
   const browserStateFilters = useMemo(
     () => ({ ...filters, searchQuery: debouncedSearchQuery }),
@@ -210,19 +221,13 @@ export default function App() {
     if (endedEventId) trackEndedEventLink(endedEventId);
   }, [endedEventId]);
 
-  const {
-    shouldAnimateCards,
-    visibleEvents,
-    hiddenEventCount,
-    eventGroups,
-    showMoreEvents,
-  } = useEventGridState({
-    loading,
-    filteredEvents,
-    effectiveDateRange,
-    prefersReducedMotion,
-    todayKey,
-  });
+  const { visibleEvents, hiddenEventCount, eventGroups, showMoreEvents } =
+    useEventGridState({
+      filteredEvents,
+      effectiveDateRange,
+      prefersReducedMotion,
+      todayKey,
+    });
 
   // A URL that arrives through popstate (back, forward, or an agent's
   // apply_ui_state) decides the view alone. Chips dismissed on the previous
@@ -266,6 +271,27 @@ export default function App() {
     [filters.searchQuery, onHistoryIntent, visibleSelectedEventId],
   );
 
+  // "Surprise me" opens one random result through the same path as a card
+  // click. Facility schedules are not events, so it skips them as Next up
+  // does.
+  const surpriseCandidates = useMemo(
+    () =>
+      loading === LoadingState.SUCCESS
+        ? filteredEvents.filter((event) => !isRecFacilitySchedule(event))
+        : [],
+    [filteredEvents, loading],
+  );
+  const handleSurprise = useCallback(() => {
+    if (surpriseCandidates.length === 0) return;
+    const event =
+      surpriseCandidates[Math.floor(Math.random() * surpriseCandidates.length)];
+    trackSurpriseMe({
+      event_id: event.id,
+      results_count: surpriseCandidates.length,
+    });
+    handleEventClick(event);
+  }, [handleEventClick, surpriseCandidates]);
+
   // Closing steps back over the entry the open added, so Back never lands on
   // the same event again. An event opened from a shared link has no entry.
   const handleCloseDetail = useCallback(() => {
@@ -279,7 +305,7 @@ export default function App() {
 
   const {
     handleSearchChange,
-    handleDismissChip,
+    handleRemoveChip,
     handleDateRangeChange,
     handleCategoryChange,
     handleTopicChange,
@@ -295,6 +321,43 @@ export default function App() {
     searchTimeoutRef,
     prevSearchQueryRef,
   });
+
+  // Removing a chip edits the query in the box, the one being typed.
+  const handleDismissChip = useCallback(
+    (key: string) =>
+      handleRemoveChip(key, filters.searchQuery, topicDefinitions ?? undefined),
+    [filters.searchQuery, handleRemoveChip, topicDefinitions],
+  );
+
+  // The page has no source control. A source from a shared link or an agent
+  // gets its own chip, unless a search chip already names it.
+  const sourceChipLabel =
+    filters.source !== DEFAULT_FILTERS.source &&
+    !activeChips.some((chip) => chip.key === `source:${filters.source}`)
+      ? (SOURCE_LABELS[filters.source] ?? filters.source)
+      : null;
+  // The same path the old dropdown's "All" took: a history entry and a
+  // source filter event.
+  const handleClearSourceChip = useCallback(
+    () => handleSourceChange(DEFAULT_FILTERS.source),
+    [handleSourceChange],
+  );
+
+  // "Clear all" shows while anything beyond the date tab narrows the view.
+  const canClearAll =
+    filters.searchQuery.trim() !== "" ||
+    filters.category !== DEFAULT_FILTERS.category ||
+    filters.topic !== DEFAULT_FILTERS.topic ||
+    filters.source !== DEFAULT_FILTERS.source;
+  const handleClearAll = useCallback(
+    (placement: "wall" | "drawer") => {
+      resetAll();
+      trackClearAll(placement);
+      // The link goes away, so focus lands on the results heading.
+      document.getElementById(RESULTS_HEADING_ID)?.focus();
+    },
+    [resetAll],
+  );
 
   // Read-only snapshot of what the page shows, for the get_ui_state tool.
   const notice = topicFilterNotice ?? fallbackBannerCopy;
@@ -346,71 +409,76 @@ export default function App() {
   ]);
   useEffect(() => () => publishViewState(null), []);
 
-  const mainContentId = "main-content";
-
   return (
-    <div className="min-h-screen bg-berkeley-lightgray text-gray-800 font-sans">
-      <AppHeaderShell
-        mainContentId={mainContentId}
-        isMobile={isMobile}
-        loading={loading}
-        allEventsCount={allEvents.length}
-        sourceCount={sourceCount}
-        filters={filters}
-        activeDateRange={effectiveDateRange}
-        sourceOptions={sourceOptions}
-        topicVocabulary={topicVocabulary}
-        topicCounts={topicCounts}
-        onSearchChange={handleSearchChange}
-        onDateChange={handleDateRangeChange}
-        onCategoryChange={handleCategoryChange}
-        onTopicChange={handleTopicChange}
-        onSourceChange={handleSourceChange}
-        onPresetSelect={handleQuickPreset}
-      />
+    <div className="min-h-screen">
+      <a href={`#${RESULTS_ANCHOR_ID}`} className="skip-link">
+        Skip to events
+      </a>
+      <Analytics />
 
-      {/* Main Content */}
-      <main
-        id={mainContentId}
-        tabIndex={-1}
-        className="container mx-auto px-4 py-6 md:py-7"
-      >
-        {loading === LoadingState.LOADING && <LoadingStateView />}
-
-        {loading === LoadingState.ERROR && (
-          <ErrorStateView onRetry={loadEvents} />
-        )}
-
-        {/* Dismissing clears the stale selection that drives the notice. */}
-        {endedEventId && (
-          <EndedEventNotice onDismiss={() => setSelectedEventId(null)} />
-        )}
-
-        {loading === LoadingState.SUCCESS && (
-          <EventsResultsSection
-            fallbackBannerCopy={notice}
-            activeChips={activeChips}
-            onDismissChip={handleDismissChip}
-            category={filters.category}
-            effectiveDateRange={effectiveDateRange}
+      <div className="wrap">
+        {/* The wall: the notice, the scraps, and every sheet share one
+            masonry grid, so sheets pack in beside the notice. */}
+        <main ref={wallRef} id="main-content" className="wall">
+          <AppHeaderShell
+            isMobile={isMobile}
+            loading={loading}
+            allEventsCount={allEvents.length}
+            sourceCount={sourceCount}
             todayKey={todayKey}
-            nowMinutes={nowMinutes}
-            filteredEvents={filteredEvents}
-            searchFallbackMessage={searchFallbackMessage}
-            emptyState={emptyState}
-            eventGroups={eventGroups}
-            visibleEventsCount={visibleEvents.length}
-            hiddenEventCount={hiddenEventCount}
-            shouldAnimateCards={shouldAnimateCards}
-            onEventClick={handleEventClick}
-            onLoadMore={showMoreEvents}
+            weekEndKey={weekEndKey}
+            filters={filters}
+            activeDateRange={effectiveDateRange}
+            topicVocabulary={topicVocabulary}
+            topicCounts={topicCounts}
+            onSearchChange={handleSearchChange}
+            onDateChange={handleDateRangeChange}
+            onCategoryChange={handleCategoryChange}
+            onTopicChange={handleTopicChange}
+            onPresetSelect={handleQuickPreset}
+            onSurprise={surpriseCandidates.length > 0 ? handleSurprise : null}
+            onClearAll={canClearAll ? () => handleClearAll("drawer") : null}
           />
-        )}
-      </main>
 
-      <AppFooter />
+          {loading === LoadingState.LOADING && <LoadingStateView />}
 
-      {/* Event Detail Panel/Sheet */}
+          {loading === LoadingState.ERROR && (
+            <ErrorStateView onRetry={loadEvents} />
+          )}
+
+          {/* Dismissing clears the stale selection that drives the notice. */}
+          {endedEventId && (
+            <EndedEventNotice onDismiss={() => setSelectedEventId(null)} />
+          )}
+
+          {loading === LoadingState.SUCCESS && (
+            <EventsResultsSection
+              fallbackBannerCopy={notice}
+              activeChips={activeChips}
+              onDismissChip={handleDismissChip}
+              sourceChipLabel={sourceChipLabel}
+              onClearSource={handleClearSourceChip}
+              category={filters.category}
+              effectiveDateRange={effectiveDateRange}
+              todayKey={todayKey}
+              nowMinutes={nowMinutes}
+              filteredEvents={filteredEvents}
+              searchFallbackMessage={searchFallbackMessage}
+              emptyState={emptyState}
+              eventGroups={eventGroups}
+              visibleEventsCount={visibleEvents.length}
+              hiddenEventCount={hiddenEventCount}
+              onEventClick={handleEventClick}
+              onLoadMore={showMoreEvents}
+              onClearAll={canClearAll ? () => handleClearAll("wall") : null}
+            />
+          )}
+        </main>
+
+        <AppFooter />
+      </div>
+
+      {/* The open event, pulled off the wall */}
       {selectedEvent && (
         <EventDetailOverlay
           event={selectedEvent}

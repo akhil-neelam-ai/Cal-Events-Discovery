@@ -243,6 +243,38 @@ export function trackEventClick(params: EventClickParams): void {
 }
 
 /**
+ * Track the "Surprise me" sticker. The event it opens also sends
+ * event_click, the same as a card click.
+ */
+export function trackSurpriseMe(params: {
+  event_id: string;
+  results_count: number;
+}): void {
+  trackEvent("surprise_me", {
+    event_id: params.event_id,
+    results_count: params.results_count,
+  });
+}
+
+/**
+ * Track the "Clear all" link, beside the view heading or in the phone
+ * Filters drawer.
+ */
+export function trackClearAll(placement: "wall" | "drawer"): void {
+  trackEvent("clear_all", { placement });
+}
+
+/**
+ * Track the notice's agent prompt card: a copy, a copy the browser refused,
+ * or opening the prompt to read it.
+ */
+export function trackAgentPrompt(
+  action: "copy" | "copy_failed" | "show_prompt",
+): void {
+  trackEvent("agent_prompt", { action });
+}
+
+/**
  * Track clicks to external event pages
  */
 export function trackExternalLink(params: ExternalLinkParams): void {

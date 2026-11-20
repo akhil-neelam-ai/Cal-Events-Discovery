@@ -40,9 +40,71 @@ test("agent-readable static files are present", () => {
     "public/.well-known/mcp/server-card.json",
     "public/.well-known/agent-card.json",
     "public/.well-known/agent-skills/index.json",
+    "public/.well-known/security.txt",
+    "public/favicon.svg",
+    "public/favicon.ico",
+    "public/apple-touch-icon.png",
+    "public/about.html",
+    "public/privacy.html",
+    "public/404.html",
+    "public/site-pages.css",
   ]) {
     assert.ok(fs.existsSync(path.join(rootDir, relativePath)), relativePath);
   }
+});
+
+// Expires is checked for format only. A date check here would start failing
+// the daily data pull request once the file goes stale.
+test("security.txt carries the RFC 9116 fields", () => {
+  const securityTxt = readText("public/.well-known/security.txt");
+  assert.match(securityTxt, /^Contact: mailto:\S+@\S+$/m);
+  assert.match(securityTxt, /^Preferred-Languages: en$/m);
+  assert.match(
+    securityTxt,
+    /^Canonical: https:\/\/cal-events\.com\/\.well-known\/security\.txt$/m,
+  );
+  const expires = securityTxt.match(/^Expires: (\S+)$/m)?.[1];
+  assert.ok(expires, "Expires is required");
+  assert.ok(!Number.isNaN(Date.parse(expires)), "Expires must be a date");
+});
+
+test("static pages cover about, privacy, and the 404", () => {
+  const sitemap = readText("public/sitemap.xml");
+  for (const page of ["about.html", "privacy.html"]) {
+    assert.ok(sitemap.includes(`<loc>https://cal-events.com/${page}</loc>`));
+    const html = readText(`public/${page}`);
+    assert.match(html, /<h1>[^<]+<\/h1>/);
+    assert.match(html, /href="\/site-pages\.css"/);
+  }
+  assert.match(
+    readText("public/404.html"),
+    /<meta name="robots" content="noindex" \/>/,
+  );
+  // The privacy page must name every analytics tool the site loads.
+  const privacy = readText("public/privacy.html");
+  for (const tool of ["Google Analytics", "PostHog", "Vercel Web Analytics"]) {
+    assert.ok(privacy.includes(tool), tool);
+  }
+});
+
+test("the home page shell reads without JavaScript", () => {
+  const html = readText("index.html");
+  const root = html.match(/<div id="root">([\s\S]*?)<script/)?.[1] ?? "";
+  assert.match(root, /<main class="boot">/);
+  assert.match(root, /<h1>[^<]+<\/h1>/);
+  assert.match(root, /href="\/about\.html"/);
+  assert.match(root, /href="\/privacy\.html"/);
+
+  const jsonLd = html.match(
+    /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+  )?.[1];
+  assert.ok(jsonLd, "WebSite structured data");
+  const data = JSON.parse(jsonLd);
+  assert.equal(data["@type"], "WebSite");
+  assert.equal(
+    data.potentialAction.target.urlTemplate,
+    "https://cal-events.com/?q={search_term_string}",
+  );
 });
 
 test("robots.txt declares sitemap, AI bot rules, and content signals", () => {
@@ -310,11 +372,31 @@ test("homepage and Vercel config expose discovery hooks", () => {
   assert.match(JSON.stringify(homeHeaders), /api-catalog/);
   assert.match(JSON.stringify(homeHeaders), /llms\.txt/);
 
-  const filesystemRoute = vercel.routes.find(
+  const filesystemIndex = vercel.routes.findIndex(
     (entry) => entry.handle === "filesystem",
   );
   assert.ok(
-    filesystemRoute,
+    filesystemIndex >= 0,
     "Vercel filesystem route must still serve the app",
+  );
+
+  // The two root scripts are not content-hashed, so they get a short
+  // lifetime rather than immutable.
+  for (const src of ["^/gtag-init\\.js$", "^/webmcp-tools\\.js$"]) {
+    const index = vercel.routes.findIndex((entry) => entry.src === src);
+    assert.ok(index >= 0 && index < filesystemIndex, src);
+    const route = vercel.routes[index];
+    assert.equal(route.continue, true, src);
+    assert.equal(
+      route.headers["Cache-Control"],
+      "public, max-age=3600, stale-while-revalidate=86400",
+    );
+  }
+  const securityTxtRoute = vercel.routes.find(
+    (entry) => entry.src === "^/\\.well-known/security\\.txt$",
+  );
+  assert.equal(
+    securityTxtRoute?.headers["Content-Type"],
+    "text/plain; charset=utf-8",
   );
 });
