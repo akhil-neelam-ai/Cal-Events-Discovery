@@ -34,13 +34,37 @@
     />
     <meta name="twitter:image" content="https://cal-events.com/og-image.png" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/archivo-v25-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
     <link rel="stylesheet" href="/site-pages.css" />
+
+    <!-- Structured data: this page documents the site's agent interfaces -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "CalEvents for agents",
+        "description": "Machine-readable UC Berkeley campus events for agents: JSON feeds, OpenAPI, WebMCP tools, and agent skills. Public and read-only, with no auth needed.",
+        "url": "https://cal-events.com/for-agents.html",
+        "inLanguage": "en",
+        "dateModified": "2026-11-19",
+        "author": {
+          "@type": "Person",
+          "name": "Akhil Neelam",
+          "url": "https://akhilneelam.com/"
+        },
+        "isPartOf": {
+          "@type": "WebSite",
+          "name": "CalEvents",
+          "url": "https://cal-events.com/"
+        }
+      }
+    </script>
   </head>
   <body>
     <header class="masthead">

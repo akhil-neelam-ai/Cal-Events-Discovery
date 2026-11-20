@@ -87,6 +87,55 @@ test("static pages cover about, privacy, and the 404", () => {
   }
 });
 
+test("Archivo is served from this site, not Google Fonts", () => {
+  const faces = (file) =>
+    readText(file)
+      .match(/@font-face \{[^}]+\}/g)
+      ?.join("\n") ?? "";
+  const appFaces = faces("index.css");
+  assert.equal(appFaces.match(/@font-face/g)?.length, 3);
+  assert.equal(faces("public/site-pages.css"), appFaces);
+  for (const [, file] of appFaces.matchAll(/url\('\/(fonts\/[^']+)'\)/g)) {
+    assert.ok(fs.existsSync(path.join(publicDir, file)), file);
+  }
+
+  for (const page of [
+    "index.html",
+    "public/about.html",
+    "public/privacy.html",
+    "public/for-agents.html",
+    "public/404.html",
+  ]) {
+    const html = readText(page);
+    assert.doesNotMatch(html, /fonts\.(googleapis|gstatic)\.com/, page);
+    assert.match(html, /rel="preload"\s+href="\/fonts\/archivo-[^"]+\.woff2"/);
+  }
+
+  const vercel = readJson("vercel.json");
+  const csp = vercel.routes.find(
+    (route) => route.headers?.["Content-Security-Policy"],
+  ).headers["Content-Security-Policy"];
+  assert.match(csp, /font-src 'self';/);
+  assert.doesNotMatch(csp, /fonts\.(googleapis|gstatic)\.com/);
+  const fontCache = vercel.routes.find(
+    (route) => route.src === "^/fonts/(.*)$",
+  );
+  assert.match(fontCache.headers["Cache-Control"], /immutable/);
+});
+
+test("the For Agents page declares itself as a TechArticle", () => {
+  const html = readText("public/for-agents.html");
+  const jsonLd = html.match(
+    /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+  )?.[1];
+  assert.ok(jsonLd, "TechArticle structured data");
+  const data = JSON.parse(jsonLd);
+  assert.equal(data["@type"], "TechArticle");
+  assert.equal(data.url, "https://cal-events.com/for-agents.html");
+  assert.ok(data.headline);
+  assert.equal(data.isPartOf.url, "https://cal-events.com/");
+});
+
 test("the home page shell reads without JavaScript", () => {
   const html = readText("index.html");
   const root = html.match(/<div id="root">([\s\S]*?)<script/)?.[1] ?? "";
