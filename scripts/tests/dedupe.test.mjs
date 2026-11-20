@@ -297,6 +297,135 @@ test("dedupe keeps near-matching titles apart at another time or venue", () => {
   }
 });
 
+test("dedupe merges copies that word the venue or title a little differently", () => {
+  // Pairs that reached the published feed twice in November 2026.
+  const pairs = [
+    [
+      {
+        source_name: "haas",
+        title: "Lean Transfer Lessons Learned Demo Day",
+        venue: "Chou Hall N170, UC Berkeley Haas School of Business",
+      },
+      {
+        source_name: "begin",
+        title: "Lean-Transfer Fall 2026 Demo Day",
+        venue: "Chou Hall, Room N170, Berkeley Haas",
+      },
+    ],
+    [
+      {
+        source_name: "begin",
+        title: "UC LAUNCH Accelerator Demo Day: Fall 2026",
+        venue:
+          "Spieker Forum, Chou Hall (6th floor), Berkeley Haas, 2220 Piedmont Ave",
+      },
+      {
+        source_name: "haas",
+        title: "UC LAUNCH Demo Day",
+        venue:
+          "Haas School of Business Spieker Forum, 6th Floor, Chou Hall Building",
+      },
+    ],
+    [
+      {
+        source_name: "livewhale",
+        title: "Accelerating Research and Engineering with AI",
+        venue: "Melvin Calvin Laboratory, UC Berkeley",
+      },
+      {
+        source_name: "simons",
+        title:
+          "Accelerating Research and Engineering with AI | Theoretically Speaking",
+        venue: "Calvin Lab auditorium",
+        building: "Calvin Lab",
+      },
+    ],
+    [
+      {
+        source_name: "bampfa",
+        title:
+          "California Live! / Our Strange Land: Arlie Hochschild on Stolen Pride and the Road Ahead",
+        venue: "BAMPFA — Berkeley Art Museum & Pacific Film Archive",
+      },
+      {
+        source_name: "livewhale",
+        title:
+          "California Live! Our Strange Land: On Stolen Pride and the Road Ahead",
+        venue: "Berkeley Art Museum and Pacific Film Archive",
+      },
+    ],
+    [
+      {
+        source_name: "livewhale",
+        title: "Behzod Abdraimov, piano",
+        venue: "Hertz Hall",
+      },
+      {
+        source_name: "cal_performances",
+        title: "Behzod Abduraimov, piano 2627",
+        venue: "Hertz Hall",
+      },
+    ],
+  ];
+
+  for (const [a, b] of pairs) {
+    const { events, duplicatesRemoved } = dedupeEvents([
+      event({ ...a, source_id: "a" }),
+      event({ ...b, source_id: "b" }),
+    ]);
+    assert.equal(duplicatesRemoved, 1, a.title);
+    assert.equal(events[0].also_listed?.length, 1, a.title);
+  }
+});
+
+test("dedupe keeps loosely matching copies apart in another room or place", () => {
+  const cases = [
+    // Same building, different rooms.
+    [
+      { venue: "Chou Hall N170, Berkeley Haas" },
+      { venue: "Chou Hall, Room N270, Berkeley Haas" },
+    ],
+    // Only one shared word, "hall".
+    [{ venue: "Zellerbach Hall" }, { venue: "Hertz Hall" }],
+    // Only the campus in common.
+    [{ venue: "Berkeley, CA" }, { venue: "UC Berkeley campus" }],
+  ];
+  for (const [a, b] of cases) {
+    const { events } = dedupeEvents([
+      event({
+        ...a,
+        source_name: "haas",
+        source_id: "a",
+        title: "Lean Transfer Lessons Learned Demo Day",
+      }),
+      event({
+        ...b,
+        source_name: "begin",
+        source_id: "b",
+        title: "Lean-Transfer Fall 2026 Demo Day",
+      }),
+    ]);
+    assert.equal(events.length, 2, JSON.stringify([a, b]));
+  }
+
+  // A one-letter slip only counts in a longer word: "men" is not "women".
+  const { events } = dedupeEvents([
+    event({
+      source_name: "livewhale",
+      source_id: "a",
+      title: "Cal Women's Rugby vs Life",
+      venue: "Witter Rugby Field",
+    }),
+    event({
+      source_name: "calbears",
+      source_id: "b",
+      title: "Cal Men's Rugby vs Life",
+      venue: "Witter Rugby Field",
+    }),
+  ]);
+  assert.equal(events.length, 2);
+});
+
 test("normalizeForDedupe strips stopwords, punctuation, and case", () => {
   assert.equal(
     normalizeForDedupe("The Spring Lecture of Music"),
