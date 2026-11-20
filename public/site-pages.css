@@ -1,4 +1,4 @@
-/* Shared styles for the static pages: about, privacy, and 404.
+/* Shared styles for the static pages: about, privacy, for agents, and 404.
    They use the flyer wall from index.css: a Berkeley blue wall, white chalk
    type on the wall, and one plain sheet of paper with black toner type.
    One typeface, Archivo, varied through font-stretch and weight. Anything
@@ -256,6 +256,26 @@ code {
   background: rgb(18 18 18 / 0.08);
   font: inherit;
   font-weight: 700;
+}
+
+/* The agents page names many files, fields and tools. Its code is set in
+   a monospace face straight on the paper, with no tint behind it, so it
+   never looks like a button. Each name stays on one line, so "?source"
+   or "YYYY-MM-DD" never splits at its punctuation. */
+.page-agents code {
+  padding: 0;
+  background: none;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.875em;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* A name wider than a phone line breaks anywhere instead of pushing the
+   page sideways. */
+.page-agents code.long {
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 /* One row per analytics tool: name on the left, what it does on the right. */
