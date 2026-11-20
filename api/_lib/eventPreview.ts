@@ -13,7 +13,6 @@ import path from "node:path";
 import type { CalEvent } from "../../types";
 import { formatEventDate, formatMultiDayWhen } from "../../utils/eventDates.js";
 import {
-  getCategoryStyle,
   hasDistinctDescription,
   shortenVenue,
 } from "../../utils/eventPresentation.js";
@@ -26,14 +25,29 @@ const DEFAULT_DESCRIPTION =
 /** Bundled with each function through `includeFiles` in vercel.json. */
 const EVENTS_PATH = path.join(process.cwd(), "public", "events.json");
 
+/**
+ * Paper colors from the `@theme` block in index.css, keyed by category
+ * (`tags[0]`). A test checks that the two stay the same.
+ */
+export const PAPER_COLORS: Record<string, string> = {
+  Academic: "#ffe55e",
+  Arts: "#ff93c6",
+  Sports: "#ffa052",
+  "Science & Tech": "#93d2ff",
+  "Student Life": "#83e4a5",
+  Entrepreneurship: "#d0b6ff",
+};
+export const PLAIN_PAPER = "#fcfcf9";
+
 export interface EventCard {
   title: string;
   when: string;
   location: string;
   organizer: string;
+  /** The category the flyer is filed under, or "" for one outside the six. */
   category: string;
-  /** Category strip color shared with the event cards in the app. */
-  accent: string;
+  /** The flyer's paper color, the same as its sheet on the wall. */
+  paper: string;
 }
 
 export interface LinkPreview {
@@ -100,14 +114,15 @@ export function describeWhen(event: CalEvent, now = new Date()): string {
 }
 
 export function buildEventCard(event: CalEvent, now = new Date()): EventCard {
-  const style = getCategoryStyle(event.tags[0]);
+  const category = event.tags[0] ?? "";
+  const paper = PAPER_COLORS[category];
   return {
     title: plainText(event.title),
     when: describeWhen(event, now),
     location: plainText(shortenVenue(event.location)),
     organizer: plainText(event.organizer),
-    category: style.label,
-    accent: style.stripColor,
+    category: paper ? category : "",
+    paper: paper ?? PLAIN_PAPER,
   };
 }
 
