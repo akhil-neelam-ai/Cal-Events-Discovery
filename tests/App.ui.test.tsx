@@ -2037,6 +2037,36 @@ describe("App UI regressions", () => {
     expect(trackClearAll).toHaveBeenCalledExactlyOnceWith("wall");
   });
 
+  it("the Cal Events wordmark links home and resets the view in place", async () => {
+    const user = userEvent.setup();
+    vi.mocked(trackClearAll).mockClear();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "a", title: "AI Talk", tags: ["Arts"] }),
+    ]);
+    window.history.replaceState({}, "", "/?q=ai&date=upcoming&category=Arts");
+
+    render(<App />);
+    const home = screen.getByRole("link", { name: "Cal Events" });
+    expect(home).toHaveAttribute("href", "/");
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Cal Events" }),
+    ).toContainElement(home);
+    await user.click(home);
+
+    await waitFor(() => {
+      expect(window.location.search).toBe("");
+    });
+    expect(
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
+    ).toHaveValue("");
+    expect(
+      screen.getByRole("heading", { level: 2, name: /^this week/i }),
+    ).toBeInTheDocument();
+    expect(trackClearAll).toHaveBeenCalledExactlyOnceWith("wordmark");
+  });
+
   it("puts Clear all in the phone Filters drawer too", async () => {
     const user = userEvent.setup();
     vi.mocked(trackClearAll).mockClear();

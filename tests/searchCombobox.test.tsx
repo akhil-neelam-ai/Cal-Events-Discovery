@@ -26,6 +26,7 @@ function NoticeHarness({ isMobile }: { isMobile: boolean }) {
       onPresetSelect={() => {}}
       onDateChange={() => {}}
       onSurprise={null}
+      onHome={() => {}}
     />
   );
 }
