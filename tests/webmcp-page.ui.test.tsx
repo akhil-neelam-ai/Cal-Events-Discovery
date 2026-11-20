@@ -50,6 +50,7 @@ vi.mock("@vercel/analytics/react", () => ({ Analytics: () => null }));
 
 vi.mock("../utils/analytics", () => ({
   initGA: vi.fn(),
+  initPostHog: vi.fn(),
   trackPageView: vi.fn(),
   trackSearch: vi.fn(),
   trackCategoryFilter: vi.fn(),
@@ -58,6 +59,9 @@ vi.mock("../utils/analytics", () => ({
   trackEventClick: vi.fn(),
   trackFilter: vi.fn(),
   trackExternalLink: vi.fn(),
+  trackSurpriseMe: vi.fn(),
+  trackClearAll: vi.fn(),
+  trackAgentPrompt: vi.fn(),
 }));
 
 vi.mock("../hooks/useEventFeed", () => ({
@@ -112,6 +116,22 @@ async function readView(): Promise<UiViewState> {
   return view;
 }
 
+// App publishes its view in an effect, so the snapshot can trail the screen
+// by a tick. Agents read again while the view is pending. Tests poll the same
+// way: a single read here failed in CI and under local load.
+async function expectView(
+  check: (view: UiViewState) => void,
+): Promise<UiViewState> {
+  let settled: UiViewState | undefined;
+  await waitFor(async () => {
+    const view = await readView();
+    check(view);
+    settled = view;
+  });
+  if (!settled) throw new Error("the view never matched");
+  return settled;
+}
+
 describe("WebMCP agent to page", () => {
   beforeEach(() => {
     window.history.replaceState({}, "", "/");
@@ -156,41 +176,44 @@ describe("WebMCP agent to page", () => {
       screen.getByRole("button", { name: /remove tomorrow filter/i }),
     ).toBeInTheDocument();
 
-    const view = await readView();
-    expect(view).toMatchObject({
-      todayKey: TODAY_KEY,
-      loading: "success",
-      pending: false,
-      searchQuery: "jazz tomorrow",
-      requestedDateRange: "tomorrow",
-      effectiveDateRange: "tomorrow",
-      dateRangeWidened: false,
-      hasExplicitDateRange: false,
-      dismissedChipKeys: [],
-      resultCount: 1,
-      visibleEventIds: ["jazz-night"],
-      fallbackMessage: null,
+    const view = await expectView((current) => {
+      expect(current).toMatchObject({
+        todayKey: TODAY_KEY,
+        loading: "success",
+        pending: false,
+        searchQuery: "jazz tomorrow",
+        requestedDateRange: "tomorrow",
+        effectiveDateRange: "tomorrow",
+        dateRangeWidened: false,
+        hasExplicitDateRange: false,
+        dismissedChipKeys: [],
+        resultCount: 1,
+        visibleEventIds: ["jazz-night"],
+        fallbackMessage: null,
+      });
+      expect(current.activeChips).toEqual([
+        { key: "dateRange:tomorrow", label: "Tomorrow" },
+      ]);
     });
-    expect(view.activeChips).toEqual([
-      { key: "dateRange:tomorrow", label: "Tomorrow" },
-    ]);
     expect(Object.isFrozen(view)).toBe(true);
   });
 
-  it("drops a dismissed chip when the agent reapplies the same URL", async () => {
+  it("brings back a removed chip when the agent reapplies the query", async () => {
     const user = userEvent.setup();
     window.history.replaceState({}, "", "/?q=jazz%20tomorrow");
     render(<App />);
 
+    // The × takes "tomorrow" out of the query. Nothing is dismissed.
     await user.click(
       screen.getByRole("button", { name: /remove tomorrow filter/i }),
     );
     await waitFor(() => {
       expect(screen.getByText("Jazz Brunch")).toBeInTheDocument();
     });
-    expect((await readView()).dismissedChipKeys).toEqual([
-      "dateRange:tomorrow",
-    ]);
+    await expectView((view) => {
+      expect(view.searchQuery).toBe("jazz");
+      expect(view.dismissedChipKeys).toEqual([]);
+    });
 
     await callTool("apply_ui_state", { q: "jazz tomorrow" });
 
@@ -201,9 +224,10 @@ describe("WebMCP agent to page", () => {
     expect(
       screen.getByRole("button", { name: /remove tomorrow filter/i }),
     ).toBeInTheDocument();
-    const view = await readView();
-    expect(view.dismissedChipKeys).toEqual([]);
-    expect(view.effectiveDateRange).toBe("tomorrow");
+    await expectView((view) => {
+      expect(view.dismissedChipKeys).toEqual([]);
+      expect(view.effectiveDateRange).toBe("tomorrow");
+    });
   });
 
   it("keeps an explicit date=week over the query's own date", async () => {
@@ -223,13 +247,15 @@ describe("WebMCP agent to page", () => {
       "week",
     );
 
-    const state = await callTool("get_ui_state");
-    expect(state.hasExplicitDateRange).toBe(true);
-    expect(state.view).toMatchObject({
-      requestedDateRange: "week",
-      effectiveDateRange: "week",
-      hasExplicitDateRange: true,
-      resultCount: 2,
+    await waitFor(async () => {
+      const state = await callTool("get_ui_state");
+      expect(state.hasExplicitDateRange).toBe(true);
+      expect(state.view).toMatchObject({
+        requestedDateRange: "week",
+        effectiveDateRange: "week",
+        hasExplicitDateRange: true,
+        resultCount: 2,
+      });
     });
   });
 
@@ -244,10 +270,12 @@ describe("WebMCP agent to page", () => {
       ).toBeInTheDocument();
     });
     expect(screen.getByText("Jazz Night")).toBeInTheDocument();
-    expect(await readView()).toMatchObject({
-      requestedDateRange: "today",
-      effectiveDateRange: "week",
-      dateRangeWidened: true,
+    await expectView((view) => {
+      expect(view).toMatchObject({
+        requestedDateRange: "today",
+        effectiveDateRange: "week",
+        dateRangeWidened: true,
+      });
     });
   });
 
@@ -256,30 +284,28 @@ describe("WebMCP agent to page", () => {
     window.history.replaceState({}, "", "/?q=brunch");
     render(<App />);
 
-    await callTool("apply_ui_state", { q: "jazz tomorrow" });
-    await user.click(
-      await screen.findByRole("button", { name: /remove tomorrow filter/i }),
-    );
-    await waitFor(() => {
-      expect(screen.getByText("Jazz Brunch")).toBeInTheDocument();
+    // No fixture event has a topic, so the page clears this one itself and
+    // records topic:law as dismissed. The × no longer dismisses anything.
+    await callTool("apply_ui_state", { q: "jazz tomorrow", topic: "law" });
+    await expectView((view) => {
+      expect(view.searchQuery).toBe("jazz tomorrow");
+      expect(view.dismissedChipKeys).toEqual(["topic:law"]);
     });
 
     // Same first word as the applied query, so the dismissal stays. Compared
     // against the page's first query, "brunch", it would reset.
     await user.type(
-      screen.getByRole("combobox", { name: /search campus events/i }),
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
       "!",
     );
     await waitFor(async () => {
       expect((await readView()).searchQuery).toBe("jazz tomorrow!");
     });
-    expect(
-      screen.queryByRole("button", { name: /remove tomorrow filter/i }),
-    ).not.toBeInTheDocument();
-    expect(screen.getByText("Jazz Brunch")).toBeInTheDocument();
-    expect((await readView()).dismissedChipKeys).toEqual([
-      "dateRange:tomorrow",
-    ]);
+    await expectView((view) => {
+      expect(view.dismissedChipKeys).toEqual(["topic:law"]);
+    });
   });
 });
 

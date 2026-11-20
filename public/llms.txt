@@ -4,8 +4,9 @@ CalEvents is a public UC Berkeley campus events discovery site. It aggregates up
 
 ## Primary Resources
 
-- [Homepage](https://cal-events.com/): Search and browse upcoming Berkeley events by date, category, topic, source, and keyword.
+- [Homepage](https://cal-events.com/): Search and browse upcoming Berkeley events by date, category, topic, and keyword. It has no source control. A `source` URL parameter or source words in the search still filter by source.
 - [For Agents](https://cal-events.com/for-agents.html): Human-readable agent entry point (tools, URL schema, CRUD limits).
+- [Day pages](https://cal-events.com/days/index.txt): One plain-text page per day for the next 14 days, each small enough to read in one fetch. Start here if your reader cuts off long pages.
 - [Events JSON](https://cal-events.com/events.json): Public machine-readable event feed. The top-level object contains `events`, `sources`, `lastUpdated`, and `topic_vocabulary`.
 - [Search Index](https://cal-events.com/search-index.json): Compact text-search index generated from the published events.
 - [Feed Status](https://cal-events.com/status.json): Machine-readable ingestion status, source health, fallback usage, duplicate counts, and filtering counts.
@@ -14,6 +15,10 @@ CalEvents is a public UC Berkeley campus events discovery site. It aggregates up
 - [Agent Skills](https://cal-events.com/.well-known/agent-skills/index.json): Skill files for search, status, detail, calendar export, and share.
 - [Agent Card](https://cal-events.com/.well-known/agent-card.json): A2A agent card with the WebMCP and OpenAPI interfaces.
 - [MCP Server Card](https://cal-events.com/.well-known/mcp/server-card.json): Browser WebMCP tool list and four named prompts. There is no remote MCP endpoint.
+
+## Day pages
+
+`events.json` is about 1.5 MB, and many fetch tools stop near 40,000 characters. Read [the day index](https://cal-events.com/days/index.txt) instead. It lists `https://cal-events.com/days/YYYY-MM-DD.txt` for today through 13 days ahead, Pacific time, with an event count for each. Each day page stays under 36,000 characters. Each line reads `time | title | place | category | topics | link`, and the link opens the event on CalEvents. Rec facility schedules are counted in one line, not listed. The pages are rebuilt with each deploy, which follows the daily data update.
 
 ## Event Feed Shape
 
@@ -60,7 +65,7 @@ WebMCP helpers: `build_calevents_url`, `get_ui_state`, `apply_ui_state`.
 
 `apply_ui_state` replaces the whole view by default. Pass `mode: "merge"` to change only some fields, `reset: true` for the default view, or `event: null` to close the detail panel. An unknown value or event id returns `applied: false`. In merge mode that includes a stale event id already in the URL, and a URL the visitor changed during the call. Call `get_ui_state`, then retry. A `date` you pass stays in the URL, so a date word in `q` cannot override it. Then call `get_ui_state` and read `view` for what the page shows: the effective date range, chips, result count, and visible event ids. Read it again while `view.pending` is true.
 
-Chip dismissal is search-only. Pass `dismiss` to `search_berkeley_events`. `apply_ui_state` has no dismiss field, and the page clears dismissed chips whenever its URL changes.
+Chip dismissal is search-only. Pass `dismiss` to `search_berkeley_events`. `apply_ui_state` has no dismiss field, and the page clears dismissed chips whenever its URL changes. On the page, a chip's "x" takes the words that set it out of the search box, so `q` changes.
 
 ## WebMCP Tools (homepage)
 
@@ -70,7 +75,7 @@ These tools run only in a browser tab on the homepage. An unknown category, sour
 
 `search_berkeley_events` reads date words in the query ("tomorrow", "this weekend") when you pass no date input. With no date at all it searches every upcoming day. A query's today or tomorrow widens to the week when that day has no match, as in the UI. A `datePreset` you pass never widens. Each result reports:
 
-- `interpretations`: the chips the query set, each with a `key` and `label`. Pass keys in `dismiss` to drop them, like the chip's "x" in the UI.
+- `interpretations`: the chips the query set, each with a `key` and `label`. Pass keys in `dismiss` to drop them for that search.
 - `effectiveDateRange`: the range searched, with `basis` (input, query, or default), `requested`, and `widened`.
 - `relaxed` and `fallbackMessage`: set when nothing matched and the engine dropped a filter (weekend, category, or topic). Tell the user which one.
 - `total`, `offset`, `limit`: page with `offset` while `offset` is below `total`.

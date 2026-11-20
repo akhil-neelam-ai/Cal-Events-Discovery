@@ -21,7 +21,12 @@ import type { CalEvent } from "../types";
 import { LoadingState } from "../types";
 import { buildSearchIndex } from "../scripts/lib/buildIndex";
 import { TOPIC_VOCABULARY } from "../scripts/lib/topics";
-import { trackEndedEventLink } from "../utils/analytics";
+import {
+  trackClearAll,
+  trackEndedEventLink,
+  trackEventClick,
+  trackSurpriseMe,
+} from "../utils/analytics";
 import { addRecentSearch } from "../utils/recentSearches";
 import type { SearchIndex } from "../utils/textUtils";
 
@@ -43,6 +48,7 @@ type MockFeedState = {
 
 let mockFeedState: MockFeedState;
 let mockNowMinutes = 0;
+let mockIsMobile = false;
 
 vi.mock("@vercel/analytics/react", () => ({
   Analytics: () => null,
@@ -50,6 +56,7 @@ vi.mock("@vercel/analytics/react", () => ({
 
 vi.mock("../utils/analytics", () => ({
   initGA: vi.fn(),
+  initPostHog: vi.fn(),
   trackPageView: vi.fn(),
   trackSearch: vi.fn(),
   trackCategoryFilter: vi.fn(),
@@ -58,6 +65,9 @@ vi.mock("../utils/analytics", () => ({
   trackEventClick: vi.fn(),
   trackFilter: vi.fn(),
   trackExternalLink: vi.fn(),
+  trackSurpriseMe: vi.fn(),
+  trackClearAll: vi.fn(),
+  trackAgentPrompt: vi.fn(),
 }));
 
 vi.mock("../utils/recentSearches", async (importOriginal) => {
@@ -71,7 +81,7 @@ vi.mock("../hooks/useEventFeed", () => ({
 }));
 
 vi.mock("../hooks/useIsMobile", () => ({
-  useIsMobile: () => false,
+  useIsMobile: () => mockIsMobile,
 }));
 
 vi.mock("../hooks/usePacificDateKeys", () => ({
@@ -161,6 +171,7 @@ describe("App UI regressions", () => {
     window.sessionStorage.clear();
     mockFeedState = makeFeedState([]);
     mockNowMinutes = 0;
+    mockIsMobile = false;
   });
 
   it("replaces one selected topic and toggles the active topic off", () => {
@@ -249,12 +260,14 @@ describe("App UI regressions", () => {
     render(<App />);
 
     expect(
-      screen.getByRole("combobox", { name: /search campus events/i }),
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
     ).toHaveValue("ai");
     expect(
       screen.getByRole("heading", {
         level: 2,
-        name: /science & tech · this week/i,
+        name: /science & tech, this week/i,
       }),
     ).toBeInTheDocument();
     expect(screen.getByText("AI Research Forum")).toBeInTheDocument();
@@ -441,6 +454,46 @@ describe("App UI regressions", () => {
     expect(back).toHaveBeenCalledTimes(1);
     expect(window.location.search).not.toContain("event=");
     back.mockRestore();
+  });
+
+  it("closes with Back to the wall at the end of the flyer, the way × does", async () => {
+    const user = userEvent.setup();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "with-notes", title: "With Notes" }),
+      makeEvent({
+        id: "no-notes",
+        title: "No Notes",
+        description: "No Notes",
+        time: "6:00 PM",
+      }),
+    ]);
+
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: /with notes/i }));
+    const backToWall = screen.getByRole("button", { name: "Back to the wall" });
+    // It comes last, after the description.
+    expect(
+      screen
+        .getByRole("heading", { name: "About this event" })
+        .compareDocumentPosition(backToWall) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+
+    const back = vi.spyOn(window.history, "back");
+    await user.click(backToWall);
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+    expect(back).toHaveBeenCalledTimes(1);
+    back.mockRestore();
+
+    // Without a description it ends the flyer itself.
+    await user.click(screen.getByRole("button", { name: /no notes/i }));
+    expect(
+      screen.queryByRole("heading", { name: "About this event" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Back to the wall" }),
+    ).toBeInTheDocument();
   });
 
   it("closes a shared-link event in place instead of going back", async () => {
@@ -777,7 +830,7 @@ describe("App UI regressions", () => {
         screen.queryByText("Nothing today — showing this week instead."),
       ).not.toBeInTheDocument();
       if (range === "week") {
-        expect(screen.getByText("Today · Apr 22")).toBeInTheDocument();
+        expect(screen.getByText("Today, Apr 22")).toBeInTheDocument();
         expect(screen.queryByText(/Apr 21/)).not.toBeInTheDocument();
       }
       unmount();
@@ -879,7 +932,9 @@ describe("App UI regressions", () => {
       screen.getByRole("heading", { level: 2, name: /this week/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Tomorrow Founder Talk")).toBeInTheDocument();
-    expect(screen.getAllByText("Updates every day").length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/public calendars every morning/),
+    ).toBeInTheDocument();
     expect(screen.queryByText(/Updated \d+h ago/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Synced \d+h ago/)).not.toBeInTheDocument();
   });
@@ -912,7 +967,7 @@ describe("App UI regressions", () => {
     await user.click(screen.getByRole("button", { name: "Arts" }));
 
     expect(
-      screen.getByRole("heading", { level: 2, name: /arts · this week/i }),
+      screen.getByRole("heading", { level: 2, name: /arts, this week/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("BAMPFA Screening")).toBeInTheDocument();
     expect(
@@ -1066,7 +1121,9 @@ describe("App UI regressions", () => {
     await user.click(screen.getByRole("button", { name: /tonight/i }));
 
     expect(
-      screen.getByRole("combobox", { name: /search campus events/i }),
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
     ).toHaveValue("tonight");
     await waitFor(() => {
       expect(screen.getByText("Evening Concert")).toBeInTheDocument();
@@ -1193,7 +1250,7 @@ describe("App UI regressions", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("lets users dismiss interpreted campus-area chips and broadens results", async () => {
+  it("removes a campus-area chip's words and broadens results", async () => {
     const user = userEvent.setup();
 
     mockFeedState = makeFeedState([
@@ -1227,6 +1284,12 @@ describe("App UI regressions", () => {
       expect(screen.queryByText("Northside")).not.toBeInTheDocument();
       expect(screen.getByText("Southside Talk")).toBeInTheDocument();
     });
+    expect(
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
+    ).toHaveValue("talks");
+    expect(new URLSearchParams(window.location.search).get("q")).toBe("talks");
   });
 
   it("opens event details from the primary card action", async () => {
@@ -1322,6 +1385,56 @@ describe("App UI regressions", () => {
     ).toEqual(["Today Talk", "Tomorrow Talk"]);
   });
 
+  it("opens a random result from Surprise me, the way a card click does", async () => {
+    const user = userEvent.setup();
+    vi.mocked(trackSurpriseMe).mockClear();
+    vi.mocked(trackEventClick).mockClear();
+    const random = vi.spyOn(Math, "random").mockReturnValue(0.99);
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "first", title: "First Talk", time: "4:00 PM" }),
+      makeEvent({ id: "second", title: "Second Talk", time: "6:00 PM" }),
+      makeEvent({
+        id: "pool",
+        title: "Lap Swim",
+        organizer: "Recreational Sports",
+        time: "9:00 PM",
+      }),
+    ]);
+    const startLength = window.history.length;
+
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "Surprise me" }));
+    random.mockRestore();
+
+    // Facility schedules are not events, so the pick skips them.
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Second Talk" }),
+    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(window.location.search).toContain("event=second");
+    });
+    expect(window.history.length).toBe(startLength + 1);
+    expect(trackSurpriseMe).toHaveBeenCalledExactlyOnceWith({
+      event_id: "second",
+      results_count: 2,
+    });
+    expect(trackEventClick).toHaveBeenCalledOnce();
+  });
+
+  it("hides Surprise me when nothing matches", async () => {
+    mockFeedState = makeFeedState([makeEvent({ id: "a", title: "AI Talk" })]);
+    window.history.replaceState({}, "", "/?q=zzzxqv");
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/No results for/)).toBeInTheDocument();
+    });
+    expect(
+      screen.queryByRole("button", { name: "Surprise me" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("collapses a day's Rec Sports schedules into one row", async () => {
     const user = userEvent.setup();
     mockFeedState = makeFeedState([
@@ -1375,7 +1488,7 @@ describe("App UI regressions", () => {
     render(<App />);
 
     expect(
-      screen.getByText("UC Berkeley Events · Cal Bears"),
+      screen.getByText("UC Berkeley Events, Cal Bears"),
     ).toBeInTheDocument();
 
     const details = render(
@@ -1409,8 +1522,8 @@ describe("App UI regressions", () => {
     expect(screen.getByText("Next up:").parentElement).toHaveTextContent(
       "Next up: 7pm Women's Basketball, Haas Pavilion",
     );
-    // The header keeps the cadence; the subtitle no longer repeats it.
-    expect(screen.getAllByText("Updates every day")).toHaveLength(1);
+    // The footer states the cadence once; the view subtitle does not.
+    expect(screen.getAllByText(/every morning/)).toHaveLength(1);
   });
 
   it("keeps the source link outside the card's button", async () => {
@@ -1785,6 +1898,260 @@ describe("App UI regressions", () => {
     await waitFor(() => {
       expect(window.location.search).not.toContain("topic=");
     });
+    expect(window.location.search).not.toContain("q=");
+    expect(
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
+    ).toHaveValue("");
+  });
+
+  it("takes a chip's words out of the search box, one chip at a time", async () => {
+    const user = userEvent.setup();
+    const box = () =>
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      });
+    const count = () =>
+      screen.getByRole("heading", { level: 2 }).textContent ?? "";
+    mockFeedState = makeFeedState([
+      makeEvent({
+        id: "bampfa-film",
+        title: "Dreams Are Colder Than Death",
+        source: "bampfa",
+        tags: ["Arts"],
+        topics: ["film"],
+      }),
+      makeEvent({
+        id: "bampfa-talk",
+        title: "Gallery Talk",
+        source: "bampfa",
+        tags: ["Arts"],
+        topics: ["visual-arts-exhibitions"],
+        description: "A gallery talk at the museum.",
+      }),
+      makeEvent({
+        id: "other-film",
+        title: "Campus Film Night",
+        source: "livewhale",
+        tags: ["Arts"],
+        topics: ["film"],
+        description: "A film night.",
+      }),
+      makeEvent({
+        id: "arts-other",
+        title: "Choir Concert",
+        source: "livewhale",
+        tags: ["Arts"],
+        topics: ["music-performance"],
+        description: "A concert.",
+      }),
+    ]);
+    // The "A film at BAMPFA" example: two chips, inside an explicit Arts.
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=bampfa%20film&category=Arts&date=upcoming",
+    );
+
+    render(<App />);
+    expect(count()).toContain("(1)");
+
+    await user.click(
+      screen.getByRole("button", { name: /remove film filter/i }),
+    );
+    await waitFor(() => expect(box()).toHaveValue("bampfa"));
+    expect(new URLSearchParams(window.location.search).get("q")).toBe("bampfa");
+    // Results follow the box after the search debounce.
+    await waitFor(() => expect(count()).toContain("(2)"));
+    expect(screen.getByText("Gallery Talk")).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: /remove bampfa filter/i }),
+    );
+    await waitFor(() => expect(box()).toHaveValue(""));
+    expect(window.location.search).not.toContain("q=");
+    expect(window.location.search).toContain("category=Arts");
+    await waitFor(() => expect(count()).toContain("(4)"));
+    expect(getViewState()?.dismissedChipKeys).toEqual([]);
+  });
+
+  it("shows Clear all only while something beyond the date narrows the view", () => {
+    mockFeedState = makeFeedState([makeEvent({ id: "a", title: "AI Talk" })]);
+    const clearAll = () => screen.queryByRole("button", { name: "Clear all" });
+
+    for (const search of ["", "?date=today", "?date=upcoming"]) {
+      window.history.replaceState({}, "", `/${search}`);
+      const view = render(<App />);
+      expect(clearAll()).not.toBeInTheDocument();
+      view.unmount();
+    }
+
+    for (const search of [
+      "?q=a",
+      "?category=Arts",
+      "?topic=ai-machine-learning",
+      "?source=livewhale",
+    ]) {
+      window.history.replaceState({}, "", `/${search}`);
+      const view = render(<App />);
+      expect(clearAll()).toBeInTheDocument();
+      view.unmount();
+    }
+  });
+
+  it("Clear all resets search, filters, and date, then focuses the results", async () => {
+    const user = userEvent.setup();
+    vi.mocked(trackClearAll).mockClear();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "a", title: "AI Talk", tags: ["Arts"] }),
+    ]);
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=ai&date=upcoming&category=Arts&source=livewhale",
+    );
+
+    render(<App />);
+    const link = screen.getByRole("button", { name: "Clear all" });
+    expect(link).toHaveTextContent(/^Clear all$/);
+    await user.click(link);
+
+    await waitFor(() => {
+      expect(window.location.search).toBe("");
+    });
+    expect(
+      screen.getByRole("combobox", {
+        name: /looking for: search campus events/i,
+      }),
+    ).toHaveValue("");
+    expect(
+      screen.getByRole("heading", { level: 2, name: /^this week/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Clear all" }),
+    ).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(
+      screen.getByRole("heading", { level: 2, name: /^this week/i }),
+    );
+    expect(trackClearAll).toHaveBeenCalledExactlyOnceWith("wall");
+  });
+
+  it("puts Clear all in the phone Filters drawer too", async () => {
+    const user = userEvent.setup();
+    vi.mocked(trackClearAll).mockClear();
+    mockIsMobile = true;
+    mockFeedState = makeFeedState([makeEvent({ id: "a", title: "AI Talk" })]);
+    window.history.replaceState({}, "", "/?source=livewhale");
+
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: /^Filters/ }));
+    const inDrawer = within(
+      document.getElementById("mobile-filters") as HTMLElement,
+    ).getByRole("button", { name: "Clear all" });
+    await user.click(inDrawer);
+
+    await waitFor(() => {
+      expect(window.location.search).toBe("");
+    });
+    expect(
+      screen.queryByRole("button", { name: "Clear all" }),
+    ).not.toBeInTheDocument();
+    expect(trackClearAll).toHaveBeenCalledExactlyOnceWith("drawer");
+  });
+
+  it("has no source control, and shows a linked source as a chip that clears it", async () => {
+    const user = userEvent.setup();
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "campus", title: "Campus Talk", source: "livewhale" }),
+      makeEvent({ id: "film", title: "Museum Film", source: "bampfa" }),
+    ]);
+    window.history.replaceState({}, "", "/?source=bampfa&date=upcoming");
+
+    render(<App />);
+
+    expect(
+      screen.queryByRole("button", { name: /^All \(\d+\)$/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Source")).not.toBeInTheDocument();
+    expect(screen.getByText("Museum Film")).toBeInTheDocument();
+    expect(screen.queryByText("Campus Talk")).not.toBeInTheDocument();
+    expect(screen.getByText("Only from")).toBeInTheDocument();
+    expect(screen.queryByText("Interpreted as")).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "Remove BAMPFA source filter" }),
+    );
+
+    await waitFor(() => {
+      expect(window.location.search).not.toContain("source=");
+    });
+    expect(screen.getByText("Campus Talk")).toBeInTheDocument();
+    expect(screen.queryByText("Only from")).not.toBeInTheDocument();
+  });
+
+  it("names a linked source once, beside any search chips", () => {
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "law", title: "Law Talk", source: "berkeley_law" }),
+      makeEvent({ id: "campus", title: "Campus Talk", source: "livewhale" }),
+    ]);
+
+    // The search already names this source, so no second chip.
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=berkeley%20law&source=berkeley_law&date=upcoming",
+    );
+    const same = render(<App />);
+    expect(
+      screen.getByRole("button", { name: "Remove Berkeley Law filter" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Only from")).not.toBeInTheDocument();
+    same.unmount();
+
+    // A different linked source hides the search's source chip, so the
+    // linked one gets its own.
+    window.history.replaceState(
+      {},
+      "",
+      "/?q=berkeley%20law%20tomorrow&source=livewhale&date=upcoming",
+    );
+    render(<App />);
+    expect(screen.getByText("Interpreted as")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Remove Tomorrow filter" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Only from")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: "Remove UC Berkeley Events source filter",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("counts only the topic on the phone Filters scrap, and the drawer has no source", async () => {
+    const user = userEvent.setup();
+    mockIsMobile = true;
+    mockFeedState = makeFeedState([
+      makeEvent({ id: "a", title: "AI Talk", tags: ["Arts"] }),
+    ]);
+    window.history.replaceState({}, "", "/?category=Arts&source=livewhale");
+
+    const view = render(<App />);
+    const filters = screen.getByRole("button", { name: /^Filters/ });
+    expect(filters).toHaveAccessibleName("Filters");
+    await user.click(filters);
+    const drawer = document.getElementById("mobile-filters") as HTMLElement;
+    expect(within(drawer).queryByText(/Source:/)).not.toBeInTheDocument();
+    expect(within(drawer).getByText(/Category:/)).toBeInTheDocument();
+    view.unmount();
+
+    window.history.replaceState({}, "", "/?topic=ai-machine-learning");
+    render(<App />);
+    // jsdom joins the count without the space a browser adds.
+    expect(
+      screen.getByRole("button", { name: /^Filters/ }),
+    ).toHaveAccessibleName(/^Filters ?1$/);
   });
 
   it("does not flash an empty grid for a doomed topic", () => {

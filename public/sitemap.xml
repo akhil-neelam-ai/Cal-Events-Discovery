@@ -6,6 +6,16 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://cal-events.com/about.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://cal-events.com/privacy.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
     <loc>https://cal-events.com/for-agents.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

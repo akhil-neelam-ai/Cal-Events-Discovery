@@ -41,10 +41,16 @@ function nextUpLabel(
   return `${when} ${event.title}${venue ? `, ${venue}` : ""}`;
 }
 
+export const RESULTS_ANCHOR_ID = "events";
+/** Focus moves here after "Clear all", which takes its own link away. */
+export const RESULTS_HEADING_ID = "events-heading";
+
 export function EventsResultsSection({
   fallbackBannerCopy,
   activeChips,
   onDismissChip,
+  sourceChipLabel,
+  onClearSource,
   category,
   effectiveDateRange,
   todayKey,
@@ -55,13 +61,16 @@ export function EventsResultsSection({
   eventGroups,
   visibleEventsCount,
   hiddenEventCount,
-  shouldAnimateCards,
   onEventClick,
   onLoadMore,
+  onClearAll,
 }: {
   fallbackBannerCopy: string | null;
   activeChips: InterpretedChip[];
   onDismissChip: (key: string) => void;
+  /** A source no search chip names, or null. */
+  sourceChipLabel: string | null;
+  onClearSource: () => void;
   category: string;
   effectiveDateRange: SearchFilters["dateRange"];
   todayKey: string;
@@ -72,9 +81,10 @@ export function EventsResultsSection({
   eventGroups: EventGroup[];
   visibleEventsCount: number;
   hiddenEventCount: number;
-  shouldAnimateCards: boolean;
   onEventClick: (event: CalEvent) => void;
   onLoadMore: () => void;
+  /** Resets every filter. Null hides "Clear all". */
+  onClearAll: (() => void) | null;
 }) {
   const nextUp = findNextUpEvent(
     filteredEvents,
@@ -84,35 +94,40 @@ export function EventsResultsSection({
   );
   return (
     <>
+      {/* Chalk on the wall: the view, its count, and the next thing on. */}
+      <div id={RESULTS_ANCHOR_ID} tabIndex={-1} className="chalk-head beside">
+        <div className="view-head">
+          <h2 id={RESULTS_HEADING_ID} tabIndex={-1} className="view-title">
+            {category !== "All" ? `${category}, ` : ""}
+            {rangeLabel(effectiveDateRange)}{" "}
+            <span className="view-count">({filteredEvents.length})</span>
+          </h2>
+          {onClearAll && (
+            <button type="button" onClick={onClearAll} className="chalk-link">
+              Clear all
+            </button>
+          )}
+        </div>
+        {nextUp && (
+          <p className="next-up">
+            <span>Next up:</span>{" "}
+            {nextUpLabel(nextUp, effectiveDateRange, todayKey)}
+          </p>
+        )}
+      </div>
+
       {fallbackBannerCopy && (
-        <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-xs">
-          {fallbackBannerCopy}
+        <div className="note note-gold beside">
+          <p>{fallbackBannerCopy}</p>
         </div>
       )}
 
-      <InterpretedChips chips={activeChips} onDismiss={onDismissChip} />
-
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div className="min-w-0 max-w-full">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-600">
-            Campus feed
-          </p>
-          <h2 className="mt-1 text-2xl font-semibold text-berkeley-blue md:text-[2rem] md:font-serif">
-            {category !== "All" ? `${category} · ` : ""}
-            {rangeLabel(effectiveDateRange)}
-            <span className="ml-2 text-sm font-normal text-slate-600">
-              ({filteredEvents.length})
-            </span>
-          </h2>
-          {/* The header already says the feed updates daily. */}
-          {nextUp && (
-            <p className="mt-1 truncate text-sm text-slate-600">
-              <span className="font-semibold text-slate-700">Next up:</span>{" "}
-              {nextUpLabel(nextUp, effectiveDateRange, todayKey)}
-            </p>
-          )}
-        </div>
-      </div>
+      <InterpretedChips
+        chips={activeChips}
+        onDismiss={onDismissChip}
+        sourceLabel={sourceChipLabel}
+        onClearSource={onClearSource}
+      />
 
       <div
         role="status"
@@ -126,8 +141,8 @@ export function EventsResultsSection({
       </div>
 
       {searchFallbackMessage && (
-        <div className="mb-4 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 shadow-xs">
-          {searchFallbackMessage}
+        <div className="note beside">
+          <p>{searchFallbackMessage}</p>
         </div>
       )}
 
@@ -139,7 +154,6 @@ export function EventsResultsSection({
           filteredEventsCount={filteredEvents.length}
           visibleEventsCount={visibleEventsCount}
           hiddenEventCount={hiddenEventCount}
-          shouldAnimateCards={shouldAnimateCards}
           effectiveDateRange={effectiveDateRange}
           todayKey={todayKey}
           onEventClick={onEventClick}

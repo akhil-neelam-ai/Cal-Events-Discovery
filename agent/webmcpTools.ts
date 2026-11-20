@@ -255,7 +255,7 @@ export function createWebMcpTools(deps: WebMcpDeps): WebMcpTool[] {
           type: "array",
           items: { type: "string" },
           description:
-            'Optional chip keys to drop, taken from a previous result\'s interpretations (for example "topic:law" or "dateRange:tomorrow"). Same as the "x" on a UI chip: the words that set a source, category, or topic chip become search text again.',
+            'Optional chip keys to drop, taken from a previous result\'s interpretations (for example "topic:law" or "dateRange:tomorrow"). The words that set a dismissed source, category, or topic chip become search text again. The "x" on a page chip works differently: it takes the words out of the search box.',
         },
         limit: {
           type: "integer",

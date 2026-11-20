@@ -1,53 +1,63 @@
 import type { InterpretedChip } from "../utils/searchEngine";
 
+/**
+ * The chip row under the view heading. "Interpreted as" names what the
+ * search words set. "Only from" names a source that came without words,
+ * from a shared link or an agent, since the page has no source control.
+ */
 export function InterpretedChips({
   chips,
   onDismiss,
+  sourceLabel = null,
+  onClearSource,
 }: {
   chips: InterpretedChip[];
   onDismiss: (key: string) => void;
+  sourceLabel?: string | null;
+  onClearSource?: () => void;
 }) {
-  if (chips.length === 0) {
+  if (chips.length === 0 && !sourceLabel) {
     return null;
   }
 
   return (
     <div
-      className="mb-4 flex flex-wrap items-center gap-2"
+      className="chips beside"
       aria-live="polite"
-      aria-label="Search interpretations"
+      aria-label="Active filters"
     >
-      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
-        Interpreted as
-      </span>
-      {chips.map((chip) => (
-        <span
-          key={chip.key}
-          className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(253,181,21,0.4)] bg-[rgba(253,181,21,0.08)] px-3 py-1 text-xs font-semibold text-berkeley-blue"
-        >
-          {chip.label}
-          <button
-            type="button"
-            aria-label={`Remove ${chip.label} filter`}
-            onClick={() => onDismiss(chip.key)}
-            className="-m-1 ml-0.5 rounded-full p-2 text-slate-500 transition-colors hover:bg-berkeley-gold/20 hover:text-berkeley-blue focus:outline-hidden focus-visible:ring-2 focus-visible:ring-berkeley-gold/70"
-          >
-            <svg
-              className="h-3 w-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+      {chips.length > 0 && (
+        <>
+          <span className="wall-label">Interpreted as</span>
+          {chips.map((chip) => (
+            <span key={chip.key} className="chip">
+              {chip.label}
+              <button
+                type="button"
+                aria-label={`Remove ${chip.label} filter`}
+                onClick={() => onDismiss(chip.key)}
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </span>
+          ))}
+        </>
+      )}
+      {sourceLabel && (
+        <>
+          <span className="wall-label">Only from</span>
+          <span className="chip">
+            {sourceLabel}
+            <button
+              type="button"
+              aria-label={`Remove ${sourceLabel} source filter`}
+              onClick={onClearSource}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2.5}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </span>
-      ))}
+              <span aria-hidden="true">×</span>
+            </button>
+          </span>
+        </>
+      )}
     </div>
   );
 }

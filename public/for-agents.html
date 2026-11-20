@@ -3,12 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CalEvents for Agents</title>
+    <title>CalEvents for Agents: UC Berkeley Event Data</title>
     <meta
       name="description"
-      content="Machine-readable UC Berkeley campus events: JSON feeds, OpenAPI, WebMCP tools, and agent skills."
+      content="Machine-readable UC Berkeley campus events for agents: JSON feeds, OpenAPI, WebMCP tools, and agent skills. Public and read-only, with no auth needed."
     />
     <link rel="canonical" href="https://cal-events.com/for-agents.html" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cal-events.com/for-agents.html" />
+    <meta property="og:title" content="CalEvents for Agents: UC Berkeley Event Data" />
+    <meta
+      property="og:description"
+      content="Machine-readable UC Berkeley campus events for agents: JSON feeds, OpenAPI, WebMCP tools, and agent skills. Public and read-only, with no auth needed."
+    />
+    <meta property="og:image" content="https://cal-events.com/og-image.png" />
+    <meta property="og:site_name" content="CalEvents" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://cal-events.com/for-agents.html" />
+    <meta name="twitter:title" content="CalEvents for Agents: UC Berkeley Event Data" />
+    <meta
+      name="twitter:description"
+      content="Machine-readable UC Berkeley campus events for agents: JSON feeds, OpenAPI, WebMCP tools, and agent skills. Public and read-only, with no auth needed."
+    />
+    <meta name="twitter:image" content="https://cal-events.com/og-image.png" />
     <style>
       :root {
         --ink: #0d2240;
@@ -87,6 +111,11 @@
 
       <h2>Data</h2>
       <ul>
+        <li>
+          <a href="/days/index.txt">Day pages</a>: one plain-text page per day
+          for the next 14 days, each under 36,000 characters. Read these if
+          your fetch tool cuts off the full feed.
+        </li>
         <li><a href="/events.json">events.json</a></li>
         <li><a href="/search-index.json">search-index.json</a></li>
         <li><a href="/status.json">status.json</a></li>
@@ -112,7 +141,9 @@
         change returns <code>applied: false</code>, so read the state and
         retry. Chip dismissal is search-only: pass <code>dismiss</code> to
         <code>search_berkeley_events</code>. The page clears dismissed chips
-        whenever its URL changes. Search inputs such as
+        whenever its URL changes. On the page, a chip's "x" takes the words
+        that set it out of the search box, so <code>q</code> changes. Search
+        inputs such as
         <code>startDate</code>, <code>endDate</code>, and
         <code>limit</code> have no URL form.
       </p>

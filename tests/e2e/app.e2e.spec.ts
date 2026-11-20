@@ -179,14 +179,14 @@ test("preserves search and filter state across detail open and reload", async ({
   await page.getByRole("button", { name: /^arts$/i }).click();
 
   const searchInput = page.getByRole("combobox", {
-    name: /search campus events/i,
+    name: /looking for: search campus events/i,
   });
   await searchInput.fill("dreams");
 
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: /arts · all upcoming events/i,
+      name: /arts, all upcoming events/i,
     }),
   ).toBeVisible();
   await expect(
@@ -213,12 +213,12 @@ test("preserves search and filter state across detail open and reload", async ({
 
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(
-    page.getByRole("combobox", { name: /search campus events/i }),
+    page.getByRole("combobox", { name: /looking for: search campus events/i }),
   ).toHaveValue("dreams");
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: /arts · all upcoming events/i,
+      name: /arts, all upcoming events/i,
     }),
   ).toBeVisible();
   await expect(
@@ -235,7 +235,7 @@ test("filters by primary category only", async ({ page }) => {
   await expect(
     page.getByRole("heading", {
       level: 2,
-      name: /arts · all upcoming events/i,
+      name: /arts, all upcoming events/i,
     }),
   ).toBeVisible();
   await expect(
@@ -246,11 +246,11 @@ test("filters by primary category only", async ({ page }) => {
   ).toHaveCount(0);
 });
 
-test("filters by source dropdown", async ({ page }) => {
-  await page.goto("/");
-
-  await page.getByRole("button", { name: /^All \(\d+\)$/ }).click();
-  await page.getByRole("option", { name: /CalLink/ }).click();
+test("filters by a linked source, clears it from its chip, and reads source words", async ({
+  page,
+}) => {
+  // The page has no source control. A shared link still filters.
+  await page.goto("/?source=callink&date=upcoming");
 
   await expect(
     page.getByText("Free Pizza Mixer", { exact: true }),
@@ -258,7 +258,26 @@ test("filters by source dropdown", async ({ page }) => {
   await expect(
     page.getByText("Dreams Are Colder Than Death", { exact: true }),
   ).toHaveCount(0);
-  await expect(page).toHaveURL(/source=callink/);
+  await expect(page.getByText("Only from", { exact: true })).toBeVisible();
+
+  await page
+    .getByRole("button", { name: "Remove CalLink source filter" })
+    .click();
+  await expect(page).not.toHaveURL(/source=/);
+  await expect(
+    page.getByText("Dreams Are Colder Than Death", { exact: true }),
+  ).toBeVisible();
+
+  // Search words still set a source, with an "Interpreted as" chip.
+  await page
+    .getByRole("combobox", { name: /looking for: search campus events/i })
+    .fill("bampfa");
+  await expect(
+    page.getByRole("button", { name: "Remove BAMPFA filter" }),
+  ).toBeVisible();
+  await expect(page.getByText("Free Pizza Mixer", { exact: true })).toHaveCount(
+    0,
+  );
 });
 
 test("desktop topic chips expand and filter across categories", async ({
@@ -368,4 +387,39 @@ test("mobile topic selection updates the filter badge and summary", async ({
     page.getByText("Dreams Are Colder Than Death", { exact: true }),
   ).toHaveCount(0);
   await expect(page).toHaveURL(/topic=social-clubs/);
+});
+
+test("removing chips empties the search box, and Clear all resets the rest", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const box = page.getByRole("combobox", {
+    name: /looking for: search campus events/i,
+  });
+
+  // The "A film at BAMPFA" example sets a query, Arts, and All Events.
+  await page.getByRole("button", { name: "A film at BAMPFA" }).click();
+  await expect(box).toHaveValue("bampfa film");
+  await expect(page).toHaveURL(/category=Arts/);
+
+  await page.getByRole("button", { name: /remove film filter/i }).click();
+  await expect(box).toHaveValue("bampfa");
+  await expect(page).toHaveURL(/q=bampfa(&|$)/);
+
+  await page.getByRole("button", { name: /remove bampfa filter/i }).click();
+  await expect(box).toHaveValue("");
+  await expect(page).not.toHaveURL(/q=/);
+  await expect(
+    page.getByRole("button", { name: /remove .* filter/i }),
+  ).toHaveCount(0);
+
+  // Arts is still set, so Clear all shows. It resets category and date too.
+  await page.getByRole("button", { name: "Clear all", exact: true }).click();
+  await expect(page).not.toHaveURL(/category=|date=/);
+  await expect(
+    page.getByRole("heading", { level: 2, name: /^this week/i }),
+  ).toBeFocused();
+  await expect(
+    page.getByRole("button", { name: "Clear all", exact: true }),
+  ).toHaveCount(0);
 });

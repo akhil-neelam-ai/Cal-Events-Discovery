@@ -77,6 +77,14 @@
       "continue": true
     },
     {
+      "src": "^/days/[^/]+\\.txt$",
+      "headers": {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "public, max-age=3600"
+      },
+      "continue": true
+    },
+    {
       "src": "^/robots\\.txt$",
       "headers": {
         "Content-Type": "text/plain; charset=utf-8",
@@ -142,6 +150,75 @@
         "Cache-Control": "public, max-age=31536000, immutable"
       },
       "continue": true
+    },
+    {
+      "src": "^/gtag-init\\.js$",
+      "headers": {
+        "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/webmcp-tools\\.js$",
+      "headers": {
+        "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/site-pages\\.css$",
+      "headers": {
+        "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/about/?$",
+      "dest": "/about.html"
+    },
+    {
+      "src": "^/privacy/?$",
+      "dest": "/privacy.html"
+    },
+    {
+      "src": "^/\\.well-known/security\\.txt$",
+      "headers": {
+        "Content-Type": "text/plain; charset=utf-8"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/pulse/static/(.*)$",
+      "dest": "https://us-assets.i.posthog.com/static/$1",
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "delete",
+          "target": { "key": "cookie" }
+        }
+      ]
+    },
+    {
+      "src": "^/pulse/array/(.*)$",
+      "dest": "https://us-assets.i.posthog.com/array/$1",
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "delete",
+          "target": { "key": "cookie" }
+        }
+      ]
+    },
+    {
+      "src": "^/pulse/(.*)$",
+      "dest": "https://us.i.posthog.com/$1",
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "delete",
+          "target": { "key": "cookie" }
+        }
+      ]
     },
     {
       "handle": "filesystem"

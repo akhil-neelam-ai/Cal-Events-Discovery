@@ -415,7 +415,7 @@ export function sortEventsChronologically(
 }
 
 /** Minutes past midnight for a time like "7:30 PM", or null without one. */
-function clockMinutes(time: string | undefined): number | null {
+export function clockMinutes(time: string | undefined): number | null {
   const match = time?.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
   if (!match) {
     return null;

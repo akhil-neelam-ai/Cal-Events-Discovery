@@ -11,6 +11,59 @@
     }
   ],
   "paths": {
+    "/days/index.txt": {
+      "get": {
+        "summary": "List the day pages",
+        "description": "Plain text. One line per day for today through 13 days ahead, Pacific time: date | weekday | events | page.",
+        "operationId": "getDayIndex",
+        "responses": {
+          "200": {
+            "description": "Day page index",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/days/{date}.txt": {
+      "get": {
+        "summary": "Get one day of events as plain text",
+        "description": "Plain text under 36,000 characters. Timed events by start, then all-day events, one per line: time | title | place | category | topics | link. Rec facility schedules get one count line.",
+        "operationId": "getDayPage",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "required": true,
+            "description": "A Pacific date in YYYY-MM-DD listed in /days/index.txt.",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One day of events",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The date is outside the 14 days the index lists."
+          }
+        }
+      }
+    },
     "/events.json": {
       "get": {
         "summary": "Get the latest normalized event snapshot",

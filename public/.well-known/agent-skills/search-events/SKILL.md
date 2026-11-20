@@ -31,9 +31,11 @@ Read these outputs on every call:
   weekend, category, or topic filter and says so. Tell the user which filter
   was dropped. Do not present the results as exact matches.
 - `interpretations`: chips the query set, each with a `key` and `label`. To
-  undo one, call again with its key in `dismiss`, like the chip's "x" in the UI.
-  Dismissal is search-only. `apply_ui_state` has no dismiss field, and the
-  page clears dismissed chips whenever its URL changes.
+  undo one, call again with its key in `dismiss`. The words behind a dismissed
+  source, category, or topic chip become search text again. Dismissal is
+  search-only. `apply_ui_state` has no dismiss field, and the page clears
+  dismissed chips whenever its URL changes. On the page, a chip's "x" takes
+  its words out of the search box instead, so `q` changes.
 - `total`, `offset`, `limit`: page with `offset += limit` while
   `offset < total`.
 
@@ -57,10 +59,16 @@ Accept: application/json
 
 For ranked offline search, also load `https://cal-events.com/search-index.json`.
 
+`events.json` is about 1.5 MB. If your fetch tool cuts off long pages, read
+`https://cal-events.com/days/index.txt` instead. It links one plain-text page
+per day for the next 14 days, each under 36,000 characters, with one event per
+line: `time | title | place | category | topics | link`.
+
 ## Procedure
 
 1. Prefer WebMCP `search_berkeley_events` when available.
-2. Otherwise read the top-level `events` array from `events.json`.
+2. Otherwise read the top-level `events` array from `events.json`, or the day
+   pages when your reader cannot take the whole feed.
 3. Treat `date` as an America/Los_Angeles calendar date in `YYYY-MM-DD`.
    A multi-day event also has `end_date` and `dates`, and `date` is only its
    first upcoming day.
