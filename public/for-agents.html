@@ -33,170 +33,184 @@
       content="Machine-readable UC Berkeley campus events for agents: JSON feeds, OpenAPI, WebMCP tools, and agent skills. Public and read-only, with no auth needed."
     />
     <meta name="twitter:image" content="https://cal-events.com/og-image.png" />
-    <style>
-      :root {
-        --ink: #0d2240;
-        --gold: #c4820e;
-        --paper: #f7f4ef;
-        --line: #d9d2c5;
-      }
-      body {
-        margin: 0;
-        font-family: "Source Serif 4", Georgia, serif;
-        background: var(--paper);
-        color: var(--ink);
-        line-height: 1.5;
-      }
-      main {
-        max-width: 42rem;
-        margin: 0 auto;
-        padding: 2.5rem 1.25rem 4rem;
-      }
-      h1 {
-        font-size: 2rem;
-        margin: 0 0 0.5rem;
-      }
-      h2 {
-        font-size: 1.15rem;
-        margin: 2rem 0 0.5rem;
-      }
-      p,
-      li {
-        font-size: 1rem;
-      }
-      a {
-        color: var(--gold);
-      }
-      code {
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 0.9em;
-      }
-      ul {
-        padding-left: 1.2rem;
-      }
-      .muted {
-        color: #5a6472;
-      }
-    </style>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/site-pages.css" />
   </head>
   <body>
+    <header class="masthead">
+      <div class="wrap">
+        <a class="wordmark" href="/" aria-label="CalEvents home"
+          ><b>Cal</b><span>Events</span></a
+        >
+        <nav class="site-nav" aria-label="Site">
+          <a href="/">Events</a>
+          <a href="/about.html">About</a>
+          <a href="/privacy.html">Privacy</a>
+        </nav>
+      </div>
+    </header>
+
     <main>
-      <h1>CalEvents for agents</h1>
-      <p class="muted">
-        Public, read-only UC Berkeley campus event discovery. No auth. No write
-        APIs.
-      </p>
+      <div class="wrap">
+        <article class="page page-text page-agents">
+          <h1>CalEvents for agents</h1>
+          <p class="lead">
+            Public, read-only UC Berkeley campus event discovery. No auth. No
+            write APIs.
+          </p>
 
-      <h2>Start here</h2>
-      <ul>
-        <li><a href="/llms.txt">llms.txt</a>: short agent overview</li>
-        <li><a href="/llms-full.txt">llms-full.txt</a>: expanded context</li>
-        <li><a href="/openapi.json">openapi.json</a>: static data API</li>
-        <li>
-          <a href="/.well-known/api-catalog">API catalog</a>: linkset of every
-          discovery file
-        </li>
-        <li>
-          <a href="/.well-known/agent-skills/index.json">agent skills index</a>
-        </li>
-        <li>
-          <a href="/.well-known/mcp/server-card.json">MCP server card</a>:
-          browser tools and prompts, no remote MCP endpoint
-        </li>
-        <li>
-          <a href="/.well-known/agent-card.json">A2A agent card</a>
-        </li>
-        <li><a href="/">Homepage</a>: WebMCP tools when supported</li>
-      </ul>
+          <div class="layout">
+            <div class="prose">
+              <h2>Start here</h2>
+              <ul>
+                <li><a href="/llms.txt">llms.txt</a>: short agent overview</li>
+                <li>
+                  <a href="/llms-full.txt">llms-full.txt</a>: expanded context
+                </li>
+                <li><a href="/openapi.json">openapi.json</a>: static data API</li>
+                <li>
+                  <a href="/.well-known/api-catalog">API catalog</a>: linkset of
+                  every discovery file
+                </li>
+                <li>
+                  <a href="/.well-known/agent-skills/index.json"
+                    >agent skills index</a
+                  >
+                </li>
+                <li>
+                  <a href="/.well-known/mcp/server-card.json">MCP server card</a>:
+                  browser tools and prompts, no remote MCP endpoint
+                </li>
+                <li>
+                  <a href="/.well-known/agent-card.json">A2A agent card</a>
+                </li>
+                <li><a href="/">Homepage</a>: WebMCP tools when supported</li>
+              </ul>
 
-      <h2>Data</h2>
-      <ul>
-        <li>
-          <a href="/days/index.txt">Day pages</a>: one plain-text page per day
-          for the next 14 days, each under 36,000 characters. Read these if
-          your fetch tool cuts off the full feed.
-        </li>
-        <li><a href="/events.json">events.json</a></li>
-        <li><a href="/search-index.json">search-index.json</a></li>
-        <li><a href="/status.json">status.json</a></li>
-      </ul>
+              <h2>Data</h2>
+              <ul>
+                <li>
+                  <a href="/days/index.txt">Day pages</a>: one plain-text page
+                  per day for the next 14 days, each under 36,000 characters.
+                  Read these if your fetch tool cuts off the full feed.
+                </li>
+                <li><a href="/events.json">events.json</a></li>
+                <li><a href="/search-index.json">search-index.json</a></li>
+                <li><a href="/status.json">status.json</a></li>
+              </ul>
 
-      <h2>URL workspace</h2>
-      <p>
-        Humans and agents share the same query string:
-        <code>?q</code>, <code>?date</code> (<code>today</code> /
-        <code>tomorrow</code> / <code>week</code> / <code>upcoming</code>),
-        <code>?category</code>, <code>?topic</code>, <code>?source</code>,
-        <code>?event</code>. Read valid topic slugs from
-        <code>events.json.topic_vocabulary.topics</code>.
-      </p>
-      <p>
-        Browser WebMCP tools include <code>get_ui_state</code>,
-        <code>apply_ui_state</code>, and <code>build_calevents_url</code>.
-        <code>apply_ui_state</code> replaces the whole view unless you pass
-        <code>mode: "merge"</code>. Pass <code>event: null</code> to close the
-        detail panel. Read <code>view</code> from <code>get_ui_state</code> to
-        see what the page shows, and read it again while
-        <code>view.pending</code> is true. A merge that races a visitor's
-        change returns <code>applied: false</code>, so read the state and
-        retry. Chip dismissal is search-only: pass <code>dismiss</code> to
-        <code>search_berkeley_events</code>. The page clears dismissed chips
-        whenever its URL changes. On the page, a chip's "x" takes the words
-        that set it out of the search box, so <code>q</code> changes. Search
-        inputs such as
-        <code>startDate</code>, <code>endDate</code>, and
-        <code>limit</code> have no URL form.
-      </p>
+              <h2>URL workspace</h2>
+              <p>
+                Humans and agents share the same query string:
+                <code>?q</code>, <code>?date</code> (<code>today</code> /
+                <code>tomorrow</code> / <code>week</code> /
+                <code>upcoming</code>), <code>?category</code>,
+                <code>?topic</code>, <code>?source</code>,
+                <code>?event</code>. Read valid topic slugs from
+                <code class="long">events.json.topic_vocabulary.topics</code>.
+              </p>
+              <p>
+                Browser WebMCP tools include <code>get_ui_state</code>,
+                <code>apply_ui_state</code>, and
+                <code>build_calevents_url</code>.
+                <code>apply_ui_state</code> replaces the whole view unless you
+                pass <code>mode: "merge"</code>. Pass
+                <code>event: null</code> to close the detail panel. Read
+                <code>view</code> from <code>get_ui_state</code> to see what
+                the page shows, and read it again while
+                <code>view.pending</code> is true. A merge that races a
+                visitor's change returns <code>applied: false</code>, so read
+                the state and retry. Chip dismissal is search-only: pass
+                <code>dismiss</code> to <code>search_berkeley_events</code>.
+                The page clears dismissed chips whenever its URL changes. On
+                the page, a chip's "x" takes the words that set it out of the
+                search box, so <code>q</code> changes. Search inputs such as
+                <code>startDate</code>, <code>endDate</code>, and
+                <code>limit</code> have no URL form.
+              </p>
 
-      <h2>WebMCP tools</h2>
-      <p>
-        These run only in a browser tab on the homepage, through
-        <code>navigator.modelContext</code>. An unknown category, source,
-        topic, or date preset is an error, and so is a date that is not
-        <code>YYYY-MM-DD</code>.
-      </p>
-      <ul>
-        <li>
-          <code>search_berkeley_events</code>: ranked UI search path. It reads
-          date words in the query when you pass no date. It returns
-          <code>interpretations</code> (chips you can <code>dismiss</code>),
-          <code>effectiveDateRange</code>, <code>relaxed</code> and
-          <code>fallbackMessage</code> when a filter was dropped, and
-          <code>total</code> for paging with <code>offset</code>.
-        </li>
-        <li><code>get_event_by_id</code></li>
-        <li><code>generate_event_ics</code></li>
-        <li><code>get_cal_events_feed_status</code></li>
-        <li><code>get_ui_state</code> / <code>apply_ui_state</code></li>
-        <li><code>build_calevents_url</code></li>
-        <li><code>get_event_directions</code></li>
-        <li>
-          <code>list_filter_options</code>: valid categories, sources, date
-          presets, and topic slugs
-        </li>
-      </ul>
+              <h2>WebMCP tools</h2>
+              <p>
+                These run only in a browser tab on the homepage, through
+                <code>navigator.modelContext</code>. An unknown category,
+                source, topic, or date preset is an error, and so is a date
+                that is not <code>YYYY-MM-DD</code>.
+              </p>
+              <ul>
+                <li>
+                  <code>search_berkeley_events</code>: ranked UI search path. It
+                  reads date words in the query when you pass no date. It
+                  returns <code>interpretations</code> (chips you can
+                  <code>dismiss</code>), <code>effectiveDateRange</code>,
+                  <code>relaxed</code> and <code>fallbackMessage</code> when a
+                  filter was dropped, and <code>total</code> for paging with
+                  <code>offset</code>.
+                </li>
+                <li><code>get_event_by_id</code></li>
+                <li><code>generate_event_ics</code></li>
+                <li><code>get_cal_events_feed_status</code></li>
+                <li><code>get_ui_state</code> / <code>apply_ui_state</code></li>
+                <li><code>build_calevents_url</code></li>
+                <li><code>get_event_directions</code></li>
+                <li>
+                  <code>list_filter_options</code>: valid categories, sources,
+                  date presets, and topic slugs
+                </li>
+              </ul>
 
-      <h2>Prompts</h2>
-      <p>The MCP server card names four prompts:</p>
-      <ul>
-        <li><code>whats-on-tonight</code>: events tonight in Pacific time</li>
-        <li><code>is-feed-healthy</code>: feed freshness and topic status</li>
-        <li><code>ics-for-event</code>: an .ics payload for one event id</li>
-        <li><code>share-this-event</code>: a shareable deep link</li>
-      </ul>
+              <h2>Prompts</h2>
+              <p>The MCP server card names four prompts:</p>
+              <ul>
+                <li>
+                  <code>whats-on-tonight</code>: events tonight in Pacific time
+                </li>
+                <li>
+                  <code>is-feed-healthy</code>: feed freshness and topic status
+                </li>
+                <li>
+                  <code>ics-for-event</code>: an .ics payload for one event id
+                </li>
+                <li><code>share-this-event</code>: a shareable deep link</li>
+              </ul>
 
-      <h2>Privacy</h2>
-      <p>
-        Recent searches stay in the visitor's browser storage. No tool or file
-        exposes them to agents, and that is on purpose.
-      </p>
+              <h2>Privacy</h2>
+              <p>
+                Recent searches stay in the visitor's browser storage. No tool
+                or file exposes them to agents, and that is on purpose.
+              </p>
 
-      <h2>CRUD limits</h2>
-      <p>
-        Events and feed status are <strong>read-only</strong>. There is no
-        create, update, or delete for campus events through CalEvents. Calendar
-        export and directions URLs are derived reads.
-      </p>
+              <h2>CRUD limits</h2>
+              <p>
+                Events and feed status are <strong>read-only</strong>. There is
+                no create, update, or delete for campus events through
+                CalEvents. Calendar export and directions URLs are derived
+                reads.
+              </p>
+            </div>
+          </div>
+
+          <div class="sheet-foot">
+            <a class="btn-toner" href="/">Back to the wall</a>
+          </div>
+        </article>
+      </div>
     </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>CalEvents is an independent student project.</p>
+        <nav aria-label="Footer">
+          <a href="/">Events</a>
+          <a href="/about.html">About</a>
+          <a href="/privacy.html">Privacy</a>
+        </nav>
+      </div>
+    </footer>
   </body>
 </html>

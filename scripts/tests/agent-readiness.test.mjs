@@ -70,7 +70,7 @@ test("security.txt carries the RFC 9116 fields", () => {
 
 test("static pages cover about, privacy, and the 404", () => {
   const sitemap = readText("public/sitemap.xml");
-  for (const page of ["about.html", "privacy.html"]) {
+  for (const page of ["about.html", "privacy.html", "for-agents.html"]) {
     assert.ok(sitemap.includes(`<loc>https://cal-events.com/${page}</loc>`));
     const html = readText(`public/${page}`);
     assert.match(html, /<h1>[^<]+<\/h1>/);
