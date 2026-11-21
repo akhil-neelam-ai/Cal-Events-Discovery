@@ -1,132 +1,134 @@
 {
-  "generated_at": "2026-11-20T19:49:51.697Z",
-  "total_events": 1539,
-  "duplicates_removed": 476,
-  "past_events_filtered": 3691,
+  "generated_at": "2026-11-21T18:55:28.027Z",
+  "total_events": 1527,
+  "duplicates_removed": 475,
+  "past_events_filtered": 3718,
   "invalid_events_filtered": 11,
   "topics": {
     "outcome": "ok",
-    "assigned_count": 568,
+    "assigned_count": 555,
     "carried_forward_count": 0
   },
   "sources": [
     {
       "name": "livewhale",
       "ok": true,
-      "count": 2189,
-      "duration_ms": 8831,
-      "fetched_at": "2026-11-20T19:49:26.711Z",
-      "last_healthy_at": "2026-11-20T19:49:26.711Z",
+      "count": 2170,
+      "duration_ms": 9850,
+      "fetched_at": "2026-11-21T18:55:05.556Z",
+      "last_healthy_at": "2026-11-21T18:55:05.556Z",
       "consecutive_failures": 0
     },
     {
       "name": "cal_performances",
       "ok": true,
-      "count": 42,
-      "duration_ms": 19418,
-      "fetched_at": "2026-11-20T19:49:26.735Z",
-      "last_healthy_at": "2026-11-20T19:49:26.735Z",
+      "count": 41,
+      "duration_ms": 20484,
+      "fetched_at": "2026-11-21T18:55:05.578Z",
+      "last_healthy_at": "2026-11-21T18:55:05.578Z",
       "consecutive_failures": 0
     },
     {
       "name": "calbears",
       "ok": true,
-      "count": 282,
-      "duration_ms": 1045,
-      "fetched_at": "2026-11-20T19:49:26.737Z",
-      "last_healthy_at": "2026-11-20T19:49:26.737Z",
+      "count": 280,
+      "duration_ms": 827,
+      "fetched_at": "2026-11-21T18:55:05.582Z",
+      "last_healthy_at": "2026-11-21T18:55:05.582Z",
       "consecutive_failures": 0
     },
     {
       "name": "bampfa",
       "ok": true,
-      "count": 140,
-      "duration_ms": 5483,
-      "fetched_at": "2026-11-20T19:49:26.739Z",
-      "last_healthy_at": "2026-11-20T19:49:26.739Z",
+      "count": 138,
+      "duration_ms": 7837,
+      "fetched_at": "2026-11-21T18:55:05.583Z",
+      "last_healthy_at": "2026-11-21T18:55:05.583Z",
       "consecutive_failures": 0
     },
     {
       "name": "haas",
       "ok": true,
       "count": 11,
-      "duration_ms": 3005,
-      "fetched_at": "2026-11-20T19:49:26.742Z",
-      "last_healthy_at": "2026-11-20T19:49:26.742Z",
+      "duration_ms": 1647,
+      "fetched_at": "2026-11-21T18:55:05.586Z",
+      "last_healthy_at": "2026-11-21T18:55:05.586Z",
       "consecutive_failures": 0
     },
     {
       "name": "berkeley_law",
       "ok": true,
       "count": 24,
-      "duration_ms": 1539,
-      "fetched_at": "2026-11-20T19:49:26.744Z",
-      "last_healthy_at": "2026-11-20T19:49:26.744Z",
+      "duration_ms": 3218,
+      "fetched_at": "2026-11-21T18:55:05.587Z",
+      "last_healthy_at": "2026-11-21T18:55:05.587Z",
       "consecutive_failures": 0
     },
     {
       "name": "simons",
       "ok": true,
       "count": 18,
-      "duration_ms": 23028,
-      "fetched_at": "2026-11-20T19:49:26.745Z",
-      "last_healthy_at": "2026-11-20T19:49:26.745Z",
+      "duration_ms": 16697,
+      "fetched_at": "2026-11-21T18:55:05.588Z",
+      "last_healthy_at": "2026-11-21T18:55:05.588Z",
       "consecutive_failures": 0
     },
     {
       "name": "luma",
       "ok": true,
       "count": 4,
-      "duration_ms": 887,
-      "fetched_at": "2026-11-20T19:49:26.746Z",
-      "last_healthy_at": "2026-11-20T19:49:26.746Z",
+      "duration_ms": 841,
+      "fetched_at": "2026-11-21T18:55:05.590Z",
+      "last_healthy_at": "2026-11-21T18:55:05.590Z",
       "consecutive_failures": 0
     },
     {
       "name": "begin",
       "ok": true,
-      "count": 5,
-      "duration_ms": 1067,
-      "fetched_at": "2026-11-20T19:49:26.754Z",
-      "last_healthy_at": "2026-11-20T19:49:26.754Z",
+      "count": 4,
+      "duration_ms": 1035,
+      "fetched_at": "2026-11-21T18:55:05.603Z",
+      "last_healthy_at": "2026-11-21T18:55:05.603Z",
       "consecutive_failures": 0
     },
     {
       "name": "ai_risk",
       "ok": true,
       "count": 0,
-      "duration_ms": 828,
-      "fetched_at": "2026-11-20T19:49:26.754Z",
+      "duration_ms": 944,
+      "fetched_at": "2026-11-21T18:55:05.604Z",
       "last_healthy_at": "2026-11-17T20:40:14.178Z",
       "consecutive_failures": 0,
       "degraded": true,
-      "degraded_reason": "ai_risk returned 0 events (below healthy threshold 1); ai_risk fallback expired (71.2h old, exceeding 48h); last-good events dropped",
+      "degraded_reason": "ai_risk returned 0 events (below healthy threshold 1); ai_risk fallback expired (94.3h old, exceeding 48h); last-good events dropped",
       "fallback_expired": true,
-      "fallback_age_hours": 71.2
+      "fallback_age_hours": 94.3
     },
     {
       "name": "brsl",
       "ok": true,
       "count": 0,
-      "duration_ms": 1303,
-      "fetched_at": "2026-11-20T19:49:26.759Z",
+      "duration_ms": 3346,
+      "fetched_at": "2026-11-21T18:55:05.605Z",
       "last_healthy_at": "2026-11-18T20:13:27.146Z",
       "consecutive_failures": 0,
       "degraded": true,
-      "degraded_reason": "brsl returned 0 events (below healthy threshold 1)"
+      "degraded_reason": "brsl returned 0 events (below healthy threshold 1); brsl fallback expired (70.7h old, exceeding 48h); last-good events dropped",
+      "fallback_expired": true,
+      "fallback_age_hours": 70.7
     },
     {
       "name": "cltc",
       "ok": true,
       "count": 0,
-      "duration_ms": 1569,
-      "fetched_at": "2026-11-20T19:49:26.760Z",
+      "duration_ms": 1945,
+      "fetched_at": "2026-11-21T18:55:05.606Z",
       "last_healthy_at": "2026-10-08T17:41:07.969Z",
       "consecutive_failures": 0,
       "degraded": true,
-      "degraded_reason": "cltc returned 0 events (below healthy threshold 1); cltc fallback expired (1034.1h old, exceeding 48h); last-good events dropped",
+      "degraded_reason": "cltc returned 0 events (below healthy threshold 1); cltc fallback expired (1057.2h old, exceeding 48h); last-good events dropped",
       "fallback_expired": true,
-      "fallback_age_hours": 1034.1
+      "fallback_age_hours": 1057.2
     }
   ],
   "fallback_used": false,
@@ -137,6 +139,7 @@
   "degraded_sources": [],
   "stale_fallback_sources": [
     "ai_risk",
+    "brsl",
     "cltc"
   ]
 }
